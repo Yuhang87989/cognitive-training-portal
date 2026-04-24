@@ -2626,42 +2626,86 @@ function closeGame() {
 
 // ====== 初始化 ======
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('认知训练门户 V60 加载完成');
-    showPage('login');
+    console.log('认知训练门户 V69 加载完成');
+    
+    // 初始化数据
     const data = loadData();
+    console.log('用户数量:', data.users.length);
+    
+    // 确保登录页面显示
+    const loginPage = document.getElementById('page-login');
+    if (loginPage) {
+        loginPage.classList.add('active');
+        loginPage.style.display = 'flex';
+    }
+    
+    // 初始化登录页面
     initLoginPage();
+    
+    // 如果有用户，自动登录
+    if (data.currentUser && data.users.length > 0) {
+        const user = data.users.find(u => u.id === data.currentUser);
+        if (user) {
+            console.log('自动登录用户:', user.name);
+            setTimeout(() => {
+                showPage('home');
+                updateUI();
+                syncTodayStats();
+            }, 100);
+        }
+    }
+    
     // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.user-select-wrapper')) { 
-            const dropdown = document.getElementById('user-select-dropdown');
-            if (dropdown) dropdown.classList.remove('show'); 
-        }
-        if (!e.target.closest('.user-menu-wrapper')) { 
-            const userDropdown = document.getElementById('user-dropdown');
-            if (userDropdown) userDropdown.classList.remove('show'); 
-        }
+        try {
+            if (!e.target.closest('.user-select-wrapper')) { 
+                const dropdown = document.getElementById('user-select-dropdown');
+                if (dropdown) dropdown.classList.remove('show'); 
+            }
+            if (!e.target.closest('.user-menu-wrapper')) { 
+                const userDropdown = document.getElementById('user-dropdown');
+                if (userDropdown) userDropdown.classList.remove('show'); 
+            }
+        } catch(err) {}
     });
 });
 
 function initLoginPage() {
-    showPage('login');
+    console.log('初始化登录页面');
     const data = loadData();
+    console.log('用户列表:', data.users.length);
+    
+    // 渲染用户列表
     renderUserList();
-    // 如果有用户，默认选中第一个用户
+    
+    // 如果有用户，默认选中第一个
     if (data.users.length > 0) {
         const firstUser = data.users[0];
+        console.log('选中用户:', firstUser.name);
+        
         const displayEl = document.getElementById('selected-user-display');
         const btn = document.querySelector('.user-select-btn');
         const diffEl = document.getElementById('login-difficulty');
         const formEl = document.getElementById('login-form-section');
-        if (displayEl) displayEl.innerHTML = '<span>' + firstUser.name.charAt(0) + '</span> ' + firstUser.name;
-        if (btn) btn.dataset.userId = firstUser.id;
-        if (diffEl) diffEl.value = firstUser.difficulty || 1;
-        if (formEl) formEl.style.display = 'block';
+        
+        if (displayEl) {
+            displayEl.innerHTML = '<span>' + firstUser.name.charAt(0) + '</span> ' + firstUser.name;
+        }
+        if (btn) {
+            btn.dataset.userId = firstUser.id;
+        }
+        if (diffEl) {
+            diffEl.value = firstUser.difficulty || 1;
+        }
+        if (formEl) {
+            formEl.style.display = 'block';
+        }
     } else {
+        console.log('无用户，显示创建表单');
         const formEl = document.getElementById('login-form-section');
         if (formEl) formEl.style.display = 'none';
-        showCreateUserModal();
+        // 延迟显示创建表单
+        setTimeout(() => showCreateUserModal(), 100);
     }
 }
 
