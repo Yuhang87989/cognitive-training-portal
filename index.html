@@ -273,7 +273,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <body>
 
 <!-- 登录页 -->
-<div id="page-login" class="page login-page active">
+<div id="page-login" class="page login-page" style="display:none !important;">
     <div class="login-header-bg"></div>
     <div class="login-content">
         <div class="login-logo-area">
@@ -368,7 +368,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 
 <!-- 首页 -->
-<div id="page-home" class="page">
+<div id="page-home" class="page active" style="display:block;">
     <div class="home-header">
         <div class="header-top">
             <div class="app-logo">🧠</div>
@@ -384,6 +384,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <div class="user-dropdown-info" id="dropdown-info">初一 · Lv.1</div>
                         </div>
                         <div class="user-dropdown-item" onclick="showUserSwitchModal()"><span>👥</span><span>切换用户</span></div>
+                        <div class="user-dropdown-item" onclick="showCreateUserModal()"><span>➕</span><span>创建新账号</span></div>
                         <div class="user-dropdown-item" onclick="openSettingsPanel()"><span>⚙️</span><span>设置</span></div>
                         <div class="user-dropdown-item danger" onclick="logoutAndReturn()"><span>🚪</span><span>退出登录</span></div>
                     </div>
@@ -2626,34 +2627,44 @@ function closeGame() {
 
 // ====== 初始化 ======
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('认知训练门户 V69 加载完成');
+    console.log('认知训练门户 V71 加载完成');
     
     // 初始化数据
-    const data = loadData();
+    let data = loadData();
     console.log('用户数量:', data.users.length);
     
-    // 确保登录页面显示
-    const loginPage = document.getElementById('page-login');
-    if (loginPage) {
-        loginPage.classList.add('active');
-        loginPage.style.display = 'flex';
+    // 如果没有用户，自动创建默认用户"邱宇菲"
+    if (data.users.length === 0) {
+        console.log('无用户，自动创建默认用户');
+        const defaultUser = {
+            id: 'user_' + Date.now(),
+            name: '邱宇菲',
+            grade: 7,
+            difficulty: 1,
+            points: 1142,
+            createdAt: new Date().toISOString(),
+            stats: {
+                totalQuestions: 0,
+                correctAnswers: 0,
+                totalMinutes: 0,
+                streakDays: 0,
+                lastActiveDate: null
+            },
+            weeklyProgress: {},
+            wrongNotes: [],
+            completedTopics: []
+        };
+        data.users.push(defaultUser);
+        data.currentUser = defaultUser.id;
+        saveData(data);
+        console.log('默认用户创建成功:', defaultUser.name);
+        data = loadData(); // 重新加载数据
     }
     
-    // 初始化登录页面
-    initLoginPage();
-    
-    // 如果有用户，自动登录
-    if (data.currentUser && data.users.length > 0) {
-        const user = data.users.find(u => u.id === data.currentUser);
-        if (user) {
-            console.log('自动登录用户:', user.name);
-            setTimeout(() => {
-                showPage('home');
-                updateUI();
-                syncTodayStats();
-            }, 100);
-        }
-    }
+    // 直接显示首页
+    showPage('home');
+    updateUI();
+    syncTodayStats();
     
     // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
@@ -2669,45 +2680,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(err) {}
     });
 });
-
-function initLoginPage() {
-    console.log('初始化登录页面');
-    const data = loadData();
-    console.log('用户列表:', data.users.length);
-    
-    // 渲染用户列表
-    renderUserList();
-    
-    // 如果有用户，默认选中第一个
-    if (data.users.length > 0) {
-        const firstUser = data.users[0];
-        console.log('选中用户:', firstUser.name);
-        
-        const displayEl = document.getElementById('selected-user-display');
-        const btn = document.querySelector('.user-select-btn');
-        const diffEl = document.getElementById('login-difficulty');
-        const formEl = document.getElementById('login-form-section');
-        
-        if (displayEl) {
-            displayEl.innerHTML = '<span>' + firstUser.name.charAt(0) + '</span> ' + firstUser.name;
-        }
-        if (btn) {
-            btn.dataset.userId = firstUser.id;
-        }
-        if (diffEl) {
-            diffEl.value = firstUser.difficulty || 1;
-        }
-        if (formEl) {
-            formEl.style.display = 'block';
-        }
-    } else {
-        console.log('无用户，显示创建表单');
-        const formEl = document.getElementById('login-form-section');
-        if (formEl) formEl.style.display = 'none';
-        // 延迟显示创建表单
-        setTimeout(() => showCreateUserModal(), 100);
-    }
-}
 
 // ====== 播客音频播放 ======
 const audioResources = {
