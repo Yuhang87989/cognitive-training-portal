@@ -30,6 +30,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .user-select-item{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}
 .user-select-item:hover{background:#f5f7ff}
 .user-select-item .item-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+.user-select-item .item-info{flex:1}
 .user-select-item .item-name{font-size:14px;font-weight:600}
 .user-select-item .item-grade{font-size:11px;color:var(--text-light)}
 .input-group{margin-bottom:16px}
@@ -918,25 +919,43 @@ function showPage(pageId) {
 }
 
 function closeFullscreenPage() { const el = document.getElementById('fullscreen-container'); if (el) el.classList.remove('active'); }
-function toggleUserMenu() { const el = document.getElementById('user-dropdown'); if (el) el.classList.toggle('show'); }
+function toggleUserMenu() { 
+    const el = document.getElementById('user-dropdown'); 
+    if (el) el.classList.toggle('show'); 
+}
+
+function closeUserMenu() { 
+    const el = document.getElementById('user-dropdown'); 
+    if (el) el.classList.remove('show'); 
+}
 
 function showUserSwitchModal() {
-    closeUserMenu();
-    const data = loadData();
-    const container = document.getElementById('switch-user-list');
-    if (!container) return;
-    const colors = ['linear-gradient(135deg,#667eea,#764ba2)', 'linear-gradient(135deg,#FF9A63,#E87A4E)', 'linear-gradient(135deg,#43E97B,#38F9D7)'];
-    let html = '';
-    data.users.forEach((u, i) => {
-        html += '<div class="user-select-item" onclick="switchToUser(\'' + u.id + '\')" style="' + (u.id === data.currentUser ? 'background:#f0f7ff;' : '') + '">';
-        html += '<div class="item-avatar" style="background:' + colors[i % 3] + ';color:white;">' + u.name.charAt(0) + '</div>';
-        html += '<div class="item-info">';
-        html += '<div class="item-name">' + u.name + (u.id === data.currentUser ? ' (当前)' : '') + '</div>';
-        html += '<div class="item-grade">' + gradeNames[u.grade] + ' · Lv.' + u.difficulty + '</div>';
-        html += '</div></div>';
-    });
-    container.innerHTML = html;
-    document.getElementById('user-switch-modal').classList.add('show');
+    console.log('>>> 打开用户切换模态框');
+    try {
+        closeUserMenu();
+        const data = loadData();
+        console.log('>>> 用户数量:', data.users.length);
+        const container = document.getElementById('switch-user-list');
+        if (!container) {
+            console.error('>>> switch-user-list容器不存在');
+            return;
+        }
+        const colors = ['linear-gradient(135deg,#667eea,#764ba2)', 'linear-gradient(135deg,#FF9A63,#E87A4E)', 'linear-gradient(135deg,#43E97B,#38F9D7)'];
+        let htmlContent = '';
+        data.users.forEach((u, i) => {
+            htmlContent += '<div class="user-select-item" onclick="switchToUser(\'' + u.id + '\')" style="' + (u.id === data.currentUser ? 'background:#f0f7ff;' : '') + '">';
+            htmlContent += '<div class="item-avatar" style="background:' + colors[i % 3] + ';color:white;">' + u.name.charAt(0) + '</div>';
+            htmlContent += '<div class="item-info">';
+            htmlContent += '<div class="item-name">' + u.name + (u.id === data.currentUser ? ' (当前)' : '') + '</div>';
+            htmlContent += '<div class="item-grade">' + gradeNames[u.grade] + ' · Lv.' + u.difficulty + '</div>';
+            htmlContent += '</div></div>';
+        });
+        container.innerHTML = htmlContent;
+        console.log('>>> 用户列表渲染完成');
+        document.getElementById('user-switch-modal').classList.add('show');
+    } catch(err) {
+        console.error('>>> showUserSwitchModal错误:', err);
+    }
 }
 
 function closeUserSwitchModal() { document.getElementById('user-switch-modal').classList.remove('show'); }
