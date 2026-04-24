@@ -1303,156 +1303,49 @@ const pageContent = {
                     <button class="grade-tab-btn" onclick="filterPodcast('story',this)">名人故事</button>
                 </div>
             </div>
-            <div id="podcast-list" style="padding:0 12px;">
-                <div class="podcast-item" onclick="playPodcast('英语听力训练技巧', 'audio1')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#667eea,#764ba2);">🎧</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">英语听力训练技巧</div>
-                        <div class="podcast-meta">王老师 · 12:30 · 英语</div>
-                    </div>
+            <div id="podcast-list">
+                <div class="podcast-item-enhanced" data-id="audio1" onclick="playPodcastCourse('audio1')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#667eea,#764ba2);">🎧<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">英语听力训练技巧</div><div class="podcast-meta-enhanced">王老师 · 12:30 · 英语</div><div class="podcast-views">2341次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('费曼学习法详解', 'audio2')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#FF9A63,#E87A4E);">🧠</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">费曼学习法详解</div>
-                        <div class="podcast-meta">李老师 · 8:45 · 学习方法</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio2" onclick="playPodcastCourse('audio2')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#FF9A63,#E87A4E);">🧠<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">费曼学习法详解</div><div class="podcast-meta-enhanced">李老师 · 8:45 · 学习方法</div><div class="podcast-views">4521次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('时间管理秘诀', 'audio3')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#43E97B,#38F9D7);">⏰</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">时间管理秘诀</div>
-                        <div class="podcast-meta">张老师 · 10:20 · 学习方法</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio3" onclick="playPodcastCourse('audio3')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#43E97B,#38F9D7);">⏰<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">时间管理秘诀</div><div class="podcast-meta-enhanced">张老师 · 10:20 · 学习方法</div><div class="podcast-views">3892次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('数学思维培养', 'audio4')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">📐</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">数学思维培养</div>
-                        <div class="podcast-meta">赵老师 · 15:00 · 数学</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio4" onclick="playPodcastCourse('audio4')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">📐<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">数学思维培养</div><div class="podcast-meta-enhanced">赵老师 · 15:00 · 数学</div><div class="podcast-views">2156次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('古诗词鉴赏技巧', 'audio5')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#f6d365,#fda085);">📝</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">古诗词鉴赏技巧</div>
-                        <div class="podcast-meta">陈老师 · 11:30 · 语文</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio5" onclick="playPodcastCourse('audio5')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#f6d365,#fda085);">📝<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">古诗词鉴赏技巧</div><div class="podcast-meta-enhanced">陈老师 · 11:30 · 语文</div><div class="podcast-views">1876次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('物理概念入门', 'audio6')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#fa709a,#fee140);">⚡</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">物理概念入门</div>
-                        <div class="podcast-meta">林老师 · 14:00 · 物理</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio6" onclick="playPodcastCourse('audio6')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#fa709a,#fee140);">⚡<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">物理概念入门</div><div class="podcast-meta-enhanced">林老师 · 14:00 · 物理</div><div class="podcast-views">1567次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('化学元素周期表', 'audio7')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#667eea,#764ba2);">🧪</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">化学元素周期表</div>
-                        <div class="podcast-meta">周老师 · 13:45 · 化学</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio7" onclick="playPodcastCourse('audio7')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#667eea,#764ba2);">🧪<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">化学元素周期表</div><div class="podcast-meta-enhanced">周老师 · 13:45 · 化学</div><div class="podcast-views">1234次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('番茄工作法实践', 'audio8')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#FF6B6B,#FF4757);">🍅</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">番茄工作法实践</div>
-                        <div class="podcast-meta">刘老师 · 9:15 · 学习方法</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio8" onclick="playPodcastCourse('audio8')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#FF6B6B,#FF4757);">🍅<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">番茄工作法实践</div><div class="podcast-meta-enhanced">刘老师 · 9:15 · 学习方法</div><div class="podcast-views">3421次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('艾宾浩斯记忆法', 'audio9')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#43E97B,#38F9D7);">🔄</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">艾宾浩斯记忆法</div>
-                        <div class="podcast-meta">孙老师 · 10:30 · 学习方法</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio9" onclick="playPodcastCourse('audio9')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#43E97B,#38F9D7);">🔄<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">艾宾浩斯记忆法</div><div class="podcast-meta-enhanced">孙老师 · 10:30 · 学习方法</div><div class="podcast-views">2890次播放</div></div>
                 </div>
-                <div class="podcast-item" onclick="playPodcast('阅读理解技巧', 'audio10')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">📖</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">阅读理解技巧</div>
-                        <div class="podcast-meta">吴老师 · 12:00 · 英语</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('写作能力提升', 'audio11')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#f6d365,#fda085);">✍️</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">写作能力提升</div>
-                        <div class="podcast-meta">郑老师 · 11:00 · 语文</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('光学原理讲解', 'audio12')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#fa709a,#fee140);">💡</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">光学原理讲解</div>
-                        <div class="podcast-meta">林老师 · 16:00 · 物理</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('力学基础入门', 'audio13')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#FF9A63,#E87A4E);">🔧</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">力学基础入门</div>
-                        <div class="podcast-meta">陈老师 · 14:30 · 物理</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('化学反应原理', 'audio14')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#667eea,#764ba2);">⚗️</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">化学反应原理</div>
-                        <div class="podcast-meta">周老师 · 15:30 · 化学</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('思维导图绘制', 'audio15')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#43E97B,#38F9D7);">🎨</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">思维导图绘制</div>
-                        <div class="podcast-meta">钱老师 · 8:00 · 学习方法</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('完形填空技巧', 'audio16')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">📝</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">完形填空技巧</div>
-                        <div class="podcast-meta">冯老师 · 9:45 · 英语</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('文言文学习方法', 'audio17')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#f6d365,#fda085);">📜</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">文言文学习方法</div>
-                        <div class="podcast-meta">卫老师 · 13:00 · 语文</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('声学基础知识', 'audio18')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#fa709a,#fee140);">🔊</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">声学基础知识</div>
-                        <div class="podcast-meta">蒋老师 · 10:15 · 物理</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('酸碱盐专题', 'audio19')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#667eea,#764ba2);">🧪</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">酸碱盐专题</div>
-                        <div class="podcast-meta">沈老师 · 14:15 · 化学</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('数学解题思路', 'audio20')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#FF9A63,#E87A4E);">📐</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">数学解题思路</div>
-                        <div class="podcast-meta">韩老师 · 16:30 · 数学</div>
-                    </div>
-                </div>
-                <div class="podcast-item" onclick="playPodcast('学霸时间表分享', 'audio21')">
-                    <div class="podcast-thumb" style="background:linear-gradient(135deg,#FF6B6B,#FF4757);">⏱️</div>
-                    <div class="podcast-info">
-                        <div class="podcast-title">学霸时间表分享</div>
-                        <div class="podcast-meta">杨老师 · 7:30 · 学习方法</div>
-                    </div>
+                <div class="podcast-item-enhanced" data-id="audio10" onclick="playPodcastCourse('audio10')">
+                    <div class="podcast-thumb-enhanced" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">📖<div class="podcast-playing-indicator">●</div></div>
+                    <div class="podcast-info-enhanced"><div class="podcast-title-enhanced">阅读理解技巧</div><div class="podcast-meta-enhanced">吴老师 · 12:00 · 英语</div><div class="podcast-views">1678次播放</div></div>
                 </div>
             </div>
-            <div style="padding:12px;text-align:center;color:var(--text-light);font-size:12px;">共21个音频课程</div>
+            <div style="padding:12px;text-align:center;color:var(--text-light);font-size:12px;">共10个音频课程</div>共21个音频课程</div>
                 <div class="podcast-item" onclick="playPodcast('费曼学习法详解')">
                     <div class="podcast-thumb">🧠</div>
                     <div class="podcast-info">
@@ -2523,12 +2416,330 @@ function openDeepSeekRecharge() {
         <div style="background:#fff3e0;border-radius:12px;padding:12px;margin-bottom:16px;">
             <div style="font-size:12px;color:var(--orange);">💡 提示：首次充值有优惠活动</div>
         </div>
-        <button onclick="window.open('https://platform.deepseek.com', '_blank')" class="login-btn login-btn-primary" style="margin-bottom:8px;">🌐 立即前往充值</button>
+        <button onclick="window.open("https://platform.deepseek.com", "_blank")" class="login-btn login-btn-primary" style="margin-bottom:8px;">🌐 立即前往充值</button>
         <button class="modal-close" onclick="closeModal()">关闭</button>
     `;
 }
 
 
+
+
+// ====== DeepSeek API V50 ======
+
+
+
+var deepseekRecognition = null;
+var isRecording = false;
+
+async function callDeepSeekAPI(messages, temperature) {
+    try {
+        var response = await fetch(DEEPSEEK_API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY},
+            body: JSON.stringify({model: DEEPSEEK_MODEL, messages: messages, temperature: temperature || 0.7, max_tokens: 2000})
+        });
+        if (!response.ok) {
+            var errorData = await response.json().catch(function() { return {}; });
+            if (response.status === 402 || response.status === 400) {
+                return {error: true, type: 'balance', message: 'DeepSeek账户余额不足，请先充值后再使用AI功能。前往: https://platform.deepseek.com'};
+            }
+            throw new Error(errorData.error && errorData.error.message || 'API调用失败');
+        }
+        var data = await response.json();
+        return {success: true, content: data.choices[0].message.content};
+    } catch (error) {
+        return {error: true, type: 'network', message: error.message};
+    }
+}
+
+function showDeepSeekBalanceAlert() {
+    var modal = document.getElementById('detail-modal');
+    var contentDiv = document.getElementById('detail-content');
+    if (modal && contentDiv) {
+        modal.classList.add('show');
+        contentDiv.innerHTML = '<div class="modal-title">⚠️ AI功能提示</div>' +
+            '<div style="background:#fff3cd;border-radius:12px;padding:16px;margin-bottom:16px;text-align:center;">' +
+            '<div style="font-size:48px;margin-bottom:12px;">💰</div>' +
+            '<div style="font-size:15px;font-weight:bold;color:#856404;margin-bottom:8px;">DeepSeek账户余额不足</div>' +
+            '<div style="font-size:13px;color:#856404;line-height:1.6;">当前账户无法继续使用AI功能，请前往DeepSeek平台充值后再试。</div></div>' +
+            '<button onclick="window.open("https://platform.deepseek.com", "_blank")" class="login-btn login-btn-primary" style="margin-bottom:8px;">🌐 前往充值</button>' +
+            '<button class="login-btn login-btn-outline" onclick="closeModal()">稍后再说</button>';
+    }
+}
+
+// ====== 语音输入功能 ======
+function initVoiceInput(inputField) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        console.log('Speech recognition not supported');
+        return null;
+    }
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    return recognition;
+}
+
+function toggleVoiceInput(btn, inputId) {
+    var inputField = document.getElementById(inputId);
+    if (!inputField) return;
+    
+    if (!deepseekRecognition) {
+        deepseekRecognition = initVoiceInput(inputField);
+        if (!deepseekRecognition) {
+            showToast('当前浏览器不支持语音输入');
+            return;
+        }
+    }
+    
+    if (isRecording) {
+        deepseekRecognition.stop();
+        isRecording = false;
+        btn.classList.remove('recording');
+        btn.textContent = '🎤';
+    } else {
+        isRecording = true;
+        btn.classList.add('recording');
+        btn.textContent = '🔴';
+        deepseekRecognition.start();
+        
+        deepseekRecognition.onresult = function(event) {
+            var transcript = event.results[0][0].transcript;
+            inputField.value = transcript;
+            isRecording = false;
+            btn.classList.remove('recording');
+            btn.textContent = '🎤';
+        };
+        
+        deepseekRecognition.onerror = function(event) {
+            isRecording = false;
+            btn.classList.remove('recording');
+            btn.textContent = '🎤';
+            if (event.error !== 'no-speech') {
+                showToast('语音识别出错: ' + event.error);
+            }
+        };
+        
+        deepseekRecognition.onend = function() {
+            isRecording = false;
+            btn.classList.remove('recording');
+            btn.textContent = '🎤';
+        };
+    }
+}
+
+// 创建AI输入区域HTML
+function createAIInputHTML(inputId, sendCallback) {
+    return '<div class="ai-input-area">' +
+        '<textarea class="ai-input" id="' + inputId + '" placeholder="输入问题..." rows="1" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();' + sendCallback + '}"></textarea>' +
+        '<div class="ai-input-actions">' +
+        '<button class="ai-input-btn ai-voice-btn" onclick="toggleVoiceInput(this,\'' + inputId + '\')">&#x1F3A4;</button>' +
+        '<button class="ai-input-btn ai-send-btn" onclick="' + sendCallback + '">&#x27A4;</button>' +
+        '</div></div>';
+}
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ====== 播客课程数据 ======
+var podcastCourses = [
+    {id:'audio1',title:'英语听力训练技巧',teacher:'王老师',duration:'12:30',category:'英语',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎧',views:2341},
+    {id:'audio2',title:'费曼学习法详解',teacher:'李老师',duration:'8:45',category:'学习方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🧠',views:4521},
+    {id:'audio3',title:'时间管理秘诀',teacher:'张老师',duration:'10:20',category:'学习方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'⏰',views:3892},
+    {id:'audio4',title:'数学思维培养',teacher:'赵老师',duration:'15:00',category:'数学',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📐',views:2156},
+    {id:'audio5',title:'古诗词鉴赏技巧',teacher:'陈老师',duration:'11:30',category:'语文',gradient:'linear-gradient(135deg,#f6d365,#fda085)',icon:'📝',views:1876},
+    {id:'audio6',title:'物理概念入门',teacher:'林老师',duration:'14:00',category:'物理',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'⚡',views:1567},
+    {id:'audio7',title:'化学元素周期表',teacher:'周老师',duration:'13:45',category:'化学',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🧪',views:1234},
+    {id:'audio8',title:'番茄工作法实践',teacher:'刘老师',duration:'9:15',category:'学习方法',gradient:'linear-gradient(135deg,#FF6B6B,#FF4757)',icon:'🍅',views:3421},
+    {id:'audio9',title:'艾宾浩斯记忆法',teacher:'孙老师',duration:'10:30',category:'学习方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🔄',views:2890},
+    {id:'audio10',title:'阅读理解技巧',teacher:'吴老师',duration:'12:00',category:'英语',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📖',views:1678}
+];
+
+var videoCourses = [
+    {id:'video1',title:'高效学习技巧',teacher:'赵老师',duration:'5:30',durationSec:330,category:'学习方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎬',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:12000},
+    {id:'video2',title:'时间管理方法',teacher:'张老师',duration:'8:15',durationSec:495,category:'学习方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🎬',url:'https://www.w3schools.com/html/movie.mp4',views:8000},
+    {id:'video3',title:'数学解题大招',teacher:'赵老师',duration:'12:00',durationSec:720,category:'数学',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'📐',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:5600},
+    {id:'video4',title:'英语口语训练',teacher:'王老师',duration:'15:45',durationSec:945,category:'英语',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🗣️',url:'https://www.w3schools.com/html/movie.mp4',views:4300}
+];
+
+// 播放器状态
+var audioCtx = {isPlaying:false,currentTrack:null,currentIndex:0,playbackSpeed:1,volume:0.8,lastVolume:0.8};
+var videoCtx = {isPlaying:false,currentVideo:null,currentIndex:0,playbackSpeed:1,volume:0.8,lastVolume:0.8};
+var savedPositions = {};
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    initAudioPlayer();
+    initEnhancedVideoPlayer();
+    setVolume(80);
+    setEnhancedVolume(80);
+});
+
+function initAudioPlayer() {
+    currentAudio = document.getElementById('hidden-audio');
+    if (!currentAudio) return;
+    currentAudio.addEventListener('timeupdate', updateAudioProgress);
+    currentAudio.addEventListener('loadedmetadata', onAudioLoaded);
+    currentAudio.addEventListener('ended', onAudioEnded);
+    currentAudio.addEventListener('play', function() { audioCtx.isPlaying = true; updatePlayButtons(); });
+    currentAudio.addEventListener('pause', function() { audioCtx.isPlaying = false; updatePlayButtons(); });
+    try { var saved = localStorage.getItem('podcastPositions'); if (saved) savedPositions = JSON.parse(saved); } catch(e) {}
+}
+
+function playPodcastCourse(courseId) {
+    var course = null;
+    for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === courseId) { course = podcastCourses[i]; break; } }
+    if (!course) return;
+    audioCtx.currentTrack = course;
+    audioCtx.currentIndex = -1;
+    for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === courseId) { audioCtx.currentIndex = i; break; } }
+    var titleEl = document.getElementById('ap-title');
+    var coverEl = document.getElementById('ap-cover');
+    var courseTitleEl = document.getElementById('ap-course-title');
+    var courseTeacherEl = document.getElementById('ap-course-teacher');
+    if (titleEl) titleEl.textContent = '音频课程';
+    if (coverEl) { coverEl.innerHTML = course.icon; coverEl.style.background = course.gradient; }
+    if (courseTitleEl) courseTitleEl.textContent = course.title;
+    if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
+    currentAudio.src = course.url || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+    if (savedPositions[courseId]) currentAudio.currentTime = savedPositions[courseId];
+    currentAudio.playbackRate = audioCtx.playbackSpeed;
+    currentAudio.volume = audioCtx.volume;
+    currentAudio.play().catch(function(e) {});
+    showMiniPlayer(course);
+    var playerEl = document.getElementById('audio-player-fullscreen');
+    var coverPlayingEl = document.getElementById('ap-cover');
+    if (playerEl) playerEl.classList.add('show');
+    if (coverPlayingEl) coverPlayingEl.classList.add('playing');
+    updatePodcastListState(courseId);
+    showToast('正在播放: ' + course.title);
+}
+
+function onAudioLoaded() { var totalEl = document.getElementById('ap-total-time'); if (totalEl) totalEl.textContent = formatTimeFull(currentAudio.duration); }
+
+function updateAudioProgress() {
+    if (!currentAudio || !currentAudio.duration) return;
+    var progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+    var fillEl = document.getElementById('ap-progress-fill');
+    var currentTimeEl = document.getElementById('ap-current-time');
+    var miniBarEl = document.getElementById('mini-player-progress-bar');
+    if (fillEl) fillEl.style.width = progress + '%';
+    if (currentTimeEl) currentTimeEl.textContent = formatTimeFull(currentAudio.currentTime);
+    if (miniBarEl) miniBarEl.style.width = progress + '%';
+    if (audioCtx.currentTrack) { savedPositions[audioCtx.currentTrack.id] = currentAudio.currentTime; try { localStorage.setItem('podcastPositions', JSON.stringify(savedPositions)); } catch(e) {} }
+}
+
+function onAudioEnded() { playNextTrack(); }
+function toggleAudioPlay() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
+
+function seekAudioPlayer(e) {
+    if (!currentAudio || !currentAudio.duration) return;
+    var bar = document.getElementById('ap-progress-bar');
+    if (!bar) return;
+    var rect = bar.getBoundingClientRect();
+    var percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    currentAudio.currentTime = percent * currentAudio.duration;
+}
+
+function playPrevTrack() { if (podcastCourses.length === 0) return; audioCtx.currentIndex = (audioCtx.currentIndex - 1 + podcastCourses.length) % podcastCourses.length; var course = podcastCourses[audioCtx.currentIndex]; if (course) playPodcastCourse(course.id); }
+function playNextTrack() { if (podcastCourses.length === 0) return; audioCtx.currentIndex = (audioCtx.currentIndex + 1) % podcastCourses.length; var course = podcastCourses[audioCtx.currentIndex]; if (course) playPodcastCourse(course.id); }
+
+function setPlaybackSpeed(speed) {
+    audioCtx.playbackSpeed = speed;
+    if (currentAudio) currentAudio.playbackRate = speed;
+    var speedBtnEl = document.getElementById('ap-speed-btn');
+    var dropdownEl = document.getElementById('ap-speed-dropdown');
+    if (speedBtnEl) speedBtnEl.textContent = speed + 'x';
+    if (dropdownEl) dropdownEl.classList.remove('show');
+    document.querySelectorAll('.ap-speed-option').forEach(function(opt) { opt.classList.toggle('active', opt.textContent.trim() === speed + 'x'); });
+}
+
+function toggleSpeedDropdown() { var dropdownEl = document.getElementById('ap-speed-dropdown'); if (dropdownEl) dropdownEl.classList.toggle('show'); }
+function setVolume(value) { audioCtx.volume = value / 100; if (currentAudio) currentAudio.volume = audioCtx.volume; updateVolumeIcon(value); }
+
+function toggleMute() {
+    if (audioCtx.volume > 0) { audioCtx.lastVolume = audioCtx.volume; setVolume(0); var sliderEl = document.getElementById('ap-volume-slider'); if (sliderEl) sliderEl.value = 0; }
+    else { setVolume((audioCtx.lastVolume || 0.8) * 100); var sliderEl = document.getElementById('ap-volume-slider'); if (sliderEl) sliderEl.value = (audioCtx.lastVolume || 0.8) * 100; }
+}
+
+function updateVolumeIcon(value) { var icon = value == 0 ? '🔇' : (value < 50 ? '🔉' : '🔊'); var btnEl = document.getElementById('ap-volume-btn'); if (btnEl) btnEl.innerHTML = icon; }
+function closeAudioPlayer() { var playerEl = document.getElementById('audio-player-fullscreen'); var coverEl = document.getElementById('ap-cover'); if (playerEl) playerEl.classList.remove('show'); if (coverEl) coverEl.classList.remove('playing'); }
+function updatePlayButtons() { var icon = audioCtx.isPlaying ? '⏸' : '▶'; var apPlayBtn = document.getElementById('ap-play-btn'); var miniBtn = document.getElementById('mini-player-btn'); if (apPlayBtn) apPlayBtn.innerHTML = icon; if (miniBtn) miniBtn.innerHTML = icon; }
+
+function showMiniPlayer(course) { var thumbEl = document.getElementById('mini-player-thumb'); var titleEl = document.getElementById('mini-player-title'); var teacherEl = document.getElementById('mini-player-teacher'); var playerEl = document.getElementById('mini-player'); if (thumbEl) { thumbEl.innerHTML = course.icon; thumbEl.style.background = course.gradient; } if (titleEl) titleEl.textContent = course.title; if (teacherEl) teacherEl.textContent = course.teacher; if (playerEl) playerEl.classList.add('show'); }
+function toggleMiniPlayer() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
+function closeMiniPlayer() { if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; } var miniEl = document.getElementById('mini-player'); var playerEl = document.getElementById('audio-player-fullscreen'); if (miniEl) miniEl.classList.remove('show'); if (playerEl) playerEl.classList.remove('show'); document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { item.classList.remove('playing'); }); }
+
+function updatePodcastListState(courseId) { document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); if (id === courseId) { item.classList.add('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'flex'; } else { item.classList.remove('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'none'; } }); }
+
+// ====== 增强视频播放器 ======
+ null;
+
+function initEnhancedVideoPlayer() {
+    evpVideo = document.getElementById('evp-video');
+    if (!evpVideo) return;
+    evpVideo.addEventListener('timeupdate', updateEnhancedVideoProgress);
+    evpVideo.addEventListener('loadedmetadata', onEnhancedVideoLoaded);
+    evpVideo.addEventListener('ended', onEnhancedVideoEnded);
+    evpVideo.addEventListener('play', function() { videoCtx.isPlaying = true; updateEnhancedPlayButtons(); });
+    evpVideo.addEventListener('pause', function() { videoCtx.isPlaying = false; updateEnhancedPlayButtons(); });
+}
+
+function playVideoCourse(courseId) {
+    var course = null;
+    for (var i = 0; i < videoCourses.length; i++) { if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; } }
+    if (!course) return;
+    videoCtx.currentVideo = course;
+    var titleEl = document.getElementById('evp-title');
+    if (titleEl) titleEl.textContent = course.title;
+    evpVideo.src = course.url;
+    evpVideo.playbackRate = videoCtx.playbackSpeed;
+    evpVideo.volume = videoCtx.volume;
+    var playerEl = document.getElementById('enhanced-video-player');
+    var bigPlayEl = document.getElementById('evp-big-play');
+    if (playerEl) playerEl.classList.add('show');
+    if (bigPlayEl) bigPlayEl.style.display = 'none';
+    updateVideoListState(courseId);
+    evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
+}
+
+function playVideo(title, url) { videoCtx.currentVideo = {title: title, url: url}; var titleEl = document.getElementById('evp-title'); if (titleEl) titleEl.textContent = title; evpVideo.src = url; var playerEl = document.getElementById('enhanced-video-player'); var bigPlayEl = document.getElementById('evp-big-play'); if (playerEl) playerEl.classList.add('show'); if (bigPlayEl) bigPlayEl.style.display = 'none'; evpVideo.playbackRate = videoCtx.playbackSpeed; evpVideo.volume = videoCtx.volume; evpVideo.play().then(function() { videoCtx.isPlaying = true; }).catch(function(e) {}); }
+
+function onEnhancedVideoLoaded() { var timeEl = document.getElementById('evp-time'); if (timeEl) timeEl.textContent = '0:00 / ' + formatTimeFull(evpVideo.duration); }
+function updateEnhancedVideoProgress() { if (!evpVideo || !evpVideo.duration) return; var progress = (evpVideo.currentTime / evpVideo.duration) * 100; var barEl = document.getElementById('evp-progress-bar'); var timeEl = document.getElementById('evp-time'); if (barEl) barEl.style.width = progress + '%'; if (timeEl) timeEl.textContent = formatTimeFull(evpVideo.currentTime) + ' / ' + formatTimeFull(evpVideo.duration); }
+function onEnhancedVideoEnded() { videoCtx.isPlaying = false; var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'flex'; updateEnhancedPlayButtons(); }
+
+function toggleEnhancedVideoPlay() {
+    if (!evpVideo) return;
+    if (videoCtx.isPlaying) { evpVideo.pause(); var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'flex'; }
+    else { evpVideo.play(); var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'none'; }
+}
+
+function seekEnhancedVideo(e) { if (!evpVideo || !evpVideo.duration) return; var bar = document.getElementById('evp-progress'); if (!bar) return; var rect = bar.getBoundingClientRect(); var percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); evpVideo.currentTime = percent * evpVideo.duration; }
+function seekEnhancedVideoBy(seconds) { if (!evpVideo) return; evpVideo.currentTime = Math.max(0, Math.min(evpVideo.duration, evpVideo.currentTime + seconds)); }
+function setEnhancedVolume(value) { videoCtx.volume = value / 100; if (evpVideo) evpVideo.volume = videoCtx.volume; updateEnhancedVolumeIcon(value); }
+
+function toggleEnhancedMute() {
+    if (videoCtx.volume > 0) { videoCtx.lastVolume = videoCtx.volume; setEnhancedVolume(0); var sliderEl = document.getElementById('evp-volume-slider'); if (sliderEl) sliderEl.value = 0; }
+    else { setEnhancedVolume((videoCtx.lastVolume || 0.8) * 100); var sliderEl = document.getElementById('evp-volume-slider'); if (sliderEl) sliderEl.value = (videoCtx.lastVolume || 0.8) * 100; }
+}
+
+function updateEnhancedVolumeIcon(value) { var icon = value == 0 ? '🔇' : (value < 50 ? '🔉' : '🔊'); var btnEl = document.getElementById('evp-volume-btn'); if (btnEl) btnEl.innerHTML = icon; }
+function toggleEnhancedSpeedDropdown() { var speeds = [0.5, 1, 1.25, 1.5, 2]; var currentIndex = speeds.indexOf(videoCtx.playbackSpeed); var nextIndex = (currentIndex + 1) % speeds.length; setEnhancedPlaybackSpeed(speeds[nextIndex]); }
+function setEnhancedPlaybackSpeed(speed) { videoCtx.playbackSpeed = speed; if (evpVideo) evpVideo.playbackRate = speed; var speedBtnEl = document.getElementById('evp-speed-btn'); if (speedBtnEl) speedBtnEl.textContent = speed + 'x'; }
+function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { showToast('画中画模式不支持'); }); } }
+function toggleEnhancedFullscreen() { var playerEl = document.getElementById('enhanced-video-player'); if (!playerEl) return; if (document.fullscreenElement) { document.exitFullscreen().catch(function(e) {}); } else { playerEl.requestFullscreen().catch(function(e) {}); } }
+function closeEnhancedVideoPlayer() { if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; } var playerEl = document.getElementById('enhanced-video-player'); if (playerEl) playerEl.classList.remove('show'); }
+function updateEnhancedPlayButtons() { var icon = videoCtx.isPlaying ? '⏸' : '▶'; var playBtnEl = document.getElementById('evp-play-btn'); var bigPlayEl = document.getElementById('evp-big-play'); if (playBtnEl) playBtnEl.innerHTML = icon; if (bigPlayEl) bigPlayEl.innerHTML = icon; }
+function updateVideoListState(courseId) { document.querySelectorAll('.video-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); item.classList.toggle('playing', id === courseId); }); }
+function formatTimeFull(seconds) { if (!seconds || isNaN(seconds)) return '0:00'; var mins = Math.floor(seconds / 60); var secs = Math.floor(seconds % 60); return mins + ':' + (secs < 10 ? '0' : '') + secs; }
+
+// 兼容原有调用
+function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } showToast('播放: ' + title); }
+
+// 兼容原视频
+
 </script>
-</body>
-</html>
