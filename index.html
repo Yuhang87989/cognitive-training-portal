@@ -647,23 +647,54 @@ function playVideoFromList(id) {
 }
 
 function migrateData() {
+    const currentData = localStorage.getItem(STORAGE_KEY);
+    // 如果已有有效数据，跳过迁移
+    if (currentData) {
+        try {
+            const parsed = JSON.parse(currentData);
+            if (parsed && Array.isArray(parsed.users)) return;
+        } catch(e) {}
+    }
+    // 尝试从旧key迁移
     for (const key of OLD_KEYS) {
-        const old = localStorage.getItem(key);
-        if (old && !localStorage.getItem(STORAGE_KEY)) {
-            localStorage.setItem(STORAGE_KEY, old);
-            console.log('数据已迁移:', key, '->', STORAGE_KEY);
-        }
+        try {
+            const old = localStorage.getItem(key);
+            if (old) {
+                const parsed = JSON.parse(old);
+                if (parsed && Array.isArray(parsed.users)) {
+                    localStorage.setItem(STORAGE_KEY, old);
+                    console.log('数据已迁移:', key, '->', STORAGE_KEY);
+                    return;
+                }
+            }
+        } catch(e) {}
     }
 }
 
 // ====== 数据存储 ======
 function loadData() {
-    migrateData();
     try {
-        const data = localStorage.getItem(STORAGE_KEY);
-        if (data) return JSON.parse(data);
-    } catch(e) {}
-    return { users: [], currentUser: null };
+        // 尝试迁移旧数据
+        migrateData();
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return { users: [], currentUser: null };
+        const data = JSON.parse(raw);
+        // 验证数据格式
+        if (!data || typeof data !== 'object') {
+            console.log('数据格式错误，重置');
+            return { users: [], currentUser: null };
+        }
+        if (!Array.isArray(data.users)) data.users = [];
+        if (!data.currentUser && data.users.length > 0) {
+            data.currentUser = data.users[0].id;
+        }
+        return data;
+    } catch(e) {
+        console.log('数据加载错误，重置:', e.message);
+        // 清除损坏的数据
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e2) {}
+        return { users: [], currentUser: null };
+    }
 }
 
 function saveData(data) {
