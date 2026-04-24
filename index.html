@@ -216,6 +216,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .wrong-note-card{background:#f5f7ff;border-radius:12px;padding:12px;margin-bottom:10px}
 .wrong-note-question{font-size:14px;margin-bottom:6px}
 .wrong-note-answer{font-size:12px;color:var(--blue)}
+.camera-btn.recording{animation:pulse 1s infinite;background:#ff4757!important}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
 .practice-card{background:white;border-radius:12px;padding:16px;margin-bottom:10px}
 .practice-question{font-size:14px;margin-bottom:12px;line-height:1.6}
 .practice-input{display:flex;gap:8px;margin-bottom:12px}
@@ -1711,6 +1713,7 @@ const pageContent = {
                     </div>
                     <div class="chat-input-area">
                         <input type="text" class="chat-input" id="deepseek-input" placeholder="输入问题..." onkeypress="if(event.key==='Enter')sendDeepseekMsg()"/>
+                        <button class="chat-send" onclick="startVoiceInput('deepseek-input')" title="语音输入" style="background:#667eea;">🎤</button>
                         <button class="chat-send" onclick="sendDeepseekMsg()">发送</button>
                     </div>
                 </div>
@@ -2585,24 +2588,6 @@ function formatTime(seconds) {
     return mins + ':' + (secs < 10 ? '0' : '') + secs;
 }
 
-function playVideoCourse(title, videoId) {
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    content.innerHTML = `
-        <div class="modal-title">🎬 \${title}</div>
-        <div style="background:#f0f0f0;border-radius:12px;padding:60px 20px;text-align:center;margin-bottom:16px;">
-            <div style="font-size:48px;margin-bottom:12px;">▶</div>
-            <div style="font-size:13px;color:var(--text-gray);">视频课程</div>
-        </div>
-        <div style="display:flex;gap:8px;">
-            <button class="login-btn login-btn-outline" style="flex:1;" onclick="closeModal()">关闭</button>
-            <button class="login-btn login-btn-primary" style="flex:1;">收藏</button>
-        </div>
-    `;
-    showToast('视频课程: ' + title);
-}
-
 // ====== 学霸方法训练 ======
 const methodPractices = {
     feyman: { title: '🧠 费曼学习法训练', tasks: ['选择一个你学过的知识点', '用最简单的语言解释给"小白"听', '找出讲解中不清楚的地方', '重新组织语言，简化解释', '用比喻或类比让解释更生动'] },
@@ -2965,7 +2950,6 @@ function playVideoCourse(courseId) {
     evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
 }
 
-function playVideo(title, url) { videoCtx.currentVideo = {title: title, url: url}; var titleEl = document.getElementById('evp-title'); if (titleEl) titleEl.textContent = title; evpVideo.src = url; var playerEl = document.getElementById('enhanced-video-player'); var bigPlayEl = document.getElementById('evp-big-play'); if (playerEl) playerEl.classList.add('show'); if (bigPlayEl) bigPlayEl.style.display = 'none'; evpVideo.playbackRate = videoCtx.playbackSpeed; evpVideo.volume = videoCtx.volume; evpVideo.play().then(function() { videoCtx.isPlaying = true; }).catch(function(e) {}); }
 
 function onEnhancedVideoLoaded() { var timeEl = document.getElementById('evp-time'); if (timeEl) timeEl.textContent = '0:00 / ' + formatTimeFull(evpVideo.duration); }
 function updateEnhancedVideoProgress() { if (!evpVideo || !evpVideo.duration) return; var progress = (evpVideo.currentTime / evpVideo.duration) * 100; var barEl = document.getElementById('evp-progress-bar'); var timeEl = document.getElementById('evp-time'); if (barEl) barEl.style.width = progress + '%'; if (timeEl) timeEl.textContent = formatTimeFull(evpVideo.currentTime) + ' / ' + formatTimeFull(evpVideo.duration); }
@@ -3000,6 +2984,212 @@ function formatTimeFull(seconds) { if (!seconds || isNaN(seconds)) return '0:00'
 function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } showToast('播放: ' + title); }
 
 // 兼容原视频
+
+
+// ====== 语音输入功能 ======
+function startVoiceInput(inputId) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showToast('您的浏览器不支持语音输入');
+        return;
+    }
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.onstart = function() {
+        showToast('正在倾听...');
+        var btn = document.querySelector('[onclick*="startVoiceInput"]');
+        if (btn) { btn.classList.add('recording'); }
+    };
+    recognition.onresult = function(event) {
+        var text = event.results[0][0].transcript;
+        document.getElementById(inputId).value = text;
+        var btn = document.querySelector('[onclick*="startVoiceInput"]');
+        if (btn) { btn.classList.remove('recording'); }
+        showToast('已识别: ' + text);
+    };
+    recognition.onerror = function(event) {
+        var btn = document.querySelector('[onclick*="startVoiceInput"]');
+        if (btn) { btn.classList.remove('recording'); }
+        if (event.error === 'no-speech') {
+            showToast('未检测到语音，请重试');
+        } else if (event.error === 'not-allowed') {
+            showToast('请允许使用麦克风');
+        }
+    };
+    recognition.onend = function() {
+        var btn = document.querySelector('[onclick*="startVoiceInput"]');
+        if (btn) { btn.classList.remove('recording'); }
+    };
+    recognition.start();
+}
+
+// 增强的拍照上传和AI分析功能
+function uploadTopicPhoto(topicId, input) {
+    if (!input.files[0]) return;
+    var file = input.files[0];
+    var reader = new FileReader();
+    var previewHtml = '';
+    
+    reader.onload = function(e) {
+        var imageData = e.target.result;
+        var user = getCurrentUserData() || {};
+        user.uploadedImages = user.uploadedImages || [];
+        var photoId = Date.now();
+        
+        // 保存图片
+        user.uploadedImages.push({ 
+            id: photoId, 
+            topicId: topicId, 
+            image: imageData, 
+            time: Date.now() 
+        });
+        syncUserData(user);
+        
+        // 显示预览和AI分析按钮
+        showPhotoPreview(imageData, topicId, photoId);
+        input.value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function showPhotoPreview(imageData, topicId, photoId) {
+    var topic = findTopic(topicId);
+    var topicTitle = topic ? topic.title : '未知题目';
+    var modal = document.getElementById('detail-modal');
+    var content = document.getElementById('detail-content');
+    modal.classList.add('show');
+    
+    content.innerHTML = '<div class="modal-title">📷 错题照片预览</div>' +
+        '<div class="card" style="padding:12px;margin-bottom:12px;">' +
+            '<img src="' + imageData + '" style="width:100%;max-height:300px;object-fit:contain;border-radius:8px;margin-bottom:12px;"/>' +
+            '<div style="font-size:12px;color:var(--text-gray);margin-bottom:8px;">关联题目: ' + topicTitle + '</div>' +
+        '</div>' +
+        '<button class="login-btn login-btn-primary" style="margin-bottom:8px;width:100%;" onclick="analyzePhotoWithAI(' + photoId + ')">🤖 AI分析错题</button>' +
+        '<button class="login-btn login-btn-secondary" style="width:100%;" onclick="closeDetail()">关闭</button>';
+}
+
+async function analyzePhotoWithAI(photoId) {
+    var user = getCurrentUserData() || {};
+    var photo = user.uploadedImages ? user.uploadedImages.find(function(p) { return p.id.toString() === photoId.toString(); }) : null;
+    if (!photo) {
+        showToast('未找到照片');
+        return;
+    }
+    
+    var modal = document.getElementById('detail-modal');
+    var content = document.getElementById('detail-content');
+    content.innerHTML = '<div class="modal-title">🤖 AI分析中...</div>' +
+        '<div class="card" style="padding:20px;text-align:center;">' +
+            '<div class="ai-loading">正在分析图片内容...</div>' +
+        '</div>';
+    
+    var analysisPrompt = '请分析这张错题照片，' +
+        '1. 识别图片中的题目内容' +
+        '2. 找出错误原因' +
+        '3. 提供正确解法' +
+        '4. 给出类似题目的举一反三练习' +
+        '请用清晰的结构化格式回答。';
+    
+    var messages = [
+        {role: 'system', content: '你是一位专业的数学辅导老师，擅长分析学生的错题，给出详细的讲解和改进建议。'},
+        {role: 'user', content: analysisPrompt}
+    ];
+    
+    await callDeepSeek(messages, null, function(content) {
+        content.innerHTML = '<div class="modal-title">📝 AI分析结果</div>' +
+            '<div class="card" style="padding:16px;max-height:400px;overflow-y:auto;">' +
+                '<div style="font-size:14px;line-height:1.8;">' + content.replace(/\n/g, '<br/>') + '</div>' +
+            '</div>' +
+            '<button class="login-btn login-btn-secondary" style="margin-top:12px;width:100%;" onclick="closeDetail()">关闭</button>';
+    }.bind(content));
+}
+
+function openWrongPhotoCapture() {
+    var modal = document.getElementById('detail-modal');
+    var content = document.getElementById('detail-content');
+    modal.classList.add('show');
+    content.innerHTML = '<div class="modal-title">📷 拍照上传错题</div>' +
+        '<div class="card" style="padding:20px;text-align:center;margin-bottom:12px;">' +
+            '<div style="font-size:48px;margin-bottom:12px;">📸</div>' +
+            '<div style="font-size:13px;color:var(--text-gray);margin-bottom:16px;">拍照或上传错题图片</div>' +
+            '<button class="camera-btn" style="margin-bottom:12px;" onclick="document.getElementById(\'wrong-photo-camera\').click()">📷 拍照</button>' +
+            '<input type="file" id="wrong-photo-camera" accept="image/*" capture="environment" style="display:none" onchange="uploadWrongPhotoDirect(this)"/>' +
+            '<button class="login-btn login-btn-outline" style="width:100%;" onclick="document.getElementById(\'wrong-photo-gallery\').click()">📁 从相册选择</button>' +
+            '<input type="file" id="wrong-photo-gallery" accept="image/*" style="display:none" onchange="uploadWrongPhotoDirect(this)"/>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--text-light);text-align:center;margin-bottom:12px;">📁 我的错题照片 (' + (getCurrentUserData()?.uploadedImages?.length || 0) + ')</div>' +
+        '<button class="login-btn login-btn-secondary" style="width:100%;" onclick="showWrongPhotoGallery()">查看错题照片</button>';
+}
+
+function uploadWrongPhotoDirect(input) {
+    if (!input.files[0]) return;
+    var file = input.files[0];
+    var reader = new FileReader();
+    
+    reader.onload = function(e) {
+        var imageData = e.target.result;
+        var user = getCurrentUserData() || {};
+        user.uploadedImages = user.uploadedImages || [];
+        var photoId = Date.now();
+        
+        user.uploadedImages.push({ 
+            id: photoId, 
+            topicId: null, 
+            image: imageData, 
+            time: Date.now() 
+        });
+        syncUserData(user);
+        
+        showToast('错题照片上传成功！');
+        showWrongPhotoGallery();
+        input.value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function showWrongPhotoGallery() {
+    var user = getCurrentUserData() || {};
+    var photos = user.uploadedImages || [];
+    var modal = document.getElementById('detail-modal');
+    var content = document.getElementById('detail-content');
+    modal.classList.add('show');
+    
+    if (photos.length === 0) {
+        content.innerHTML = '<div class="modal-title">📁 错题照片库</div>' +
+            '<div style="text-align:center;padding:40px;color:var(--text-light);">' +
+                '<div style="font-size:48px;margin-bottom:12px;">📂</div>' +
+                '<div>暂无错题照片</div>' +
+                '<div style="font-size:12px;margin-top:4px;">开始拍照上传吧！</div>' +
+            '</div>' +
+            '<button class="login-btn login-btn-secondary" style="width:100%;" onclick="openWrongPhotoCapture()">拍照上传</button>';
+        return;
+    }
+    
+    var photosHtml = photos.slice().reverse().map(function(p) {
+        return '<div style="position:relative;display:inline-block;width:calc(50% - 6px);margin:3px;">' +
+            '<img src="' + p.image + '" style="width:100%;height:100px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="showPhotoPreview(\'' + p.image + '\', ' + p.topicId + ', ' + p.id + ')"/>' +
+            '<button style="position:absolute;top:4px;right:4px;background:rgba(255,0,0,0.8);color:white;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:12px;" onclick="deleteWrongPhoto(' + p.id + ')">×</button>' +
+        '</div>';
+    }).join('');
+    
+    content.innerHTML = '<div class="modal-title">📁 错题照片库 (' + photos.length + '张)</div>' +
+        '<div style="text-align:right;margin-bottom:8px;">' +
+            '<button class="login-btn login-btn-outline" style="padding:6px 12px;font-size:12px;" onclick="openWrongPhotoCapture()">+ 添加</button>' +
+        '</div>' +
+        '<div style="max-height:400px;overflow-y:auto;">' + photosHtml + '</div>' +
+        '<button class="login-btn login-btn-secondary" style="margin-top:12px;width:100%;" onclick="closeDetail()">关闭</button>';
+}
+
+function deleteWrongPhoto(photoId) {
+    var user = getCurrentUserData() || {};
+    user.uploadedImages = user.uploadedImages || [];
+    user.uploadedImages = user.uploadedImages.filter(function(p) { return p.id !== photoId; });
+    syncUserData(user);
+    showToast('已删除');
+    showWrongPhotoGallery();
+}
 
 </script>
 </body>
