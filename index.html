@@ -752,28 +752,53 @@ function showCreateUserModal() { document.getElementById('create-user-modal').cl
 function closeCreateUserModal() { document.getElementById('create-user-modal').classList.remove('show'); document.getElementById('create-name').value = ''; }
 
 function createNewUser() {
-    const name = document.getElementById('create-name').value.trim();
-    const grade = parseInt(document.getElementById('create-grade').value);
-    const difficulty = parseInt(document.getElementById('create-difficulty').value);
+    const nameEl = document.getElementById('create-name');
+    const gradeEl = document.getElementById('create-grade');
+    const diffEl = document.getElementById('create-difficulty');
+    if (!nameEl || !gradeEl || !diffEl) {
+        showToast('页面加载错误，请刷新重试');
+        return;
+    }
+    const name = nameEl.value.trim();
+    const grade = parseInt(gradeEl.value) || 7;
+    const difficulty = parseInt(diffEl.value) || 1;
     if (!name) { showToast('请输入名字'); return; }
     const data = loadData();
     if (data.users.find(u => u.name === name)) { showToast('名字已存在'); return; }
     const user = {
-        id: 'user_' + Date.now(), name, grade, difficulty, score: 0, lastLogin: Date.now(), createdAt: Date.now(),
+        id: 'user_' + Date.now(),
+        name: name,
+        grade: grade,
+        difficulty: difficulty,
+        score: 0,
+        lastLogin: Date.now(),
+        createdAt: Date.now(),
         abilities: { attention: 65, memory: 60, logic: 70, creativity: 55, problem: 65, strategy: 60 },
         knowledge: { math: 30, chinese: 30, english: 30, physics: 30, chemistry: 30 },
-        studyDays: {}, calendarData: {}, planTasks: {}, gameScores: {},
+        studyDays: {},
+        calendarData: {},
+        planTasks: {},
+        gameScores: {},
         uploads: { method: [], thinking: [], video: [] },
-        userVideos: [], chatHistory: {}, thinkingScores: { logic: 0, creative: 0, critical: 0, system: 0 },
-        practiceRecords: [], wrongNotes: [], aiChatCount: 0,
+        userVideos: [],
+        chatHistory: {},
+        thinkingScores: { logic: 0, creative: 0, critical: 0, system: 0 },
+        practiceRecords: [],
+        wrongNotes: [],
+        aiChatCount: 0,
         todayStats: { date: new Date().toDateString(), questions: 0, correct: 0, minutes: 0 },
-        // 母题相关
-        topicResults: {}, // {topicId: {correct, wrong, lastTime}}
-        wrongNoteIds: [], // 错题ID列表
-        uploadedImages: [] // 上传的错题图片
+        topicResults: {},
+        wrongNoteIds: [],
+        uploadedImages: []
     };
-    data.users.push(user); data.currentUser = user.id; saveData(data);
-    closeCreateUserModal(); updateUI(); showPage('home'); showToast('账号创建成功！');
+    data.users.push(user);
+    data.currentUser = user.id;
+    saveData(data);
+    closeCreateUserModal();
+    updateUI();
+    syncTodayStats();
+    showPage('home');
+    showToast('账号创建成功！');
 }
 
 function confirmClearAllData() {
@@ -790,11 +815,16 @@ function clearAllData() {
 function updateUI() {
     const user = getCurrentUserData();
     if (!user) return;
-    document.getElementById('greeting-name').textContent = user.name;
-    document.getElementById('difficulty-text').textContent = 'Lv.' + user.difficulty;
-    document.getElementById('header-avatar').textContent = user.name.charAt(0);
-    document.getElementById('dropdown-name').textContent = user.name;
-    document.getElementById('dropdown-info').textContent = `${gradeNames[user.grade]} · Lv.${user.difficulty}`;
+    const greetingEl = document.getElementById('greeting-name');
+    const diffEl = document.getElementById('difficulty-text');
+    const avatarEl = document.getElementById('header-avatar');
+    const dropNameEl = document.getElementById('dropdown-name');
+    const dropInfoEl = document.getElementById('dropdown-info');
+    if (greetingEl) greetingEl.textContent = user.name;
+    if (diffEl) diffEl.textContent = 'Lv.' + user.difficulty;
+    if (avatarEl) avatarEl.textContent = user.name.charAt(0);
+    if (dropNameEl) dropNameEl.textContent = user.name;
+    if (dropInfoEl) dropInfoEl.textContent = gradeNames[user.grade] + ' · Lv.' + user.difficulty;
 }
 
 function syncTodayStats() {
