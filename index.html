@@ -1602,7 +1602,7 @@ function updateTopicStats() {
     let correct = 0;
     Object.values(results).forEach(r => { if (r.correct) correct++; });
     document.getElementById('topic-done').textContent = done;
-    document.getElementById('topic-accuracy').textContent = done > 0 ? Math.round(correct/do*100)+'%' : '0%';
+    document.getElementById('topic-accuracy').textContent = done > 0 ? Math.round(correct/done*100)+'%' : '0%';
     document.getElementById('topic-wrong').textContent = wrongNoteIds.length;
     document.getElementById('wrong-note-count').textContent = wrongNoteIds.length;
 }
