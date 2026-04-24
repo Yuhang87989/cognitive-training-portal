@@ -263,6 +263,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .media-views{font-size:11px;color:var(--text-light);margin-top:2px}
 .media-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;background:rgba(102,126,234,0.1);color:var(--blue)}
 .media-badge.video{background:rgba(255,107,107,0.1);color:#FF6B6B}
+
+.audio-player-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:2000;display:none;flex-direction:column;}
+.audio-player-modal.show{display:flex}
+.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
+
 </style>
 </head>
 <body>
@@ -3679,6 +3684,67 @@ function deleteWrongPhoto(photoId) {
 
 <!-- 隐藏的音频元素 -->
 <audio id="mp-audio-element" style="display:none;"></audio>
+
+
+<!-- 音频播放器容器（隐藏） -->
+<div id="audio-player-fullscreen" class="audio-player-modal" style="display:none;">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+        <div id="ap-cover" style="width:200px;height:200px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:80px;background:linear-gradient(135deg,#667eea,#764ba2);">🎧</div>
+        <div id="ap-title" style="color:white;font-size:20px;font-weight:bold;margin-top:20px;"></div>
+        <div id="ap-course-title" style="color:rgba(255,255,255,0.8);font-size:14px;margin-top:8px;"></div>
+        <div id="ap-course-teacher" style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:4px;"></div>
+    </div>
+    <div style="padding:20px;">
+        <div id="ap-progress-bar" style="height:4px;background:rgba(255,255,255,0.2);border-radius:2px;cursor:pointer;" onclick="seekAudioPlayer(event)">
+            <div id="ap-progress-fill" style="height:100%;background:var(--blue);border-radius:2px;width:0%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+            <span id="ap-current-time" style="color:rgba(255,255,255,0.7);font-size:12px;">0:00</span>
+            <span id="ap-total-time" style="color:rgba(255,255,255,0.7);font-size:12px;">0:00</span>
+        </div>
+    </div>
+    <div style="padding:10px 20px;display:flex;align-items:center;justify-content:center;gap:32px;">
+        <button onclick="playPrevTrack()" style="background:none;border:none;color:white;font-size:28px;cursor:pointer;">⏮</button>
+        <button id="ap-play-btn" onclick="toggleAudioPlay()" style="width:64px;height:64px;border-radius:50%;background:var(--blue);border:none;color:white;font-size:28px;cursor:pointer;">▶</button>
+        <button onclick="playNextTrack()" style="background:none;border:none;color:white;font-size:28px;cursor:pointer;">⏭</button>
+    </div>
+    <div style="padding:10px 20px;display:flex;justify-content:center;gap:16px;">
+        <button id="ap-speed-btn" onclick="toggleSpeedDropdown()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 16px;border-radius:20px;font-size:12px;cursor:pointer;">1x</button>
+        <button id="ap-volume-btn" onclick="toggleMute()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer;">🔊</button>
+        <input type="range" id="ap-volume-slider" min="0" max="100" value="80" onchange="setVolume(this.value)" style="width:100px;">
+        <button onclick="closeAudioPlayer()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 16px;border-radius:20px;font-size:14px;cursor:pointer;">✕</button>
+    </div>
+    <div id="ap-speed-dropdown" style="display:none;position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border-radius:8px;padding:8px;">
+        <div class="ap-speed-option active" onclick="setPlaybackSpeed(0.5)" style="padding:8px 16px;color:white;cursor:pointer;">0.5x</div>
+        <div class="ap-speed-option" onclick="setPlaybackSpeed(1)" style="padding:8px 16px;color:white;cursor:pointer;">1x</div>
+        <div class="ap-speed-option" onclick="setPlaybackSpeed(1.5)" style="padding:8px 16px;color:white;cursor:pointer;">1.5x</div>
+        <div class="ap-speed-option" onclick="setPlaybackSpeed(2)" style="padding:8px 16px;color:white;cursor:pointer;">2x</div>
+    </div>
+</div>
+
+<!-- 迷你播放器 -->
+<div id="mini-player" class="mini-player" style="display:none;">
+    <div id="mini-player-thumb" style="width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;background:linear-gradient(135deg,#667eea,#764ba2);">🎧</div>
+    <div style="flex:1;padding:0 12px;">
+        <div id="mini-player-title" style="font-size:14px;font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+        <div id="mini-player-teacher" style="font-size:11px;color:var(--text-gray);"></div>
+        <div style="height:2px;background:#e0e0e0;border-radius:1px;margin-top:4px;">
+            <div id="mini-player-progress-bar" style="height:100%;background:var(--blue);border-radius:1px;width:0%;"></div>
+        </div>
+    </div>
+    <button id="mini-player-btn" onclick="toggleMiniPlayer()" style="width:36px;height:36px;border-radius:50%;background:var(--blue);border:none;color:white;font-size:16px;cursor:pointer;">▶</button>
+    <button onclick="closeMiniPlayer()" style="width:28px;height:28px;border-radius:50%;background:#f0f0f0;border:none;font-size:12px;cursor:pointer;margin-left:8px;">✕</button>
+</div>
+
+
+<!-- 隐藏的音频元素 -->
+<audio id="main-audio" style="display:none;"></audio>
+
+<!-- 隐藏的控制元素 -->
+<div style="display:none;">
+    <button id="mp-volume-btn" onclick="toggleMediaMute()">🔊</button>
+    <input type="range" id="evp-volume-slider" min="0" max="100" value="80" onchange="setVolume(this.value)">
+</div>
 
 </body>
 </html>
