@@ -2531,19 +2531,20 @@ function closeGame() {
 
 // ====== 初始化 ======
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('认知训练门户 V58 加载完成');
-    // 始终先显示登录页面
+    console.log('认知训练门户 V60 加载完成');
     showPage('login');
-    initLoginPage();
     const data = loadData();
-    // 如果有用户，自动登录
-    if (data.currentUser && data.users.find(u=>u.id===data.currentUser)) {
-        setTimeout(() => {
-            updateUI(); syncTodayStats(); showPage('home');
-        }, 100);
+    initLoginPage();
+    // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.user-select-wrapper')) { document.getElementById('user-select-dropdown').classList.remove('show'); }
-        if (!e.target.closest('.user-menu-wrapper')) { document.getElementById('user-dropdown').classList.remove('show'); }
+        if (!e.target.closest('.user-select-wrapper')) { 
+            const dropdown = document.getElementById('user-select-dropdown');
+            if (dropdown) dropdown.classList.remove('show'); 
+        }
+        if (!e.target.closest('.user-menu-wrapper')) { 
+            const userDropdown = document.getElementById('user-dropdown');
+            if (userDropdown) userDropdown.classList.remove('show'); 
+        }
     });
 });
 
@@ -2554,12 +2555,17 @@ function initLoginPage() {
     // 如果有用户，默认选中第一个用户
     if (data.users.length > 0) {
         const firstUser = data.users[0];
-        document.getElementById('selected-user-display').innerHTML = `<span>${firstUser.name.charAt(0)}</span> ${firstUser.name}`;
-        document.querySelector('.user-select-btn').dataset.userId = firstUser.id;
-        document.getElementById('login-difficulty').value = firstUser.difficulty || 1;
-        document.getElementById('login-form-section').style.display = 'block';
+        const displayEl = document.getElementById('selected-user-display');
+        const btn = document.querySelector('.user-select-btn');
+        const diffEl = document.getElementById('login-difficulty');
+        const formEl = document.getElementById('login-form-section');
+        if (displayEl) displayEl.innerHTML = '<span>' + firstUser.name.charAt(0) + '</span> ' + firstUser.name;
+        if (btn) btn.dataset.userId = firstUser.id;
+        if (diffEl) diffEl.value = firstUser.difficulty || 1;
+        if (formEl) formEl.style.display = 'block';
     } else {
-        document.getElementById('login-form-section').style.display = 'none';
+        const formEl = document.getElementById('login-form-section');
+        if (formEl) formEl.style.display = 'none';
         showCreateUserModal();
     }
 }
