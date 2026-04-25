@@ -3866,42 +3866,54 @@ function initLoginPageProtection() {
 
 // ====== V33: 延迟初始化 - 等待部署系统完成修改 ======
 function delayedInit() {
-    console.log('[V33] 开始延迟初始化...');
+    console.log('[V99] 开始初始化...');
     
     try {
         const data = loadData();
-        console.log('[V33] 加载数据完成');
+        console.log('[V99] 加载数据完成');
         
+        // 隐藏登录页，直接显示首页
         const loginPage = document.getElementById('page-login');
-        
-        if (data.currentUser && data.users && data.users.find(u => u.id === data.currentUser)) {
-            console.log('[V33] 发现已登录用户:', data.currentUser);
-            // 已登录：强制隐藏登录页
+        if (loginPage) {
+            loginPage.style.display = 'none';
             loginPage.classList.remove('active');
-            loginPage.style.cssText = 'display:none !important;;;;opacity:0 !important';
-            updateUI();
-            showPage('home');
-        } else {
-            console.log('[V33] 未登录，显示登录页面');
-            // 未登录：显示登录页
-            loginPage.classList.add('active');
-            loginPage.style.cssText = 'display:flex !important;visibility:visible !important;position:relative !important;left:auto !important;opacity:1 !important';
-            initLoginPage();
         }
+        
+        // 如果没有用户数据，创建默认用户
+        if (!data.users || data.users.length === 0) {
+            data.users = [{
+                id: 'default_user',
+                name: '学习者',
+                grade: 7,
+                difficulty: 2,
+                score: 0,
+                streak: 0,
+                wrongTopics: [],
+                completedTopics: [],
+                createdAt: Date.now()
+            }];
+            data.currentUser = 'default_user';
+            saveData(data);
+        }
+        
+        // 如果没有当前用户，设置第一个用户
+        if (!data.currentUser && data.users.length > 0) {
+            data.currentUser = data.users[0].id;
+            saveData(data);
+        }
+        
+        updateUI();
+        showPage('home');
+        
     } catch(e) {
-        console.error('[V33] 初始化错误:', e);
-        const loginPage = document.getElementById('page-login');
-        loginPage.classList.add('active');
-        loginPage.style.cssText = 'display:flex !important;visibility:visible !important;position:relative !important;left:auto !important;opacity:1 !important';
-        initLoginPage();
+        console.error('[V99] 初始化错误:', e);
+        // 出错也直接显示首页
+        showPage('home');
     }
     
     // 初始化播客
     renderPodcastList();
     updatePodcastDisplay();
-    
-    // 初始化登录页保护机制
-    initLoginPageProtection();
 }
 
 // ====== 页面初始化 ======
@@ -3928,7 +3940,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V99';
+const CURRENT_VERSION = 'V100';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
