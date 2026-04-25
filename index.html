@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
 <title>认知训练 V81</title>
-<!-- V81 Build: 修复showToast/openVideoPlayer等缺失函数 -->
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -1530,10 +1529,7 @@ function renderMap(container) {
         if (radarContainer) renderCognitiveRadar(radarContainer);
     }, 100);
 }
-            </div>
-        </div>
-    `;
-}
+
 
 function generateHeatmap() {
     let html = '';
@@ -2311,11 +2307,6 @@ function playVideo(title, url) {
     vpVideo.onplay = () => { vpPlaying = true; document.getElementById('vp-play-btn').textContent = '⏸'; };
     vpVideo.onpause = () => { vpPlaying = false; document.getElementById('vp-play-btn').textContent = '▶'; };
     vpVideo.play();
-}
-
-// openVideoPlayer是playVideo的别名（兼容性）
-function openVideoPlayer(url, title) {
-    playVideo(title, url);
 }
 
 function toggleVpPlay() { if (!vpVideo) return; vpPlaying ? vpVideo.pause() : vpVideo.play(); }
@@ -4093,27 +4084,6 @@ function startFocusChallenge() {
 }
 
 // ====== V81修复：添加缺失的函数 ======
-
-// Toast提示功能
-function showToast(message, duration) {
-    // 移除已存在的toast
-    const existingToast = document.querySelector(".toast");
-    if (existingToast) existingToast.remove();
-    
-    // 创建新的toast
-    const toast = document.createElement("div");
-    toast.className = "toast";
-    toast.textContent = message;
-    toast.style.cssText = "position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:white;padding:12px 24px;border-radius:20px;font-size:14px;z-index:9999;animation:fadeIn 0.3s;white-space:nowrap;";
-    document.body.appendChild(toast);
-    
-    // 自动移除
-    setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transition = "opacity 0.3s";
-        setTimeout(() => toast.remove(), 300);
-    }, duration || 2000);
-}
 
 // 设置面板功能
 function openSettingsPanel() {
