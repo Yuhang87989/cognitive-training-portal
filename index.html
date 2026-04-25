@@ -1205,6 +1205,15 @@ function createNewUser() {
     // 清空表单
     if (nameEl) nameEl.value = '';
 }
+function confirmClearAllData() {
+    // 显示登录页让用户确认
+    const loginPage = document.getElementById('page-login');
+    if (loginPage) {
+        loginPage.style.display = 'flex';
+        loginPage.classList.add('active');
+    }
+}
+
 function clearAllData() {
     if (!confirm('⚠️ 确定要清除所有数据吗？')) return;
     localStorage.removeItem(STORAGE_KEY); location.reload();
@@ -2855,7 +2864,7 @@ function openFullscreenPage(page) {
     }
     
     // 检查用户是否已登录
-    const currentUser = localStorage.getItem(STORAGE_KEY + '_currentUser');
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); const currentUser = data.currentUser;
     if (!currentUser && page !== 'settings') {
         showToast('请先登录后再使用');
         return;
