@@ -354,7 +354,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <span class="module-tag tag-new">NEW</span>
                 <div class="module-icon">📅</div>
                 <div class="module-name">学习计划</div>
-                <div class="module-desc">Week1-5训练</div>
+                <div class="module-desc">Week1-6训练</div>
             </button>
             <button class="module-btn gradient-pink" onclick="showPage('topics')">
                 <div class="module-icon">📚</div>
@@ -392,10 +392,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-name">DeepSeek</div>
                 <div class="module-desc">智能问答</div>
             </button>
-            <button class="module-btn gradient-pink" onclick="showPage('ai')">
-                <div class="module-icon">🎓</div>
-                <div class="module-name">AI超级老师</div>
-                <div class="module-desc">学情诊断</div>
+            <button class="module-btn gradient-cyan" onclick="showPage('settings')">
+                <div class="module-icon">⚙️</div>
+                <div class="module-name">设置</div>
+                <div class="module-desc">系统设置</div>
             </button>
         </div>
     </div>
@@ -980,13 +980,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 </div>
                 <div class="task-time">30分钟</div>
             </div>
-            <div class="plan-task" onclick="toggleTask(this, 'week5')">
+            <div class="plan-task" onclick="toggleTask(this, 'week6')">
                 <div class="task-checkbox">✓</div>
                 <div style="flex:1;">
-                    <div style="font-size:14px;">Week5 - 综合整合</div>
-                    <div style="font-size:11px;color:var(--text-gray);">综合练习 × 5</div>
+                    <div style="font-size:14px;">Week6 - 自主学习</div>
+                    <div style="font-size:11px;color:var(--text-gray);">学科整合 × 5 | 创新思维 × 2</div>
                 </div>
-                <div class="task-time">45分钟</div>
+                <div class="task-time">50分钟</div>
             </div>
         </div>
     </div>
@@ -1128,12 +1128,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 </div>
                 <div class="method-content">选择一个概念，用自己的话教给别人，发现不足重新学习，直到能用简单语言解释清楚。</div>
             </div>
-            <div class="method-card" onclick="showMethodDetail(4)">
+
+            <div class="method-card" onclick="showMethodDetail(5)">
                 <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                    <span style="font-size:28px;">🗺️</span>
-                    <div class="method-title">思维导图法</div>
+                    <span style="font-size:28px;">📖</span>
+                    <div class="method-title">SQ3R阅读法</div>
                 </div>
-                <div class="method-content">以中心主题发散，用关键词和图形将知识点串联起来，形成知识网络。</div>
+                <div class="method-content">浏览(Survey)、提问(Question)、阅读(Read)、复述(Recite)、复习(Review)，系统化阅读理解。</div>
+            </div>
+            <div class="method-card" onclick="showMethodDetail(6)">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                    <span style="font-size:28px;">⏰</span>
+                    <div class="method-title">时间管理法</div>
+                </div>
+                <div class="method-content">四象限法则：重要紧急、重要不紧急、紧急不重要、不重要不紧急，优先处理重要事项。</div>
+            </div>
+            <div class="method-card" onclick="showMethodDetail(7)">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                    <span style="font-size:28px;">✍️</span>
+                    <div class="method-title">高效笔记法</div>
+                </div>
+                <div class="method-content">大纲笔记+关键词+图表结合，听课时只记要点，课后整理完善，定期回顾复习。</div>
+            </div>
+            <div class="method-card" onclick="showMethodDetail(8)">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                    <span style="font-size:28px;">🏆</span>
+                    <div class="method-title">考试策略</div>
+                </div>
+                <div class="method-content">先易后难、审题仔细、合理分配时间、检查验算，考后及时总结错题。</div>
             </div>
         </div>
     </div>
@@ -1471,6 +1493,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             </div>
             <button class="modal-close" onclick="closeAnalysisModal()">关闭</button>
         </div>
+    </div>
+</div>
+
+
+<!-- 设置页面 -->
+<div id="page-settings" class="page">
+    <div class="page-header">
+        <div class="back-btn" onclick="showPage('home')">←</div>
+        <span class="page-title">⚙️ 设置</span>
+    </div>
+    <div class="card">
+        <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">👤 用户设置</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--border-gray);border-radius:10px;margin-bottom:8px;">
+            <span>难度级别</span>
+            <select id="settings-difficulty" onchange="updateDifficulty()" style="padding:8px;border-radius:8px;border:none;background:white;">
+                <option value="1">Lv.1 入门</option>
+                <option value="2">Lv.2 基础</option>
+                <option value="3">Lv.3 进阶</option>
+                <option value="4">Lv.4 挑战</option>
+                <option value="5">Lv.5 大师</option>
+            </select>
+        </div>
+    </div>
+    <div class="card">
+        <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">🔑 API设置</div>
+        <div style="padding:12px;background:var(--border-gray);border-radius:10px;margin-bottom:8px;">
+            <div style="font-size:12px;color:var(--text-gray);margin-bottom:8px;">DeepSeek API Key</div>
+            <input type="text" id="settings-api-key" placeholder="输入API Key（可选）" style="width:100%;padding:10px;border-radius:8px;border:none;">
+            <button onclick="saveSettingsApiKey()" style="width:100%;margin-top:8px;padding:10px;background:var(--gradient-blue);color:white;border:none;border-radius:8px;cursor:pointer;">保存</button>
+        </div>
+    </div>
+    <div class="card">
+        <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">💰 充值</div>
+        <button onclick="window.open('https://platform.deepseek.com/usage','_blank')" style="width:100%;padding:12px;background:linear-gradient(135deg,#fa709a,#fee140);color:white;border:none;border-radius:10px;cursor:pointer;">💰 DeepSeek充值</button>
+    </div>
+    <div class="card">
+        <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">📊 数据管理</div>
+        <button onclick="confirmClearAllData()" style="width:100%;padding:12px;background:#ff4444;color:white;border:none;border-radius:10px;cursor:pointer;">🗑️ 清除所有数据</button>
+    </div>
+    <div class="card">
+        <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">ℹ️ 关于</div>
+        <button onclick="showAboutModal()" style="width:100%;padding:12px;background:var(--gradient-purple);color:white;border:none;border-radius:10px;cursor:pointer;">📖 关于系统</button>
+        <button onclick="checkSystemUpdate()" style="width:100%;margin-top:8px;padding:12px;background:var(--gradient-green);color:white;border:none;border-radius:10px;cursor:pointer;">🔄 检查更新</button>
     </div>
 </div>
 
@@ -2088,7 +2153,7 @@ function handleLogin() {
                 wrongTopics: [],
                 practiceHistory: [],
                 gameScores: {},
-                planTasks: { week1: false, week2: false, week3: false, week4: false, week5: false },
+                planTasks: { week1: false, week2: false, week3: false, week4: false, week5: false, week6: false },
                 calendarData: {},
                 thinkingScores: { logic: 0, creative: 0, critical: 0, system: 0 }
             };
@@ -3931,6 +3996,40 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(delayedInit, 1000);
 });
 
+
+// ====== 设置页面函数 ======
+function updateDifficulty() {
+    const difficulty = document.getElementById('settings-difficulty').value;
+    const data = loadData();
+    const user = getCurrentUserData();
+    if (user) {
+        user.difficulty = parseInt(difficulty);
+        syncUserData(user);
+        alert('难度已更新为 Lv.' + difficulty);
+    }
+}
+
+function saveSettingsApiKey() {
+    const key = document.getElementById('settings-api-key').value.trim();
+    if (key) {
+        localStorage.setItem('deepseek_api_key', key);
+        alert('API Key已保存');
+    } else {
+        localStorage.removeItem('deepseek_api_key');
+        alert('API Key已清除');
+    }
+}
+
+function initSettingsPage() {
+    const user = getCurrentUserData();
+    if (user) {
+        document.getElementById('settings-difficulty').value = user.difficulty || 2;
+    }
+    const savedKey = localStorage.getItem('deepseek_api_key') || '';
+    document.getElementById('settings-api-key').value = savedKey;
+}
+
+
 // ====== 关于系统 ======
 function showAboutModal() {
     document.getElementById('about-modal').classList.add('show');
@@ -3940,7 +4039,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V100';
+const CURRENT_VERSION = 'V104';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
