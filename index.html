@@ -237,28 +237,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .thinking-option.selected{border-color:var(--blue);background:rgba(51,119,255,0.1)}
 .thinking-option.correct{border-color:#43E97B;background:rgba(67,233,123,0.1)}
 .thinking-option.wrong{border-color:#FF6B6B;background:rgba(255,107,107,0.1)}
-
-/* V84: 视频播放器弹窗样式 */
-#video-player-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.9);
-    z-index: 10000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-}
-
-#video-player-modal.show {
-    display: flex;
-}
-
-.modal-overlay.show {
-    display: flex !important;
-}
 </style>
 <style>
 /* V33: 强制隐藏登录页面 - 防部署系统干扰版本 */
@@ -282,6 +260,79 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </style>
 </head>
 <body>
+<script>
+// V33: 立即强制隐藏登录页面，防止部署系统干扰
+(function(){
+    // 创建多层保护样式
+    var style = document.createElement('style');
+    style.id = 'v33-login-protect';
+    style.textContent = `
+        .login-page{display:none !important;;;;opacity:0 !important}
+        .login-page.active{display:flex !important;visibility:visible !important;position:relative !important;left:auto !important;opacity:1 !important}
+    `;
+    document.head.appendChild(style);
+    
+    // 立即隐藏登录页
+    var loginPage = document.getElementById('page-login');
+    if(loginPage){
+        loginPage.style.cssText = 'display:none !important;;;;opacity:0 !important';
+    }
+    
+    // 延迟500ms后再次检查并强制隐藏（应对部署系统后续修改）
+    setTimeout(function(){
+        var lp = document.getElementById('page-login');
+        if(lp && !lp.classList.contains('active')){
+            lp.style.cssText = 'display:none !important;;;;opacity:0 !important';
+        }
+    }, 500);
+    
+    // 延迟1秒后再次强制检查
+    setTimeout(function(){
+        var lp = document.getElementById('page-login');
+        if(lp && !lp.classList.contains('active')){
+            lp.style.cssText = 'display:none !important;;;;opacity:0 !important';
+        }
+    }, 1000);
+})();
+
+// ====== 关于系统 ======
+function showAboutModal() {
+    document.getElementById('about-modal').classList.add('show');
+}
+function closeAboutModal() {
+    document.getElementById('about-modal').classList.remove('show');
+}
+
+// ====== 系统更新 ======
+const CURRENT_VERSION = 'V83';
+const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
+
+async function checkSystemUpdate() {
+    const statusEl = document.getElementById('update-status');
+    document.getElementById('update-modal').classList.add('show');
+    
+    statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🔄</div><div style="font-size:14px;color:#666;">正在检查更新...</div>';
+    
+    try {
+        const response = await fetch(GITHUB_REPO);
+        const commits = await response.json();
+        
+        if (commits && commits.length > 0) {
+            const latestCommit = commits[0];
+            const commitDate = new Date(latestCommit.commit.committer.date);
+            const commitMsg = latestCommit.commit.message;
+            
+            statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本：' + CURRENT_VERSION + '</div><div style="font-size:12px;color:#666;margin-bottom:8px;">最新更新：' + commitDate.toLocaleDateString('zh-CN') + '</div><div style="font-size:11px;color:#999;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:12px;">' + commitMsg + '</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-bottom:8px;">🔄 刷新页面获取最新版本</button>';
+        }
+    } catch (e) {
+        statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">⚠️</div><div style="font-size:14px;color:#666;">无法检查更新</div><div style="font-size:12px;color:#999;margin-top:8px;">请检查网络连接</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-top:12px;">🔄 手动刷新页面</button>';
+    }
+}
+
+function closeUpdateModal() {
+    document.getElementById('update-modal').classList.remove('show');
+}
+</script>
 <!-- 登录页 -->
 <div id="page-login" class="page login-page" >
     <div class="login-header-bg"></div>
@@ -1004,64 +1055,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             <div class="plan-task" onclick="toggleTask(this, 'week5')">
                 <div class="task-checkbox">✓</div>
                 <div style="flex:1;">
-                    <div style="font-size:14px;">Week5 - 系统性思维与守恒思维综合周</div>
-                    <div style="font-size:11px;color:var(--text-gray);">7天综合训练</div>
+                    <div style="font-size:14px;">Week5 - 综合整合</div>
+                    <div style="font-size:11px;color:var(--text-gray);">综合练习 × 5</div>
                 </div>
                 <div class="task-time">45分钟</div>
-            </div>
-            <div id="week5-details" style="display:none;padding-left:20px;margin-top:8px;">
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day1: 系统性思维专项 - 知识网络构建
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day2: 守恒思维入门 - 自然界的守恒奥秘
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day3: 守恒思维专项 - 守恒定律应用
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day4: 创新思维激发 - 突破思维定式
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day5: 高阶建模综合 - 真实问题挑战
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day6: 复习巩固 - 综合思维能力整合
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(67,233,123,0.1);border-radius:8px;">
-                    📊 Day7: Week5复盘报告与评估
-                </div>
-            </div>
-            <div class="plan-task" onclick="toggleTask(this, 'week6')">
-                <div class="task-checkbox">✓</div>
-                <div style="flex:1;">
-                    <div style="font-size:14px;">Week6 - 学科深度整合与自主学习能力培养周</div>
-                    <div style="font-size:11px;color:var(--text-gray);">7天综合训练</div>
-                </div>
-                <div class="task-time">45分钟</div>
-            </div>
-            <div id="week6-details" style="display:none;padding-left:20px;margin-top:8px;">
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day1: 自主学习流程建立 - 学习如何学习
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day2: 学科整合入门 - 数学物理的对话
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day3: 学科整合专项模块 - 跨学科问题实战
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day4: 元认知能力培养 - 思维的思维
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day5: 高阶综合应用 - 项目式学习实践
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
-                    📅 Day6: 复习巩固 - 能力整合与迁移
-                </div>
-                <div style="font-size:12px;padding:8px 12px;background:rgba(67,233,123,0.1);border-radius:8px;">
-                    📊 Day7: Week6复盘 - 阶段性评估与规划
-                </div>
             </div>
         </div>
     </div>
@@ -1414,11 +1411,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <div id="podcast-list" class="topic-list"></div>
     </div>
     
-    <!-- 视频播放器容器 -->
-    <div id="podcast-video-container" style="display:none;margin-top:16px;">
-        <video id="podcast-video" controls style="width:100%;border-radius:12px;max-height:300px;"></video>
-    </div>
-    
     <!-- 隐藏的音频元素 -->
     <audio id="podcast-audio" preload="auto" crossorigin="anonymous"></audio>
     
@@ -1443,13 +1435,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             <div class="upload-icon">➕</div>
             <div class="upload-text">添加B站/抖音视频链接</div>
         </div>
-    </div>
-    <div class="card">
-        <div class="upload-zone" onclick="document.getElementById('video-file-input').click()" style="cursor:pointer;">
-            <div class="upload-icon">📤</div>
-            <div class="upload-text">上传本地视频</div>
-        </div>
-        <input type="file" id="video-file-input" accept="video/*" style="display:none" onchange="handleVideoUpload(event)">
     </div>
     <div class="card">
         <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">📺 精选课程</div>
@@ -1488,16 +1473,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">🎬 我的收藏</div>
         <div id="my-video-list" class="video-grid"></div>
     </div>
-    </div>
-    
-    <!-- 视频播放器弹窗 -->
-    <div class="modal-overlay" id="video-player-modal">
-        <div class="modal-content" style="max-width:90%;max-height:90%;padding:0;background:#000;position:relative;">
-            <video id="local-video-player" controls style="width:100%;max-height:80vh;"></video>
-            <button onclick="closeVideoPlayer()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.5);color:white;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:18px;">✕</button>
-        </div>
-    </div>
-    
     <div class="bottom-nav">
         <div class="nav-item" onclick="showPage('home')"><span class="nav-icon">🏠</span><span class="nav-label">首页</span></div>
         <div class="nav-item" onclick="showPage('avatar')"><span class="nav-icon">👨‍🏫</span><span class="nav-label">老师</span></div>
@@ -1860,7 +1835,7 @@ function getCurrentUserData() {
     return user || data.users[0];
 }
 
-// ====== V84母题数据 - 378道完整题目 ======
+// ====== V83母题数据 - 378道完整题目 ======
 const topics = {
     // 五年级 - 数学7题
     grade5_math: [
@@ -2333,29 +2308,28 @@ const methodData = [
     { title: '思维导图法', icon: '🗺️', content: '以中心主题发散，用关键词和图形将知识点串联起来，形成知识网络。', video: 'https://example.com/mindmap' }
 ];
 
-// ====== V84播客数据 - 21个播客(支持音频+视频) ======
+// ====== V83播客数据 - 21个播客 ======
 const podcastData = {
     method: [
-        { title: '高效学习的10个秘诀', duration: 900, icon: '🎧', desc: '掌握高效学习的核心方法', author: '学习方法专家', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', type: 'audio' },
-        { title: '费曼学习法详解', duration: 960, icon: '🎬', desc: '用简单语言讲解复杂知识', author: '学习专家', url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'video' },
-        { title: '如何提高记忆力', duration: 1200, icon: '🧠', desc: '科学记忆法，让知识记得更牢', author: '记忆训练师', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', type: 'audio' },
-        { title: '时间管理三步法', duration: 720, icon: '⏰', desc: '番茄工作法+优先级排序', author: '效率达人', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', type: 'audio' },
-        { title: '专注力训练技巧', duration: 840, icon: '🎯', desc: '告别分心，保持长时间专注', author: '心理学博士', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', type: 'audio' }
+        { title: '高效学习的10个秘诀', duration: 900, icon: '🎧', desc: '掌握高效学习的核心方法', author: '学习方法专家' },
+        { title: '如何提高记忆力', duration: 1200, icon: '🧠', desc: '科学记忆法，让知识记得更牢', author: '记忆训练师' },
+        { title: '时间管理三步法', duration: 720, icon: '⏰', desc: '番茄工作法+优先级排序', author: '效率达人' },
+        { title: '专注力训练技巧', duration: 840, icon: '🎯', desc: '告别分心，保持长时间专注', author: '心理学博士' }
     ],
     knowledge: [
-        { title: '数学思维导图入门', duration: 1500, icon: '📐', desc: '用思维导图梳理数学知识体系', author: '数学名师', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', type: 'audio' },
-        { title: '语文阅读理解技巧', duration: 1080, icon: '📖', desc: '快速抓住文章中心和重点', author: '语文特级教师', url: 'https://www.w3schools.com/html/movie.mp4', type: 'video' },
-        { title: '英语语法基础', duration: 1320, icon: '🔤', desc: '系统掌握英语语法核心规则', author: '雅思名师', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3', type: 'audio' }
+        { title: '数学思维导图入门', duration: 1500, icon: '📐', desc: '用思维导图梳理数学知识体系', author: '数学名师' },
+        { title: '语文阅读理解技巧', duration: 1080, icon: '📖', desc: '快速抓住文章中心和重点', author: '语文特级教师' },
+        { title: '英语语法基础', duration: 1320, icon: '🔤', desc: '系统掌握英语语法核心规则', author: '雅思名师' }
     ],
     focus: [
-        { title: '5分钟冥想放松', duration: 300, icon: '🧘', desc: '快速放松身心，恢复精力', author: '冥想导师', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3', type: 'audio' },
-        { title: '考前焦虑缓解', duration: 480, icon: '🌙', desc: '用深呼吸缓解考试压力', author: '心理咨询师', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', type: 'audio' },
-        { title: '高效休息方法', duration: 360, icon: '💤', desc: '科学休息比熬夜更有效', author: '睡眠专家', url: 'https://www.w3schools.com/html/mov_bbb.mp4', type: 'video' }
+        { title: '5分钟冥想放松', duration: 300, icon: '🧘', desc: '快速放松身心，恢复精力', author: '冥想导师' },
+        { title: '考前焦虑缓解', duration: 480, icon: '🌙', desc: '用深呼吸缓解考试压力', author: '心理咨询师' },
+        { title: '高效休息方法', duration: 360, icon: '💤', desc: '科学休息比熬夜更有效', author: '睡眠专家' }
     ],
     share: [
-        { title: '学霸作息时间表', duration: 600, icon: '📅', desc: '985学霸的每日作息安排', author: '名校学霸', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', type: 'audio' },
-        { title: '备考经验分享', duration: 900, icon: '💬', desc: '过来人的中考高考经验', author: '高考状元', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', type: 'audio' },
-        { title: '错题本使用方法', duration: 720, icon: '📝', desc: '如何高效利用错题本提分', author: '逆袭学霸', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', type: 'audio' }
+        { title: '学霸作息时间表', duration: 600, icon: '📅', desc: '985学霸的每日作息安排', author: '名校学霸' },
+        { title: '备考经验分享', duration: 900, icon: '💬', desc: '过来人的中考高考经验', author: '高考状元' },
+        { title: '错题本使用方法', duration: 720, icon: '📝', desc: '如何高效利用错题本提分', author: '逆袭学霸' }
     ]
 };
 
@@ -2392,80 +2366,6 @@ let currentThinkingScore = 0;
 let audioPlaying = false;
 let currentAudioIndex = 0;
 let currentPodcastCategory = 'method';
-
-
-// ====== V84 本地视频上传功能 ======
-// 上传本地视频
-function handleVideoUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const url = URL.createObjectURL(file);
-    const myVideos = JSON.parse(localStorage.getItem('myVideos') || '[]');
-    myVideos.push({
-        id: Date.now(),
-        title: file.name.replace(/\.[^/.]+$/, ""),
-        url: url,
-        date: new Date().toLocaleDateString(),
-        size: (file.size / 1024 / 1024).toFixed(2) + 'MB'
-    });
-    localStorage.setItem('myVideos', JSON.stringify(myVideos));
-    renderMyVideos();
-}
-
-// 页面加载时渲染我的视频
-function initMyVideos() {
-    renderMyVideos();
-}
-
-// 渲染我的视频
-function renderMyVideos() {
-    const container = document.getElementById('my-video-list');
-    if (!container) return;
-    const videos = JSON.parse(localStorage.getItem('myVideos') || '[]');
-    
-    if (videos.length === 0) {
-        container.innerHTML = '<div style="text-align:center;color:var(--text-gray);padding:20px;">暂无上传视频</div>';
-        return;
-    }
-    
-    container.innerHTML = videos.map(v => `
-        <div class="video-card" onclick="playLocalVideo('${v.url}')">
-            <div class="video-thumb">🎬<div class="video-play-overlay">▶</div></div>
-            <div class="video-info">
-                <div class="video-title">${v.title}</div>
-                <div class="video-source">${v.size} · ${v.date}</div>
-            </div>
-            <button onclick="event.stopPropagation();deleteVideo(${v.id})" style="background:none;border:none;color:#ff4444;cursor:pointer;padding:4px;">🗑</button>
-        </div>
-    `).join('');
-}
-
-// 播放本地视频
-function playLocalVideo(url) {
-    const player = document.getElementById('local-video-player');
-    if (!player) return;
-    player.src = url;
-    document.getElementById('video-player-modal').classList.add('show');
-    player.play();
-}
-
-// 关闭视频播放器
-function closeVideoPlayer() {
-    const player = document.getElementById('local-video-player');
-    if (!player) return;
-    player.pause();
-    player.src = '';
-    document.getElementById('video-player-modal').classList.remove('show');
-}
-
-// 删除视频
-function deleteVideo(id) {
-    if (!confirm('确定删除这个视频吗？')) return;
-    const videos = JSON.parse(localStorage.getItem('myVideos') || '[]');
-    localStorage.setItem('myVideos', JSON.stringify(videos.filter(v => v.id !== id)));
-    renderMyVideos();
-}
 
 // ====== AI智能回复（无需配置API Key） ======
 // 内置智能回复系统，根据问题类型自动匹配最佳回复
@@ -2790,10 +2690,9 @@ function updateUI() {
 function showPage(pageId) {
     // 隐藏登录页面
     const loginPage = document.getElementById('page-login');
-    if (loginPage) {
-        loginPage.style.setProperty('display', 'none', 'important');
-        loginPage.style.setProperty('visibility', 'hidden', 'important');
-    }
+    if (loginPage) loginPage.style.setProperty('display', 'none', 'important');
+            loginPage.style.setProperty('visibility', 'hidden', 'important');
+    
     // 隐藏所有普通页面
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     
@@ -3382,19 +3281,6 @@ function updatePodcastDisplay() {
     document.getElementById('podcast-title').textContent = p.title;
     document.getElementById('podcast-subtitle').textContent = `${p.author} · ${formatTime(p.duration)}`;
     document.getElementById('audio-duration').textContent = formatTime(p.duration);
-    
-    // 支持视频播放
-    const videoContainer = document.getElementById('podcast-video-container');
-    const audioElement = document.getElementById('podcast-audio');
-    
-    if (p.type === 'video') {
-        videoContainer.style.display = 'block';
-        document.getElementById('podcast-video').src = p.url;
-        audioElement.pause();
-    } else {
-        videoContainer.style.display = 'none';
-        audioElement.src = p.url || '';
-    }
 }
 
 function toggleAudio() {
@@ -4270,12 +4156,6 @@ function toggleTask(el, taskId) {
     const checkbox = el.querySelector('.task-checkbox');
     checkbox.classList.toggle('checked');
     
-    
-    // 展开/收起详细内容
-    const details = document.getElementById(taskId + '-details');
-    if (details) {
-        details.style.display = details.style.display === 'none' ? 'block' : 'none';
-    }
     const data = loadData();
     const user = data.users.find(u => u.id === data.currentUser);
     if (user) {
@@ -4459,9 +4339,6 @@ function delayedInit() {
     renderPodcastList();
     updatePodcastDisplay();
     
-    // 初始化我的视频
-    initMyVideos();
-    
     // 初始化登录页保护机制
     initLoginPageProtection();
 }
@@ -4490,7 +4367,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V86';
+const CURRENT_VERSION = 'V83';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
@@ -4520,6 +4397,289 @@ function closeUpdateModal() {
 }
 </script>
 
+<!-- ====== V33: 强制修复脚本 - 防部署系统干扰 ====== -->
+<!-- 此脚本在DOM加载完成后执行，确保登录页控制不受部署系统影响 -->
+<script>
+// V33多重保险机制 - 确保登录页面显示控制正常工作
+(function(){
+    // 存储键名（用于版本检测）
+    var V33_KEY = 'cognitive_training_v33_active';
+    
+    // 强制执行修复
+    var forceFix = function(){
+        var loginPage = document.getElementById('page-login');
+        if (!loginPage) return;
+        
+        try {
+            var data = localStorage.getItem('cognitive_training_v33') || localStorage.getItem('cognitive_training_v32');
+            if (data) {
+                try {
+                    var parsed = JSON.parse(data);
+                    if (parsed && parsed.currentUser && parsed.users && parsed.users.find(function(u){return u.id === parsed.currentUser;})) {
+                        // 已登录用户 - 隐藏登录页
+                        loginPage.classList.remove('active');
+                        loginPage.style.setProperty('display', 'none', 'important');
+            loginPage.style.setProperty('visibility', 'hidden', 'important');
+                        loginPage.style.visibility = 'hidden';
+                        loginPage.style.position = 'absolute';
+                        loginPage.style.left = '-9999px';
+                        loginPage.style.opacity = '0';
+                        localStorage.setItem(V33_KEY, 'hidden');
+                    } else {
+                        // 无用户 - 显示登录页
+                        loginPage.classList.add('active');
+                        loginPage.style.setProperty('display', 'flex', 'important');
+            loginPage.style.setProperty('visibility', 'visible', 'important');
+                        loginPage.style.visibility = 'visible';
+                        loginPage.style.position = 'relative';
+                        loginPage.style.left = 'auto';
+                        loginPage.style.opacity = '1';
+                        localStorage.setItem(V33_KEY, 'show');
+                    }
+                } catch(e) {
+                    // 解析失败，显示登录页
+                    loginPage.classList.add('active');
+                    loginPage.style.setProperty('display', 'flex', 'important');
+            loginPage.style.setProperty('visibility', 'visible', 'important');
+                    loginPage.style.visibility = 'visible';
+                    loginPage.style.position = 'relative';
+                    localStorage.setItem(V33_KEY, 'show');
+                }
+            } else {
+                // 无数据 - 显示登录页
+                loginPage.classList.add('active');
+                loginPage.style.setProperty('display', 'flex', 'important');
+            loginPage.style.setProperty('visibility', 'visible', 'important');
+                loginPage.style.visibility = 'visible';
+                loginPage.style.position = 'relative';
+                localStorage.setItem(V33_KEY, 'show');
+            }
+        } catch(e) {
+            console.log('[V33] 强制修复遇到错误:', e);
+        }
+    };
+    
+    // 添加样式覆盖
+    var addOverrideStyle = function(){
+        var style = document.createElement('style');
+        style.id = 'v33-override-style';
+        style.textContent = [
+            '.login-page{display:none !important;;;;opacity:0 !important;pointer-events:none !important}',
+            '.login-page.active{display:flex !important;visibility:visible !important;position:relative !important;left:auto !important;opacity:1 !important;pointer-events:auto !important}'
+        ].join('\n');
+        document.head.appendChild(style);
+    };
+    
+    // 立即执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function(){
+            forceFix();
+            addOverrideStyle();
+        });
+    } else {
+        forceFix();
+        addOverrideStyle();
+    }
+    
+    // 延迟500ms再次执行
+    setTimeout(forceFix, 500);
+    
+    // 延迟1秒再次执行
+    setTimeout(forceFix, 1000);
+    
+    // 延迟2秒再次执行
+    setTimeout(forceFix, 2000);
+    
+    // 每3秒周期性检查
+    setInterval(forceFix, 3000);
+    
+    // MutationObserver监听DOM变化
+    if (typeof MutationObserver !== 'undefined') {
+        var observer = new MutationObserver(function(mutations){
+            mutations.forEach(function(mutation){
+                if (mutation.target && mutation.target.id === 'page-login') {
+                    forceFix();
+                }
+            });
+        });
+        
+        // 等待loginPage元素出现
+        var observeLoginPage = function(){
+            var loginPage = document.getElementById('page-login');
+            if (loginPage) {
+                observer.observe(loginPage, { 
+                    attributes: true, 
+                    attributeFilter: ['class', 'style', 'id'] 
+                });
+                forceFix();
+            } else {
+                setTimeout(observeLoginPage, 100);
+            }
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', observeLoginPage);
+        } else {
+            observeLoginPage();
+        }
+    }
+    
+    console.log('[V33] 强制修复脚本已加载');
+})();
 
+// ====== 关于系统 ======
+function showAboutModal() {
+    document.getElementById('about-modal').classList.add('show');
+}
+function closeAboutModal() {
+    document.getElementById('about-modal').classList.remove('show');
+}
+
+// ====== 系统更新 ======
+const CURRENT_VERSION = 'V83';
+const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
+
+async function checkSystemUpdate() {
+    const statusEl = document.getElementById('update-status');
+    document.getElementById('update-modal').classList.add('show');
+    
+    statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🔄</div><div style="font-size:14px;color:#666;">正在检查更新...</div>';
+    
+    try {
+        const response = await fetch(GITHUB_REPO);
+        const commits = await response.json();
+        
+        if (commits && commits.length > 0) {
+            const latestCommit = commits[0];
+            const commitDate = new Date(latestCommit.commit.committer.date);
+            const commitMsg = latestCommit.commit.message;
+            
+            statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本：' + CURRENT_VERSION + '</div><div style="font-size:12px;color:#666;margin-bottom:8px;">最新更新：' + commitDate.toLocaleDateString('zh-CN') + '</div><div style="font-size:11px;color:#999;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:12px;">' + commitMsg + '</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-bottom:8px;">🔄 刷新页面获取最新版本</button>';
+        }
+    } catch (e) {
+        statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">⚠️</div><div style="font-size:14px;color:#666;">无法检查更新</div><div style="font-size:12px;color:#999;margin-top:8px;">请检查网络连接</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-top:12px;">🔄 手动刷新页面</button>';
+    }
+}
+
+function closeUpdateModal() {
+    document.getElementById('update-modal').classList.remove('show');
+}
+</script>
+
+<script>
+// V33 强制初始化脚本 - 使用MutationObserver绕过部署系统修改
+(function() {
+    'use strict';
+    
+    // 强制修复登录页面样式
+    function forceFixLoginPage() {
+        var loginPage = document.getElementById('page-login');
+        if (!loginPage) return;
+        
+        try {
+            var dataStr = localStorage.getItem('trainingAppData');
+            var data = dataStr ? JSON.parse(dataStr) : null;
+            var isLoggedIn = data && data.currentUser && data.users && data.users.find(function(u) { return u.id === data.currentUser; });
+            
+            if (isLoggedIn) {
+                loginPage.style.setProperty('display', 'none', 'important');
+                loginPage.style.setProperty('visibility', 'hidden', 'important');
+                loginPage.style.setProperty('position', 'absolute', 'important');
+                loginPage.style.setProperty('left', '-9999px', 'important');
+            } else {
+                loginPage.style.setProperty('display', 'flex', 'important');
+                loginPage.style.setProperty('visibility', 'visible', 'important');
+                loginPage.style.setProperty('position', 'relative', 'important');
+                loginPage.style.setProperty('left', 'auto', 'important');
+            }
+        } catch(e) {
+            loginPage.style.setProperty('display', 'flex', 'important');
+            loginPage.style.setProperty('visibility', 'visible', 'important');
+        }
+    }
+    
+    // 创建MutationObserver监听样式变化
+    function setupObserver() {
+        var loginPage = document.getElementById('page-login');
+        if (!loginPage) return;
+        
+        var observer = new MutationObserver(function() {
+            forceFixLoginPage();
+        });
+        
+        observer.observe(loginPage, { attributes: true, attributeFilter: ['style', 'class'] });
+        
+        var bodyObserver = new MutationObserver(function() {
+            forceFixLoginPage();
+        });
+        
+        bodyObserver.observe(document.body, { childList: true, subtree: true });
+    }
+    
+    // 多次重试确保生效
+    var retryCount = 0;
+    function initWithRetry() {
+        retryCount++;
+        forceFixLoginPage();
+        if (retryCount < 10) setTimeout(initWithRetry, 200);
+    }
+    
+    // 立即执行
+    forceFixLoginPage();
+    
+    // DOM加载完成后设置监听
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setupObserver();
+            setTimeout(initWithRetry, 100);
+        });
+    } else {
+        setupObserver();
+        setTimeout(initWithRetry, 100);
+    }
+    
+    window.addEventListener('load', function() {
+        setTimeout(forceFixLoginPage, 500);
+    });
+})();
+
+// ====== 关于系统 ======
+function showAboutModal() {
+    document.getElementById('about-modal').classList.add('show');
+}
+function closeAboutModal() {
+    document.getElementById('about-modal').classList.remove('show');
+}
+
+// ====== 系统更新 ======
+const CURRENT_VERSION = 'V83';
+const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
+
+async function checkSystemUpdate() {
+    const statusEl = document.getElementById('update-status');
+    document.getElementById('update-modal').classList.add('show');
+    
+    statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🔄</div><div style="font-size:14px;color:#666;">正在检查更新...</div>';
+    
+    try {
+        const response = await fetch(GITHUB_REPO);
+        const commits = await response.json();
+        
+        if (commits && commits.length > 0) {
+            const latestCommit = commits[0];
+            const commitDate = new Date(latestCommit.commit.committer.date);
+            const commitMsg = latestCommit.commit.message;
+            
+            statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本：' + CURRENT_VERSION + '</div><div style="font-size:12px;color:#666;margin-bottom:8px;">最新更新：' + commitDate.toLocaleDateString('zh-CN') + '</div><div style="font-size:11px;color:#999;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:12px;">' + commitMsg + '</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-bottom:8px;">🔄 刷新页面获取最新版本</button>';
+        }
+    } catch (e) {
+        statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">⚠️</div><div style="font-size:14px;color:#666;">无法检查更新</div><div style="font-size:12px;color:#999;margin-top:8px;">请检查网络连接</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-top:12px;">🔄 手动刷新页面</button>';
+    }
+}
+
+function closeUpdateModal() {
+    document.getElementById('update-modal').classList.remove('show');
+}
+</script>
 </body>
 </html>
