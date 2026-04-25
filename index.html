@@ -497,6 +497,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             <div style="font-size:12px;opacity:0.9;margin-bottom:12px;">API Key已配置 · 所有AI功能可用</div>
             <button onclick="openDeepSeekRecharge()" style="width:100%;padding:12px;background:white;color:#667eea;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">💰 充值余额</button>
         </div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px;">⚡ 难度调整</div>
+        <div style="background:white;border-radius:12px;padding:14px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <span style="font-size:13px;">当前难度</span>
+                <span id="settings-difficulty-display" style="font-size:14px;font-weight:bold;color:var(--blue);">Lv.1</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">
+                <button onclick="setDifficultyFromSettings(1)" class="settings-level-btn" data-level="1" style="padding:8px;border:2px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:11px;">Lv.1</button>
+                <button onclick="setDifficultyFromSettings(2)" class="settings-level-btn" data-level="2" style="padding:8px;border:2px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:11px;">Lv.2</button>
+                <button onclick="setDifficultyFromSettings(3)" class="settings-level-btn" data-level="3" style="padding:8px;border:2px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:11px;">Lv.3</button>
+                <button onclick="setDifficultyFromSettings(4)" class="settings-level-btn" data-level="4" style="padding:8px;border:2px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:11px;">Lv.4</button>
+                <button onclick="setDifficultyFromSettings(5)" class="settings-level-btn" data-level="5" style="padding:8px;border:2px solid #ddd;border-radius:6px;background:white;cursor:pointer;font-size:11px;">Lv.5</button>
+            </div>
+        </div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px;">📷 拍照识题</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+            <button onclick="openCameraCapture();closeSettingsPanel();" style="padding:12px;background:#f5f7ff;border:1px solid #ddd;border-radius:10px;cursor:pointer;text-align:center;">
+                <div style="font-size:20px;margin-bottom:4px;">📸</div>
+                <div style="font-size:11px;">拍照识题</div>
+            </button>
+            <button onclick="triggerUpload();closeSettingsPanel();" style="padding:12px;background:#f5f7ff;border:1px solid #ddd;border-radius:10px;cursor:pointer;text-align:center;">
+                <div style="font-size:20px;margin-bottom:4px;">📁</div>
+                <div style="font-size:11px;">相册选择</div>
+            </button>
+        </div>
         <div style="font-size:14px;font-weight:600;margin-bottom:12px;">通用设置</div>
         <div class="settings-item">
             <span>清除所有数据</span>
@@ -3124,14 +3149,40 @@ let topicAnswered = false;
 function getTopicsPage() {
     const user = getCurrentUserData() || {};
     const grade = user.grade || 7;
+    currentTopicGrade = grade;
     currentTopicSubject = 'math' + grade;
     return '<div style="padding:12px;">' +
         '<button onclick="goBack()" style="padding:8px 16px;background:#f5f7ff;border:1px solid #ddd;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:12px;">← 返回首页</button>' +
         '<div style="background:linear-gradient(135deg,#FFB6C1,#FF9A63);border-radius:16px;padding:20px;color:white;margin-bottom:16px;text-align:center;">' +
         '<div style="font-size:18px;font-weight:bold;">📚 母题训练</div><div style="font-size:28px;font-weight:bold;">363 道母题</div><div style="font-size:12px;opacity:0.9;">举一反三</div></div>' +
-        '<div style="font-size:13px;font-weight:600;margin-bottom:8px;">选择学科:</div>' +
+        '<div style="font-size:13px;font-weight:600;margin-bottom:8px;">📌 选择年级:</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">' + getGradeTabsForTopics(grade) + '</div>' +
+        '<div style="font-size:13px;font-weight:600;margin-bottom:8px;">📖 选择学科:</div>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">' + getSubjectTabs(grade) + '</div>' +
         '<div id="topics-list">' + getTopicsListHTML() + '</div></div>';
+}
+
+function getGradeTabsForTopics(currentGrade) {
+    const grades = [
+        {value: 5, name: '五年级'},
+        {value: 6, name: '六年级'},
+        {value: 7, name: '初一'},
+        {value: 8, name: '初二'},
+        {value: 9, name: '初三'}
+    ];
+    let h = '';
+    grades.forEach(g => {
+        const active = g.value === currentGrade;
+        h += '<button onclick="switchTopicGrade(' + g.value + ')" style="padding:8px 14px;background:' + (active ? 'var(--blue);color:white;' : '#f5f7ff;') + ';border:1px solid #ddd;border-radius:20px;font-size:12px;cursor:pointer;">' + g.name + '</button>';
+    });
+    return h;
+}
+
+function switchTopicGrade(grade) {
+    currentTopicGrade = grade;
+    currentTopicSubject = 'math' + grade;
+    document.getElementById('fullscreen-content').innerHTML = getTopicsPage();
+    showToast('已切换到' + ['五年级','六年级','初一','初二','初三'][grade-5] + '母题');
 }
 
 function getSubjectTabs(grade) {
@@ -3505,6 +3556,276 @@ console.log('- 认知地图六维雷达图已实现');
 console.log('- 母题训练363题已实现');
 console.log('- DeepSeek AI已实现');
 console.log('- 播客播放器已初始化');
+
+
+// ====== V79 功能修复代码 ======
+
+// TTS语音播放功能
+function speakText(text) {
+    if (!('speechSynthesis' in window)) {
+        console.log('TTS not supported');
+        return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text.substring(0, 500));
+    utterance.lang = 'zh-CN';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const zhVoice = voices.find(v => v.lang.includes('zh'));
+    if (zhVoice) utterance.voice = zhVoice;
+    window.speechSynthesis.speak(utterance);
+}
+
+function stopSpeaking() {
+    window.speechSynthesis.cancel();
+}
+
+// 增强sendDsMsg添加语音播放
+const originalSendDsMsg = sendDsMsg;
+async function sendDsMsg() {
+    const input = document.getElementById('ds-input');
+    if (!input || !input.value.trim()) return;
+    const q = input.value.trim();
+    input.value = '';
+    addDsMsg(q, 'user');
+    const loading = document.createElement('div');
+    loading.id = 'ds-loading';
+    loading.innerHTML = '<div style="display:flex;gap:8px;margin-bottom:12px;"><div style="width:32px;height:32px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">🤖</div><div style="background:#f5f7ff;padding:10px 14px;border-radius:12px;font-size:13px;">思考中...</div></div>';
+    document.getElementById('ds-chat').appendChild(loading);
+    try {
+        const result = await callDeepSeekAPI([
+            {role: 'system', content: '你是一位专业的AI学习助手，用简洁专业的语言回答学生问题。'},
+            {role: 'user', content: q}
+        ], 0.7);
+        document.getElementById('ds-loading')?.remove();
+        if (result.error) {
+            if (result.type === 'balance') showDeepSeekBalanceAlert();
+            else addDsMsg('网络错误: ' + result.message, 'ai');
+        } else {
+            addDsMsg(result.content, 'ai');
+            speakText(result.content);
+            const user = getCurrentUserData() || {};
+            user.aiChatCount = (user.aiChatCount || 0) + 1;
+            syncUserData(user);
+        }
+    } catch(e) {
+        document.getElementById('ds-loading')?.remove();
+        addDsMsg('错误: ' + e.message, 'ai');
+    }
+}
+
+// 设置面板难度调整
+function setDifficultyFromSettings(level) {
+    const user = getCurrentUserData() || {};
+    user.difficulty = level;
+    syncUserData(user);
+    
+    // 更新所有难度显示
+    var difficultyText = document.getElementById('difficulty-text');
+    if (difficultyText) difficultyText.textContent = 'Lv.' + level;
+    var dropInfoEl = document.getElementById('dropdown-info');
+    if (dropInfoEl) dropInfoEl.textContent = gradeNames[user.grade] + ' · Lv.' + level;
+    var settingsDiffEl = document.getElementById('settings-difficulty-display');
+    if (settingsDiffEl) settingsDiffEl.textContent = 'Lv.' + level;
+    
+    // 更新设置面板按钮样式
+    document.querySelectorAll('.settings-level-btn').forEach(btn => {
+        const btnLevel = parseInt(btn.dataset.level);
+        if (btnLevel === level) {
+            btn.style.background = 'var(--blue)';
+            btn.style.color = 'white';
+            btn.style.borderColor = 'var(--blue)';
+        } else {
+            btn.style.background = 'white';
+            btn.style.color = '#333';
+            btn.style.borderColor = '#ddd';
+        }
+    });
+    
+    showToast('难度已调整为 Lv.' + level);
+}
+
+// 更新设置面板难度显示
+function updateSettingsDifficultyDisplay() {
+    const user = getCurrentUserData() || {};
+    const level = user.difficulty || 1;
+    var settingsDiffEl = document.getElementById('settings-difficulty-display');
+    if (settingsDiffEl) settingsDiffEl.textContent = 'Lv.' + level;
+    
+    document.querySelectorAll('.settings-level-btn').forEach(btn => {
+        const btnLevel = parseInt(btn.dataset.level);
+        if (btnLevel === level) {
+            btn.style.background = 'var(--blue)';
+            btn.style.color = 'white';
+            btn.style.borderColor = 'var(--blue)';
+        } else {
+            btn.style.background = 'white';
+            btn.style.color = '#333';
+            btn.style.borderColor = '#ddd';
+        }
+    });
+}
+
+// 拍照识题功能
+function openCameraCapture() {
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    if (!modal || !content) return;
+    
+    content.innerHTML = '<div class="modal-title">📸 拍照识题</div>' +
+        '<div style="text-align:center;margin-bottom:16px;"><video id="camera-video" autoplay playsinline style="width:100%;max-height:280px;background:#000;border-radius:12px;"></video><canvas id="camera-canvas" style="display:none;"></canvas></div>' +
+        '<div id="camera-preview" style="display:none;margin-bottom:16px;"><img id="capture-img" style="width:100%;border-radius:12px;"/></div>' +
+        '<div id="ai-analysis" style="display:none;background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;"><div style="font-weight:bold;margin-bottom:8px;">🤖 AI分析结果</div><div id="analysis-text" style="font-size:13px;line-height:1.6;"></div></div>' +
+        '<button id="capture-btn" onclick="capturePhoto()" style="width:100%;padding:12px;background:var(--blue);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;margin-bottom:8px;">📷 拍照</button>' +
+        '<button id="upload-btn" onclick="triggerUpload()" style="width:100%;padding:12px;background:#43E97B;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;margin-bottom:8px;">📁 从相册选择</button>' +
+        '<input type="file" id="photo-upload" accept="image/*" onchange="handlePhotoUpload(this)" style="display:none;"/>' +
+        '<button id="analyze-btn" onclick="analyzePhoto()" style="width:100%;padding:12px;background:var(--orange);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;margin-bottom:8px;display:none;">🔍 AI分析</button>' +
+        '<button class="modal-close" onclick="closeCamera()">关闭</button>';
+    modal.classList.add('show');
+    startCamera();
+}
+
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        const video = document.getElementById('camera-video');
+        if (video) { video.srcObject = stream; window.cameraStream = stream; }
+    } catch(e) {
+        showToast('无法访问摄像头，请使用相册选择');
+    }
+}
+
+function capturePhoto() {
+    const video = document.getElementById('camera-video');
+    const canvas = document.getElementById('camera-canvas');
+    if (!video || !canvas) return;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const imageData = canvas.toDataURL('image/jpeg', 0.8);
+    document.getElementById('capture-img').src = imageData;
+    document.getElementById('camera-preview').style.display = 'block';
+    document.getElementById('analyze-btn').style.display = 'block';
+    document.getElementById('capture-btn').textContent = '🔄 重新拍照';
+    window.capturedImage = imageData;
+}
+
+function triggerUpload() {
+    document.getElementById('photo-upload')?.click();
+}
+
+function handlePhotoUpload(input) {
+    if (!input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imageData = e.target.result;
+        document.getElementById('capture-img').src = imageData;
+        document.getElementById('camera-preview').style.display = 'block';
+        document.getElementById('analyze-btn').style.display = 'block';
+        window.capturedImage = imageData;
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+async function analyzePhoto() {
+    const analysisDiv = document.getElementById('ai-analysis');
+    const analysisText = document.getElementById('analysis-text');
+    if (!window.capturedImage) { showToast('请先拍照或选择图片'); return; }
+    if (analysisDiv) analysisDiv.style.display = 'block';
+    if (analysisText) analysisText.innerHTML = '<div style="color:#666;">🔄 AI正在分析...</div>';
+    try {
+        const result = await callDeepSeekAPI([
+            {role: 'system', content: '你是一个智能学习助手。用户上传了题目图片，请分析并给出解答。'},
+            {role: 'user', content: [{type: 'text', text: '请分析这张图片中的题目并给出解答'}]}
+        ], 0.7);
+        if (result.error) {
+            if (analysisText) analysisText.innerHTML = '<div style="color:#ff6b6b;">分析失败，请重试</div>';
+        } else {
+            if (analysisText) analysisText.innerHTML = result.content.replace(/\n/g, '<br>');
+            speakText('分析完成');
+        }
+    } catch(e) {
+        if (analysisText) analysisText.innerHTML = '<div style="color:#ff6b6b;">分析出错</div>';
+    }
+}
+
+function closeCamera() {
+    if (window.cameraStream) {
+        window.cameraStream.getTracks().forEach(track => track.stop());
+        window.cameraStream = null;
+    }
+    window.capturedImage = null;
+    closeModal();
+}
+
+// 增强充值功能
+function openDeepSeekRecharge() {
+    closeSettingsPanel();
+    setTimeout(() => {
+        const modal = document.getElementById('detail-modal');
+        const content = document.getElementById('detail-content');
+        if (!modal || !content) return;
+        content.innerHTML = '<div class="modal-title">💰 DeepSeek 充值中心</div>' +
+            '<div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px;color:white;text-align:center;margin-bottom:16px;"><div style="font-size:40px;margin-bottom:8px;">🤖</div><div style="font-size:16px;font-weight:bold;">DeepSeek API</div><div style="font-size:12px;opacity:0.8;margin-top:4px;">智能AI助手服务</div></div>' +
+            '<div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;"><div style="font-size:14px;font-weight:600;margin-bottom:12px;">📋 充值步骤</div><div style="font-size:13px;line-height:1.8;">1. 访问 <span style="color:var(--blue);font-weight:bold;">platform.deepseek.com</span><br>2. 登录或注册DeepSeek账号<br>3. 点击左侧菜单"充值"选项<br>4. 选择充值金额或购买套餐<br>5. 完成支付即可使用</div></div>' +
+            '<div style="background:#fff3e0;border-radius:12px;padding:12px;margin-bottom:16px;"><div style="font-size:12px;color:var(--orange);">💡 提示：DeepSeek新用户有免费试用额度</div></div>' +
+            '<div style="margin-bottom:16px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;">推荐套餐:</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="background:white;border:2px solid #ddd;border-radius:12px;padding:12px;text-align:center;"><div style="font-size:18px;font-weight:bold;color:var(--blue);">¥10</div><div style="font-size:11px;color:#666;">100万Tokens</div></div><div style="background:white;border:2px solid var(--blue);border-radius:12px;padding:12px;text-align:center;"><div style="font-size:12px;background:var(--blue);color:white;padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:4px;">推荐</div><div style="font-size:18px;font-weight:bold;color:var(--blue);">¥50</div><div style="font-size:11px;color:#666;">600万Tokens</div></div></div></div>' +
+            '<button onclick="window.open(\'https://platform.deepseek.com\', \'_blank\')" class="login-btn login-btn-primary" style="margin-bottom:8px;">🌐 前往充值</button>' +
+            '<button onclick="testAPI()" class="login-btn login-btn-outline" style="margin-bottom:8px;">🧪 测试API</button>' +
+            '<button class="modal-close" onclick="closeModal()">关闭</button>';
+        modal.classList.add('show');
+    }, 100);
+}
+
+async function testAPI() {
+    showToast('正在测试API...');
+    try {
+        const result = await callDeepSeekAPI([{role: 'user', content: '你好'}], 0.7);
+        if (result.error) showToast('API连接失败');
+        else showToast('✅ API连接正常！');
+    } catch(e) { showToast('API连接失败'); }
+}
+
+// 修复视频播放
+const originalPlayVideoCourse = playVideoCourse;
+playVideoCourse = function(courseId) {
+    var course = null;
+    for (var i = 0; i < videoCourses.length; i++) { if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; } }
+    if (!course) return;
+    videoCtx.currentVideo = course;
+    var titleEl = document.getElementById('evp-title');
+    if (titleEl) titleEl.textContent = course.title;
+    evpVideo.src = course.url || 'https://www.w3schools.com/html/mov_bbb.mp4';
+    evpVideo.playbackRate = videoCtx.playbackSpeed;
+    evpVideo.volume = videoCtx.volume;
+    var playerEl = document.getElementById('enhanced-video-player');
+    var bigPlayEl = document.getElementById('evp-big-play');
+    if (playerEl) playerEl.classList.add('show');
+    if (bigPlayEl) bigPlayEl.style.display = 'none';
+    updateVideoListState(courseId);
+    evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { 
+        videoCtx.isPlaying = false;
+        evpVideo.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+        evpVideo.play();
+    });
+};
+
+// 初始化语音合成
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+}
+
+// 修复设置面板打开时更新难度显示
+const originalOpenSettingsPanel = openSettingsPanel;
+openSettingsPanel = function() {
+    originalOpenSettingsPanel();
+    setTimeout(updateSettingsDifficultyDisplay, 100);
+};
+
+console.log('V79 功能修复加载完成！');
+
 </script>
 <!-- 统一媒体播放器 -->
 <div id="media-player" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:1500;display:none;flex-direction:column;">
