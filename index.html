@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练V121</title>
+<title>认知训练V122</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -2462,16 +2462,21 @@ function renderMyPodcasts() {
         return;
     }
     
-    container.innerHTML = user.myPodcasts.map((p, i) => `
-        <div style="display:flex;align-items:center;padding:12px;background:#f8f9fa;border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="playMyPodcast(${i})">
-            <div style="width:44px;height:44px;background:${p.type === 'video' ? 'linear-gradient(135deg,#FF6B6B,#E87A4E)' : 'linear-gradient(135deg,#667eea,#764ba2)'};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;">${p.type === 'video' ? '🎬' : '🎵'}</div>
-            <div style="flex:1;margin-left:12px;">
-                <div style="font-size:14px;font-weight:600;">${p.title}</div>
-                <div style="font-size:12px;color:#999;">${p.type === 'video' ? '视频' : '音频'}</div>
-            </div>
-            <button onclick="event.stopPropagation();deleteMyPodcast(${i})" style="background:none;border:none;font-size:16px;cursor:pointer;">🗑️</button>
-        </div>
-    `).join('');
+    let html = '';
+    user.myPodcasts.forEach((p, i) => {
+        const bgColor = p.type === 'video' ? 'linear-gradient(135deg,#FF6B6B,#E87A4E)' : 'linear-gradient(135deg,#667eea,#764ba2)';
+        const icon = p.type === 'video' ? '🎬' : '🎵';
+        const typeName = p.type === 'video' ? '视频' : '音频';
+        html += '<div style="display:flex;align-items:center;padding:12px;background:#f8f9fa;border-radius:12px;margin-bottom:8px;cursor:pointer;" onclick="playMyPodcast(' + i + ')">';
+        html += '<div style="width:44px;height:44px;background:' + bgColor + ';border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;">' + icon + '</div>';
+        html += '<div style="flex:1;margin-left:12px;">';
+        html += '<div style="font-size:14px;font-weight:600;">' + p.title + '</div>';
+        html += '<div style="font-size:12px;color:#999;">' + typeName + '</div>';
+        html += '</div>';
+        html += '<button onclick="event.stopPropagation();deleteMyPodcast(' + i + ')" style="background:none;border:none;font-size:16px;cursor:pointer;">🗑️</button>';
+        html += '</div>';
+    });
+    container.innerHTML = html;
 }
 
 function playMyPodcast(index) {
@@ -2512,15 +2517,18 @@ function renderMyVideos() {
         return;
     }
     
-    container.innerHTML = user.myVideos.map((v, i) => `
-        <div class="video-card" onclick="playMyVideo(${i})">
-            <div class="video-thumb">${v.type === 'video' ? '🎬' : '🎵'}<div class="video-play-overlay">▶</div></div>
-            <div class="video-info">
-                <div class="video-title">${v.title}</div>
-                <div class="video-source">${v.type === 'video' ? '视频' : '音频'}</div>
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    user.myVideos.forEach((v, i) => {
+        const icon = v.type === 'video' ? '🎬' : '🎵';
+        const typeName = v.type === 'video' ? '视频' : '音频';
+        html += '<div class="video-card" onclick="playMyVideo(' + i + ')">';
+        html += '<div class="video-thumb">' + icon + '<div class="video-play-overlay">▶</div></div>';
+        html += '<div class="video-info">';
+        html += '<div class="video-title">' + v.title + '</div>';
+        html += '<div class="video-source">' + typeName + '</div>';
+        html += '</div></div>';
+    });
+    container.innerHTML = html;
 }
 
 function playMyVideo(index) {
@@ -3363,18 +3371,20 @@ function renderPodcastList() {
     const list = podcastData[currentPodcastCategory] || [];
     const container = document.getElementById('podcast-list');
     
-    container.innerHTML = list.map((p, i) => `
-        <div class="topic-item ${i === currentAudioIndex ? 'active' : ''}" onclick="selectAudio(${i})" style="${i === currentAudioIndex ? 'border:2px solid #667eea;' : ''}">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:24px;">${p.icon}</span>
-                <div style="flex:1;">
-                    <div style="font-weight:600;font-size:14px;">${p.title}</div>
-                    <div style="font-size:11px;color:var(--text-light);">${p.author} · ${formatTime(p.duration)}</div>
-                </div>
-                <div style="color:var(--blue);">▶</div>
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    list.forEach((p, i) => {
+        const isActive = i === currentAudioIndex;
+        html += '<div class="topic-item" onclick="selectAudio(' + i + ')" style="padding:12px;background:' + (isActive ? 'rgba(102,126,234,0.1)' : 'white') + ';border-radius:12px;margin-bottom:8px;cursor:pointer;' + (isActive ? 'border:2px solid #667eea;' : '') + '">';
+        html += '<div style="display:flex;align-items:center;gap:10px;">';
+        html += '<div style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;">' + p.icon + '</div>';
+        html += '<div style="flex:1;">';
+        html += '<div style="font-weight:600;font-size:14px;">' + p.title + '</div>';
+        html += '<div style="font-size:11px;color:#999;">' + p.author + ' · ' + formatTime(p.duration) + '</div>';
+        html += '</div>';
+        html += '<div style="width:36px;height:36px;background:' + (isActive ? '#667eea' : '#f0f0f0') + ';border-radius:50%;display:flex;align-items:center;justify-content:center;color:' + (isActive ? 'white' : '#666') + ';font-size:14px;">' + (isActive ? '⏸' : '▶') + '</div>';
+        html += '</div></div>';
+    });
+    container.innerHTML = html;
 }
 
 function formatTime(seconds) {
