@@ -331,6 +331,29 @@ async function checkSystemUpdate() {
 
 function closeUpdateModal() {
 
+// ====== API Key管理 ======
+
+function showApiKeyModal() {
+
+    alert('💡 V32版本已内置智能回复功能，无需配置API Key即可使用AI功能！');
+
+}
+
+function closeApiKeyModal() {
+
+    document.getElementById('api-key-modal')?.classList.remove('show');
+
+}
+
+function saveApiKey() {
+
+    alert('API Key已保存');
+
+    closeApiKeyModal();
+
+}
+
+
 // ====== 学霸方法详情 ======
 function showMethodDetail(index) {
     const methods = methodData || [
@@ -2499,11 +2522,6 @@ async function aiCorrectAnswer(question, userAnswer) {
     return await callDeepSeek(`批改题目：${question}\n学生答案：${userAnswer}`);
 }
 
-async function aiExplainTopic(topic) {
-    return await callDeepSeek(`详细解说这道题：${topic}`);
-}
-
-function showApiKeyModal() {
     // 不再需要配置API Key，显示提示
     alert('💡 V32版本已内置智能回复功能，无需配置API Key即可使用AI功能！');
 }
@@ -2780,17 +2798,6 @@ function showAccountMenu() {
 }
 
 // ====== API Key弹窗 ======
-function showApiKeyModal() {
-    const savedKey = localStorage.getItem('deepseek_api_key') || '';
-    document.getElementById('api-key-input').value = savedKey;
-    document.getElementById('api-key-modal').classList.add('show');
-}
-function closeApiKeyModal() { document.getElementById('api-key-modal').classList.remove('show'); }
-function saveApiKey() {
-    const key = document.getElementById('api-key-input').value.trim();
-    localStorage.setItem('deepseek_api_key', key);
-    alert('API Key已保存');
-    closeApiKeyModal();
 }
 
 // ====== 飞书数字分身 ======
@@ -2910,55 +2917,6 @@ async function sendDeepSeekChat() {
     deepseekHistory.push({ role: 'assistant', content: response });
     messages.innerHTML += `<div class="chat-msg"><div class="chat-avatar">🤖</div><div class="chat-bubble">${response}</div></div>`;
     messages.scrollTop = messages.scrollHeight;
-}
-
-async function callDeepSeek(question) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || 'sk-8413f72a3f084fb08c84389555a76d37';
-    if (!apiKey) {
-        return getDeepSeekResponse(question);
-    }
-    
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一个专业的学习助手，擅长解答各学科问题。请用简洁易懂的语言回答。' },
-                    { role: 'user', content: question }
-                ]
-            })
-        });
-        
-        if (!response.ok) throw new Error('API调用失败');
-        
-        const data = await response.json();
-        return data.choices[0].message.content;
-    } catch(e) {
-        console.error('DeepSeek API error:', e);
-        return getDeepSeekResponse(question);
-    }
-}
-
-function getDeepSeekResponse(question) {
-    const q = question.toLowerCase();
-    if (q.includes('数学') || q.includes('计算')) {
-        return '数学学习需要注重基础概念的理解和大量的练习。建议你每天坚持做一定量的练习题，逐步提高解题能力。如果有具体题目可以发给我帮你分析！';
-    } else if (q.includes('语文') || q.includes('阅读')) {
-        return '语文学习重在积累和感悟。建议你多读经典文章，做好读书笔记，培养语感。可以准备一个摘抄本，记录好词好句。';
-    } else if (q.includes('英语')) {
-        return '英语学习需要多说多练。建议你每天背单词、听听力、读短文。可以使用艾宾浩斯记忆法来记忆单词，效果会更好！';
-    } else if (q.includes('物理')) {
-        return '物理学习要注重理解概念和原理，多做实验。建议你准备一个物理笔记本，记录重要公式和实验现象。';
-    } else if (q.includes('化学')) {
-        return '化学学习要重视实验和元素周期表。建议多做实验来加深理解，同时要记住重要的化学反应方程式。';
-    } else {
-        return '好的，我明白了。学习是一个循序渐进的过程，需要耐心和坚持。有什么具体的学科问题可以随时问我！';
-    }
 }
 
 function insertDeepSeekTemplate(text) {
@@ -4381,69 +4339,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 三次检查（1秒后）
     setTimeout(delayedInit, 1000);
 });
-
-// ====== 关于系统 ======
-function showAboutModal() {
-    document.getElementById('about-modal').classList.add('show');
-}
-function closeAboutModal() {
-    document.getElementById('about-modal').classList.remove('show');
-}
-
-// ====== 系统更新 ======
-const CURRENT_VERSION = 'V83';
-const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
-
-async function checkSystemUpdate() {
-    const statusEl = document.getElementById('update-status');
-    document.getElementById('update-modal').classList.add('show');
-    
-    statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🔄</div><div style="font-size:14px;color:#666;">正在检查更新...</div>';
-    
-    try {
-        const response = await fetch(GITHUB_REPO);
-        const commits = await response.json();
-        
-        if (commits && commits.length > 0) {
-            const latestCommit = commits[0];
-            const commitDate = new Date(latestCommit.commit.committer.date);
-            const commitMsg = latestCommit.commit.message;
-            
-            statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本：' + CURRENT_VERSION + '</div><div style="font-size:12px;color:#666;margin-bottom:8px;">最新更新：' + commitDate.toLocaleDateString('zh-CN') + '</div><div style="font-size:11px;color:#999;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:12px;">' + commitMsg + '</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-bottom:8px;">🔄 刷新页面获取最新版本</button>';
-        }
-    } catch (e) {
-        statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">⚠️</div><div style="font-size:14px;color:#666;">无法检查更新</div><div style="font-size:12px;color:#999;margin-top:8px;">请检查网络连接</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-top:12px;">🔄 手动刷新页面</button>';
-    }
-}
-
-function closeUpdateModal() {
-
-// ====== 学霸方法详情 ======
-function showMethodDetail(index) {
-    const methods = methodData || [
-        { title: "番茄工作法", icon: "⏱", content: "学习25分钟，休息5分钟，循环4个周期后长休息。" },
-        { title: "艾宾浩斯记忆法", icon: "🧠", content: "按照遗忘曲线复习：5分钟、30分钟、12小时、1天、2天、4天、7天、15天。" },
-        { title: "康奈尔笔记法", icon: "📝", content: "将笔记分为：右侧主栏（记录）、左侧副栏（线索）、底部总结栏（思考）。" },
-        { title: "费曼学习法", icon: "🎯", content: "选择一个概念，用自己的话教给别人，发现不足重新学习。" },
-        { title: "思维导图法", icon: "🗺️", content: "以中心主题发散，用关键词和图形将知识点串联起来。" }
-    ];
-    const method = methods[index] || methods[0];
-    const modal = document.getElementById("method-detail-modal");
-    if (modal) {
-        document.getElementById("method-detail-title").textContent = method.icon + " " + method.title;
-        document.getElementById("method-detail-content").textContent = method.content;
-        modal.classList.add("show");
-    } else {
-        alert(method.icon + " " + method.title + "\n\n" + method.content);
-    }
-}
-function closeMethodDetail() {
-    const modal = document.getElementById("method-detail-modal");
-    if (modal) modal.classList.remove("show");
-}
-    document.getElementById('update-modal').classList.remove('show');
-}
-</script>
 </script>
 
 </body>
