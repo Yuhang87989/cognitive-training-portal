@@ -2418,8 +2418,10 @@ function updateUI() {
 function showPage(pageId) {
     // 隐藏登录页面
     const loginPage = document.getElementById('page-login');
-    if (loginPage) loginPage.style.setProperty('display', 'none', 'important');
-            loginPage.style.setProperty('visibility', 'hidden', 'important');
+    if (loginPage) {
+        loginPage.style.setProperty('display', 'none', 'important');
+        loginPage.style.setProperty('visibility', 'hidden', 'important');
+    }
     
     // 隐藏所有普通页面
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
