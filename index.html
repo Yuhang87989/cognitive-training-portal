@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练V122</title>
+<title>认知训练V123</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -3056,18 +3056,19 @@ function renderTopics() {
     const endIndex = startIndex + TOPICS_PER_PAGE;
     const pageTopics = topicList.slice(startIndex, endIndex);
     
-    container.innerHTML = pageTopics.map(t => `
-        <div class="topic-item" onclick="showTopicDetail('${t.id}')">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <span style="font-size:24px;">${t.icon}</span>
-                <div style="flex:1;">
-                    <div style="font-weight:600;font-size:14px;">${t.title}</div>
-                    <div style="font-size:11px;color:var(--text-light);">${t.difficulty}</div>
-                </div>
-                <div style="color:var(--blue);">→</div>
-            </div>
-        </div>
-    `).join('');
+    let html = '';
+    pageTopics.forEach(t => {
+        html += '<div class="topic-item" onclick="showTopicDetail(\'' + t.id + '\')">';
+        html += '<div style="display:flex;align-items:center;gap:10px;">';
+        html += '<span style="font-size:24px;">' + t.icon + '</span>';
+        html += '<div style="flex:1;">';
+        html += '<div style="font-weight:600;font-size:14px;">' + t.title + '</div>';
+        html += '<div style="font-size:11px;color:#999;">' + t.difficulty + '</div>';
+        html += '</div>';
+        html += '<div style="color:#3377FF;">→</div>';
+        html += '</div></div>';
+    });
+    container.innerHTML = html;
     
     updateTopicPagination(topicList.length, totalPages);
 }
