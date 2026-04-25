@@ -326,7 +326,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V84';
+const CURRENT_VERSION = 'V85';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
@@ -1077,10 +1077,33 @@ function closeUpdateModal() {
             <div class="plan-task" onclick="toggleTask(this, 'week5')">
                 <div class="task-checkbox">✓</div>
                 <div style="flex:1;">
-                    <div style="font-size:14px;">Week5 - 综合整合</div>
-                    <div style="font-size:11px;color:var(--text-gray);">综合练习 × 5</div>
+                    <div style="font-size:14px;">Week5 - 系统性思维与守恒思维综合周</div>
+                    <div style="font-size:11px;color:var(--text-gray);">7天综合训练</div>
                 </div>
                 <div class="task-time">45分钟</div>
+            </div>
+            <div id="week5-details" style="display:none;padding-left:20px;margin-top:8px;">
+                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
+                    📅 Day1: 系统性思维专项 - 知识网络构建
+                </div>
+                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
+                    📅 Day2: 守恒思维入门 - 自然界的守恒奥秘
+                </div>
+                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
+                    📅 Day3: 守恒思维专项 - 守恒定律应用
+                </div>
+                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
+                    📅 Day4: 创新思维激发 - 突破思维定式
+                </div>
+                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
+                    📅 Day5: 高阶建模综合 - 真实问题挑战
+                </div>
+                <div style="font-size:12px;padding:8px 12px;background:rgba(102,126,234,0.1);border-radius:8px;margin-bottom:6px;">
+                    📅 Day6: 复习巩固 - 综合思维能力整合
+                </div>
+                <div style="font-size:12px;padding:8px 12px;background:rgba(67,233,123,0.1);border-radius:8px;">
+                    📊 Day7: Week5复盘报告与评估
+                </div>
             </div>
         </div>
     </div>
@@ -4288,6 +4311,12 @@ function toggleTask(el, taskId) {
     const checkbox = el.querySelector('.task-checkbox');
     checkbox.classList.toggle('checked');
     
+    
+    // 展开/收起详细内容
+    const details = document.getElementById(taskId + '-details');
+    if (details) {
+        details.style.display = details.style.display === 'none' ? 'block' : 'none';
+    }
     const data = loadData();
     const user = data.users.find(u => u.id === data.currentUser);
     if (user) {
@@ -4502,7 +4531,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V84';
+const CURRENT_VERSION = 'V85';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
@@ -4671,7 +4700,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V84';
+const CURRENT_VERSION = 'V85';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
@@ -4787,7 +4816,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V84';
+const CURRENT_VERSION = 'V85';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
