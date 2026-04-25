@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练V117</title>
+<title>认知训练V118</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -265,7 +265,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <!-- 主页 -->
 <div id="page-home" class="page active" style="display:block;">
 
-<!-- V117: 首页登录卡片 -->
+<!-- V118: 首页登录卡片 -->
 <div id="home-login-overlay" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#E8F4FF,#D4ECFF);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
     <div style="background:white;border-radius:20px;padding:24px;width:100%;max-width:340px;box-shadow:0 4px 20px rgba(51,119,255,0.2);">
         <div style="text-align:center;margin-bottom:20px;">
@@ -2395,26 +2395,33 @@ function updateUI() {
 
 // ====== 页面导航 ======
 function showPage(pageId) {
-    // 隐藏登录页面
-    const loginPage = document.getElementById('page-login');
-    if (loginPage) {
-        loginPage.style.setProperty('display', 'none', 'important');
-        loginPage.style.setProperty('visibility', 'hidden', 'important');
-    }
+    console.log('[V118] showPage:', pageId);
     
-    // 隐藏所有普通页面
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // 隐藏登录遮罩
+    const loginOverlay = document.getElementById('home-login-overlay');
+    if (loginOverlay) loginOverlay.style.display = 'none';
+    
+    // 隐藏所有页面
+    document.querySelectorAll('.page').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none';
+    });
     
     // 显示目标页面
     const page = document.getElementById('page-' + pageId);
-    if (page) page.classList.add('active');
+    if (page) {
+        page.classList.add('active');
+        page.style.display = 'block';
+    }
     
+    // 更新底部导航
     document.querySelectorAll('.bottom-nav .nav-item').forEach((n, i) => {
         const navMap = {home:0, avatar:1, deepseek:1, ai:1, practice:2, games:2, map:3, plan:4, topics:4, method:4, thinking:4, podcast:4, video:4, wrong:4, 'ai-chat':1};
         n.classList.toggle('active', navMap[pageId] === i);
     });
     
-    document.getElementById('difficulty-modal').classList.remove('show');
+    const diffModal = document.getElementById('difficulty-modal');
+    if (diffModal) diffModal.classList.remove('show');
     
     if (pageId === 'topics') renderTopics();
     if (pageId === 'wrong') renderWrongTopics();
@@ -4436,50 +4443,65 @@ function initLoginPageProtection() {
 
 // ====== V33: 延迟初始化 - 等待部署系统完成修改 ======
 function delayedInit() {
-    console.log('[V117] 初始化开始');
+    console.log('[V116] 开始初始化...');
     
+    // 先显示首页，防止白屏
     const homePage = document.getElementById('page-home');
-    const loginOverlay = document.getElementById('home-login-overlay');
-    
     if (homePage) {
-        homePage.style.display = 'block';
         homePage.classList.add('active');
+        homePage.style.display = 'block';
+    }
+    
+    // 隐藏登录页
+    const loginPage = document.getElementById('page-login');
+    if (loginPage) {
+        loginPage.style.display = 'none';
+        loginPage.classList.remove('active');
     }
     
     try {
         let data = loadData();
+        console.log('[V116] 加载数据完成, 用户数:', data.users?.length);
         
-        // 难度滑块事件
-        const diffSlider = document.getElementById('home-difficulty');
-        if (diffSlider) {
-            diffSlider.addEventListener('input', function() {
-                document.getElementById('home-diff-display').textContent = 'Lv.' + this.value;
-            });
+        // 如果没有用户数据，创建默认用户
+        if (!data.users || data.users.length === 0) {
+            data = {
+                users: [{
+                    id: 'default_user',
+                    name: '学习者',
+                    grade: 7,
+                    difficulty: 2,
+                    score: 0,
+                    streak: 0,
+                    wrongTopics: [],
+                    completedTopics: [],
+                    createdAt: Date.now()
+                }],
+                currentUser: 'default_user'
+            };
+            saveData(data);
+            console.log('[V116] 创建默认用户');
         }
         
-        // 显示已有用户
-        const userListDiv = document.getElementById('home-user-list');
-        if (userListDiv && data.users && data.users.length > 0) {
-            userListDiv.innerHTML = '已有学习者: ' + data.users.map(u => u.name).join('、');
+        // 确保有当前用户
+        if (!data.currentUser && data.users.length > 0) {
+            data.currentUser = data.users[0].id;
+            saveData(data);
         }
         
-        // 检查登录状态
-        if (!data.currentUser || data.users.length === 0) {
-            if (loginOverlay) loginOverlay.style.display = 'flex';
-        } else {
-            if (loginOverlay) loginOverlay.style.display = 'none';
-            updateUI();
-        }
+        updateUI();
         
-        console.log('[V117] 初始化完成, 用户:', data.currentUser);
     } catch(e) {
-        console.error('[V117] 初始化错误:', e);
-        if (loginOverlay) loginOverlay.style.display = 'flex';
+        console.error('[V116] 初始化错误:', e);
     }
+    
+    // 初始化播客
+    try { renderPodcastList(); } catch(e) {}
+    try { updatePodcastDisplay(); } catch(e) {}
 }
 
 
-// V117: 首页登录处理
+// V118: 首页登录处理
 function handleHomeLogin() {
     const name = document.getElementById('home-name').value.trim();
     const grade = parseInt(document.getElementById('home-grade').value);
@@ -4501,7 +4523,6 @@ function handleHomeLogin() {
     
     document.getElementById('home-login-overlay').style.display = 'none';
     updateUI();
-    alert('欢迎 ' + name + '！');
 }
 
 // ====== 页面初始化 ======
