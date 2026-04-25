@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练V123</title>
+<title>认知训练V124</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -3878,10 +3878,22 @@ function playExternalVideo(url) {
 }
 
 function closeVideoPlayer() {
+    console.log('关闭视频播放器');
     const modal = document.getElementById('video-player-modal');
     const video = document.getElementById('main-video-player');
-    video.pause();
-    video.src = '';
+    const container = document.getElementById('video-container');
+    
+    // 暂停并清除视频
+    if (video) {
+        video.pause();
+        video.src = '';
+    }
+    
+    // 清除可能的iframe
+    if (container) {
+        container.innerHTML = '<video id="main-video-player" controls style="width:100%;height:100%;">您的浏览器不支持视频播放</video>';
+    }
+    
     modal.classList.remove('show');
 }
 
@@ -5136,11 +5148,11 @@ function closeUpdateModal() {
 
 
 <!-- V119: 视频播放器模态框 -->
-<div class="modal-overlay" id="video-player-modal">
-    <div class="modal-content" style="max-width:90%;max-height:90vh;padding:0;background:#000;border-radius:16px;overflow:hidden;">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#1a1a1a;">
+<div class="modal-overlay" id="video-player-modal" onclick="if(event.target===this)closeVideoPlayer()">
+    <div class="modal-content" style="max-width:90%;max-height:90vh;padding:0;background:#000;border-radius:16px;overflow:hidden;position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#1a1a1a;position:relative;z-index:10;">
             <span id="video-player-title" style="color:white;font-size:14px;">视频播放</span>
-            <button onclick="closeVideoPlayer()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">✕</button>
+            <button onclick="closeVideoPlayer()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:20px;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div id="video-container" style="width:100%;aspect-ratio:16/9;background:#000;">
             <video id="main-video-player" controls style="width:100%;height:100%;">
