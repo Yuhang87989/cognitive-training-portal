@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练V105</title>
+<title>认知训练V33</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -267,7 +267,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="login-content">
         <div class="login-logo-area">
             <div class="login-avatar">🧠</div>
-            <div class="login-title">认知训练V105</div>
+            <div class="login-title">认知训练V33</div>
             <div class="login-subtitle">青少年注意力和记忆力训练</div>
         </div>
         <div class="login-card">
@@ -525,7 +525,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         </div>
         <div style="padding:12px;border-top:1px solid #eee;display:flex;gap:8px;align-items:center;">
             <button onclick="showDeepSeekPhoto()" style="background:none;border:none;font-size:20px;cursor:pointer;">📷</button>
-            <button onclick="toggleDeepSeekVoice()" style="background:none;border:none;font-size:20px;cursor:pointer;">🎤</button>
             <input type="text" class="chat-input" id="deepseek-chat-input" placeholder="输入问题..." style="flex:1;" onkeypress="if(event.key==='Enter')sendDeepSeekChat()"/>
             <button class="chat-send" onclick="sendDeepSeekChat()">发送</button>
         </div>
@@ -981,14 +980,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 </div>
                 <div class="task-time">30分钟</div>
             </div>
-            <div class="plan-task" onclick="toggleTask(this, 'week5')">
-                <div class="task-checkbox">✓</div>
-                <div style="flex:1;">
-                    <div style="font-size:14px;">Week5 - 综合提升</div>
-                    <div style="font-size:11px;color:var(--text-gray);">知识整合 × 4 | 综合应用 × 3</div>
-                </div>
-                <div class="task-time">45分钟</div>
-            </div>
             <div class="plan-task" onclick="toggleTask(this, 'week6')">
                 <div class="task-checkbox">✓</div>
                 <div style="flex:1;">
@@ -1072,19 +1063,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         </select>
     </div>
     <div class="card">
-        <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">📷 拍照上传错题</div>
-        <p style="color:#666;font-size:12px;margin-bottom:12px;">拍下不会的题目，AI帮你分析讲解</p>
-        <div class="upload-zone" onclick="document.getElementById('wrong-photo-input').click()" style="margin-bottom:0;">
-            <div class="upload-icon">📸</div>
-            <div class="upload-text">点击拍照或选择图片</div>
-        </div>
-        <input type="file" id="wrong-photo-input" accept="image/*" capture="environment" style="display:none;" onchange="handleWrongPhoto(event)">
-        <div id="wrong-photo-preview" style="display:none;margin-top:12px;">
-            <img id="wrong-photo-img" style="width:100%;border-radius:12px;">
-            <button onclick="analyzeWrongPhoto()" style="width:100%;padding:12px;background:var(--gradient-blue);border:none;border-radius:10px;color:white;font-size:14px;cursor:pointer;margin-top:12px;">🔍 AI分析错题</button>
-        </div>
-    </div>
-    <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <div style="font-size:14px;font-weight:bold;">📋 错题列表</div>
             <div style="font-size:12px;color:var(--text-gray);">共 <span id="wrong-count">0</span> 道</div>
@@ -1149,13 +1127,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                     <div class="method-title">费曼学习法</div>
                 </div>
                 <div class="method-content">选择一个概念，用自己的话教给别人，发现不足重新学习，直到能用简单语言解释清楚。</div>
-            </div>
-            <div class="method-card" onclick="showMethodDetail(4)">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-                    <span style="font-size:28px;">🗺️</span>
-                    <div class="method-title">思维导图法</div>
-                </div>
-                <div class="method-content">中心主题+分支+关键词，可视化思维，便于记忆和理解各知识点之间的关系。</div>
             </div>
 
             <div class="method-card" onclick="showMethodDetail(5)">
@@ -2058,8 +2029,6 @@ let cameraStream = null;
 let currentUploadType = '';
 let currentGradeTab = 'grade5';
 let currentSubjectTab = 'math';
-let currentTopicPage = 1;
-const TOPICS_PER_PAGE = 10;
 
 // ====== 游戏数据 ======
 const gameConfig = {
@@ -2599,19 +2568,6 @@ function insertDeepSeekTemplate(text) {
     document.getElementById('deepseek-chat-input').focus();
 }
 
-function toggleDeepSeekVoice() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('您的浏览器不支持语音输入');
-        return;
-    }
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = 'zh-CN';
-    recognition.onresult = (event) => {
-        document.getElementById('deepseek-chat-input').value = event.results[0][0].transcript;
-    };
-    recognition.start();
-}
-
 function clearDeepSeekChat() {
     if (!confirm('确定要清空对话记录吗？')) return;
     deepseekHistory = [];
@@ -3088,118 +3044,6 @@ function startDailyThinking() {
     const types = ['logic', 'creative', 'critical', 'system'];
     const type = types[Math.floor(Math.random() * types.length)];
     startThinkingTrain(type);
-}
-
-// ====== 学霸方法详解 ======
-// 学霸方法训练题库
-const methodTrainingData = {
-    0: { // 番茄工作法
-        title: '番茄工作法训练',
-        questions: [
-            {q: '番茄工作法的一个工作周期是多久？', opts: ['15分钟', '25分钟', '30分钟', '45分钟'], a: 1},
-            {q: '完成4个番茄钟后应该休息多久？', opts: ['5分钟', '10分钟', '15-30分钟', '1小时'], a: 2},
-            {q: '番茄工作法的主要目的是什么？', opts: ['提高记忆力', '提高专注力', '提高阅读速度', '提高计算能力'], a: 1},
-            {q: '一个番茄钟内可以做什么？', opts: ['多个任务', '一个任务', '任意任务', '只看不做'], a: 1},
-            {q: '番茄工作法的发明者是？', opts: ['艾宾浩斯', '费曼', '弗朗西斯科·西里洛', '康奈尔'], a: 2}
-        ]
-    },
-    1: { // 艾宾浩斯记忆法
-        title: '艾宾浩斯记忆法训练',
-        questions: [
-            {q: '艾宾浩斯遗忘曲线的核心发现是？', opts: ['记忆会增强', '遗忘先快后慢', '记忆永久保持', '遗忘速度恒定'], a: 1},
-            {q: '第一次复习应该在学习后多久？', opts: ['5分钟', '30分钟', '1小时', '1天'], a: 0},
-            {q: '艾宾浩斯记忆法的关键是？', opts: ['只学一次', '及时复习', '多做题', '看视频'], a: 1},
-            {q: '第七次复习的时间节点是？', opts: ['7天', '15天', '30天', '60天'], a: 2},
-            {q: '艾宾浩斯是哪国心理学家？', opts: ['美国', '英国', '德国', '法国'], a: 2}
-        ]
-    },
-    2: { // 康奈尔笔记法
-        title: '康奈尔笔记法训练',
-        questions: [
-            {q: '康奈尔笔记法将页面分为几个区域？', opts: ['2个', '3个', '4个', '5个'], a: 1},
-            {q: '康奈尔笔记法的右侧区域用于？', opts: ['总结', '记录主要内容', '写关键词', '画图'], a: 1},
-            {q: '底部区域的作用是？', opts: ['写标题', '总结和思考', '画图', '记录细节'], a: 1},
-            {q: '康奈尔笔记法的发明大学是？', opts: ['哈佛大学', '康奈尔大学', '斯坦福大学', 'MIT'], a: 1},
-            {q: '左侧区域应该记录什么？', opts: ['详细内容', '关键词和线索', '日期', '画图'], a: 1}
-        ]
-    },
-    3: { // 费曼学习法
-        title: '费曼学习法训练',
-        questions: [
-            {q: '费曼学习法的核心理念是？', opts: ['死记硬背', '以教代学', '多做题', '看视频'], a: 1},
-            {q: '费曼学习法的第一步是？', opts: ['做题', '选择概念', '教别人', '总结'], a: 1},
-            {q: '费曼学习法要求用什么语言讲解？', opts: ['专业术语', '简单易懂的语言', '外语', '书面语'], a: 1},
-            {q: '费曼学习法的发明者是？', opts: ['心理学家', '物理学家', '教育学家', '数学家'], a: 1},
-            {q: '讲解过程中卡住说明什么？', opts: ['理解透彻', '理解有漏洞', '题目太难', '需要放弃'], a: 1}
-        ]
-    },
-    4: { // 思维导图法
-        title: '思维导图法训练',
-        questions: [
-            {q: '思维导图的中心应该放什么？', opts: ['关键词', '核心主题', '标题', '日期'], a: 1},
-            {q: '思维导图使用什么结构？', opts: ['线性结构', '放射状结构', '表格结构', '列表结构'], a: 1},
-            {q: '思维导图的主要优点是？', opts: ['省时间', '可视化便于记忆', '字数少', '格式简单'], a: 1},
-            {q: '思维导图的发明者是？', opts: ['艾宾浩斯', '东尼·博赞', '费曼', '康奈尔'], a: 1},
-            {q: '分支上应该写什么？', opts: ['长句', '关键词', '数字', '符号'], a: 1}
-        ]
-    },
-    5: { // SQ3R阅读法
-        title: 'SQ3R阅读法训练',
-        questions: [
-            {q: 'SQ3R中的S代表什么？', opts: ['Study学习', 'Survey浏览', 'Select选择', 'Search搜索'], a: 1},
-            {q: 'SQ3R中的Q代表什么？', opts: ['Quit退出', 'Quick快速', 'Question提问', 'Quote引用'], a: 2},
-            {q: 'SQ3R共有几个步骤？', opts: ['3个', '4个', '5个', '6个'], a: 2},
-            {q: '第三步Read的作用是？', opts: ['快速浏览', '仔细阅读', '背诵', '做题'], a: 1},
-            {q: 'SQ3R适合哪种阅读？', opts: ['小说', '教科书', '新闻', '漫画'], a: 1}
-        ]
-    },
-    6: { // 时间管理法
-        title: '时间管理法训练',
-        questions: [
-            {q: '四象限法则将任务分为几类？', opts: ['2类', '3类', '4类', '5类'], a: 2},
-            {q: '最重要最紧急的任务应该？', opts: ['最后做', '优先做', '让别人做', '不做'], a: 1},
-            {q: '重要但不紧急的任务应该？', opts: ['立刻做', '计划安排', '不做', '交给别人'], a: 1},
-            {q: '四象限法则的提出者是？', opts: ['艾森豪威尔', '费曼', '康奈尔', '艾宾浩斯'], a: 0},
-            {q: '最应该减少的是哪种任务？', opts: ['重要紧急', '重要不紧急', '紧急不重要', '不重要不紧急'], a: 2}
-        ]
-    },
-    7: { // 高效笔记法
-        title: '高效笔记法训练',
-        questions: [
-            {q: '课堂笔记应该主要记什么？', opts: ['所有内容', '要点和关键词', '老师原话', '板书内容'], a: 1},
-            {q: '笔记应该在什么时候整理？', opts: ['一周后', '课后立刻', '考前', '不用整理'], a: 1},
-            {q: '高效笔记的三个要素是？', opts: ['快、准、全', '大纲、关键词、图表', '颜色、字体、格式', '时间、地点、人物'], a: 1},
-            {q: '听课时记笔记的正确做法是？', opts: ['逐字记录', '只记要点', '不记笔记', '抄同学笔记'], a: 1},
-            {q: '定期回顾笔记的目的是？', opts: ['检查错字', '加深记忆', '整理格式', '删除内容'], a: 1}
-        ]
-    },
-    8: { // 考试策略
-        title: '考试策略训练',
-        questions: [
-            {q: '考试时应该按什么顺序答题？', opts: ['从前到后', '从后到前', '先易后难', '随机'], a: 2},
-            {q: '审题时最重要的是？', opts: ['快速读完', '理解题意', '记住题目', '看分值'], a: 1},
-            {q: '考试结束后应该？', opts: ['立刻交卷', '检查验算', '睡觉', '看别人'], a: 1},
-            {q: '遇到不会的题应该？', opts: ['空着', '先做其他题', '一直思考', '放弃'], a: 1},
-            {q: '考试时间不够时应该？', opts: ['放弃', '抢答', '优先做分值高的题', '随便写'], a: 2}
-        ]
-    }
-};
-function showMethodDetail(index) {
-    const methods = [
-        {icon:'⏱', title:'番茄工作法', content:'学习25分钟，休息5分钟，循环4个周期后长休息。提高专注力，避免疲劳。'},
-        {icon:'🧠', title:'艾宾浩斯记忆法', content:'按照遗忘曲线复习：5分钟、30分钟、12小时、1天、2天、4天、7天、15天。'},
-        {icon:'📝', title:'康奈尔笔记法', content:'将笔记分为：右侧主栏（记录）、左侧副栏（线索）、底部总结栏（思考）。'},
-        {icon:'🎯', title:'费曼学习法', content:'选择一个概念，用自己的话教给别人，发现不足重新学习。'},
-        {icon:'🗺️', title:'思维导图法', content:'中心主题+分支+关键词，可视化思维，便于记忆和理解。'},
-        {icon:'📖', title:'SQ3R阅读法', content:'浏览、提问、阅读、复述、复习，系统化阅读理解。'},
-        {icon:'⏰', title:'时间管理法', content:'四象限法则：重要紧急、重要不紧急、紧急不重要、不重要不紧急。'},
-        {icon:'✍️', title:'高效笔记法', content:'大纲笔记+关键词+图表结合，听课时只记要点，课后整理完善。'},
-        {icon:'🏆', title:'考试策略', content:'先易后难、审题仔细、合理分配时间、检查验算。'}
-    ];
-    const method = methods[index];
-    if (method) {
-        alert(method.icon + ' ' + method.title + '\n\n' + method.content);
-    }
 }
 
 function playMethodVideo(index) {
@@ -4195,7 +4039,7 @@ function closeAboutModal() {
 }
 
 // ====== 系统更新 ======
-const CURRENT_VERSION = 'V105';
+const CURRENT_VERSION = 'V104';
 const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
 
 async function checkSystemUpdate() {
