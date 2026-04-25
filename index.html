@@ -330,6 +330,30 @@ async function checkSystemUpdate() {
 }
 
 function closeUpdateModal() {
+
+// ====== 学霸方法详情 ======
+function showMethodDetail(index) {
+    const methods = methodData || [
+        { title: "番茄工作法", icon: "⏱", content: "学习25分钟，休息5分钟，循环4个周期后长休息。" },
+        { title: "艾宾浩斯记忆法", icon: "🧠", content: "按照遗忘曲线复习：5分钟、30分钟、12小时、1天、2天、4天、7天、15天。" },
+        { title: "康奈尔笔记法", icon: "📝", content: "将笔记分为：右侧主栏（记录）、左侧副栏（线索）、底部总结栏（思考）。" },
+        { title: "费曼学习法", icon: "🎯", content: "选择一个概念，用自己的话教给别人，发现不足重新学习。" },
+        { title: "思维导图法", icon: "🗺️", content: "以中心主题发散，用关键词和图形将知识点串联起来。" }
+    ];
+    const method = methods[index] || methods[0];
+    const modal = document.getElementById("method-detail-modal");
+    if (modal) {
+        document.getElementById("method-detail-title").textContent = method.icon + " " + method.title;
+        document.getElementById("method-detail-content").textContent = method.content;
+        modal.classList.add("show");
+    } else {
+        alert(method.icon + " " + method.title + "\n\n" + method.content);
+    }
+}
+function closeMethodDetail() {
+    const modal = document.getElementById("method-detail-modal");
+    if (modal) modal.classList.remove("show");
+}
     document.getElementById('update-modal').classList.remove('show');
 }
 </script>
@@ -4393,293 +4417,34 @@ async function checkSystemUpdate() {
 }
 
 function closeUpdateModal() {
-    document.getElementById('update-modal').classList.remove('show');
-}
-</script>
 
-<!-- ====== V33: 强制修复脚本 - 防部署系统干扰 ====== -->
-<!-- 此脚本在DOM加载完成后执行，确保登录页控制不受部署系统影响 -->
-<script>
-// V33多重保险机制 - 确保登录页面显示控制正常工作
-(function(){
-    // 存储键名（用于版本检测）
-    var V33_KEY = 'cognitive_training_v33_active';
-    
-    // 强制执行修复
-    var forceFix = function(){
-        var loginPage = document.getElementById('page-login');
-        if (!loginPage) return;
-        
-        try {
-            var data = localStorage.getItem('cognitive_training_v33') || localStorage.getItem('cognitive_training_v32');
-            if (data) {
-                try {
-                    var parsed = JSON.parse(data);
-                    if (parsed && parsed.currentUser && parsed.users && parsed.users.find(function(u){return u.id === parsed.currentUser;})) {
-                        // 已登录用户 - 隐藏登录页
-                        loginPage.classList.remove('active');
-                        loginPage.style.setProperty('display', 'none', 'important');
-            loginPage.style.setProperty('visibility', 'hidden', 'important');
-                        loginPage.style.visibility = 'hidden';
-                        loginPage.style.position = 'absolute';
-                        loginPage.style.left = '-9999px';
-                        loginPage.style.opacity = '0';
-                        localStorage.setItem(V33_KEY, 'hidden');
-                    } else {
-                        // 无用户 - 显示登录页
-                        loginPage.classList.add('active');
-                        loginPage.style.setProperty('display', 'flex', 'important');
-            loginPage.style.setProperty('visibility', 'visible', 'important');
-                        loginPage.style.visibility = 'visible';
-                        loginPage.style.position = 'relative';
-                        loginPage.style.left = 'auto';
-                        loginPage.style.opacity = '1';
-                        localStorage.setItem(V33_KEY, 'show');
-                    }
-                } catch(e) {
-                    // 解析失败，显示登录页
-                    loginPage.classList.add('active');
-                    loginPage.style.setProperty('display', 'flex', 'important');
-            loginPage.style.setProperty('visibility', 'visible', 'important');
-                    loginPage.style.visibility = 'visible';
-                    loginPage.style.position = 'relative';
-                    localStorage.setItem(V33_KEY, 'show');
-                }
-            } else {
-                // 无数据 - 显示登录页
-                loginPage.classList.add('active');
-                loginPage.style.setProperty('display', 'flex', 'important');
-            loginPage.style.setProperty('visibility', 'visible', 'important');
-                loginPage.style.visibility = 'visible';
-                loginPage.style.position = 'relative';
-                localStorage.setItem(V33_KEY, 'show');
-            }
-        } catch(e) {
-            console.log('[V33] 强制修复遇到错误:', e);
-        }
-    };
-    
-    // 添加样式覆盖
-    var addOverrideStyle = function(){
-        var style = document.createElement('style');
-        style.id = 'v33-override-style';
-        style.textContent = [
-            '.login-page{display:none !important;;;;opacity:0 !important;pointer-events:none !important}',
-            '.login-page.active{display:flex !important;visibility:visible !important;position:relative !important;left:auto !important;opacity:1 !important;pointer-events:auto !important}'
-        ].join('\n');
-        document.head.appendChild(style);
-    };
-    
-    // 立即执行
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function(){
-            forceFix();
-            addOverrideStyle();
-        });
+// ====== 学霸方法详情 ======
+function showMethodDetail(index) {
+    const methods = methodData || [
+        { title: "番茄工作法", icon: "⏱", content: "学习25分钟，休息5分钟，循环4个周期后长休息。" },
+        { title: "艾宾浩斯记忆法", icon: "🧠", content: "按照遗忘曲线复习：5分钟、30分钟、12小时、1天、2天、4天、7天、15天。" },
+        { title: "康奈尔笔记法", icon: "📝", content: "将笔记分为：右侧主栏（记录）、左侧副栏（线索）、底部总结栏（思考）。" },
+        { title: "费曼学习法", icon: "🎯", content: "选择一个概念，用自己的话教给别人，发现不足重新学习。" },
+        { title: "思维导图法", icon: "🗺️", content: "以中心主题发散，用关键词和图形将知识点串联起来。" }
+    ];
+    const method = methods[index] || methods[0];
+    const modal = document.getElementById("method-detail-modal");
+    if (modal) {
+        document.getElementById("method-detail-title").textContent = method.icon + " " + method.title;
+        document.getElementById("method-detail-content").textContent = method.content;
+        modal.classList.add("show");
     } else {
-        forceFix();
-        addOverrideStyle();
-    }
-    
-    // 延迟500ms再次执行
-    setTimeout(forceFix, 500);
-    
-    // 延迟1秒再次执行
-    setTimeout(forceFix, 1000);
-    
-    // 延迟2秒再次执行
-    setTimeout(forceFix, 2000);
-    
-    // 每3秒周期性检查
-    setInterval(forceFix, 3000);
-    
-    // MutationObserver监听DOM变化
-    if (typeof MutationObserver !== 'undefined') {
-        var observer = new MutationObserver(function(mutations){
-            mutations.forEach(function(mutation){
-                if (mutation.target && mutation.target.id === 'page-login') {
-                    forceFix();
-                }
-            });
-        });
-        
-        // 等待loginPage元素出现
-        var observeLoginPage = function(){
-            var loginPage = document.getElementById('page-login');
-            if (loginPage) {
-                observer.observe(loginPage, { 
-                    attributes: true, 
-                    attributeFilter: ['class', 'style', 'id'] 
-                });
-                forceFix();
-            } else {
-                setTimeout(observeLoginPage, 100);
-            }
-        };
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', observeLoginPage);
-        } else {
-            observeLoginPage();
-        }
-    }
-    
-    console.log('[V33] 强制修复脚本已加载');
-})();
-
-// ====== 关于系统 ======
-function showAboutModal() {
-    document.getElementById('about-modal').classList.add('show');
-}
-function closeAboutModal() {
-    document.getElementById('about-modal').classList.remove('show');
-}
-
-// ====== 系统更新 ======
-const CURRENT_VERSION = 'V83';
-const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
-
-async function checkSystemUpdate() {
-    const statusEl = document.getElementById('update-status');
-    document.getElementById('update-modal').classList.add('show');
-    
-    statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🔄</div><div style="font-size:14px;color:#666;">正在检查更新...</div>';
-    
-    try {
-        const response = await fetch(GITHUB_REPO);
-        const commits = await response.json();
-        
-        if (commits && commits.length > 0) {
-            const latestCommit = commits[0];
-            const commitDate = new Date(latestCommit.commit.committer.date);
-            const commitMsg = latestCommit.commit.message;
-            
-            statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本：' + CURRENT_VERSION + '</div><div style="font-size:12px;color:#666;margin-bottom:8px;">最新更新：' + commitDate.toLocaleDateString('zh-CN') + '</div><div style="font-size:11px;color:#999;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:12px;">' + commitMsg + '</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-bottom:8px;">🔄 刷新页面获取最新版本</button>';
-        }
-    } catch (e) {
-        statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">⚠️</div><div style="font-size:14px;color:#666;">无法检查更新</div><div style="font-size:12px;color:#999;margin-top:8px;">请检查网络连接</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-top:12px;">🔄 手动刷新页面</button>';
+        alert(method.icon + " " + method.title + "\n\n" + method.content);
     }
 }
-
-function closeUpdateModal() {
+function closeMethodDetail() {
+    const modal = document.getElementById("method-detail-modal");
+    if (modal) modal.classList.remove("show");
+}
     document.getElementById('update-modal').classList.remove('show');
 }
 </script>
-
-<script>
-// V33 强制初始化脚本 - 使用MutationObserver绕过部署系统修改
-(function() {
-    'use strict';
-    
-    // 强制修复登录页面样式
-    function forceFixLoginPage() {
-        var loginPage = document.getElementById('page-login');
-        if (!loginPage) return;
-        
-        try {
-            var dataStr = localStorage.getItem('trainingAppData');
-            var data = dataStr ? JSON.parse(dataStr) : null;
-            var isLoggedIn = data && data.currentUser && data.users && data.users.find(function(u) { return u.id === data.currentUser; });
-            
-            if (isLoggedIn) {
-                loginPage.style.setProperty('display', 'none', 'important');
-                loginPage.style.setProperty('visibility', 'hidden', 'important');
-                loginPage.style.setProperty('position', 'absolute', 'important');
-                loginPage.style.setProperty('left', '-9999px', 'important');
-            } else {
-                loginPage.style.setProperty('display', 'flex', 'important');
-                loginPage.style.setProperty('visibility', 'visible', 'important');
-                loginPage.style.setProperty('position', 'relative', 'important');
-                loginPage.style.setProperty('left', 'auto', 'important');
-            }
-        } catch(e) {
-            loginPage.style.setProperty('display', 'flex', 'important');
-            loginPage.style.setProperty('visibility', 'visible', 'important');
-        }
-    }
-    
-    // 创建MutationObserver监听样式变化
-    function setupObserver() {
-        var loginPage = document.getElementById('page-login');
-        if (!loginPage) return;
-        
-        var observer = new MutationObserver(function() {
-            forceFixLoginPage();
-        });
-        
-        observer.observe(loginPage, { attributes: true, attributeFilter: ['style', 'class'] });
-        
-        var bodyObserver = new MutationObserver(function() {
-            forceFixLoginPage();
-        });
-        
-        bodyObserver.observe(document.body, { childList: true, subtree: true });
-    }
-    
-    // 多次重试确保生效
-    var retryCount = 0;
-    function initWithRetry() {
-        retryCount++;
-        forceFixLoginPage();
-        if (retryCount < 10) setTimeout(initWithRetry, 200);
-    }
-    
-    // 立即执行
-    forceFixLoginPage();
-    
-    // DOM加载完成后设置监听
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setupObserver();
-            setTimeout(initWithRetry, 100);
-        });
-    } else {
-        setupObserver();
-        setTimeout(initWithRetry, 100);
-    }
-    
-    window.addEventListener('load', function() {
-        setTimeout(forceFixLoginPage, 500);
-    });
-})();
-
-// ====== 关于系统 ======
-function showAboutModal() {
-    document.getElementById('about-modal').classList.add('show');
-}
-function closeAboutModal() {
-    document.getElementById('about-modal').classList.remove('show');
-}
-
-// ====== 系统更新 ======
-const CURRENT_VERSION = 'V83';
-const GITHUB_REPO = 'https://api.github.com/repos/Yuhang87989/cognitive-training-portal/commits?per_page=1';
-
-async function checkSystemUpdate() {
-    const statusEl = document.getElementById('update-status');
-    document.getElementById('update-modal').classList.add('show');
-    
-    statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🔄</div><div style="font-size:14px;color:#666;">正在检查更新...</div>';
-    
-    try {
-        const response = await fetch(GITHUB_REPO);
-        const commits = await response.json();
-        
-        if (commits && commits.length > 0) {
-            const latestCommit = commits[0];
-            const commitDate = new Date(latestCommit.commit.committer.date);
-            const commitMsg = latestCommit.commit.message;
-            
-            statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">当前版本：' + CURRENT_VERSION + '</div><div style="font-size:12px;color:#666;margin-bottom:8px;">最新更新：' + commitDate.toLocaleDateString('zh-CN') + '</div><div style="font-size:11px;color:#999;background:#f5f5f5;padding:8px;border-radius:8px;margin-bottom:12px;">' + commitMsg + '</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-bottom:8px;">🔄 刷新页面获取最新版本</button>';
-        }
-    } catch (e) {
-        statusEl.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">⚠️</div><div style="font-size:14px;color:#666;">无法检查更新</div><div style="font-size:12px;color:#999;margin-top:8px;">请检查网络连接</div><button class="login-btn login-btn-primary" onclick="location.reload()" style="margin-top:12px;">🔄 手动刷新页面</button>';
-    }
-}
-
-function closeUpdateModal() {
-    document.getElementById('update-modal').classList.remove('show');
-}
 </script>
+
 </body>
 </html>
