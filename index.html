@@ -2639,7 +2639,7 @@ async function sendDeepSeekChat() {
 }
 
 async function callDeepSeek(question) {
-    const apiKey = localStorage.getItem('deepseek_api_key');
+    const apiKey = localStorage.getItem('deepseek_api_key') || 'sk-8413f72a3f084fb08c84389555a76d37';
     if (!apiKey) {
         return getDeepSeekResponse(question);
     }
