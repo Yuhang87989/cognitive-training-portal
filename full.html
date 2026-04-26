@@ -10,8 +10,6 @@
 body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;margin:0 auto}
 .header{background:linear-gradient(135deg,var(--blue),#4A80F5);color:white;padding:16px}
 .header-top{display:flex;justify-content:space-between;align-items:center}
-.app-logo{font-size:24px}
-.app-title{font-size:18px;font-weight:bold;margin-left:8px}
 .user-avatar{width:36px;height:36px;background:linear-gradient(135deg,#FFD4B8,#FFB6C1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer}
 .greeting{margin-top:12px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
@@ -24,7 +22,6 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 .module-icon{font-size:26px;margin-bottom:6px}
 .module-name{font-size:12px;font-weight:bold;color:#333}
 .module-desc{font-size:10px;color:#999;margin-top:2px}
-.module-tag{position:absolute;top:-4px;right:-4px;background:#FF6B6B;color:white;font-size:8px;padding:2px 6px;border-radius:10px}
 .page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:100;flex-direction:column}
 .page.active{display:flex}
 .page-header{background:white;padding:12px 16px;display:flex;align-items:center;border-bottom:1px solid #eee}
@@ -32,34 +29,45 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 .page-title{flex:1;font-size:16px;font-weight:bold;text-align:center}
 .page-content{flex:1;overflow-y:auto;padding:12px}
 .card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.card-title{font-size:14px;font-weight:bold;margin-bottom:8px}
-.card-text{font-size:13px;color:#666;line-height:1.6}
+.card-title{font-size:14px;font-weight:bold;margin-bottom:12px}
+.btn{background:var(--blue);color:white;border:none;padding:12px 20px;border-radius:12px;cursor:pointer;font-size:14px;width:100%;margin-bottom:8px}
+.btn:active{opacity:0.8}
+.item{background:#f8f9fa;border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer}
+.item:active{background:#e8f4ff}
+.item-title{font-size:14px;font-weight:bold}
+.item-desc{font-size:12px;color:#666;margin-top:4px}
+.badge{display:inline-block;background:var(--blue);color:white;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px}
 .dropdown{display:none;position:absolute;top:100%;right:0;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);width:200px;z-index:1000}
 .dropdown.show{display:block}
 .dropdown-item{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}
-.dropdown-item:active{background:#f5f7ff}
-.dropdown-icon{font-size:18px}
+.progress-bar{height:8px;background:#e0e0e0;border-radius:4px;margin-top:8px}
+.progress-fill{height:100%;background:var(--blue);border-radius:4px}
+.game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.game-btn{background:white;border-radius:16px;padding:20px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.game-btn:active{transform:scale(0.95)}
+.game-icon{font-size:32px;margin-bottom:8px}
+.game-name{font-size:12px;font-weight:bold;color:#333}
 </style>
 </head>
 <body>
 
 <div class="header">
 <div class="header-top">
-<div style="display:flex;align-items:center"><span class="app-logo">🧠</span><span class="app-title">认知训练</span></div>
+<div style="display:flex;align-items:center"><span style="font-size:24px">🧠</span><span style="font-size:18px;font-weight:bold;margin-left:8px">认知训练</span></div>
 <div style="position:relative">
 <div class="user-avatar" onclick="toggleMenu()">邱</div>
 <div class="dropdown" id="menu">
-<div class="dropdown-item" onclick="openPage('settings')"><span class="dropdown-icon">⚙️</span><span>设置</span></div>
-<div class="dropdown-item" onclick="clearData()"><span class="dropdown-icon">🗑️</span><span>清除数据</span></div>
+<div class="dropdown-item" onclick="openPage('settings')"><span>⚙️</span><span>设置</span></div>
+<div class="dropdown-item" onclick="clearData()"><span>🗑️</span><span>清除数据</span></div>
 </div>
 </div>
 </div>
 <div class="greeting"><span id="name">邱宇菲</span>，今天也要加油哦 💪</div>
 <div class="stats">
-<div class="stat"><div class="stat-value" id="q">0</div><div class="stat-label">提问</div></div>
-<div class="stat"><div class="stat-value" id="a">0%</div><div class="stat-label">正确率</div></div>
-<div class="stat"><div class="stat-value" id="m">0</div><div class="stat-label">分钟</div></div>
-<div class="stat"><div class="stat-value" id="s">0</div><div class="stat-label">连续</div></div>
+<div class="stat"><div class="stat-value">0</div><div class="stat-label">提问</div></div>
+<div class="stat"><div class="stat-value">0%</div><div class="stat-label">正确率</div></div>
+<div class="stat"><div class="stat-value">0</div><div class="stat-label">分钟</div></div>
+<div class="stat"><div class="stat-value">0</div><div class="stat-label">连续</div></div>
 </div>
 </div>
 
@@ -75,7 +83,6 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 <div class="module" onclick="openPage('games')"><div class="module-icon">🎮</div><div class="module-name">训练游戏</div><div class="module-desc">8款益智游戏</div></div>
 </div>
 
-<!-- 页面容器 -->
 <div id="page-avatar" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎓 AI数字分身</div></div><div class="page-content" id="content-avatar"></div></div>
 <div id="page-classroom" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎥 在线课堂</div></div><div class="page-content" id="content-classroom"></div></div>
 <div id="page-practice" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎯 AI精准练</div></div><div class="page-content" id="content-practice"></div></div>
@@ -88,47 +95,28 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 <div id="page-settings" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">⚙️ 设置</div></div><div class="page-content" id="content-settings"></div></div>
 
 <script>
-// 用户数据
-var user = {name:'邱宇菲',grade:7,difficulty:1,points:1142,stats:{questions:0,correct:0,minutes:0,streak:0}};
-
-// 下拉菜单
+var user={name:'邱宇菲',grade:7,difficulty:1};
 function toggleMenu(){document.getElementById('menu').classList.toggle('show')}
 document.addEventListener('click',function(e){if(!e.target.closest('.user-avatar')&&!e.target.closest('.dropdown'))document.getElementById('menu').classList.remove('show')});
-
-// 打开页面
-function openPage(name){
-var page=document.getElementById('page-'+name);
-var content=document.getElementById('content-'+name);
-if(page&&content){page.classList.add('active');renderContent(name,content)}
-}
-
-// 关闭页面
+function openPage(n){var p=document.getElementById('page-'+n),c=document.getElementById('content-'+n);if(p&&c){p.classList.add('active');render(n,c)}}
 function closePage(){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')})}
-
-// 渲染内容
-function renderContent(name,el){
-var html='<div class="card"><div class="card-title">'+name+'</div><div class="card-text">';
-switch(name){
-case 'avatar':html+='<p>AI数字分身模块</p><p>选择不同学科的AI老师进行学习辅导</p>';break;
-case 'classroom':html+='<p>在线课堂模块</p><p>支持100人实时互动学习</p>';break;
-case 'practice':html+='<p>AI精准练模块</p><p>智能诊断薄弱点，精准练习</p>';break;
-case 'map':html+='<p>认知地图模块</p><p>可视化展示六大认知能力</p>';break;
-case 'plan':html+='<p>学习计划模块</p><p>Week1-6系统训练计划</p>';break;
-case 'topics':html+='<p>母题训练模块</p><p>126道经典母题，举一反三</p>';break;
-case 'method':html+='<p>学霸方法模块</p><p>高效学习方法和技巧</p>';break;
-case 'thinking':html+='<p>思维训练模块</p><p>逻辑推理和思维训练</p>';break;
-case 'games':html+='<p>训练游戏模块</p><p>8款益智游戏：舒尔特方格、数字记忆等</p>';break;
-case 'settings':html+='<p>设置模块</p><p>调整难度级别和其他设置</p>';break;
-default:html+='<p>模块开发中...</p>';
+function render(n,e){
+var h='';
+switch(n){
+case'avatar':h+='<div class="card"><div class="card-title">选择AI老师</div><div class="item"><div class="item-title">👨‍🏫 数学老师-小明</div><div class="item-desc">擅长代数几何</div></div><div class="item"><div class="item-title">👩‍🏫 英语老师-Emma</div><div class="item-desc">纯正发音教学</div></div><div class="item"><div class="item-title">👨‍🏫 语文老师-文老师</div><div class="item-desc">古诗词鉴赏</div></div><div class="item"><div class="item-title">👨‍🏫 物理老师-牛顿</div><div class="item-desc">实验演示</div></div><div class="item"><div class="item-title">👩‍🏫 化学老师-门捷列夫</div><div class="item-desc">元素周期</div></div></div>';break;
+case'classroom':h+='<div class="card"><div class="card-title">今日课程</div><div class="item"><div class="item-title">📹 数学-二次函数<span class="badge">直播中</span></div><div class="item-desc">14:00-15:00 | 86人观看</div></div><div class="item"><div class="item-title">📹 英语-完形填空</div><div class="item-desc">16:00-17:00 | 52人预约</div></div><div class="item"><div class="item-title">📹 物理-力学综合</div><div class="item-desc">19:00-20:00 | 68人预约</div></div></div>';break;
+case'practice':h+='<div class="card"><div class="card-title">AI诊断结果</div><div class="item"><div class="item-title">📐 二次函数</div><div class="item-desc">正确率 45%</div><div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div></div><div class="item"><div class="item-title">📐 因式分解</div><div class="item-desc">正确率 62%</div><div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div></div></div><button class="btn" onclick="alert(\'开始练习\')">开始精准练习</button>';break;
+case'map':h+='<div class="card"><div class="card-title">六维认知能力</div><div class="item"><div class="item-title">🎯 注意力</div><div class="item-desc">85分</div><div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div></div><div class="item"><div class="item-title">🧠 记忆力</div><div class="item-desc">72分</div><div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div></div><div class="item"><div class="item-title">💡 思维力</div><div class="item-desc">68分</div><div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div></div><div class="item"><div class="item-title">📊 逻辑力</div><div class="item-desc">75分</div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div><div class="item"><div class="item-title">🎨 创造力</div><div class="item-desc">80分</div><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div></div><div class="item"><div class="item-title">⚡ 反应力</div><div class="item-desc">90分</div><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div></div></div>';break;
+case'plan':h+='<div class="card"><div class="card-title">训练计划进度</div><div class="item"><div class="item-title">Week 1: 基础训练</div><div class="item-desc">已完成 5/7 天</div><div class="progress-bar"><div class="progress-fill" style="width:71%"></div></div></div><div class="item"><div class="item-title">Week 2: 能力提升</div><div class="item-desc">未开始</div></div><div class="item"><div class="item-title">Week 3: 综合应用</div><div class="item-desc">未开始</div></div></div><button class="btn">开始今日训练</button>';break;
+case'topics':h+='<div class="card"><div class="card-title">母题分类</div><div class="item"><div class="item-title">📐 数学母题 <span class="badge">42题</span></div><div class="item-desc">已练习15题 | 正确率73%</div></div><div class="item"><div class="item-title">🔤 英语母题 <span class="badge">35题</span></div><div class="item-desc">已练习8题 | 正确率85%</div></div><div class="item"><div class="item-title">⚡ 物理母题 <span class="badge">28题</span></div><div class="item-desc">已练习5题 | 正确率60%</div></div><div class="item"><div class="item-title">🧪 化学母题 <span class="badge">21题</span></div><div class="item-desc">未练习</div></div></div>';break;
+case'method':h+='<div class="card"><div class="card-title">学习方法</div><div class="item"><div class="item-title">📖 费曼学习法</div><div class="item-desc">用教的方式学习</div></div><div class="item"><div class="item-title">⏰ 番茄工作法</div><div class="item-desc">25分钟专注+5分钟休息</div></div><div class="item"><div class="item-title">📝 康奈尔笔记法</div><div class="item-desc">三分法笔记</div></div><div class="item"><div class="item-title">🌳 思维导图法</div><div class="item-desc">可视化知识结构</div></div><div class="item"><div class="item-title">🔄 艾宾浩斯遗忘曲线</div><div class="item-desc">科学复习时间表</div></div></div>';break;
+case'thinking':h+='<div class="card"><div class="card-title">思维训练类型</div><div class="item"><div class="item-title">🔍 逻辑推理</div><div class="item-desc">提升逻辑分析 | 20题</div></div><div class="item"><div class="item-title">🔷 图形规律</div><div class="item-desc">空间想象能力 | 15题</div></div><div class="item"><div class="item-title">🔢 数字推理</div><div class="item-desc">数学思维能力 | 18题</div></div><div class="item"><div class="item-title">⚡ 类比推理</div><div class="item-desc">归纳总结能力 | 12题</div></div></div>';break;
+case'games':h+='<div class="card"><div class="card-title">益智游戏</div><div class="game-grid"><div class="game-btn"><div class="game-icon">🔢</div><div class="game-name">舒尔特方格</div></div><div class="game-btn"><div class="game-icon">🧠</div><div class="game-name">数字记忆</div></div><div class="game-btn"><div class="game-icon">👀</div><div class="game-name">找不同</div></div><div class="game-btn"><div class="game-icon">🔗</div><div class="game-name">连连看</div></div><div class="game-btn"><div class="game-icon">💎</div><div class="game-name">消消乐</div></div><div class="game-btn"><div class="game-icon">🧩</div><div class="game-name">拼图</div></div><div class="game-btn"><div class="game-icon">📊</div><div class="game-name">2048</div></div><div class="game-btn"><div class="game-icon">🐹</div><div class="game-name">打地鼠</div></div></div></div>';break;
+case'settings':h+='<div class="card"><div class="card-title">难度设置</div><p style="font-size:13px;color:#666;margin-bottom:12px">当前难度：Lv.'+user.difficulty+'</p><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=1">Lv.1 入门</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=2">Lv.2 基础</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=3">Lv.3 进阶</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=4">Lv.4 挑战</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=5">Lv.5 大师</button></div>';break;
 }
-html+='</div></div>';
-el.innerHTML=html;
+e.innerHTML=h;
 }
-
-// 清除数据
 function clearData(){if(confirm('确定清除所有数据？')){localStorage.clear();location.reload()}}
-
-console.log('认知训练加载完成');
 </script>
 </body>
 </html>
