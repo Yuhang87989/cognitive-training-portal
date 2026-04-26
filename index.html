@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V112</title>
+<meta name="theme-color" content="#1A6BFF"/>
+<title>认知训练 V113</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
+:root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#1A6BFF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#1A6BFF;--orange:#E87A4E}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif;background:var(--bg-page);min-height:100vh;color:var(--text-dark);padding-bottom:80px;max-width:480px;margin:0 auto}
 .page{display:none;min-height:100vh;background:var(--bg-page);padding-bottom:80px}
 .page.active{display:block}
@@ -490,7 +490,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-name">思维训练</div>
                 <div class="module-desc">四维能力提升</div>
             </button>
-            <button class="module-btn gradient-blue" onclick="showToast('播客功能已禁用')">
+            <button class="module-btn gradient-blue" onclick="openFullscreenPage('podcast')">
                 <div class="module-icon">🎧</div>
                 <div class="module-name">播客课堂</div>
                 <div class="module-desc">音频学习</div>
@@ -802,7 +802,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 
 <!-- 隐藏的音频元素 -->
-<!-- <audio id="hidden-audio" style="display:none;"></audio>
+<audio id="hidden-audio" style="display:none;"></audio>
 
 <!-- 增强版视频播放器 -->
 <div id="enhanced-video-player" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;display:none;flex-direction:column;">
@@ -2170,6 +2170,11 @@ function openFullscreenPage(module) {
     }
     
     container.classList.add('active');
+}
+
+// 在线课堂功能
+function openOnlineClassroom() {
+    showToast('在线课堂功能开发中...');
 }
 
 // ====== 模块渲染函数 ======
@@ -5977,7 +5982,6 @@ function updateMediaListState(courseId) {
 
 
 // ====== 增强视频播放器 ======
- null;
 
 function initEnhancedVideoPlayer() {
     evpVideo = document.getElementById('evp-video');
