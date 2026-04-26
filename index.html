@@ -5257,34 +5257,24 @@ function closeGame() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('认知训练门户 V107 加载完成');
     
-    // 初始化数据
-    let data = loadData();
-    console.log('用户数量:', data.users.length);
+    // 强制重置为默认用户"邱宇菲"
+    localStorage.removeItem('cognitive_training_users');
+    localStorage.removeItem('cognitive_training_current_user');
     
-    // 自动创建默认用户"邱宇菲"（如果不存在）
-    // 确保有默认用户
-    if (data.users.length === 0 || !data.users.find(u => u.name === '邱宇菲')) {
-        const defaultUser = {
-            id: 'user_default',
-            name: '邱宇菲',
-            grade: 7,
-            difficulty: 1,
-            points: 1142,
-            createdAt: new Date().toISOString(),
-            stats: { totalQuestions: 0, correctAnswers: 0, totalMinutes: 0, streakDays: 0, lastActiveDate: null },
-            weeklyProgress: {}, wrongNotes: [], completedTopics: []
-        };
-        data.users = [defaultUser];
-        data.currentUser = defaultUser.id;
-        saveData(data);
-        console.log('默认用户已创建');
-    }
+    const defaultUser = {
+        id: 'user_default',
+        name: '邱宇菲',
+        grade: 7,
+        difficulty: 1,
+        points: 1142,
+        createdAt: new Date().toISOString(),
+        stats: { totalQuestions: 0, correctAnswers: 0, totalMinutes: 0, streakDays: 0, lastActiveDate: null },
+        weeklyProgress: {}, wrongNotes: [], completedTopics: []
+    };
     
-    // 始终使用默认用户
-    if (!data.currentUser) {
-        data.currentUser = data.users[0].id;
-        saveData(data);
-    }
+    let data = { users: [defaultUser], currentUser: defaultUser.id };
+    saveData(data);
+    console.log('默认用户已创建: 邱宇菲');
     
     // 初始化用户列表
     renderUserList();
