@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#1A6BFF"/>
-<title>认知训练 V116</title>
+<title>认知训练 V117</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#1A6BFF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#1A6BFF;--orange:#E87A4E}
@@ -403,7 +403,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .vp-time{color:white;font-size:13px}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
 .modal-overlay.show{display:flex !important;animation:fadeIn 0.2s;z-index:9999}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal-content{background:white;border-radius:20px;padding:24px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}
 .modal-title{font-size:18px;font-weight:bold;text-align:center;margin-bottom:20px}
 .modal-close{width:100%;padding:14px;background:var(--gradient-blue);border:none;border-radius:12px;color:white;font-size:15px;font-weight:600;cursor:pointer;margin-top:12px}
@@ -1045,7 +1044,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v49';
+const STORAGE_KEY = 'cognitive_training_v117';
 
 // ====== 音效系统 ======
 const SoundEffects = {
@@ -5279,33 +5278,6 @@ function startMethodTraining(methodId) {
 
 
 
-// ====== 学霸方法训练题库（V99新增）======
-
-function getMethodTraining(methodId) {
-    return methodTraining[methodId] || [];
-}
-
-function startMethodTraining(methodId) {
-    const questions = getMethodTraining(methodId);
-    if (questions.length === 0) { showToast('暂无训练题'); return; }
-    const methodNames = {
-        feyman:'费曼学习法',pomodoro:'番茄工作法',ebbinghaus:'艾宾浩斯记忆法',
-        mindmap:'思维导图法',cornell:'康奈尔笔记法',sq3r:'SQ3R阅读法',
-        timeManagement:'时间管理法',noteTaking:'高效笔记法',testStrategy:'考试策略'
-    };
-    let html = '<div style="max-height:70vh;overflow-y:auto;">';
-    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:16px;text-align:center;">' + methodNames[methodId] + ' 训练 (' + questions.length + '题)</div>';
-    questions.forEach((q, i) => {
-        html += '<div class="method-card" style="margin-bottom:16px;">';
-        html += '<div style="font-size:14px;font-weight:600;margin-bottom:8px;">' + (i+1) + '. ' + q.q + '</div>';
-        html += '<div class="method-content" style="background:#f5f7ff;padding:10px;border-radius:8px;">';
-        html += '<strong>参考答案：</strong>' + q.a + '</div></div>';
-    });
-    html += '</div><button class="login-btn login-btn-primary" onclick="closeDetail()" style="width:100%;">完成训练</button>';
-    const contentEl = document.getElementById('detail-content');
-    if (contentEl) { contentEl.innerHTML = html; document.getElementById('detail-modal').classList.add('show'); }
-}
-
 // ====== 播客 ======
 
 function playPodcast(title) {
@@ -5353,44 +5325,6 @@ function toggleWeekTask(taskId) {
 }
 
 
-
-
-// ====== Week5-6训练计划（V99新增）======
-
-function getWeekPlan(weekId) { return weekPlans[weekId] || null; }
-
-function renderWeekPlan(weekId) {
-    const plan = getWeekPlan(weekId);
-    if (!plan) return '<div>暂无训练计划</div>';
-    let html = '<div style="margin-bottom:20px;">';
-    html += '<div style="font-size:18px;font-weight:bold;margin-bottom:8px;">' + plan.weekTitle + '</div>';
-    html += '<div style="font-size:13px;color:#666;margin-bottom:16px;">' + plan.weekDesc + '</div>';
-    plan.days.forEach(day => {
-        html += '<div class="card" style="margin-bottom:12px;">';
-        html += '<div style="font-weight:600;margin-bottom:10px;">Day' + day.day + '：' + day.title + '</div>';
-        day.tasks.forEach(task => {
-            const typeIcons = {video:'📹',practice:'✏️',creative:'🎨',social:'💬',review:'📖',test:'📝',writing:'📄',podcast:'🎧',planning:'📋',quiz:'❓',rest:'😴'};
-            const typeNames = {video:'视频学习',practice:'练习',creative:'创作',social:'讨论',review:'复习',test:'测试',writing:'写作',podcast:'播客',planning:'计划',quiz:'测评',rest:'休息'};
-            html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;">';
-            html += '<input type="checkbox" ' + (task.completed ? 'checked' : '') + ' onchange="toggleWeekTask(\'' + task.id + '\')">';
-            html += '<span style="font-size:16px;">' + (typeIcons[task.type] || '📋') + '</span>';
-            html += '<div style="flex:1;"><div style="font-size:13px;">' + task.title + '</div>';
-            html += '<div style="font-size:11px;color:#999;">' + typeNames[task.type] + (task.duration ? ' · ' + task.duration + '分钟' : '') + '</div></div></div>';
-        });
-        html += '</div>';
-    });
-    html += '</div><button class="login-btn login-btn-secondary" onclick="closeDetail()">关闭</button>';
-    return html;
-}
-
-function toggleWeekTask(taskId) {
-    const user = getCurrentUserData();
-    if (!user) return;
-    user.weekTasks = user.weekTasks || {};
-    user.weekTasks[taskId] = !user.weekTasks[taskId];
-    syncUserData(user);
-    showToast('任务状态已更新');
-}
 
 // ====== 视频 ======
 let vpVideo = null, vpPlaying = false;
