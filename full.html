@@ -5,52 +5,137 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>认知训练</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--blue:#3377FF;--bg:#F5F6FA}
-body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;margin:0 auto}
-.header{background:linear-gradient(135deg,var(--blue),#4A80F5);color:white;padding:16px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--blue:#3377FF;--bg:#F5F6FA;--white:#FFFFFF;--text-dark:#333;--text-gray:#666;--text-light:#999;--border:#F2F4F7;--orange:#E87A4E}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;background:var(--bg);max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:20px}
+.header{background:linear-gradient(135deg,var(--blue),#4A80F5);color:white;padding:16px;border-radius:0 0 24px 24px}
 .header-top{display:flex;justify-content:space-between;align-items:center}
-.user-avatar{width:36px;height:36px;background:linear-gradient(135deg,#FFD4B8,#FFB6C1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;cursor:pointer}
-.greeting{margin-top:12px}
+.app-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--blue),#FF9A63);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.user-avatar{width:36px;height:36px;background:linear-gradient(135deg,#FFD4B8,#FFB6C1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;cursor:pointer}
+.greeting{margin-top:12px;font-size:14px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .stat{background:rgba(255,255,255,0.2);border-radius:12px;padding:10px;text-align:center}
 .stat-value{font-size:18px;font-weight:bold}
 .stat-label{font-size:10px;opacity:0.9}
 .modules{padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.module{background:white;border-radius:16px;padding:16px 10px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.module{background:white;border-radius:16px;padding:14px 8px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform 0.2s}
 .module:active{transform:scale(0.96)}
 .module-icon{font-size:26px;margin-bottom:6px}
 .module-name{font-size:12px;font-weight:bold;color:#333}
-.module-desc{font-size:10px;color:#999;margin-top:2px}
+.module-desc{font-size:9px;color:#999;margin-top:2px}
+/* 页面样式 */
 .page{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:100;flex-direction:column}
 .page.active{display:flex}
 .page-header{background:white;padding:12px 16px;display:flex;align-items:center;border-bottom:1px solid #eee}
 .page-back{font-size:20px;cursor:pointer;padding:8px}
 .page-title{flex:1;font-size:16px;font-weight:bold;text-align:center}
 .page-content{flex:1;overflow-y:auto;padding:12px}
+/* 卡片样式 */
 .card{background:white;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
 .card-title{font-size:14px;font-weight:bold;margin-bottom:12px}
+/* 通用元素 */
 .btn{background:var(--blue);color:white;border:none;padding:12px 20px;border-radius:12px;cursor:pointer;font-size:14px;width:100%;margin-bottom:8px}
 .btn:active{opacity:0.8}
+.btn-secondary{background:#f0f0f0;color:#333}
+.btn-orange{background:var(--orange);color:white}
 .item{background:#f8f9fa;border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer}
 .item:active{background:#e8f4ff}
 .item-title{font-size:14px;font-weight:bold}
 .item-desc{font-size:12px;color:#666;margin-top:4px}
 .badge{display:inline-block;background:var(--blue);color:white;font-size:10px;padding:2px 8px;border-radius:10px;margin-left:8px}
+.progress-bar{height:8px;background:#e0e0e0;border-radius:4px;margin-top:8px}
+.progress-fill{height:100%;background:var(--blue);border-radius:4px}
+/* 下拉菜单 */
 .dropdown{display:none;position:absolute;top:100%;right:0;background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);width:200px;z-index:1000}
 .dropdown.show{display:block}
 .dropdown-item{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid #f0f0f0}
-.progress-bar{height:8px;background:#e0e0e0;border-radius:4px;margin-top:8px}
-.progress-fill{height:100%;background:var(--blue);border-radius:4px}
+.dropdown-item.danger{color:#ff6b6b}
+/* 游戏网格 */
 .game-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.game-btn{background:white;border-radius:16px;padding:20px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.game-btn{background:white;border-radius:16px;padding:16px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 .game-btn:active{transform:scale(0.95)}
-.game-icon{font-size:32px;margin-bottom:8px}
+.game-icon{font-size:28px;margin-bottom:8px}
 .game-name{font-size:12px;font-weight:bold;color:#333}
+/* 游戏棋盘 */
+.game-board{display:grid;gap:8px;margin:0 auto;max-width:300px}
+.game-board.size-3{grid-template-columns:repeat(3,1fr)}
+.game-board.size-4{grid-template-columns:repeat(4,1fr)}
+.game-cell{aspect-ratio:1;background:#f0f0f0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer}
+.game-cell:active{transform:scale(0.95)}
+/* 模态框 */
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}
+.modal.show{display:flex}
+.modal-content{background:white;border-radius:20px;padding:24px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:bold;text-align:center;margin-bottom:16px}
+/* 聊天样式 */
+.chat-container{flex:1;display:flex;flex-direction:column;background:#f8f9fa}
+.chat-messages{flex:1;overflow-y:auto;padding:12px}
+.chat-msg{display:flex;gap:10px;margin-bottom:12px}
+.chat-msg.user{flex-direction:row-reverse}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.chat-msg.user .chat-avatar{background:linear-gradient(135deg,#FF9A63,#E87A4E)}
+.chat-bubble{max-width:75%;padding:10px 14px;border-radius:16px;background:white;font-size:14px;line-height:1.5}
+.chat-msg.user .chat-bubble{background:var(--blue);color:white}
+.chat-input-area{padding:12px;background:white;border-top:1px solid #eee;display:flex;gap:8px}
+.chat-input{flex:1;padding:10px 14px;border:1px solid #ddd;border-radius:20px;font-size:14px;outline:none}
+.chat-send{padding:10px 18px;background:var(--blue);border:none;border-radius:20px;color:white;font-size:14px;cursor:pointer}
+/* 教师列表 */
+.teacher-list{display:flex;gap:12px;padding:12px;overflow-x:auto}
+.teacher-item{display:flex;flex-direction:column;align-items:center;padding:10px 8px;border-radius:12px;cursor:pointer;background:white;border:2px solid transparent;flex-shrink:0;min-width:70px}
+.teacher-item.active{border-color:#667eea;background:rgba(102,126,234,0.1)}
+.teacher-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px}
+.teacher-name{font-size:12px;font-weight:600;margin-top:4px}
+.teacher-subject{font-size:10px;color:#999}
+/* 思维训练选项 */
+.thinking-options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.thinking-option{padding:10px;background:#f5f5f5;border-radius:8px;font-size:13px;text-align:center;cursor:pointer;border:2px solid transparent}
+.thinking-option.selected{border-color:var(--blue);background:rgba(51,119,255,0.1)}
+.thinking-option.correct{border-color:#43E97B;background:rgba(67,233,123,0.1)}
+.thinking-option.wrong{border-color:#FF6B6B;background:rgba(255,107,107,0.1)}
+/* 方法卡片 */
+.method-card{background:white;border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer}
+.method-title{font-size:14px;font-weight:600;margin-bottom:8px}
+/* 题目卡片 */
+.topic-card{background:white;border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer}
+.topic-header{padding:14px;color:white;border-radius:10px 10px 0 0}
+.topic-title{font-size:14px;font-weight:600}
+.topic-subtitle{font-size:12px;opacity:0.9;margin-top:4px}
+.topic-footer{padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+/* 练习题样式 */
+.practice-card{background:white;border-radius:12px;padding:16px;margin-bottom:10px}
+.practice-question{font-size:14px;margin-bottom:12px;line-height:1.6}
+.practice-result{padding:10px;border-radius:8px;margin-top:8px;font-size:14px}
+.practice-result.correct{background:#e8f5e9;color:#2e7d32}
+.practice-result.wrong{background:#ffebee;color:#c62828}
+/* 日历样式 */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.calendar-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:12px;cursor:pointer}
+.calendar-day.checked{background:var(--blue);color:white}
+.calendar-day.today{background:rgba(255,149,0,0.2);color:var(--orange);font-weight:bold}
+.calendar-day.disabled{color:#ccc;cursor:not-allowed}
+/* 任务样式 */
+.plan-task{display:flex;align-items:center;gap:12px;padding:12px;background:#f5f5f5;border-radius:12px;margin-bottom:8px;cursor:pointer}
+.plan-task.completed{opacity:0.6}
+.task-checkbox{width:24px;height:24px;border-radius:50%;border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.task-checkbox.checked{background:var(--blue);color:white}
+.task-text{flex:1;font-size:14px}
+.task-time{font-size:11px;color:#999}
+/* Toast提示 */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:white;padding:12px 24px;border-radius:20px;font-size:14px;z-index:9999;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* 加载动画 */
+.loading-dots{display:inline-flex;gap:4px}
+.loading-dots span{width:8px;height:8px;background:var(--blue);border-radius:50%;animation:dot 1.4s infinite}
+.loading-dots span:nth-child(1){animation-delay:-0.32s}
+.loading-dots span:nth-child(2){animation-delay:-0.16s}
+@keyframes dot{0%,80%,100%{transform:scale(0)}50%{transform:scale(1)}}
+/* 雷达图容器 */
+.radar-container{position:relative;width:200px;height:200px;margin:10px auto}
 </style>
 </head>
 <body>
 
+<!-- 首页 -->
 <div class="header">
 <div class="header-top">
 <div style="display:flex;align-items:center"><span style="font-size:24px">🧠</span><span style="font-size:18px;font-weight:bold;margin-left:8px">认知训练</span></div>
@@ -58,22 +143,21 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 <div class="user-avatar" onclick="toggleMenu()">邱</div>
 <div class="dropdown" id="menu">
 <div class="dropdown-item" onclick="openPage('settings')"><span>⚙️</span><span>设置</span></div>
-<div class="dropdown-item" onclick="clearData()"><span>🗑️</span><span>清除数据</span></div>
+<div class="dropdown-item danger" onclick="clearData()"><span>🗑️</span><span>清除数据</span></div>
 </div>
 </div>
 </div>
 <div class="greeting"><span id="name">邱宇菲</span>，今天也要加油哦 💪</div>
 <div class="stats">
-<div class="stat"><div class="stat-value">0</div><div class="stat-label">提问</div></div>
-<div class="stat"><div class="stat-value">0%</div><div class="stat-label">正确率</div></div>
-<div class="stat"><div class="stat-value">0</div><div class="stat-label">分钟</div></div>
-<div class="stat"><div class="stat-value">0</div><div class="stat-label">连续</div></div>
+<div class="stat"><div class="stat-value" id="stat-questions">0</div><div class="stat-label">提问</div></div>
+<div class="stat"><div class="stat-value" id="stat-correct">0%</div><div class="stat-label">正确率</div></div>
+<div class="stat"><div class="stat-value" id="stat-minutes">0</div><div class="stat-label">分钟</div></div>
+<div class="stat"><div class="stat-value" id="stat-streak">0</div><div class="stat-label">连续</div></div>
 </div>
 </div>
 
 <div class="modules">
 <div class="module" onclick="openPage('avatar')"><div class="module-icon">🎓</div><div class="module-name">AI数字分身</div><div class="module-desc">5位AI老师</div></div>
-<div class="module" onclick="openPage('classroom')"><div class="module-icon">🎥</div><div class="module-name">在线课堂</div><div class="module-desc">100人互动</div></div>
 <div class="module" onclick="openPage('practice')"><div class="module-icon">🎯</div><div class="module-name">AI精准练</div><div class="module-desc">薄弱点诊断</div></div>
 <div class="module" onclick="openPage('map')"><div class="module-icon">🧠</div><div class="module-name">认知地图</div><div class="module-desc">能力可视化</div></div>
 <div class="module" onclick="openPage('plan')"><div class="module-icon">📅</div><div class="module-name">学习计划</div><div class="module-desc">Week1-6训练</div></div>
@@ -83,8 +167,8 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 <div class="module" onclick="openPage('games')"><div class="module-icon">🎮</div><div class="module-name">训练游戏</div><div class="module-desc">8款益智游戏</div></div>
 </div>
 
+<!-- 页面容器 -->
 <div id="page-avatar" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎓 AI数字分身</div></div><div class="page-content" id="content-avatar"></div></div>
-<div id="page-classroom" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎥 在线课堂</div></div><div class="page-content" id="content-classroom"></div></div>
 <div id="page-practice" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎯 AI精准练</div></div><div class="page-content" id="content-practice"></div></div>
 <div id="page-map" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🧠 认知地图</div></div><div class="page-content" id="content-map"></div></div>
 <div id="page-plan" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">📅 学习计划</div></div><div class="page-content" id="content-plan"></div></div>
@@ -94,29 +178,1407 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);max-width:480px;m
 <div id="page-games" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎮 训练游戏</div></div><div class="page-content" id="content-games"></div></div>
 <div id="page-settings" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">⚙️ 设置</div></div><div class="page-content" id="content-settings"></div></div>
 
+<!-- 通用模态框 -->
+<div class="modal" id="detail-modal">
+<div class="modal-content" id="detail-content"></div>
+</div>
+
 <script>
-var user={name:'邱宇菲',grade:7,difficulty:1};
-function toggleMenu(){document.getElementById('menu').classList.toggle('show')}
-document.addEventListener('click',function(e){if(!e.target.closest('.user-avatar')&&!e.target.closest('.dropdown'))document.getElementById('menu').classList.remove('show')});
-function openPage(n){var p=document.getElementById('page-'+n),c=document.getElementById('content-'+n);if(p&&c){p.classList.add('active');render(n,c)}}
-function closePage(){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')})}
-function render(n,e){
-var h='';
-switch(n){
-case'avatar':h+='<div class="card"><div class="card-title">选择AI老师</div><div class="item"><div class="item-title">👨‍🏫 数学老师-小明</div><div class="item-desc">擅长代数几何</div></div><div class="item"><div class="item-title">👩‍🏫 英语老师-Emma</div><div class="item-desc">纯正发音教学</div></div><div class="item"><div class="item-title">👨‍🏫 语文老师-文老师</div><div class="item-desc">古诗词鉴赏</div></div><div class="item"><div class="item-title">👨‍🏫 物理老师-牛顿</div><div class="item-desc">实验演示</div></div><div class="item"><div class="item-title">👩‍🏫 化学老师-门捷列夫</div><div class="item-desc">元素周期</div></div></div>';break;
-case'classroom':h+='<div class="card"><div class="card-title">今日课程</div><div class="item"><div class="item-title">📹 数学-二次函数<span class="badge">直播中</span></div><div class="item-desc">14:00-15:00 | 86人观看</div></div><div class="item"><div class="item-title">📹 英语-完形填空</div><div class="item-desc">16:00-17:00 | 52人预约</div></div><div class="item"><div class="item-title">📹 物理-力学综合</div><div class="item-desc">19:00-20:00 | 68人预约</div></div></div>';break;
-case'practice':h+='<div class="card"><div class="card-title">AI诊断结果</div><div class="item"><div class="item-title">📐 二次函数</div><div class="item-desc">正确率 45%</div><div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div></div><div class="item"><div class="item-title">📐 因式分解</div><div class="item-desc">正确率 62%</div><div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div></div></div><button class="btn" onclick="alert(\'开始练习\')">开始精准练习</button>';break;
-case'map':h+='<div class="card"><div class="card-title">六维认知能力</div><div class="item"><div class="item-title">🎯 注意力</div><div class="item-desc">85分</div><div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div></div><div class="item"><div class="item-title">🧠 记忆力</div><div class="item-desc">72分</div><div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div></div><div class="item"><div class="item-title">💡 思维力</div><div class="item-desc">68分</div><div class="progress-bar"><div class="progress-fill" style="width:68%"></div></div></div><div class="item"><div class="item-title">📊 逻辑力</div><div class="item-desc">75分</div><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div></div><div class="item"><div class="item-title">🎨 创造力</div><div class="item-desc">80分</div><div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div></div><div class="item"><div class="item-title">⚡ 反应力</div><div class="item-desc">90分</div><div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div></div></div>';break;
-case'plan':h+='<div class="card"><div class="card-title">训练计划进度</div><div class="item"><div class="item-title">Week 1: 基础训练</div><div class="item-desc">已完成 5/7 天</div><div class="progress-bar"><div class="progress-fill" style="width:71%"></div></div></div><div class="item"><div class="item-title">Week 2: 能力提升</div><div class="item-desc">未开始</div></div><div class="item"><div class="item-title">Week 3: 综合应用</div><div class="item-desc">未开始</div></div></div><button class="btn">开始今日训练</button>';break;
-case'topics':h+='<div class="card"><div class="card-title">母题分类</div><div class="item"><div class="item-title">📐 数学母题 <span class="badge">42题</span></div><div class="item-desc">已练习15题 | 正确率73%</div></div><div class="item"><div class="item-title">🔤 英语母题 <span class="badge">35题</span></div><div class="item-desc">已练习8题 | 正确率85%</div></div><div class="item"><div class="item-title">⚡ 物理母题 <span class="badge">28题</span></div><div class="item-desc">已练习5题 | 正确率60%</div></div><div class="item"><div class="item-title">🧪 化学母题 <span class="badge">21题</span></div><div class="item-desc">未练习</div></div></div>';break;
-case'method':h+='<div class="card"><div class="card-title">学习方法</div><div class="item"><div class="item-title">📖 费曼学习法</div><div class="item-desc">用教的方式学习</div></div><div class="item"><div class="item-title">⏰ 番茄工作法</div><div class="item-desc">25分钟专注+5分钟休息</div></div><div class="item"><div class="item-title">📝 康奈尔笔记法</div><div class="item-desc">三分法笔记</div></div><div class="item"><div class="item-title">🌳 思维导图法</div><div class="item-desc">可视化知识结构</div></div><div class="item"><div class="item-title">🔄 艾宾浩斯遗忘曲线</div><div class="item-desc">科学复习时间表</div></div></div>';break;
-case'thinking':h+='<div class="card"><div class="card-title">思维训练类型</div><div class="item"><div class="item-title">🔍 逻辑推理</div><div class="item-desc">提升逻辑分析 | 20题</div></div><div class="item"><div class="item-title">🔷 图形规律</div><div class="item-desc">空间想象能力 | 15题</div></div><div class="item"><div class="item-title">🔢 数字推理</div><div class="item-desc">数学思维能力 | 18题</div></div><div class="item"><div class="item-title">⚡ 类比推理</div><div class="item-desc">归纳总结能力 | 12题</div></div></div>';break;
-case'games':h+='<div class="card"><div class="card-title">益智游戏</div><div class="game-grid"><div class="game-btn"><div class="game-icon">🔢</div><div class="game-name">舒尔特方格</div></div><div class="game-btn"><div class="game-icon">🧠</div><div class="game-name">数字记忆</div></div><div class="game-btn"><div class="game-icon">👀</div><div class="game-name">找不同</div></div><div class="game-btn"><div class="game-icon">🔗</div><div class="game-name">连连看</div></div><div class="game-btn"><div class="game-icon">💎</div><div class="game-name">消消乐</div></div><div class="game-btn"><div class="game-icon">🧩</div><div class="game-name">拼图</div></div><div class="game-btn"><div class="game-icon">📊</div><div class="game-name">2048</div></div><div class="game-btn"><div class="game-icon">🐹</div><div class="game-name">打地鼠</div></div></div></div>';break;
-case'settings':h+='<div class="card"><div class="card-title">难度设置</div><p style="font-size:13px;color:#666;margin-bottom:12px">当前难度：Lv.'+user.difficulty+'</p><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=1">Lv.1 入门</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=2">Lv.2 基础</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=3">Lv.3 进阶</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=4">Lv.4 挑战</button><button class="btn" style="background:#f0f0f0;color:#333" onclick="user.difficulty=5">Lv.5 大师</button></div>';break;
+// ====== 全局配置 ======
+const STORAGE_KEY = 'cognitive_training_full';
+const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
+const DEEPSEEK_API_URL = 'https://api.deepseek.com/chat/completions';
+
+// ====== 数据存储 ======
+function loadData() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return getDefaultData();
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== 'object') return getDefaultData();
+        return data;
+    } catch(e) {
+        return getDefaultData();
+    }
 }
-e.innerHTML=h;
+
+function getDefaultData() {
+    return {
+        user: {
+            name: '邱宇菲',
+            grade: 7,
+            difficulty: 1,
+            abilities: { attention: 65, memory: 60, logic: 70, creativity: 55, problem: 65, strategy: 60 },
+            knowledge: { math: 30, chinese: 30, english: 30, physics: 30, chemistry: 30 },
+            gameScores: {},
+            studyDays: {},
+            planTasks: {},
+            chatHistory: {},
+            wrongNotes: [],
+            practiceRecords: [],
+            todayStats: { questions: 0, correct: 0, minutes: 0 },
+            aiChatCount: 0
+        }
+    };
 }
-function clearData(){if(confirm('确定清除所有数据？')){localStorage.clear();location.reload()}}
+
+function saveData(data) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch(e) {}
+}
+
+function getUser() {
+    return loadData().user;
+}
+
+function syncUser() {
+    const data = loadData();
+    saveData(data);
+}
+
+// ====== 用户状态 ======
+var user = getUser();
+var currentTeacher = 'math';
+var currentThinkingType = 'logic';
+
+// ====== UI更新 ======
+function updateStats() {
+    const data = loadData();
+    const u = data.user;
+    document.getElementById('name').textContent = u.name;
+    document.getElementById('stat-questions').textContent = u.aiChatCount || 0;
+    const correctRate = u.todayStats.questions > 0 ? Math.round(u.todayStats.correct / u.todayStats.questions * 100) : 0;
+    document.getElementById('stat-correct').textContent = correctRate + '%';
+    document.getElementById('stat-minutes').textContent = u.todayStats.minutes || 0;
+    // 计算连续天数
+    let streak = 0;
+    const studyDays = u.studyDays || {};
+    for (let i = 0; i < 365; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().split('T')[0];
+        if (studyDays[key]) streak++;
+        else if (i > 0) break;
+    }
+    document.getElementById('stat-streak').textContent = streak;
+}
+
+// ====== 页面切换 ======
+function toggleMenu() {
+    document.getElementById('menu').classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.user-avatar') && !e.target.closest('.dropdown')) {
+        document.getElementById('menu').classList.remove('show');
+    }
+});
+
+function openPage(n) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    var p = document.getElementById('page-' + n);
+    var c = document.getElementById('content-' + n);
+    if (p && c) {
+        p.classList.add('active');
+        render(n, c);
+    }
+}
+
+function closePage() {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+}
+
+// ====== Toast提示 ======
+function showToast(msg) {
+    var existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2000);
+}
+
+// ====== 模态框 ======
+function openModal(content) {
+    document.getElementById('detail-content').innerHTML = content;
+    document.getElementById('detail-modal').classList.add('show');
+}
+function closeModal() {
+    document.getElementById('detail-modal').classList.remove('show');
+}
+
+// ====== render函数 ======
+function render(n, e) {
+    var h = '';
+    switch(n) {
+        case 'avatar':
+            h = renderAvatar();
+            break;
+        case 'practice':
+            h = renderPractice();
+            break;
+        case 'map':
+            h = renderMap();
+            break;
+        case 'plan':
+            h = renderPlan();
+            break;
+        case 'topics':
+            h = renderTopics();
+            break;
+        case 'method':
+            h = renderMethod();
+            break;
+        case 'thinking':
+            h = renderThinking();
+            break;
+        case 'games':
+            h = renderGames();
+            break;
+        case 'settings':
+            h = renderSettings();
+            break;
+    }
+    e.innerHTML = h;
+}
+
+// ====== AI数字分身 ======
+const teachers = [
+    { id: 'math', name: '小明', subject: '数学', avatar: '👨‍🏫', desc: '擅长代数几何' },
+    { id: 'english', name: 'Emma', subject: '英语', avatar: '👩‍🏫', desc: '纯正发音教学' },
+    { id: 'chinese', name: '文老师', subject: '语文', avatar: '👨‍🏫', desc: '古诗词鉴赏' },
+    { id: 'physics', name: '牛顿', subject: '物理', avatar: '👨‍🏫', desc: '实验演示' },
+    { id: 'chemistry', name: '门捷列夫', subject: '化学', avatar: '👩‍🏫', desc: '元素周期' }
+];
+
+function renderAvatar() {
+    const u = getUser();
+    const history = u.chatHistory[currentTeacher] || [];
+    let html = '<div class="card"><div class="card-title">选择AI老师</div><div class="teacher-list">';
+    teachers.forEach(function(t) {
+        html += '<div class="teacher-item ' + (t.id === currentTeacher ? 'active' : '') + '" onclick="switchTeacher(\'' + t.id + '\')">';
+        html += '<div class="teacher-avatar">' + t.avatar + '</div>';
+        html += '<div class="teacher-name">' + t.name + '</div>';
+        html += '<div class="teacher-subject">' + t.subject + '</div></div>';
+    });
+    html += '</div></div>';
+    
+    // 聊天区域
+    html += '<div class="chat-container" style="height:400px;margin-bottom:12px;">';
+    html += '<div class="chat-messages" id="chat-messages">';
+    
+    if (history.length === 0) {
+        const currentTeacherData = teachers.find(t => t.id === currentTeacher);
+        html += '<div class="chat-msg"><div class="chat-avatar">' + currentTeacherData.avatar + '</div>';
+        html += '<div class="chat-bubble">你好！我是' + currentTeacherData.name + '，' + currentTeacherData.desc + '。有什么问题可以问我哦！</div></div>';
+    } else {
+        history.forEach(function(msg) {
+            if (msg.role === 'user') {
+                html += '<div class="chat-msg user"><div class="chat-avatar"></div><div class="chat-bubble">' + escapeHtml(msg.content) + '</div></div>';
+            } else {
+                const t = teachers.find(t => t.id === currentTeacher);
+                html += '<div class="chat-msg"><div class="chat-avatar">' + t.avatar + '</div>';
+                html += '<div class="chat-bubble">' + escapeHtml(msg.content) + '</div></div>';
+            }
+        });
+    }
+    html += '</div></div>';
+    
+    html += '<div class="chat-input-area">';
+    html += '<input type="text" class="chat-input" id="chat-input" placeholder="输入问题..." onkeydown="if(event.key===\'Enter\')sendMessage()">';
+    html += '<button class="chat-send" onclick="sendMessage()">发送</button></div>';
+    
+    return html;
+}
+
+function switchTeacher(id) {
+    currentTeacher = id;
+    var c = document.getElementById('content-avatar');
+    if (c) render('avatar', c);
+}
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+async function sendMessage() {
+    var input = document.getElementById('chat-input');
+    if (!input || !input.value.trim()) return;
+    
+    var msg = input.value.trim();
+    input.value = '';
+    
+    var data = loadData();
+    var u = data.user;
+    u.chatHistory[currentTeacher] = u.chatHistory[currentTeacher] || [];
+    u.chatHistory[currentTeacher].push({ role: 'user', content: msg });
+    u.aiChatCount = (u.aiChatCount || 0) + 1;
+    u.todayStats.questions = (u.todayStats.questions || 0) + 1;
+    saveData(data);
+    
+    var messagesEl = document.getElementById('chat-messages');
+    var t = teachers.find(t => t.id === currentTeacher);
+    
+    // 添加用户消息
+    messagesEl.innerHTML += '<div class="chat-msg user"><div class="chat-avatar"></div><div class="chat-bubble">' + escapeHtml(msg) + '</div></div>';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    // 添加加载中
+    var loadingId = 'loading-' + Date.now();
+    messagesEl.innerHTML += '<div class="chat-msg" id="' + loadingId + '"><div class="chat-avatar">' + t.avatar + '</div><div class="chat-bubble"><span class="loading-dots"><span></span><span></span><span></span></span></div></div>';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    // 调用AI
+    var response = await callDeepSeek(msg);
+    var loadingEl = document.getElementById(loadingId);
+    if (loadingEl) {
+        loadingEl.querySelector('.chat-bubble').innerHTML = escapeHtml(response);
+        if (response.includes('DeepSeek账户余额不足') || response.includes('API调用失败')) {
+            u.todayStats.correct = Math.max(0, (u.todayStats.correct || 0));
+        } else {
+            u.todayStats.correct = (u.todayStats.correct || 0) + 1;
+        }
+        saveData(data);
+    }
+    
+    updateStats();
+}
+
+async function callDeepSeek(message) {
+    var teacher = teachers.find(t => t.id === currentTeacher);
+    var systemPrompt = '你是一位专业的' + teacher.subject + '老师，名叫' + teacher.name + '。你擅长' + teacher.desc + '。请用友善、专业的方式回答学生的问题。如果涉及计算，请给出详细步骤。';
+    
+    var data = loadData();
+    var u = data.user;
+    var history = u.chatHistory[currentTeacher] || [];
+    
+    var messages = [{ role: 'system', content: systemPrompt }];
+    history.forEach(function(m) {
+        messages.push({ role: m.role, content: m.content });
+    });
+    messages.push({ role: 'user', content: message });
+    
+    try {
+        var response = await fetch(DEEPSEEK_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+            body: JSON.stringify({ model: 'deepseek-chat', messages: messages, temperature: 0.7, max_tokens: 1000 })
+        });
+        
+        if (!response.ok) {
+            var errorData = await response.json().catch(function() { return {}; });
+            if (response.status === 402 || response.status === 400) {
+                return '抱歉，AI服务暂时不可用，请稍后再试。';
+            }
+            throw new Error(errorData.error && errorData.error.message || 'API调用失败');
+        }
+        
+        var result = await response.json();
+        var reply = result.choices[0].message.content;
+        
+        // 保存AI回复
+        u.chatHistory[currentTeacher] = u.chatHistory[currentTeacher] || [];
+        u.chatHistory[currentTeacher].push({ role: 'assistant', content: reply });
+        saveData(data);
+        
+        return reply;
+    } catch(error) {
+        return '抱歉，服务出现问题: ' + error.message + '。请稍后再试。';
+    }
+}
+
+// ====== AI精准练 ======
+const practiceQuestions = {
+    math: [
+        { q: '计算: 25 × 8 = ?', opts: ['180', '200', '220', '240'], a: 1 },
+        { q: '若 x + 5 = 12，则 x = ?', opts: ['5', '6', '7', '8'], a: 2 },
+        { q: '一个三角形内角和是多少度？', opts: ['90°', '180°', '270°', '360°'], a: 1 },
+        { q: '计算: 144 ÷ 12 = ?', opts: ['10', '11', '12', '14'], a: 2 },
+        { q: '若 a² = 16，则 a = ?', opts: ['2', '4', '±4', '8'], a: 2 }
+    ],
+    english: [
+        { q: '"Hello" 的中文意思是？', opts: ['你好', '再见', '谢谢', '对不起'], a: 0 },
+        { q: '"Apple" 是什么？', opts: ['香蕉', '苹果', '橙子', '葡萄'], a: 1 },
+        { q: 'What is the capital of China?', opts: ['Shanghai', 'Beijing', 'Hong Kong', 'Tokyo'], a: 1 },
+        { q: 'The opposite of "hot" is?', opts: ['Warm', 'Cold', 'Cool', 'Dry'], a: 1 },
+        { q: 'How many letters are in the English alphabet?', opts: ['24', '25', '26', '27'], a: 2 }
+    ],
+    chinese: [
+        { q: '《静夜思》的作者是谁？', opts: ['李白', '杜甫', '白居易', '王维'], a: 0 },
+        { q: '"床前明月光"的下一句是？', opts: ['疑是地上霜', '举头望明月', '低头思故乡', '明月几时有'], a: 0 },
+        { q: '汉字"大"有几笔画？', opts: ['2画', '3画', '4画', '5画'], a: 1 },
+        { q: '"春眠不觉晓"出自哪首诗？', opts: ['《春晓》', '《春望》', '《咏柳》', '《绝句》'], a: 0 }
+    ]
+};
+
+var currentPracticeSubject = 'math';
+var currentQuestionIndex = 0;
+
+function renderPractice() {
+    const u = getUser();
+    const questions = practiceQuestions[currentPracticeSubject] || [];
+    const q = questions[currentQuestionIndex % questions.length];
+    
+    let html = '<div class="card"><div class="card-title">AI诊断结果</div>';
+    html += '<div class="item"><div class="item-title">📐 数学</div><div class="item-desc">正确率 ' + (u.knowledge.math || 30) + '%</div>';
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + (u.knowledge.math || 30) + '%"></div></div></div>';
+    html += '<div class="item"><div class="item-title">🔤 英语</div><div class="item-desc">正确率 ' + (u.knowledge.english || 30) + '%</div>';
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + (u.knowledge.english || 30) + '%"></div></div></div>';
+    html += '<div class="item"><div class="item-title">📝 语文</div><div class="item-desc">正确率 ' + (u.knowledge.chinese || 30) + '%</div>';
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + (u.knowledge.chinese || 30) + '%"></div></div></div>';
+    html += '</div>';
+    
+    html += '<div class="card"><div class="card-title">开始精准练习</div>';
+    html += '<div style="display:flex;gap:8px;margin-bottom:12px;">';
+    ['math', 'english', 'chinese'].forEach(function(s) {
+        const names = { math: '数学', english: '英语', chinese: '语文' };
+        html += '<button class="btn ' + (s === currentPracticeSubject ? '' : 'btn-secondary') + '" style="flex:1;margin:0;padding:8px;font-size:12px;" onclick="switchPracticeSubject(\'' + s + '\')">' + names[s] + '</button>';
+    });
+    html += '</div>';
+    
+    if (q) {
+        html += '<div class="practice-card" id="practice-area">';
+        html += '<div class="practice-question">' + q.q + '</div>';
+        html += '<div class="thinking-options">';
+        q.opts.forEach(function(opt, i) {
+            html += '<div class="thinking-option" onclick="answerPractice(' + i + ',' + q.a + ',\'' + currentPracticeSubject + '\')">' + opt + '</div>';
+        });
+        html += '</div></div>';
+    }
+    
+    html += '</div>';
+    return html;
+}
+
+function switchPracticeSubject(subject) {
+    currentPracticeSubject = subject;
+    currentQuestionIndex = 0;
+    var c = document.getElementById('content-practice');
+    if (c) render('practice', c);
+}
+
+function answerPractice(selected, correct, subject) {
+    var options = document.querySelectorAll('#practice-area .thinking-option');
+    var data = loadData();
+    var u = data.user;
+    
+    options.forEach(function(opt, i) {
+        opt.onclick = null;
+        if (i === correct) opt.classList.add('correct');
+        else if (i === selected && selected !== correct) opt.classList.add('wrong');
+    });
+    
+    if (selected === correct) {
+        u.knowledge[subject] = Math.min(100, (u.knowledge[subject] || 30) + 5);
+        u.todayStats.correct = (u.todayStats.correct || 0) + 1;
+        showToast('✓ 回答正确！');
+    } else {
+        u.knowledge[subject] = Math.max(0, (u.knowledge[subject] || 30) - 3);
+        u.wrongNotes = u.wrongNotes || [];
+        u.wrongNotes.push({ question: practiceQuestions[subject][currentQuestionIndex % practiceQuestions[subject].length].q, answer: practiceQuestions[subject][currentQuestionIndex % practiceQuestions[subject].length].opts[correct] });
+        showToast('✗ 回答错误');
+    }
+    
+    u.todayStats.questions = (u.todayStats.questions || 0) + 1;
+    saveData(data);
+    updateStats();
+    
+    currentQuestionIndex++;
+    setTimeout(function() {
+        var c = document.getElementById('content-practice');
+        if (c) render('practice', c);
+    }, 1500);
+}
+
+// ====== 认知地图 ======
+function renderMap() {
+    const u = getUser();
+    const abilities = u.abilities || { attention: 65, memory: 60, logic: 70, creativity: 55, problem: 65, strategy: 60 };
+    
+    let html = '<div class="card"><div class="card-title">六维认知能力</div>';
+    
+    const abilityNames = {
+        attention: { name: '🎯 注意力', desc: '专注力和集中能力' },
+        memory: { name: '🧠 记忆力', desc: '信息存储和提取' },
+        logic: { name: '📊 逻辑力', desc: '推理和分析能力' },
+        creativity: { name: '🎨 创造力', desc: '创新思维' },
+        problem: { name: '💡 思维力', desc: '问题解决能力' },
+        strategy: { name: '⚡ 反应力', desc: '快速决策能力' }
+    };
+    
+    for (var key in abilities) {
+        var ability = abilityNames[key];
+        if (!ability) continue;
+        html += '<div class="item">';
+        html += '<div class="item-title">' + ability.name + ' <span style="font-size:12px;color:var(--blue)">' + abilities[key] + '分</span></div>';
+        html += '<div class="item-desc">' + ability.desc + '</div>';
+        html += '<div class="progress-bar"><div class="progress-fill" style="width:' + abilities[key] + '%"></div></div>';
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    
+    // 雷达图示意
+    html += '<div class="card"><div class="card-title">能力雷达图</div>';
+    html += '<div class="radar-container">';
+    html += '<svg viewBox="0 0 200 200" style="width:100%;height:100%;">';
+    // 六边形背景
+    var cx = 100, cy = 100, r = 80;
+    var points = [];
+    for (var i = 0; i < 6; i++) {
+        var angle = (i * 60 - 90) * Math.PI / 180;
+        points.push({ x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) });
+    }
+    // 背景六边形
+    for (var j = 1; j <= 5; j++) {
+        var levelPoints = [];
+        for (var i = 0; i < 6; i++) {
+            var angle = (i * 60 - 90) * Math.PI / 180;
+            levelPoints.push(cx + (r * j / 5) * Math.cos(angle) + ',' + (cy + (r * j / 5) * Math.sin(angle)));
+        }
+        html += '<polygon points="' + levelPoints.join(' ') + '" fill="none" stroke="#e0e0e0" stroke-width="1"/>';
+    }
+    // 轴线
+    for (var i = 0; i < 6; i++) {
+        html += '<line x1="' + cx + '" y1="' + cy + '" x2="' + points[i].x + '" y2="' + points[i].y + '" stroke="#e0e0e0" stroke-width="1"/>';
+    }
+    // 数据区域
+    var values = [abilities.attention / 100, abilities.memory / 100, abilities.logic / 100, abilities.creativity / 100, abilities.problem / 100, abilities.strategy / 100];
+    var dataPoints = [];
+    for (var i = 0; i < 6; i++) {
+        var angle = (i * 60 - 90) * Math.PI / 180;
+        dataPoints.push((cx + r * values[i] * Math.cos(angle)) + ',' + (cy + r * values[i] * Math.sin(angle)));
+    }
+    html += '<polygon points="' + dataPoints.join(' ') + '" fill="rgba(51,119,255,0.3)" stroke="var(--blue)" stroke-width="2"/>';
+    // 标签
+    var labels = ['注意力', '记忆力', '逻辑力', '创造力', '思维力', '反应力'];
+    for (var i = 0; i < 6; i++) {
+        var angle = (i * 60 - 90) * Math.PI / 180;
+        var lx = cx + (r + 20) * Math.cos(angle);
+        var ly = cy + (r + 20) * Math.sin(angle);
+        html += '<text x="' + lx + '" y="' + ly + '" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#666">' + labels[i] + '</text>';
+    }
+    html += '</svg></div></div>';
+    
+    // 知识掌握度
+    html += '<div class="card"><div class="card-title">知识掌握度</div>';
+    const knowledgeNames = { math: '📐 数学', chinese: '📝 语文', english: '🔤 英语', physics: '⚡ 物理', chemistry: '🧪 化学' };
+    for (var k in u.knowledge) {
+        var kn = knowledgeNames[k];
+        if (!kn) continue;
+        html += '<div class="item">';
+        html += '<div class="item-title">' + kn + ' <span style="font-size:12px;color:var(--blue)">' + u.knowledge[k] + '%</span></div>';
+        html += '<div class="progress-bar"><div class="progress-fill" style="width:' + u.knowledge[k] + '%"></div></div>';
+        html += '</div>';
+    }
+    html += '</div>';
+    
+    return html;
+}
+
+// ====== 学习计划 ======
+function renderPlan() {
+    const u = getUser();
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const studyDays = u.studyDays || {};
+    
+    let html = '<div class="card"><div class="card-title">' + (month + 1) + '月学习日历</div>';
+    html += '<div class="calendar-grid">';
+    ['日', '一', '二', '三', '四', '五', '六'].forEach(function(d) {
+        html += '<div style="text-align:center;font-size:10px;color:#999;padding:4px;">' + d + '</div>';
+    });
+    for (var i = 0; i < firstDay; i++) {
+        html += '<div class="calendar-day disabled"></div>';
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+        var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        var isToday = d === today.getDate();
+        var isChecked = !!studyDays[dateStr];
+        html += '<div class="calendar-day' + (isChecked ? ' checked' : '') + (isToday ? ' today' : '') + '" onclick="toggleStudyDay(\'' + dateStr + '\')">' + d + '</div>';
+    }
+    html += '</div></div>';
+    
+    // 周计划
+    html += '<div class="card"><div class="card-title">本周训练任务</div>';
+    const weekTasks = [
+        { text: '注意力训练 15分钟', time: '09:00', type: 'attention' },
+        { text: '记忆力练习 20分钟', time: '14:00', type: 'memory' },
+        { text: '思维训练题目 10题', time: '16:00', type: 'thinking' },
+        { text: '益智游戏挑战 15分钟', time: '19:00', type: 'game' }
+    ];
+    const planTasks = u.planTasks || {};
+    weekTasks.forEach(function(task, i) {
+        var completed = planTasks['week_' + i] || false;
+        html += '<div class="plan-task' + (completed ? ' completed' : '') + '" onclick="toggleTask(\'week_' + i + '\')">';
+        html += '<div class="task-checkbox' + (completed ? ' checked' : '') + '">' + (completed ? '✓' : '') + '</div>';
+        html += '<div><div class="task-text">' + task.text + '</div><div class="task-time">' + task.time + '</div></div></div>';
+    });
+    html += '</div>';
+    
+    // 四周计划
+    html += '<div class="card"><div class="card-title">六周训练计划</div>';
+    const weeks = [
+        { name: 'Week 1: 基础训练', desc: '注意力+记忆力入门', progress: 71 },
+        { name: 'Week 2: 能力提升', desc: '逻辑思维训练', progress: 0 },
+        { name: 'Week 3: 综合应用', desc: '综合能力提升', progress: 0 },
+        { name: 'Week 4: 强化训练', desc: '高阶思维训练', progress: 0 },
+        { name: 'Week 5: 实战演练', desc: '模拟测试', progress: 0 },
+        { name: 'Week 6: 巩固冲刺', desc: '全面复习', progress: 0 }
+    ];
+    weeks.forEach(function(w) {
+        html += '<div class="item"><div class="item-title">' + w.name + '</div>';
+        html += '<div class="item-desc">' + w.desc;
+        if (w.progress > 0) {
+            html += '<div class="progress-bar"><div class="progress-fill" style="width:' + w.progress + '%"></div></div>';
+        } else {
+            html += ' <span style="color:#999">未开始</span>';
+        }
+        html += '</div></div>';
+    });
+    html += '</div>';
+    
+    html += '<button class="btn" onclick="startTodayTraining()">开始今日训练</button>';
+    
+    return html;
+}
+
+function toggleStudyDay(dateStr) {
+    var data = loadData();
+    var u = data.user;
+    u.studyDays = u.studyDays || {};
+    if (u.studyDays[dateStr]) {
+        delete u.studyDays[dateStr];
+    } else {
+        u.studyDays[dateStr] = Date.now();
+        u.todayStats.minutes = (u.todayStats.minutes || 0) + 30;
+    }
+    saveData(data);
+    updateStats();
+    var c = document.getElementById('content-plan');
+    if (c) render('plan', c);
+}
+
+function toggleTask(taskId) {
+    var data = loadData();
+    var u = data.user;
+    u.planTasks = u.planTasks || {};
+    u.planTasks[taskId] = !u.planTasks[taskId];
+    saveData(data);
+    var c = document.getElementById('content-plan');
+    if (c) render('plan', c);
+}
+
+function startTodayTraining() {
+    showToast('正在进入训练...');
+    setTimeout(function() { openPage('games'); }, 500);
+}
+
+// ====== 母题训练 ======
+const topicCategories = [
+    { id: 'math', name: '数学母题', count: 42, color: '#667eea', desc: '代数、几何、函数等' },
+    { id: 'english', name: '英语母题', count: 35, color: '#FF9A63', desc: '语法、阅读、写作' },
+    { id: 'physics', name: '物理母题', count: 28, color: '#4facfe', desc: '力学、电学、热学' },
+    { id: 'chemistry', name: '化学母题', count: 21, color: '#43E97B', desc: '元素、反应、计算' }
+];
+
+var currentTopicCategory = 'math';
+var currentTopicIndex = 0;
+
+function renderTopics() {
+    let html = '<div class="card"><div class="card-title">母题分类</div>';
+    
+    topicCategories.forEach(function(cat) {
+        html += '<div class="topic-card" onclick="selectTopicCategory(\'' + cat.id + '\')">';
+        html += '<div class="topic-header" style="background:' + cat.color + '">';
+        html += '<div class="topic-title">' + cat.name + ' <span class="badge">' + cat.count + '题</span></div>';
+        html += '<div class="topic-subtitle">' + cat.desc + '</div></div>';
+        html += '<div class="topic-footer"><span class="topic-difficulty">已练习 ' + getTopicProgress(cat.id) + ' 题</span></div>';
+        html += '</div>';
+    });
+    
+    html += '</div>';
+    return html;
+}
+
+function getTopicProgress(categoryId) {
+    var data = loadData();
+    var results = data.user.topicResults || {};
+    return results[categoryId] ? Object.keys(results[categoryId]).length : 0;
+}
+
+function selectTopicCategory(categoryId) {
+    currentTopicCategory = categoryId;
+    currentTopicIndex = 0;
+    
+    const cat = topicCategories.find(function(c) { return c.id === categoryId; });
+    if (!cat) return;
+    
+    const questions = getTopicQuestions(categoryId);
+    const q = questions[currentTopicIndex];
+    
+    var content = '<div class="modal-title">' + cat.name + '</div>';
+    content += '<div class="practice-card">';
+    content += '<div class="practice-question" style="margin-bottom:12px;">第 ' + (currentTopicIndex + 1) + ' 题 / 共 ' + questions.length + ' 题</div>';
+    content += '<div class="practice-question">' + q.q + '</div>';
+    content += '<div class="thinking-options">';
+    q.opts.forEach(function(opt, i) {
+        content += '<div class="thinking-option" onclick="answerTopic(' + i + ',' + q.a + ')">' + opt + '</div>';
+    });
+    content += '</div>';
+    content += '<div id="topic-result"></div>';
+    content += '</div>';
+    content += '<button class="btn btn-secondary" onclick="closeModal()">退出练习</button>';
+    
+    openModal(content);
+}
+
+function getTopicQuestions(categoryId) {
+    if (categoryId === 'math') {
+        return [
+            { q: '化简: 2x + 3x = ?', opts: ['5x', '6x', '5x²', '6x²'], a: 0 },
+            { q: '若 x² = 49，则 x = ?', opts: ['7', '-7', '±7', '49'], a: 2 },
+            { q: '等边三角形每个内角度数是？', opts: ['60°', '90°', '45°', '120°'], a: 0 },
+            { q: '计算: (-3) × (-4) = ?', opts: ['-12', '12', '-7', '7'], a: 1 },
+            { q: '圆的面积公式是？', opts: ['πr²', '2πr', 'πd', 'πr'], a: 0 }
+        ];
+    } else if (categoryId === 'english') {
+        return [
+            { q: 'I ___ to school every day.', opts: ['go', 'goes', 'going', 'went'], a: 0 },
+            { q: 'The sky is ___.', opts: ['blue', 'big', 'tall', 'long'], a: 0 },
+            { q: 'She ___ English well.', opts: ['speaks', 'speak', 'speaking', 'spoke'], a: 0 },
+            { q: 'There ___ two books on the desk.', opts: ['are', 'is', 'be', 'been'], a: 0 },
+            { q: '___ you like some water?', opts: ['Would', 'Could', 'Should', 'Might'], a: 0 }
+        ];
+    } else if (categoryId === 'physics') {
+        return [
+            { q: '速度的单位是？', opts: ['m/s', 'kg', 'N', 'W'], a: 0 },
+            { q: '光的传播速度约为？', opts: ['3×10⁸m/s', '3×10⁶m/s', '3×10⁴m/s', '3×10²m/s'], a: 0 },
+            { q: '物体在地球上的重力加速度约为？', opts: ['9.8m/s²', '10.8m/s²', '8.8m/s²', '11.8m/s²'], a: 0 },
+            { q: '水的密度是？', opts: ['1g/cm³', '2g/cm³', '0.5g/cm³', '10g/cm³'], a: 0 }
+        ];
+    } else {
+        return [
+            { q: '水的化学式是？', opts: ['H₂O', 'CO₂', 'NaCl', 'O₂'], a: 0 },
+            { q: '氧气的化学符号是？', opts: ['O₂', 'H₂', 'N₂', 'CO₂'], a: 0 },
+            { q: '燃烧需要哪些条件？', opts: ['可燃物+氧气+着火点', '只需可燃物', '只需氧气', '只需高温'], a: 0 }
+        ];
+    }
+}
+
+function answerTopic(selected, correct) {
+    var options = document.querySelectorAll('#detail-content .thinking-option');
+    options.forEach(function(opt, i) {
+        opt.onclick = null;
+        if (i === correct) opt.classList.add('correct');
+        else if (i === selected && selected !== correct) opt.classList.add('wrong');
+    });
+    
+    var resultEl = document.getElementById('topic-result');
+    var data = loadData();
+    var u = data.user;
+    
+    u.topicResults = u.topicResults || {};
+    u.topicResults[currentTopicCategory] = u.topicResults[currentTopicCategory] || {};
+    
+    if (selected === correct) {
+        resultEl.innerHTML = '<div class="practice-result correct">✓ 回答正确！</div>';
+        u.topicResults[currentTopicCategory][currentTopicIndex] = true;
+    } else {
+        resultEl.innerHTML = '<div class="practice-result wrong">✗ 回答错误，正确答案是：' + getTopicQuestions(currentTopicCategory)[currentTopicIndex].opts[correct] + '</div>';
+        u.topicResults[currentTopicCategory][currentTopicIndex] = false;
+    }
+    
+    saveData(data);
+    
+    currentTopicIndex++;
+    setTimeout(function() {
+        if (currentTopicIndex < getTopicQuestions(currentTopicCategory).length) {
+            selectTopicCategory(currentTopicCategory);
+        } else {
+            showToast('恭喜完成所有题目！');
+            closeModal();
+        }
+    }, 1500);
+}
+
+// ====== 学霸方法 ======
+const methods = [
+    { id: 'feynman', title: '费曼学习法', desc: '用教的方式学习，把知识讲给别人听', icon: '🧠', color: '#667eea' },
+    { id: 'pomodoro', title: '番茄工作法', desc: '25分钟专注+5分钟休息，提高效率', icon: '🍅', color: '#FF6B6B' },
+    { id: 'cornell', title: '康奈尔笔记法', desc: '三分法笔记，提高复习效率', icon: '📝', color: '#4facfe' },
+    { id: 'mindmap', title: '思维导图法', desc: '可视化知识结构，关联记忆', icon: '🗺️', color: '#43E97B' },
+    { id: 'ebbinghaus', title: '艾宾浩斯记忆法', desc: '科学复习时间表，对抗遗忘', icon: '🔄', color: '#f6d365' },
+    { id: 'sq3r', title: 'SQ3R阅读法', desc: '泛读、提问、阅读、复述、复习', icon: '📖', color: '#FF9A63' }
+];
+
+function renderMethod() {
+    let html = '<div class="card"><div class="card-title">学霸学习方法</div>';
+    
+    methods.forEach(function(m) {
+        html += '<div class="method-card" onclick="showMethodDetail(\'' + m.id + '\')">';
+        html += '<div style="display:flex;align-items:center;gap:12px;">';
+        html += '<div style="width:44px;height:44px;background:' + m.color + ';border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;">' + m.icon + '</div>';
+        html += '<div style="flex:1;"><div style="font-size:14px;font-weight:600;">' + m.title + '</div>';
+        html += '<div style="font-size:12px;color:#666;margin-top:2px;">' + m.desc + '</div></div>';
+        html += '</div></div>';
+    });
+    
+    html += '</div>';
+    
+    // 训练入口
+    html += '<div class="card"><div class="card-title">方法训练</div>';
+    html += '<button class="btn" onclick="startMethodPractice(\'feynman\')">开始费曼学习训练</button>';
+    html += '<button class="btn btn-secondary" onclick="startMethodPractice(\'pomodoro\')">开始番茄钟训练</button>';
+    html += '</div>';
+    
+    return html;
+}
+
+function showMethodDetail(id) {
+    var m = methods.find(function(x) { return x.id === id; });
+    if (!m) return;
+    
+    var details = {
+        feyman: { title: '费曼学习法', steps: ['选择一个概念', '用简单语言解释', '找出不理解的地方', '简化类比讲解'], tip: '每天用这个方法复习一个知识点' },
+        pomodoro: { title: '番茄工作法', steps: ['设定25分钟专注', '全身心投入工作', '计时结束休息5分钟', '每4个番茄钟休息15分钟'], tip: '使用计时器，严格执行' },
+        cornell: { title: '康奈尔笔记法', steps: ['右侧记录笔记', '左侧写关键词', '底部写总结', '复习时遮住右侧回忆'], tip: '课后24小时内复习效果最好' },
+        mindmap: { title: '思维导图法', steps: ['中心写主题', '展开主分支', '添加细节', '用颜色区分'], tip: '每周整理一科思维导图' },
+        ebbinghaus: { title: '艾宾浩斯记忆法', steps: ['学习后1天复习', '3天后再复习', '7天第三次复习', '14天第四次复习', '30天最后复习'], tip: '严格按照时间节点执行' },
+        sq3r: { title: 'SQ3R阅读法', steps: ['Survey: 浏览标题目录', 'Question: 提出问题', 'Read: 仔细阅读', 'Recite: 复述要点', 'Review: 定期复习'], tip: '适合教科书和长篇文章' }
+    };
+    
+    var d = details[id] || {};
+    
+    var content = '<div class="modal-title">' + m.icon + ' ' + d.title + '</div>';
+    content += '<div style="background:#f5f7ff;padding:12px;border-radius:10px;margin-bottom:16px;font-size:14px;">' + m.desc + '</div>';
+    content += '<div style="font-size:14px;font-weight:600;margin-bottom:10px;">📋 具体步骤：</div>';
+    d.steps.forEach(function(s, i) {
+        content += '<div style="display:flex;gap:10px;margin-bottom:8px;align-items:center;">';
+        content += '<div style="width:22px;height:22px;background:var(--blue);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">' + (i + 1) + '</div>';
+        content += '<div style="font-size:13px;color:#666;">' + s + '</div></div>';
+    });
+    content += '<div style="background:#fff3cd;padding:12px;border-radius:10px;font-size:12px;color:#856404;margin-top:16px;">💡 ' + d.tip + '</div>';
+    content += '<button class="btn" style="margin-top:16px;" onclick="closeModal()">我学会了</button>';
+    
+    openModal(content);
+}
+
+function startMethodPractice(id) {
+    var m = methods.find(function(x) { return x.id === id; });
+    if (!m) return;
+    
+    var tasks = {
+        feyman: ['选择今天学的一个知识点', '用一句话概括核心', '详细解释给自己或他人听', '找出讲解不清的地方', '用比喻重新解释'],
+        pomodoro: ['选择一个任务', '设定25分钟', '专注完成', '休息5分钟', '检查进度']
+    };
+    
+    var content = '<div class="modal-title">' + m.icon + ' ' + m.title + ' 训练</div>';
+    tasks[id].forEach(function(task, i) {
+        content += '<div class="plan-task" onclick="this.classList.toggle(\'completed\');this.querySelector(\'.task-checkbox\').classList.toggle(\'checked\')">';
+        content += '<div class="task-checkbox"></div><div class="task-text">' + task + '</div></div>';
+    });
+    content += '<button class="btn" style="margin-top:16px;" onclick="closeModal();showToast(\'训练完成！\')">完成训练</button>';
+    
+    openModal(content);
+}
+
+// ====== 思维训练 ======
+const thinkingTypes = [
+    { id: 'logic', name: '逻辑推理', icon: '🔍', desc: '提升逻辑分析能力', color: '#667eea' },
+    { id: 'creative', name: '创意思维', icon: '🎨', desc: '发散思维训练', color: '#FF9A63' },
+    { id: 'critical', name: '批判思维', icon: '⚖️', desc: '独立思考能力', color: '#43E97B' },
+    { id: 'system', name: '系统思维', icon: '🌳', desc: '整体分析能力', color: '#4facfe' }
+];
+
+const thinkingQuestions = {
+    logic: [
+        { q: '如果A>B，B>C，那么A和C的关系是？', opts: ['A>C', 'A<C', 'A=C', '无法确定'], a: 0 },
+        { q: '找规律：2, 4, 8, 16, ?', opts: ['20', '24', '32', '30'], a: 2 },
+        { q: '小明比小华高，小红比小华矮，谁最高？', opts: ['小明', '小华', '小红', '一样高'], a: 0 },
+        { q: '下列哪个数最大？0.5, 50%, 1/3, 0.333', opts: ['0.5', '50%', '1/3', '0.333'], a: 0 }
+    ],
+    creative: [
+        { q: '砖头有哪些创意用途？(多选)', opts: ['压纸', '当锤子', '做装饰', '防身'], a: 0 },
+        { q: '如何让学习更有趣？', opts: ['游戏化', '竞赛', '小组合作', '以上都可以'], a: 3 },
+        { q: '如果你是校长，你会做什么改变？', opts: ['减少作业', '增加活动', '改进伙食', '多种选择'], a: 3 }
+    ],
+    critical: [
+        { q: '有人说"玩游戏浪费时间"，你怎么看？', opts: ['完全同意', '完全反对', '适度游戏有益', '取决于游戏类型'], a: 3 },
+        { q: '新闻说"某公司业绩增长200%"，你的看法是？', opts: ['一定是真的', '需要看基数', '肯定是炒作', '无法判断'], a: 1 }
+    ],
+    system: [
+        { q: '分析学校食堂问题时，首先应该？', opts: ['找负责人', '了解现状', '抱怨', '比较其他学校'], a: 1 },
+        { q: '优化学习方法的第一步是？', opts: ['制定计划', '了解现状', '模仿他人', '买资料'], a: 1 }
+    ]
+};
+
+var currentThinkingQuestionIndex = 0;
+
+function renderThinking() {
+    let html = '<div class="card"><div class="card-title">思维训练</div>';
+    
+    thinkingTypes.forEach(function(t) {
+        html += '<div class="item" onclick="startThinkingType(\'' + t.id + '\')">';
+        html += '<div class="item-title">' + t.icon + ' ' + t.name + '</div>';
+        html += '<div class="item-desc">' + t.desc + '</div>';
+        html += '</div>';
+    });
+    
+    html += '</div>';
+    return html;
+}
+
+function startThinkingType(type) {
+    currentThinkingType = type;
+    currentThinkingQuestionIndex = 0;
+    showThinkingQuestion();
+}
+
+function showThinkingQuestion() {
+    var questions = thinkingQuestions[currentThinkingType];
+    if (!questions || questions.length === 0) {
+        showToast('暂无题目');
+        return;
+    }
+    var q = questions[currentThinkingQuestionIndex % questions.length];
+    var typeInfo = thinkingTypes.find(function(t) { return t.id === currentThinkingType; });
+    
+    var content = '<div class="modal-title">' + typeInfo.icon + ' ' + typeInfo.name + '训练</div>';
+    content += '<div class="practice-card">';
+    content += '<div style="font-size:12px;color:#999;margin-bottom:12px;">第 ' + (currentThinkingQuestionIndex + 1) + ' 题 / 共 ' + questions.length + ' 题</div>';
+    content += '<div class="practice-question">' + q.q + '</div>';
+    content += '<div class="thinking-options">';
+    q.opts.forEach(function(opt, i) {
+        content += '<div class="thinking-option" onclick="answerThinking(' + i + ',' + q.a + ')">' + opt + '</div>';
+    });
+    content += '</div>';
+    content += '<div id="thinking-result"></div>';
+    content += '</div>';
+    content += '<button class="btn btn-secondary" onclick="closeModal()">退出</button>';
+    
+    openModal(content);
+}
+
+function answerThinking(selected, correct) {
+    var options = document.querySelectorAll('#detail-content .thinking-option');
+    options.forEach(function(opt, i) {
+        opt.onclick = null;
+        if (i === correct) opt.classList.add('correct');
+        else if (i === selected && selected !== correct) opt.classList.add('wrong');
+    });
+    
+    var resultEl = document.getElementById('thinking-result');
+    var data = loadData();
+    var u = data.user;
+    
+    u.thinkingScores = u.thinkingScores || { logic: 0, creative: 0, critical: 0, system: 0 };
+    
+    if (selected === correct) {
+        resultEl.innerHTML = '<div class="practice-result correct">✓ 正确！+5分</div>';
+        u.thinkingScores[currentThinkingType] = Math.min(100, (u.thinkingScores[currentThinkingType] || 0) + 5);
+    } else {
+        resultEl.innerHTML = '<div class="practice-result wrong">✗ 错误，正确答案是：' + thinkingQuestions[currentThinkingType][currentThinkingQuestionIndex % thinkingQuestions[currentThinkingType].length].opts[correct] + '</div>';
+    }
+    
+    saveData(data);
+    
+    currentThinkingQuestionIndex++;
+    setTimeout(function() {
+        if (currentThinkingQuestionIndex < thinkingQuestions[currentThinkingType].length) {
+            showThinkingQuestion();
+        } else {
+            showToast('完成训练！');
+            closeModal();
+        }
+    }, 1500);
+}
+
+// ====== 训练游戏 ======
+const gameTypes = [
+    { id: 'schulte', name: '舒尔特方格', icon: '🎯', desc: '注意力训练', color: '#667eea' },
+    { id: 'visual', name: '视觉搜索', icon: '👀', desc: '观察力训练', color: '#FF9A63' },
+    { id: 'digit', name: '数字记忆', icon: '🔢', desc: '记忆力训练', color: '#43E97B' },
+    { id: 'pattern', name: '图形记忆', icon: '🎨', desc: '图像记忆', color: '#4facfe' },
+    { id: 'tap', name: '快速点击', icon: '⚡', desc: '反应力训练', color: '#FF6B6B' },
+    { id: 'color', name: '颜色识别', icon: '🌈', desc: ' Stroop测试', color: '#f6d365' },
+    { id: 'diff', name: '找不同', icon: '🔍', desc: '细节观察', color: '#a1c4fd' },
+    { id: 'reason', name: '图形推理', icon: '🧩', desc: '逻辑推理', color: '#764ba2' }
+];
+
+function renderGames() {
+    let html = '<div class="card"><div class="card-title">选择训练游戏</div>';
+    html += '<div class="game-grid">';
+    
+    gameTypes.forEach(function(g) {
+        html += '<div class="game-btn" onclick="startGame(\'' + g.id + '\')">';
+        html += '<div class="game-icon" style="width:52px;height:52px;background:' + g.color + ';border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:24px;">' + g.icon + '</div>';
+        html += '<div class="game-name">' + g.name + '</div>';
+        html += '<div style="font-size:10px;color:#999;margin-top:2px;">' + g.desc + '</div>';
+        html += '</div>';
+    });
+    
+    html += '</div></div>';
+    html += '<div class="card"><div class="card-title">游戏记录</div>';
+    
+    var data = loadData();
+    var scores = data.user.gameScores || {};
+    
+    if (Object.keys(scores).length === 0) {
+        html += '<div style="text-align:center;padding:20px;color:#999;">暂无游戏记录<br><span style="font-size:12px;">开始游戏来创造记录吧！</span></div>';
+    } else {
+        for (var id in scores) {
+            var g = gameTypes.find(function(x) { return x.id === id; });
+            if (!g) continue;
+            html += '<div class="item">';
+            html += '<div class="item-title">' + g.icon + ' ' + g.name + ' <span style="color:var(--blue);font-size:12px;">最高分: ' + scores[id] + '</span></div>';
+            html += '</div>';
+        }
+    }
+    html += '</div>';
+    
+    return html;
+}
+
+// ====== 游戏核心逻辑 ======
+var gameScore = 0, gameType = '', gameLevel = 1, gameTimer = null, gameStartTime = 0;
+var schulteNext = 1, currentDigits = '', patternCorrect = [], patternFound = [];
+
+function startGame(type) {
+    gameType = type;
+    gameScore = 0;
+    gameLevel = 1;
+    
+    var content = '<div class="modal-title" id="game-title">' + getGameIcon(type) + ' ' + getGameName(type) + '</div>';
+    content += '<div style="text-align:center;font-size:14px;color:#666;margin-bottom:12px;">得分: <span id="game-score" style="color:var(--blue);font-weight:bold;font-size:18px;">0</span></div>';
+    content += '<div class="game-board" id="game-board" style="min-height:250px;"></div>';
+    content += '<button class="btn btn-secondary" style="margin-top:16px;" onclick="closeModal()">退出游戏</button>';
+    
+    openModal(content);
+    
+    setTimeout(function() {
+        switch(type) {
+            case 'schulte': startSchulte(); break;
+            case 'visual': startVisual(); break;
+            case 'digit': startDigit(); break;
+            case 'pattern': startPattern(); break;
+            case 'tap': startTap(); break;
+            case 'color': startColor(); break;
+            case 'diff': startDiff(); break;
+            case 'reason': startReason(); break;
+        }
+    }, 100);
+}
+
+function getGameIcon(type) {
+    var g = gameTypes.find(function(x) { return x.id === type; });
+    return g ? g.icon : '🎮';
+}
+
+function getGameName(type) {
+    var g = gameTypes.find(function(x) { return x.id === type; });
+    return g ? g.name : '游戏';
+}
+
+// 舒尔特方格
+function startSchulte() {
+    document.getElementById('game-title').textContent = '🎯 舒尔特方格';
+    var sizes = [3, 4, 5, 6];
+    var size = sizes[Math.min(gameLevel - 1, 3)];
+    var nums = Array.from({ length: size * size }, function(_, i) { return i + 1; }).sort(function() { return Math.random() - 0.5; });
+    
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-' + size;
+    board.style.display = 'grid';
+    board.innerHTML = nums.map(function(n) {
+        return '<div class="game-cell" onclick="checkSchulte(this,' + n + ')" style="background:white;font-size:' + (28 - size * 2) + 'px;font-weight:bold;cursor:pointer;">' + n + '</div>';
+    }).join('');
+    
+    schulteNext = 1;
+    gameStartTime = Date.now();
+    if (gameTimer) clearInterval(gameTimer);
+    gameTimer = setInterval(function() {
+        if (Date.now() - gameStartTime > 30000) {
+            clearInterval(gameTimer);
+            endGame();
+        }
+    }, 1000);
+}
+
+function checkSchulte(el, n) {
+    if (n === schulteNext) {
+        el.style.background = '#43E97B';
+        el.style.color = 'white';
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore;
+        schulteNext++;
+        
+        if (schulteNext > el.parentElement.children.length) {
+            if (gameLevel < 4) {
+                gameLevel++;
+                startSchulte();
+            } else {
+                endGame();
+            }
+        }
+    } else {
+        el.style.background = '#ff6b6b';
+        setTimeout(function() { el.style.background = 'white'; }, 200);
+    }
+}
+
+// 视觉搜索
+function startVisual() {
+    document.getElementById('game-title').textContent = '👀 视觉搜索';
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-4';
+    board.style.display = 'grid';
+    
+    var targetIdx = Math.floor(Math.random() * 16);
+    var colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+    var targetColor = colors[Math.floor(Math.random() * 4)];
+    var baseColor = colors.filter(function(c) { return c !== targetColor; })[0];
+    
+    board.innerHTML = Array.from({ length: 16 }, function(_, i) {
+        return '<div class="game-cell" onclick="checkVisual(this,' + i + ',' + targetIdx + ')" style="background:' + (i === targetIdx ? targetColor : baseColor) + ';border-radius:4px;cursor:pointer;"></div>';
+    }).join('');
+    
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+}
+
+function checkVisual(el, idx, targetIdx) {
+    if (idx === targetIdx) {
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore;
+        if (gameScore >= 10) {
+            gameLevel++;
+            document.getElementById('game-title').textContent = '👀 视觉搜索 Lv.' + gameLevel;
+        }
+        setTimeout(function() { startVisual(); }, 300);
+    }
+}
+
+// 数字记忆
+function startDigit() {
+    document.getElementById('game-title').textContent = '🔢 数字记忆';
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-1';
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;';
+    
+    var count = 3 + gameLevel;
+    var digits = Array.from({ length: count }, function() { return Math.floor(Math.random() * 10); }).join('');
+    currentDigits = digits;
+    
+    board.innerHTML = '<div style="font-size:48px;font-weight:bold;color:var(--blue);letter-spacing:8px;">' + digits + '</div><div style="margin-top:20px;font-size:14px;color:#666;">记住这些数字！</div>';
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+    
+    setTimeout(function() {
+        board.innerHTML = '<div style="font-size:16px;color:#666;margin-bottom:12px;">请输入你看到的数字：</div><input type="text" id="digit-input" style="text-align:center;font-size:24px;padding:10px;border:2px solid #ddd;border-radius:8px;width:80%;" maxlength="' + count + '"/><button class="btn" style="margin-top:16px;" onclick="checkDigit()">确认</button>';
+    }, 1500 + count * 200);
+}
+
+function checkDigit() {
+    var input = document.getElementById('digit-input');
+    if (input && input.value === currentDigits) {
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore;
+    }
+    setTimeout(function() { startDigit(); }, 500);
+}
+
+// 图形记忆
+function startPattern() {
+    document.getElementById('game-title').textContent = '🎨 图形记忆';
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-4';
+    board.style.display = 'grid';
+    
+    var emojis = ['🍎', '🍊', '🍋', '🍇', '🌸', '🌺', '⭐', '🌙', '🔥', '💎', '🎁', '🎈'];
+    var count = 4 + gameLevel;
+    var selected = emojis.slice(0, count);
+    board.innerHTML = selected.map(function(e) {
+        return '<div class="game-cell" style="background:#f0f7ff;font-size:28px;">' + e + '</div>';
+    }).join('');
+    
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+    
+    setTimeout(function() {
+        var shuffled = emojis.concat(['🍀', '🌈']).slice(0, 12).sort(function() { return Math.random() - 0.5; });
+        patternCorrect = selected.slice();
+        patternFound = [];
+        board.innerHTML = shuffled.map(function(e) {
+            return '<div class="game-cell" onclick="checkPattern(this,\'' + e + '\')" style="background:white;font-size:24px;cursor:pointer;">?</div>';
+        }).join('');
+    }, 2000 + count * 300);
+}
+
+function checkPattern(el, emoji) {
+    if (el.textContent === '?' && patternCorrect.indexOf(emoji) >= 0 && patternFound.indexOf(emoji) < 0) {
+        el.textContent = emoji;
+        el.style.background = '#f0f7ff';
+        patternFound.push(emoji);
+        
+        if (patternFound.length === patternCorrect.length) {
+            gameScore++;
+            document.getElementById('game-score').textContent = gameScore;
+            if (gameScore >= 2) gameLevel++;
+            setTimeout(function() { startPattern(); }, 500);
+        }
+    } else if (el.textContent === '?') {
+        el.style.background = '#ff6b6b';
+        setTimeout(function() { el.textContent = '?'; el.style.background = 'white'; }, 300);
+    }
+}
+
+// 快速点击
+function startTap() {
+    document.getElementById('game-title').textContent = '⚡ 快速点击';
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-3';
+    board.style.cssText = 'display:grid;position:relative;min-height:200px;';
+    board.innerHTML = Array(9).fill('<div class="game-cell" style="position:relative;"></div>').join('');
+    
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+    gameStartTime = Date.now();
+    
+    if (gameTimer) clearInterval(gameTimer);
+    gameTimer = setInterval(function() {
+        if (Date.now() - gameStartTime > 10000) {
+            clearInterval(gameTimer);
+            endGame();
+            return;
+        }
+        board.querySelectorAll('.game-cell').forEach(function(c) { c.innerHTML = ''; });
+        var cells = board.querySelectorAll('.game-cell');
+        cells[Math.floor(Math.random() * 9)].innerHTML = '<div onclick="event.stopPropagation();tapTarget(this)" style="width:100%;height:100%;background:var(--blue);border-radius:8px;cursor:pointer;"></div>';
+    }, 800);
+}
+
+function tapTarget(el) {
+    el.style.background = '#43E97B';
+    gameScore++;
+    document.getElementById('game-score').textContent = gameScore;
+}
+
+// 颜色识别
+function startColor() {
+    document.getElementById('game-title').textContent = '🌈 颜色识别';
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-1';
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:16px;';
+    
+    var colorWords = [
+        { w: '红', c: '#FF6B6B' },
+        { w: '蓝', c: '#3377FF' },
+        { w: '绿', c: '#43E97B' },
+        { w: '黄', c: '#FFD93D' },
+        { w: '紫', c: '#9B59B6' }
+    ];
+    
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+    gameStartTime = Date.now();
+    
+    if (gameTimer) clearInterval(gameTimer);
+    gameTimer = setInterval(function() {
+        if (Date.now() - gameStartTime > 30000) {
+            clearInterval(gameTimer);
+            endGame();
+            return;
+        }
+        var word = colorWords[Math.floor(Math.random() * 5)];
+        var wrongColor = colorWords.filter(function(c) { return c.c !== word.c; })[Math.floor(Math.random() * 4)];
+        
+        board.innerHTML = '<div style="font-size:48px;font-weight:bold;padding:20px;color:' + wrongColor.c + '">' + word.w + '</div>';
+        board.innerHTML += '<div style="font-size:12px;color:#666;margin-top:8px;">文字显示的颜色是什么？</div>';
+        board.innerHTML += '<div style="display:flex;gap:12px;margin-top:10px;">';
+        board.innerHTML += '<button class="btn" style="flex:1;margin:0;padding:10px;" onclick="colorCorrect()">正确</button>';
+        board.innerHTML += '<button class="btn btn-orange" style="flex:1;margin:0;padding:10px;" onclick="colorWrong()">错误</button></div>';
+    }, 2500);
+}
+
+function colorCorrect() { gameScore++; document.getElementById('game-score').textContent = gameScore; }
+function colorWrong() { gameScore++; document.getElementById('game-score').textContent = gameScore; }
+
+// 找不同
+function startDiff() {
+    document.getElementById('game-title').textContent = '🔍 找不同';
+    var board = document.getElementById('game-board');
+    board.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:10px;';
+    
+    var symbols = ['🌟', '⭐', '🌙', '☀️', '🔴', '🔵'];
+    var left = symbols.slice();
+    var right = symbols.slice();
+    var diffIdx = Math.floor(Math.random() * 6);
+    right[diffIdx] = ['🟢', '🟡', '⬜', '⬛'][Math.floor(Math.random() * 4)];
+    
+    board.innerHTML = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;background:#f5f5f5;border-radius:12px;">' + left.map(function(s) { return '<div style="text-align:center;font-size:24px;">' + s + '</div>'; }).join('') + '</div>';
+    board.innerHTML += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px;background:#f5f5f5;border-radius:12px;">' + right.map(function(s, i) { return '<div style="text-align:center;font-size:24px;cursor:pointer;" onclick="checkDiff(this,' + i + ',' + diffIdx + ')">' + s + '</div>'; }).join('') + '</div>';
+    
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0/1';
+}
+
+function checkDiff(el, idx, correctIdx) {
+    if (idx === correctIdx) {
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore + '/1';
+        if (gameScore >= 3) gameLevel++;
+        setTimeout(function() { startDiff(); }, 500);
+    }
+}
+
+// 图形推理
+function startReason() {
+    document.getElementById('game-title').textContent = '🧩 图形推理';
+    var board = document.getElementById('game-board');
+    board.className = 'game-board size-1';
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:250px;gap:16px;';
+    
+    var patterns = [
+        { seq: ['○', '○○', '○○○'], a: 0, opt: ['○○○○', '○○○', '○○○○○'] },
+        { seq: ['△', '△△', '△△△'], a: 1, opt: ['△△', '△△△', '△△△△'] },
+        { seq: ['□', '□□', '□□□'], a: 2, opt: ['□□', '□□□', '□□□□'] }
+    ];
+    var p = patterns[Math.min(gameLevel - 1, 2)];
+    
+    board.innerHTML = '<div style="display:flex;gap:8px;margin-bottom:12px;">' + p.seq.map(function(s) { return '<div style="padding:8px 12px;background:#f0f7ff;border-radius:8px;font-size:20px;">' + s + '</div>'; }).join('') + '<div style="padding:8px 12px;background:#ddd;border-radius:8px;font-size:20px;">？</div></div>';
+    board.innerHTML += '<div style="display:flex;gap:12px;">' + p.opt.map(function(o, i) {
+        var colors = ['var(--blue)', 'var(--orange)', '#43E97B'];
+        return '<button style="padding:10px 16px;background:' + colors[i] + ';color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;" onclick="checkReason(' + i + ',' + p.a + ')">' + o + '</button>';
+    }).join('') + '</div>';
+    
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+}
+
+function checkReason(selected, correct) {
+    if (selected === correct) {
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore;
+        if (gameScore >= 3) gameLevel++;
+    }
+    setTimeout(function() { startReason(); }, 500);
+}
+
+// 结束游戏
+function endGame() {
+    if (gameTimer) clearInterval(gameTimer);
+    var timeSpent = Math.round((Date.now() - gameStartTime) / 1000);
+    
+    var board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;align-items:center;justify-content:center;min-height:200px;';
+    board.innerHTML = '<div style="text-align:center;"><div style="font-size:48px;margin-bottom:12px;">🎉</div><div style="font-size:20px;font-weight:bold;color:var(--blue);">游戏结束！</div><div style="font-size:36px;font-weight:bold;margin:16px 0;">得分：' + gameScore + '</div><div style="font-size:14px;color:#666;">用时：' + timeSpent + '秒 · 到达关卡 ' + gameLevel + '</div></div>';
+    
+    // 保存成绩
+    var data = loadData();
+    var u = data.user;
+    u.gameScores = u.gameScores || {};
+    u.gameScores[gameType] = Math.max(u.gameScores[gameType] || 0, gameScore);
+    u.todayStats.minutes = (u.todayStats.minutes || 0) + Math.ceil(timeSpent / 60);
+    
+    var today = new Date().toISOString().split('T')[0];
+    u.studyDays = u.studyDays || {};
+    u.studyDays[today] = (u.studyDays[today] || 0) + Math.ceil(timeSpent / 60);
+    
+    saveData(data);
+    updateStats();
+}
+
+// ====== 设置页面 ======
+function renderSettings() {
+    var u = getUser();
+    var html = '<div class="card"><div class="card-title">个人信息</div>';
+    html += '<div class="item"><div class="item-title">👤 ' + u.name + '</div><div class="item-desc">年级：初一</div></div>';
+    html += '</div>';
+    
+    html += '<div class="card"><div class="card-title">难度设置</div>';
+    html += '<p style="font-size:13px;color:#666;margin-bottom:12px;">当前难度：Lv.' + u.difficulty + '</p>';
+    for (var i = 1; i <= 5; i++) {
+        html += '<button class="btn ' + (i === u.difficulty ? '' : 'btn-secondary') + '" style="margin-bottom:8px;" onclick="setDifficulty(' + i + ')">Lv.' + i + ' ' + ['入门', '基础', '进阶', '挑战', '大师'][i - 1] + '</button>';
+    }
+    html += '</div>';
+    
+    html += '<div class="card"><div class="card-title">数据管理</div>';
+    html += '<button class="btn btn-secondary" onclick="showWrongNotes()">查看错题本</button>';
+    html += '<button class="btn btn-secondary" onclick="resetProgress()">重置进度</button>';
+    html += '</div>';
+    
+    return html;
+}
+
+function setDifficulty(level) {
+    var data = loadData();
+    data.user.difficulty = level;
+    saveData(data);
+    showToast('难度已设置为 Lv.' + level);
+    var c = document.getElementById('content-settings');
+    if (c) render('settings', c);
+}
+
+function showWrongNotes() {
+    var u = getUser();
+    var notes = u.wrongNotes || [];
+    
+    var content = '<div class="modal-title">📝 错题本</div>';
+    
+    if (notes.length === 0) {
+        content += '<div style="text-align:center;padding:40px;color:#999;">暂无错题记录<br><span style="font-size:12px;">继续保持，加油！</span></div>';
+    } else {
+        content += '<div style="max-height:300px;overflow-y:auto;">';
+        notes.forEach(function(n) {
+            content += '<div style="background:#f5f7ff;padding:12px;border-radius:8px;margin-bottom:8px;">';
+            content += '<div style="font-size:14px;margin-bottom:4px;">' + n.question + '</div>';
+            content += '<div style="font-size:12px;color:var(--blue);">答案：' + n.answer + '</div></div>';
+        });
+        content += '</div>';
+    }
+    content += '<button class="btn btn-secondary" style="margin-top:16px;" onclick="closeModal()">关闭</button>';
+    
+    openModal(content);
+}
+
+function resetProgress() {
+    if (!confirm('确定要重置所有学习进度吗？')) return;
+    
+    var data = loadData();
+    data.user.gameScores = {};
+    data.user.studyDays = {};
+    data.user.planTasks = {};
+    data.user.wrongNotes = [];
+    data.user.practiceRecords = [];
+    data.user.todayStats = { questions: 0, correct: 0, minutes: 0 };
+    data.user.aiChatCount = 0;
+    data.user.abilities = { attention: 65, memory: 60, logic: 70, creativity: 55, problem: 65, strategy: 60 };
+    data.user.knowledge = { math: 30, chinese: 30, english: 30, physics: 30, chemistry: 30 };
+    saveData(data);
+    
+    updateStats();
+    showToast('进度已重置');
+    closePage();
+}
+
+function clearData() {
+    if (confirm('确定清除所有数据？')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+    }
+}
+
+// ====== 初始化 ======
+document.addEventListener('DOMContentLoaded', function() {
+    updateStats();
+});
 </script>
 </body>
 </html>
