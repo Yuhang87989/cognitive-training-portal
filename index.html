@@ -5255,43 +5255,35 @@ function closeGame() {
 
 // ====== 初始化 ======
 document.addEventListener('DOMContentLoaded', () => {
-    // 强制清除旧数据
-    localStorage.removeItem('cognitive_training_users');
-    localStorage.removeItem('cognitive_training_current_user');
-    localStorage.removeItem('cognitive_training_v43');
-    localStorage.removeItem('cognitive_training_v42');
-    localStorage.removeItem('cognitive_training_v41');
-    localStorage.removeItem('cognitive_training_v40');
-    localStorage.removeItem('cognitive_training_v33');
-    localStorage.removeItem('cognitive_training_v32');
-    console.log('认知训练门户 V107 加载完成');
+    console.log('认知训练门户加载中...');
     
-    // 强制重置为默认用户"邱宇菲"
-    localStorage.removeItem('cognitive_training_users');
-    localStorage.removeItem('cognitive_training_current_user');
+    // 清除旧数据
+    try {
+        localStorage.clear();
+    } catch(e) {}
     
+    // 创建默认用户
     const defaultUser = {
         id: 'user_default',
         name: '邱宇菲',
         grade: 7,
         difficulty: 1,
         points: 1142,
-        createdAt: new Date().toISOString(),
         stats: { totalQuestions: 0, correctAnswers: 0, totalMinutes: 0, streakDays: 0, lastActiveDate: null },
         weeklyProgress: {}, wrongNotes: [], completedTopics: []
     };
     
-    let data = { users: [defaultUser], currentUser: defaultUser.id };
-    saveData(data);
-    console.log('默认用户已创建: 邱宇菲');
-    
-    // 初始化用户列表
-    renderUserList();
+    saveData({ users: [defaultUser], currentUser: defaultUser.id });
     
     // 显示首页
     showPage('home');
-    updateUI();
-    syncTodayStats();
+    
+    // 更新用户名显示
+    document.getElementById('greeting-name').textContent = '邱宇菲';
+    document.getElementById('dropdown-name').textContent = '邱宇菲';
+    document.getElementById('header-avatar').textContent = '邱';
+    
+    console.log('初始化完成');
     
     // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
@@ -5787,13 +5779,7 @@ var videoCtx = {isPlaying:false,currentVideo:null,currentIndex:0,playbackSpeed:1
 var savedPositions = {};
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    // initAudioPlayer(); // 已禁用
-    // initEnhancedVideoPlayer(); // 已禁用
-    // initUnifiedPlayer(); // 已禁用
-    setVolume(80);
-    setEnhancedVolume(80);
-});
+// 音频初始化已全部禁用
 
 function initAudioPlayer() {
     currentAudio = document.getElementById('hidden-audio');
