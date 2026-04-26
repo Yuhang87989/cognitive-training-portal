@@ -7765,17 +7765,14 @@ function logoutAndReturn() {
 
 // 检查是否需要弹出注册模态框
 function checkAndShowRegisterModal() {
+    // 此函数已简化，不再弹出模态框
+    // 用户切换通过右上角下拉菜单完成
     const data = loadData();
     if (data.users.length === 0) {
-        // 没有任何用户，弹出注册模态框
-        openRegisterModal();
-    } else if (!data.currentUser) {
-        // 有用户但没有选择当前用户，弹出用户切换
-        showUserSwitchModal();
-    } else {
-        // 有当前用户，更新UI
-        updateUI();
+        console.log('无用户数据');
     }
+    // 直接更新UI
+    updateUI();
 }
 
 // 打开注册模态框
