@@ -369,7 +369,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <body>
 
 <!-- 登录页（已停用，由下拉菜单替代） -->
-<div id="page-login" class="page active" aria-hidden="true">
+<div id="page-login" class="page" style="display:none;" aria-hidden="true">
     <div class="login-header-bg"></div>
     <div class="login-content">
         <div class="login-logo-area">
@@ -500,7 +500,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 
 <!-- 首页 -->
-<div id="page-home" class="page">
+<div id="page-home" class="page active">
     <div class="home-header">
         <div class="header-top">
             <div style="display:flex;align-items:center;">
@@ -1968,7 +1968,9 @@ function handleLogin() {
         // 先切换页面，再更新UI
         // 检查是否需要显示登录页
     if (!data.currentUser) {
-        showPage('login');
+        showPage('home');
+    updateUI();
+    syncTodayStats();
     } else {
         showPage('home');
         updateUI();
@@ -5239,7 +5241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             completedTopics: []
         };
         data.users.push(defaultUser);
-        // 不自动设置currentUser，让用户手动选择
+        data.currentUser = defaultUser.id;
         saveData(data);
         console.log('默认用户创建成功:', defaultUser.name);
         data = loadData(); // 重新加载数据
@@ -5249,7 +5251,9 @@ document.addEventListener('DOMContentLoaded', () => {
     renderUserList();
     
     // 显示登录页，让用户选择账号
-    showPage('login');
+    showPage('home');
+    updateUI();
+    syncTodayStats();
     
     // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
@@ -7889,7 +7893,9 @@ function registerNewUser() {
     // 跳转到主页
     // 检查是否需要显示登录页
     if (!data.currentUser) {
-        showPage('login');
+        showPage('home');
+    updateUI();
+    syncTodayStats();
     } else {
         showPage('home');
         updateUI();
