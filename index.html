@@ -632,26 +632,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="stat-label">连续天数</div>
             </div>
         </div>
+        
+        <!-- 成长中心卡片 -->
+        <div class="growth-card" onclick="openFullscreenPage('growth')" style="margin-top:12px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:16px;color:white;cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <div style="font-size:16px;font-weight:600;">📈 成长中心</div>
+                <div style="font-size:12px;opacity:0.9;">查看详情 ›</div>
+            </div>
+            <div style="display:flex;gap:12px;">
+                <div style="flex:1;text-align:center;padding:10px;background:rgba(255,255,255,0.15);border-radius:12px;">
+                    <div style="font-size:20px;font-weight:bold;" id="growth-level">Lv.1</div>
+                    <div style="font-size:11px;opacity:0.9;">当前等级</div>
+                </div>
+                <div style="flex:1;text-align:center;padding:10px;background:rgba(255,255,255,0.15);border-radius:12px;">
+                    <div style="font-size:20px;font-weight:bold;" id="growth-points">0</div>
+                    <div style="font-size:11px;opacity:0.9;">总积分</div>
+                </div>
+                <div style="flex:1;text-align:center;padding:10px;background:rgba(255,255,255,0.15);border-radius:12px;">
+                    <div style="font-size:20px;font-weight:bold;" id="growth-achievements">0</div>
+                    <div style="font-size:11px;opacity:0.9;">成就数</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="module-section">
         <div class="module-grid">
-            <button class="module-btn gradient-purple" onclick="openFullscreenPage('avatar')">
-                <div class="module-icon">🎓</div>
-                <div class="module-name">AI数字分身</div>
-                <div class="module-desc">5位AI老师</div>
-            </button>
-            <button class="module-btn gradient-cyan" onclick="openOnlineClassroom()">
-                <span class="module-tag" style="background:#FFD700;color:#333;">新</span>
-                <div class="module-icon">🎥</div>
-                <div class="module-name">在线课堂</div>
-                <div class="module-desc">100人互动</div>
-            </button>
             <button class="module-btn gradient-orange" onclick="openFullscreenPage('practice')">
                 <span class="module-tag" style="background:#667eea;">AI</span>
                 <div class="module-icon">🎯</div>
                 <div class="module-name">AI精准练</div>
                 <div class="module-desc">薄弱点诊断</div>
+            </button>
+            <button class="module-btn gradient-purple" onclick="openFullscreenPage('aiteacher')">
+                <span class="module-tag" style="background:#FFD700;color:#333;">超级</span>
+                <div class="module-icon">👨‍🏫</div>
+                <div class="module-name">AI超级老师</div>
+                <div class="module-desc">全科智能辅导</div>
             </button>
             <button class="module-btn gradient-green" onclick="openFullscreenPage('map')">
                 <div class="module-icon">🧠</div>
@@ -2324,6 +2341,8 @@ function openFullscreenPage(module) {
     const moduleTitles = {
         'avatar': '🎓 AI数字分身',
         'practice': '🎯 AI精准练',
+        'aiteacher': '👨‍🏫 AI超级老师',
+        'growth': '📈 成长中心',
         'map': '🧠 认知地图',
         'plan': '📅 学习计划',
         'topics': '📚 母题训练',
@@ -2341,6 +2360,8 @@ function openFullscreenPage(module) {
     switch(module) {
         case 'avatar': renderAvatar(contentEl); break;
         case 'practice': renderPractice(contentEl); break;
+        case 'aiteacher': renderAITeacher(contentEl); break;
+        case 'growth': renderGrowth(contentEl); break;
         case 'map': renderMap(contentEl); break;
         case 'plan': renderPlan(contentEl); break;
         case 'topics': renderTopics(contentEl); break;
@@ -3737,13 +3758,21 @@ function renderGames(container) {
         {id:'tap',icon:'⚡',name:'快速点击',desc:'反应速度',color:'#FFD93D',gradient:'linear-gradient(135deg,#f6d365,#fda085)'},
         {id:'color',icon:'🌈',name:'色彩识别',desc:'辨色能力',color:'#4ECDC4',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)'},
         {id:'diff',icon:'🔎',name:'找不同',desc:'细节观察',color:'#FA709A',gradient:'linear-gradient(135deg,#fa709a,#fee140)'},
-        {id:'reason',icon:'🧩',name:'逻辑推理',desc:'思维能力',color:'#667eea',gradient:'linear-gradient(135deg,#667eea,#764ba2)'}
+        {id:'reason',icon:'🧩',name:'逻辑推理',desc:'思维能力',color:'#667eea',gradient:'linear-gradient(135deg,#667eea,#764ba2)'},
+        {id:'game2048',icon:'🎲',name:'2048',desc:'数学思维',color:'#ED6C02',gradient:'linear-gradient(135deg,#ED6C02,#F5A623)'},
+        {id:'tetris',icon:'🧱',name:'俄罗斯方块',desc:'空间思维',color:'#E53935',gradient:'linear-gradient(135deg,#E53935,#FF7043)'},
+        {id:'snake',icon:'🐍',name:'贪吃蛇',desc:'反应速度',color:'#4CAF50',gradient:'linear-gradient(135deg,#4CAF50,#8BC34A)'},
+        {id:'memory',icon:'🃏',name:'记忆翻牌',desc:'记忆力训练',color:'#9C27B0',gradient:'linear-gradient(135deg,#9C27B0,#E040FB)'},
+        {id:'whack',icon:'🔨',name:'打地鼠',desc:'反应速度',color:'#795548',gradient:'linear-gradient(135deg,#795548,#A1887F)'},
+        {id:'match3',icon:'💎',name:'三消游戏',desc:'观察力训练',color:'#00BCD4',gradient:'linear-gradient(135deg,#00BCD4,#26C6DA)'},
+        {id:'puzzle',icon:'🔢',name:'数字华容道',desc:'逻辑思维',color:'#607D8B',gradient:'linear-gradient(135deg,#607D8B,#90A4AE)'},
+        {id:'sequence',icon:'🔢',name:'序列记忆',desc:'序列记忆',color:'#FF5722',gradient:'linear-gradient(135deg,#FF5722,#FF8A65)'}
     ];
     
     container.innerHTML = `
         <div class="card">
             <h3 style="margin-bottom:12px;">🎮 认知训练游戏</h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">8大游戏全面提升认知能力！</p>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">16大认知游戏全面提升认知能力！</p>
             
             <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
                 ${games.map(g => `
@@ -3780,6 +3809,283 @@ function renderGames(container) {
     `;
 }
 
+// AI超级老师 - 支持文字、语音、图片、音视频上传
+let aiTeacherRecognition = null;
+let isAITeacherRecording = false;
+let currentAITeacherFile = null;
+
+function renderAITeacher(container) {
+    const supportsSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+    
+    container.innerHTML = `
+        <div class="card">
+            <h3 style="margin-bottom:16px;">👨‍🏫 AI超级老师 <button class="tts-stop-btn" onclick="stopTTSSpeech()" style="display:none;" title="停止朗读">🔇</button></h3>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">全科智能辅导，支持文字、语音、图片、音视频提问</p>
+        </div>
+        <div class="chat-container" style="height:320px;">
+            <div class="chat-messages" id="aiteacher-messages">
+                <div class="chat-msg"><div class="chat-avatar">👨‍🏫</div><div class="chat-bubble">你好！我是AI超级老师，全科辅导，有问必答！支持：
+                    <br>• ✍️ 文字输入
+                    <br>• 🎤 语音输入
+                    <br>• 📷 图片上传
+                    <br>• 🎬 音视频上传
+                </div></div>
+            </div>
+            <div class="chat-input-area">
+                ${supportsSpeechRecognition ? '<button class="chat-voice-btn" id="aiteacher-voice-btn" onclick="toggleAITeacherVoice()" title="语音输入">🎤</button>' : ''}
+                <button class="chat-voice-btn" onclick="document.getElementById('aiteacher-image-input').click()" title="上传图片">📷</button>
+                <button class="chat-voice-btn" onclick="document.getElementById('aiteacher-media-input').click()" title="上传音视频">🎬</button>
+                <input type="file" id="aiteacher-image-input" accept="image/*" style="display:none" onchange="handleAITeacherFile(this, 'image')"/>
+                <input type="file" id="aiteacher-media-input" accept="audio/*,video/*" style="display:none" onchange="handleAITeacherFile(this, 'media')"/>
+                <input type="text" class="chat-input" id="aiteacher-input" placeholder="输入问题..." onkeypress="if(event.key==='Enter')sendToAITeacher()">
+                <button class="chat-send" onclick="sendToAITeacher()">发送</button>
+            </div>
+        </div>
+        <div id="aiteacher-file-preview" style="display:none;padding:12px;background:#f5f7ff;border-radius:12px;margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span id="aiteacher-file-icon" style="font-size:24px;">📄</span>
+                <span id="aiteacher-file-name" style="font-size:12px;color:#666;flex:1;">文件已准备好</span>
+                <button onclick="clearAITeacherFile()" style="background:#ff6b6b;color:white;border:none;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;">移除</button>
+            </div>
+        </div>
+        <div class="template-btns" style="margin-top:12px;">
+            <button class="template-btn" onclick="askAITeacherTemplate('请讲解这道数学题')">数学题讲解</button>
+            <button class="template-btn" onclick="askAITeacherTemplate('帮我分析这篇英语阅读')">英语阅读</button>
+            <button class="template-btn" onclick="askAITeacherTemplate('解释这个物理概念')">物理概念</button>
+            <button class="template-btn" onclick="askAITeacherTemplate('帮我修改作文')">作文修改</button>
+        </div>
+    `;
+}
+
+function toggleAITeacherVoice() {
+    const btn = document.getElementById('aiteacher-voice-btn');
+    const input = document.getElementById('aiteacher-input');
+    if (!input) return;
+    
+    if (!aiTeacherRecognition) {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            showToast('您的浏览器不支持语音输入');
+            return;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        aiTeacherRecognition = new SpeechRecognition();
+        aiTeacherRecognition.lang = 'zh-CN';
+        aiTeacherRecognition.continuous = false;
+        aiTeacherRecognition.interimResults = false;
+    }
+    
+    if (isAITeacherRecording) {
+        aiTeacherRecognition.stop();
+        isAITeacherRecording = false;
+        if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+    } else {
+        isAITeacherRecording = true;
+        if (btn) { btn.classList.add('recording'); btn.textContent = '🔴'; }
+        aiTeacherRecognition.start();
+        
+        aiTeacherRecognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            input.value = transcript;
+            isAITeacherRecording = false;
+            if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+        };
+        
+        aiTeacherRecognition.onerror = function(event) {
+            isAITeacherRecording = false;
+            if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+            if (event.error !== 'no-speech') showToast('语音识别错误');
+        };
+        
+        aiTeacherRecognition.onend = function() {
+            isAITeacherRecording = false;
+            if (btn) { btn.classList.remove('recording'); btn.textContent = '🎤'; }
+        };
+    }
+}
+
+function handleAITeacherFile(input, type) {
+    if (!input.files[0]) return;
+    const file = input.files[0];
+    
+    currentAITeacherFile = { type: type, name: file.name, file: file };
+    
+    const preview = document.getElementById('aiteacher-file-preview');
+    const icon = document.getElementById('aiteacher-file-icon');
+    const nameEl = document.getElementById('aiteacher-file-name');
+    
+    if (preview && icon && nameEl) {
+        if (type === 'image') {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAITeacherFile.data = e.target.result;
+                icon.innerHTML = `<img src="${e.target.result}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">`;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            icon.textContent = file.type.startsWith('audio') ? '🎵' : '🎬';
+            preview.style.display = 'block';
+        }
+        nameEl.textContent = file.name;
+    }
+    showToast('文件已添加，输入问题后发送');
+    input.value = '';
+}
+
+function clearAITeacherFile() {
+    currentAITeacherFile = null;
+    const preview = document.getElementById('aiteacher-file-preview');
+    if (preview) preview.style.display = 'none';
+}
+
+function askAITeacherTemplate(question) {
+    const input = document.getElementById('aiteacher-input');
+    if (input) { input.value = question; sendToAITeacher(); }
+}
+
+async function sendToAITeacher() {
+    const input = document.getElementById('aiteacher-input');
+    const messagesEl = document.getElementById('aiteacher-messages');
+    if (!input || !messagesEl) return;
+    
+    const question = input.value.trim();
+    if (!question && !currentAITeacherFile) {
+        showToast('请输入问题或上传文件');
+        return;
+    }
+    
+    let userMsgHtml = `<div class="chat-msg"><div class="chat-avatar" style="background:linear-gradient(135deg,#1A6BFF,#4A90E2);color:white;font-size:12px;">我</div><div class="chat-bubble">`;
+    if (currentAITeacherFile) {
+        if (currentAITeacherFile.type === 'image' && currentAITeacherFile.data) {
+            userMsgHtml += `<img src="${currentAITeacherFile.data}" style="max-width:150px;border-radius:8px;margin-bottom:8px;"><br>`;
+        } else {
+            userMsgHtml += `📎 ${currentAITeacherFile.name}<br>`;
+        }
+    }
+    userMsgHtml += `${question}</div></div>`;
+    messagesEl.innerHTML += userMsgHtml;
+    
+    input.value = '';
+    clearAITeacherFile();
+    
+    const loadingId = 'aiteacher-loading-' + Date.now();
+    messagesEl.innerHTML += `<div class="chat-msg" id="${loadingId}"><div class="chat-avatar">👨‍🏫</div><div class="chat-bubble"><span class="loading-dots"><span></span><span></span><span></span></span></div></div>`;
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    try {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37' },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [
+                    { role: 'system', content: '你是AI超级老师，专业、耐心、循循善诱，擅长全科辅导（数学、语文、英语、物理、化学等），回答简洁清晰，适合初中生理解。' },
+                    { role: 'user', content: question }
+                ],
+                stream: false
+            })
+        });
+        
+        const data = await response.json();
+        const answer = data.choices?.[0]?.message?.content || '抱歉，我没听懂，请换个方式问我。';
+        
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        
+        messagesEl.innerHTML += `<div class="chat-msg"><div class="chat-avatar">👨‍🏫</div><div class="chat-bubble">${answer.replace(/\n/g, '<br>')}</div></div>`;
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        
+    } catch (error) {
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        messagesEl.innerHTML += `<div class="chat-msg"><div class="chat-avatar">👨‍🏫</div><div class="chat-bubble">网络错误，请稍后重试</div></div>`;
+    }
+}
+
+// 成长中心
+function renderGrowth(container) {
+    const user = getCurrentUserData() || {};
+    const points = user.points || 1142;
+    const level = Math.floor(points / 500) + 1;
+    const exp = points % 500;
+    
+    container.innerHTML = `
+        <div class="card" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:20px;border-radius:16px;">
+            <div style="text-align:center;margin-bottom:16px;">
+                <div style="font-size:48px;margin-bottom:8px;">${user.avatar || '👤'}</div>
+                <div style="font-size:20px;font-weight:bold;">${user.name || '同学'}</div>
+                <div style="font-size:13px;opacity:0.9;">${user.grade ? ['五年级','六年级','初一','初二','初三'][user.grade-5] : '初一'} · Lv.${user.difficulty || 1}</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.2);border-radius:12px;padding:12px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                    <span>等级进度</span>
+                    <span>Lv.${level}</span>
+                </div>
+                <div style="height:8px;background:rgba(255,255,255,0.3);border-radius:4px;overflow:hidden;">
+                    <div style="width:${exp/500*100}%;height:100%;background:white;border-radius:4px;"></div>
+                </div>
+                <div style="font-size:11px;margin-top:4px;opacity:0.9;">${exp}/500 经验值</div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top:12px;">
+            <h4 style="margin-bottom:12px;">📊 学习数据</h4>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                <div style="text-align:center;padding:16px;background:#f5f7ff;border-radius:12px;">
+                    <div style="font-size:28px;font-weight:bold;color:#1A6BFF;">${points}</div>
+                    <div style="font-size:12px;color:#666;">总积分</div>
+                </div>
+                <div style="text-align:center;padding:16px;background:#fff5f0;border-radius:12px;">
+                    <div style="font-size:28px;font-weight:bold;color:#FF9A63;">${user.studyDays ? Object.keys(user.studyDays).length : 0}</div>
+                    <div style="font-size:12px;color:#666;">学习天数</div>
+                </div>
+                <div style="text-align:center;padding:16px;background:#f0fff4;border-radius:12px;">
+                    <div style="font-size:28px;font-weight:bold;color:#43E97B;">${user.totalCorrect || 0}</div>
+                    <div style="font-size:12px;color:#666;">答对题数</div>
+                </div>
+                <div style="text-align:center;padding:16px;background:#fff0f6;border-radius:12px;">
+                    <div style="font-size:28px;font-weight:bold;color:#FF6B9D;">${user.streakDays || 0}</div>
+                    <div style="font-size:12px;color:#666;">连续天数</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top:12px;">
+            <h4 style="margin-bottom:12px;">🏆 成就徽章</h4>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+                <div style="text-align:center;padding:12px;background:#f5f7ff;border-radius:12px;">
+                    <div style="font-size:24px;">🌟</div>
+                    <div style="font-size:10px;color:#666;">初学者</div>
+                </div>
+                <div style="text-align:center;padding:12px;background:#f5f7ff;border-radius:12px;opacity:${points>=500?1:0.3}">
+                    <div style="font-size:24px;">🔥</div>
+                    <div style="font-size:10px;color:#666;">坚持者</div>
+                </div>
+                <div style="text-align:center;padding:12px;background:#f5f7ff;border-radius:12px;opacity:${points>=1000?1:0.3}">
+                    <div style="font-size:24px;">💎</div>
+                    <div style="font-size:10px;color:#666;">学霸</div>
+                </div>
+                <div style="text-align:center;padding:12px;background:#f5f7ff;border-radius:12px;opacity:${points>=2000?1:0.3}">
+                    <div style="font-size:24px;">👑</div>
+                    <div style="font-size:10px;color:#666;">学神</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top:12px;">
+            <h4 style="margin-bottom:12px;">📅 本周学习</h4>
+            <div style="display:flex;justify-content:space-around;">
+                ${['一','二','三','四','五','六','日'].map((d,i) => {
+                    const active = user.studyDays && user.studyDays[new Date(Date.now() - (6-i)*86400000).toISOString().split('T')[0]];
+                    return \`<div style="text-align:center;padding:8px;">
+                        <div style="width:28px;height:28px;border-radius:50%;background:\${active?'#1A6BFF':'#e0e0e0'};color:\${active?'white':'#999'};display:flex;align-items:center;justify-content:center;font-size:11px;margin:0 auto;">\${d}</div>
+                    </div>\`;
+                }).join('')}
+            </div>
+        </div>
+    `;
+}
+
 function renderDeepseek(container) {
     // 检查浏览器是否支持语音识别
     const supportsSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
@@ -3792,20 +4098,23 @@ function renderDeepseek(container) {
     container.innerHTML = `
         <div class="card">
             <h3 style="margin-bottom:16px;">🤖 DeepSeek AI 助手 <button class="tts-stop-btn" id="tts-stop-btn" onclick="stopTTSSpeech()" style="display:none;" title="停止朗读">🔇</button></h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">智能学习助手，支持文字、语音和图片提问</p>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">智能学习助手，支持文字、语音、图片、音视频提问</p>
         </div>
         <div class="chat-container" style="height:350px;">
             <div class="chat-messages" id="deepseek-messages">
                 <div class="chat-msg"><div class="chat-avatar">🤖</div><div class="chat-bubble">你好！我是DeepSeek AI助手，有什么学习上的问题可以问我哦！你可以：
-                    <br>• 文字输入问题
-                    <br>• 点击🎤语音输入
-                    <br>• 点击📷上传图片提问
+                    <br>• ✍️ 文字输入问题
+                    <br>• 🎤 语音输入
+                    <br>• 📷 上传图片提问
+                    <br>• 🎬 上传音视频
                 </div></div>
             </div>
             <div class="chat-input-area">
                 ${voiceBtn}
                 <button class="chat-voice-btn" id="deepseek-image-btn" onclick="document.getElementById('deepseek-image-input').click()" title="上传图片">📷</button>
+                <button class="chat-voice-btn" onclick="document.getElementById('deepseek-media-input').click()" title="上传音视频">🎬</button>
                 <input type="file" id="deepseek-image-input" accept="image/*" style="display:none" onchange="handleDeepSeekImage(this)"/>
+                <input type="file" id="deepseek-media-input" accept="audio/*,video/*" style="display:none" onchange="handleDeepSeekMedia(this)"/>
                 <input type="text" class="chat-input" id="deepseek-input" placeholder="输入问题..." onkeypress="if(event.key==='Enter')sendToDeepSeek()">
                 <button class="chat-send" onclick="sendToDeepSeek()">发送</button>
             </div>
@@ -3815,6 +4124,13 @@ function renderDeepseek(container) {
                 <img id="deepseek-preview-img" style="width:60px;height:60px;object-fit:cover;border-radius:8px;"/>
                 <span style="font-size:12px;color:#666;">图片已准备好</span>
                 <button onclick="clearDeepSeekImage()" style="margin-left:auto;background:#ff6b6b;color:white;border:none;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;">移除</button>
+            </div>
+        </div>
+        <div id="deepseek-media-preview" style="display:none;padding:12px;background:#f5f7ff;border-radius:12px;margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span id="deepseek-media-icon" style="font-size:24px;">🎬</span>
+                <span id="deepseek-media-name" style="font-size:12px;color:#666;flex:1;">文件已准备好</span>
+                <button onclick="clearDeepSeekMedia()" style="background:#ff6b6b;color:white;border:none;border-radius:4px;padding:4px 8px;font-size:11px;cursor:pointer;">移除</button>
             </div>
         </div>
         <div class="template-btns" style="margin-top:12px;">
@@ -3827,6 +4143,7 @@ function renderDeepseek(container) {
 
 // DeepSeek图片上传处理
 let currentDeepSeekImage = null;
+let currentDeepSeekMedia = null;
 
 function handleDeepSeekImage(input) {
     if (!input.files[0]) return;
@@ -3856,6 +4173,32 @@ function clearDeepSeekImage() {
     if (preview) preview.style.display = 'none';
 }
 
+function handleDeepSeekMedia(input) {
+    if (!input.files[0]) return;
+    const file = input.files[0];
+    
+    currentDeepSeekMedia = { name: file.name, type: file.type };
+    
+    const preview = document.getElementById('deepseek-media-preview');
+    const icon = document.getElementById('deepseek-media-icon');
+    const nameEl = document.getElementById('deepseek-media-name');
+    
+    if (preview && icon && nameEl) {
+        icon.textContent = file.type.startsWith('audio') ? '🎵' : '🎬';
+        nameEl.textContent = file.name;
+        preview.style.display = 'block';
+    }
+    
+    showToast('音视频已添加，输入问题后发送');
+    input.value = '';
+}
+
+function clearDeepSeekMedia() {
+    currentDeepSeekMedia = null;
+    const preview = document.getElementById('deepseek-media-preview');
+    if (preview) preview.style.display = 'none';
+}
+
 function askTemplate(question) {
     const input = document.getElementById('deepseek-input');
     if (input) { input.value = question; sendToDeepSeek(); }
@@ -3871,9 +4214,9 @@ async function sendToDeepSeek() {
     if (!input) return;
     const msg = input.value.trim();
     
-    // 允许只有图片没有文字
-    if (!msg && !currentDeepSeekImage) {
-        showToast('请输入问题或上传图片');
+    // 允许只有文件没有文字
+    if (!msg && !currentDeepSeekImage && !currentDeepSeekMedia) {
+        showToast('请输入问题或上传文件');
         return;
     }
     
@@ -3887,6 +4230,9 @@ async function sendToDeepSeek() {
     let userMsgHtml = '<div class="chat-msg user"><div class="chat-avatar">👤</div><div class="chat-bubble">';
     if (currentDeepSeekImage) {
         userMsgHtml += '<img src="' + currentDeepSeekImage + '" style="max-width:150px;max-height:100px;border-radius:8px;margin-bottom:8px;display:block;"/>';
+    }
+    if (currentDeepSeekMedia) {
+        userMsgHtml += '<div style="background:#f0f0f0;padding:8px 12px;border-radius:8px;margin-bottom:8px;">📎 ' + currentDeepSeekMedia.name + '</div>';
     }
     if (msg) {
         userMsgHtml += escapeHtml(msg);
@@ -3906,14 +4252,15 @@ async function sendToDeepSeek() {
             {type: 'text', text: msg || '请分析这张图片'}
         ];
     } else {
-        userContent = msg;
+        userContent = msg || (currentDeepSeekMedia ? '请帮我分析这个音视频文件：' + currentDeepSeekMedia.name : '');
     }
     
     // 添加用户消息到历史
     deepseekConversationHistory.push({role: 'user', content: userContent});
     
-    // 清除图片预览
+    // 清除文件预览
     clearDeepSeekImage();
+    clearDeepSeekMedia();
     
     try {
         // 使用视觉模型处理图片
@@ -4853,7 +5200,15 @@ const gameConfig = {
     tap: {name:'⚡ 快速点击',color:'#FFD93D',gradient:'linear-gradient(135deg,#f6d365,#fda085)'},
     color: {name:'🌈 颜色识别',color:'#4ECDC4',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)'},
     diff: {name:'🔍 找不同',color:'#FA709A',gradient:'linear-gradient(135deg,#fa709a,#fee140)'},
-    reason: {name:'🧩 图形推理',color:'#667eea',gradient:'linear-gradient(135deg,#667eea,#764ba2)'}
+    reason: {name:'🧩 图形推理',color:'#667eea',gradient:'linear-gradient(135deg,#667eea,#764ba2)'},
+    game2048: {name:'🎲 2048',color:'#ED6C02',gradient:'linear-gradient(135deg,#ED6C02,#F5A623)'},
+    tetris: {name:'🧱 俄罗斯方块',color:'#E53935',gradient:'linear-gradient(135deg,#E53935,#FF7043)'},
+    snake: {name:'🐍 贪吃蛇',color:'#4CAF50',gradient:'linear-gradient(135deg,#4CAF50,#8BC34A)'},
+    memory: {name:'🃏 记忆翻牌',color:'#9C27B0',gradient:'linear-gradient(135deg,#9C27B0,#E040FB)'},
+    whack: {name:'🔨 打地鼠',color:'#795548',gradient:'linear-gradient(135deg,#795548,#A1887F)'},
+    match3: {name:'💎 三消游戏',color:'#00BCD4',gradient:'linear-gradient(135deg,#00BCD4,#26C6DA)'},
+    puzzle: {name:'🔢 数字华容道',color:'#607D8B',gradient:'linear-gradient(135deg,#607D8B,#90A4AE)'},
+    sequence: {name:'🔢 序列记忆',color:'#FF5722',gradient:'linear-gradient(135deg,#FF5722,#FF8A65)'}
 };
 
 let gameTimerDisplay = null;
@@ -4919,6 +5274,14 @@ function startGame(type) {
             case 'color': startColor(); break;
             case 'diff': startDiff(); break;
             case 'reason': startReason(); break;
+            case 'game2048': startGame2048(); break;
+            case 'tetris': startTetris(); break;
+            case 'snake': startSnake(); break;
+            case 'memory': startMemory(); break;
+            case 'whack': startWhack(); break;
+            case 'match3': startMatch3(); break;
+            case 'puzzle': startPuzzle(); break;
+            case 'sequence': startSequence(); break;
         }
     }, 100);
 }
@@ -5194,6 +5557,647 @@ function checkReason(selected, correct) {
     }
     setTimeout(() => startReason(), 500); 
 }
+
+
+
+// ====== 2048 游戏 ======
+let g2048_grid = [];
+function startGame2048() {
+    const config = gameConfig['game2048'];
+    document.getElementById('game-title').textContent = config?.name || '🎲 2048';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;';
+    
+    // 初始化4x4网格
+    g2048_grid = Array(4).fill(null).map(() => Array(4).fill(0));
+    addRandomTile();
+    addRandomTile();
+    
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    // 触摸/键盘控制
+    let touchStartX = 0, touchStartY = 0;
+    
+    const renderGrid = () => {
+        const colors = {0:'#eee',2:'#eee4da',4:'#ede0c8',8:'#f2b179',16:'#f59563',32:'#f67c5f',64:'#f65e3b',128:'#edcf72',256:'#edcc61',512:'#edc850',1024:'#edc53f',2048:'#edc22e'};
+        board.innerHTML = `<div id="g2048-container" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px;background:#bbada0;border-radius:12px;">
+            ${g2048_grid.flat().map(v => `<div style="width:60px;height:60px;background:${colors[v]||'#3c3a32'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:${v>99?20:24}px;font-weight:bold;color:${v<=4?'#776e65':'#f9f6f2'};">${v||''}</div>`).join('')}
+        </div>`;
+        document.getElementById('game-score').textContent = gameScore;
+    };
+    
+    const addRandomTile = () => {
+        const empty = [];
+        for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(g2048_grid[r][c]===0) empty.push([r,c]);
+        if(empty.length) { const [r,c] = empty[Math.floor(Math.random()*empty.length)]; g2048_grid[r][c] = Math.random()<0.9?2:4; }
+    };
+    
+    const move = (dir) => {
+        let moved = false;
+        const merge = (line) => {
+            line = line.filter(v => v);
+            for(let i=0;i<line.length-1;i++) if(line[i]===line[i+1]) { line[i]*=2; gameScore+=line[i]; line.splice(i+1,1); moved=true; }
+            while(line.length<4) line.push(0);
+            return line;
+        };
+        
+        const old = JSON.stringify(g2048_grid);
+        
+        if(dir==='left') g2048_grid = g2048_grid.map(row => merge([...row]));
+        else if(dir==='right') g2048_grid = g2048_grid.map(row => merge([...row].reverse()).reverse());
+        else if(dir==='up') {
+            for(let c=0;c<4;c++) { let col = [g2048_grid[0][c],g2048_grid[1][c],g2048_grid[2][c],g2048_grid[3][c]]; col = merge(col); for(let r=0;r<4;r++) g2048_grid[r][c]=col[r]; }
+        } else if(dir==='down') {
+            for(let c=0;c<4;c++) { let col = [g2048_grid[3][c],g2048_grid[2][c],g2048_grid[1][c],g2048_grid[0][c]]; col = merge(col); for(let r=0;r<4;r++) g2048_grid[3-r][c]=col[r]; }
+        }
+        
+        if(JSON.stringify(g2048_grid)!==old) { addRandomTile(); renderGrid(); SoundEffects.playClick(); }
+        
+        // 检查游戏结束
+        let over = true;
+        for(let r=0;r<4;r++) for(let c=0;c<4;c++) { if(g2048_grid[r][c]===0) over=false; }
+        if(over) { setTimeout(() => endGame(), 500); }
+    };
+    
+    renderGrid();
+    
+    // 键盘控制
+    document.onkeydown = (e) => {
+        if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) { e.preventDefault(); move(e.key.replace('Arrow','').toLowerCase()); }
+    };
+    
+    // 触摸控制
+    board.ontouchstart = (e) => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; };
+    board.ontouchend = (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if(Math.abs(dx)>30||Math.abs(dy)>30) { move(Math.abs(dx)>Math.abs(dy)?(dx>0?'right':'left'):(dy>0?'down':'up')); }
+    };
+    
+    // 30秒计时
+    if(gameTimer) clearInterval(gameTimer);
+    gameTimer = setInterval(() => { if(Date.now()-gameStartTime>30000) { document.onkeydown=null; endGame(); } }, 1000);
+}
+
+// ====== 俄罗斯方块 ======
+let tetris_board = [], tetris_current = null, tetris_score = 0, tetris_timer = null;
+const tetris_shapes = [
+    {s:[[1,1,1,1]],c:'#00BCD4'},
+    {s:[[1,1],[1,1]],c:'#FFD700'},
+    {s:[[0,1,0],[1,1,1]],c:'#9C27B0'},
+    {s:[[1,0,0],[1,1,1]],c:'#2196F3'},
+    {s:[[0,0,1],[1,1,1]],c:'#FF9800'},
+    {s:[[1,1,0],[0,1,1]],c:'#E91E63'},
+    {s:[[0,1,1],[1,1,0]],c:'#4CAF50'}
+];
+
+function startTetris() {
+    const config = gameConfig['tetris'];
+    document.getElementById('game-title').textContent = config?.name || '🧱 俄罗斯方块';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;';
+    
+    tetris_board = Array(16).fill(null).map(() => Array(10).fill(0));
+    tetris_score = 0;
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    const newPiece = () => {
+        const shape = tetris_shapes[Math.floor(Math.random()*tetris_shapes.length)];
+        return {s:shape.s.map(r=>[...r]),c:shape.c,x:4,y:0};
+    };
+    
+    tetris_current = newPiece();
+    
+    const render = () => {
+        const display = tetris_board.map(r=>[...r]);
+        if(tetris_current) {
+            for(let y=0;y<tetris_current.s.length;y++) {
+                for(let x=0;x<tetris_current.s[y].length;x++) {
+                    if(tetris_current.s[y][x]) {
+                        const ny = tetris_current.y+y, nx = tetris_current.x+x;
+                        if(ny>=0&&ny<16&&nx>=0&&nx<10) display[ny][nx] = tetris_current.c;
+                    }
+                }
+            }
+        }
+        const colors = {0:'#222',1:'#00BCD4',2:'#FFD700',3:'#9C27B0',4:'#2196F3',5:'#FF9800',6:'#E91E63',7:'#4CAF50'};
+        board.innerHTML = `<div id="tetris-grid" style="display:grid;grid-template-columns:repeat(10,28px);gap:1px;background:#111;padding:4px;border-radius:8px;">
+            ${display.flat().map(v=>`<div style="width:28px;height:28px;background:${v||'#333'};border-radius:2px;"></div>`).join('')}
+        </div>`;
+        document.getElementById('game-score').textContent = tetris_score;
+    };
+    
+    const tick = () => {
+        if(!tetris_current) return;
+        const next = {s:tetris_current.s,c:tetris_current.c,x:tetris_current.x,y:tetris_current.y+1};
+        let valid = true;
+        for(let y=0;y<next.s.length;y++) {
+            for(let x=0;x<next.s[y].length;x++) {
+                if(next.s[y][x]) {
+                    const ny=next.y+y,nx=next.x+x;
+                    if(ny>=16||nx<0||nx>=10||(ny>=0&&tetris_board[ny][nx])) valid=false;
+                }
+            }
+        }
+        
+        if(valid) { tetris_current.y++; render(); }
+        else {
+            // 固定方块
+            for(let y=0;y<tetris_current.s.length;y++) {
+                for(let x=0;x<tetris_current.s[y].length;x++) {
+                    if(tetris_current.s[y][x]) {
+                        const ny=tetris_current.y+y,nx=tetris_current.x+x;
+                        if(ny>=0) tetris_board[ny][nx]=tetris_current.c;
+                    }
+                }
+            }
+            // 消行
+            for(let r=15;r>=0;r--) {
+                if(tetris_board[r].every(v=>v)) {
+                    tetris_board.splice(r,1);
+                    tetris_board.unshift(Array(10).fill(0));
+                    tetris_score+=100;
+                    r++;
+                }
+            }
+            tetris_current = newPiece();
+            render();
+            
+            // 检查游戏结束
+            if(tetris_board[0].some(v=>v)) {
+                clearInterval(tetris_timer);
+                endGame();
+            }
+        }
+    };
+    
+    render();
+    
+    document.onkeydown = (e) => {
+        if(e.key==='ArrowLeft'&&tetris_current) {
+            let valid=true;
+            for(let y=0;y<tetris_current.s.length;y++) for(let x=0;x<tetris_current.s[y].length;x++) if(tetris_current.s[y][x]) {const ny=tetris_current.y+y,nx=tetris_current.x+x-1; if(nx<0||(ny>=0&&tetris_board[ny][nx])) valid=false;}
+            if(valid) { tetris_current.x--; render(); }
+        } else if(e.key==='ArrowRight'&&tetris_current) {
+            let valid=true;
+            for(let y=0;y<tetris_current.s.length;y++) for(let x=0;x<tetris_current.s[y].length;x++) if(tetris_current.s[y][x]) {const ny=tetris_current.y+y,nx=tetris_current.x+x+1; if(nx>=10||(ny>=0&&tetris_board[ny][nx])) valid=false;}
+            if(valid) { tetris_current.x++; render(); }
+        } else if(e.key==='ArrowDown'&&tetris_current) { tick(); }
+        else if(e.key==='ArrowUp'&&tetris_current) {
+            // 旋转
+            const rotated = tetris_current.s[0].map((_,i) => tetris_current.s.map(r=>r[i]).reverse());
+            const old = tetris_current.s;
+            tetris_current.s = rotated;
+            let valid=true;
+            for(let y=0;y<tetris_current.s.length;y++) for(let x=0;x<tetris_current.s[y].length;x++) if(tetris_current.s[y][x]) {const ny=tetris_current.y+y,nx=tetris_current.x+x; if(ny>=16||nx<0||nx>=10||(ny>=0&&tetris_board[ny][nx])) valid=false;}
+            if(!valid) tetris_current.s = old;
+            else render();
+        }
+    };
+    
+    if(tetris_timer) clearInterval(tetris_timer);
+    tetris_timer = setInterval(tick, 500);
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+}
+
+// ====== 贪吃蛇 ======
+let snake_game = null;
+function startSnake() {
+    const config = gameConfig['snake'];
+    document.getElementById('game-title').textContent = config?.name || '🐍 贪吃蛇';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;';
+    
+    const gridSize = 14;
+    let snake = [{x:7,y:7}];
+    let food = {x:10,y:10};
+    let dir = 'right';
+    let nextDir = 'right';
+    let score = 0;
+    let gameOver = false;
+    
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    const render = () => {
+        const cells = Array(gridSize*gridSize).fill(0);
+        // 食物
+        cells[food.y*gridSize+food.x] = 2;
+        // 蛇
+        snake.forEach((p,i) => { if(p.x>=0&&p.x<gridSize&&p.y>=0&&p.y<gridSize) cells[p.y*gridSize+p.x] = 1; });
+        
+        board.innerHTML = `<div style="display:grid;grid-template-columns:repeat(${gridSize},20px);gap:1px;background:#1a1a2e;padding:4px;border-radius:8px;">
+            ${cells.map(v=>`<div style="width:20px;height:20px;background:${v===1?'#4CAF50':v===2?'#FF5722':'#333'};border-radius:${v===1?'10px':'2px'};"></div>`).join('')}
+        </div>`;
+        document.getElementById('game-score').textContent = score;
+    };
+    
+    const tick = () => {
+        if(gameOver) return;
+        dir = nextDir;
+        const head = {...snake[0]};
+        if(dir==='up') head.y--;
+        else if(dir==='down') head.y++;
+        else if(dir==='left') head.x--;
+        else if(dir==='right') head.x++;
+        
+        // 撞墙或撞自己
+        if(head.x<0||head.x>=gridSize||head.y<0||head.y>=gridSize||snake.some(p=>p.x===head.x&&p.y===head.y)) {
+            gameOver = true;
+            clearInterval(snake_game);
+            endGame();
+            return;
+        }
+        
+        snake.unshift(head);
+        if(head.x===food.x&&head.y===food.y) {
+            score+=10;
+            gameScore = score;
+            // 生成新食物
+            let newFood;
+            do { newFood = {x:Math.floor(Math.random()*gridSize),y:Math.floor(Math.random()*gridSize)}; } while(snake.some(p=>p.x===newFood.x&&p.y===newFood.y));
+            food = newFood;
+            SoundEffects.playCorrect();
+        } else {
+            snake.pop();
+        }
+        render();
+    };
+    
+    render();
+    
+    document.onkeydown = (e) => {
+        if(e.key==='ArrowUp'&&dir!=='down') nextDir='up';
+        else if(e.key==='ArrowDown'&&dir!=='up') nextDir='down';
+        else if(e.key==='ArrowLeft'&&dir!=='right') nextDir='left';
+        else if(e.key==='ArrowRight'&&dir!=='left') nextDir='right';
+    };
+    
+    if(snake_game) clearInterval(snake_game);
+    snake_game = setInterval(tick, 150);
+}
+
+// ====== 记忆翻牌 ======
+let memory_cards = [], memory_flipped = [], memory_matched = 0;
+function startMemory() {
+    const config = gameConfig['memory'];
+    document.getElementById('game-title').textContent = config?.name || '🃏 记忆翻牌';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;';
+    
+    const emojis = ['🍎','🍊','🍋','🍇','🌸','⭐','🔥','💎'];
+    const pairs = [...emojis.slice(0,8),...emojis.slice(0,8)].sort(()=>Math.random()-0.5);
+    
+    memory_cards = pairs.map((e,i) => ({emoji:e,id:i,flipped:false,matched:false}));
+    memory_flipped = [];
+    memory_matched = 0;
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    const render = () => {
+        board.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:280px;">
+            ${memory_cards.map((c,i)=>`
+                <div onclick="flipCard(${i})" style="width:60px;height:60px;background:${c.matched?'#43E97B':c.flipped?'#fff':'#1A6BFF'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);transition:all 0.3s;">
+                    ${c.flipped||c.matched?c.emoji:'?'}
+                </div>
+            `).join('')}
+        </div>`;
+        document.getElementById('game-score').textContent = memory_matched+'/8';
+    };
+    
+    window.flipCard = (idx) => {
+        const card = memory_cards[idx];
+        if(card.flipped||card.matched||memory_flipped.length>=2) return;
+        
+        card.flipped = true;
+        memory_flipped.push(idx);
+        render();
+        SoundEffects.playClick();
+        
+        if(memory_flipped.length===2) {
+            const [i1,i2] = memory_flipped;
+            if(memory_cards[i1].emoji===memory_cards[i2].emoji) {
+                memory_cards[i1].matched = true;
+                memory_cards[i2].matched = true;
+                memory_matched++;
+                gameScore = memory_matched;
+                memory_flipped = [];
+                SoundEffects.playCorrect();
+                render();
+                
+                if(memory_matched===8) {
+                    setTimeout(() => endGame(), 500);
+                }
+            } else {
+                setTimeout(() => {
+                    memory_cards[i1].flipped = false;
+                    memory_cards[i2].flipped = false;
+                    memory_flipped = [];
+                    render();
+                }, 800);
+            }
+        }
+    };
+    
+    render();
+}
+
+// ====== 打地鼠 ======
+let whack_score = 0, whack_timer = null, whack_active = false;
+function startWhack() {
+    const config = gameConfig['whack'];
+    document.getElementById('game-title').textContent = config?.name || '🔨 打地鼠';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;';
+    
+    whack_score = 0;
+    gameScore = 0;
+    gameStartTime = Date.now();
+    whack_active = true;
+    
+    const holes = Array(9).fill(false);
+    
+    const render = () => {
+        board.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:12px;">
+            ${holes.map((h,i)=>`
+                <div onclick="whackHole(${i})" style="width:70px;height:70px;background:linear-gradient(180deg,#8B4513,#654321);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;box-shadow:inset 0 4px 8px rgba(0,0,0,0.5);">
+                    ${h?'<div style="width:50px;height:50px;background:#8B6914;border-radius:50%;position:absolute;top:10px;animation:whackUp 0.2s;">🐹</div>':''}
+                </div>
+            `).join('')}
+        </div>
+        <style>@keyframes whackUp{0%{top:70px}100%{top:10px}}</style>`;
+        document.getElementById('game-score').textContent = whack_score;
+    };
+    
+    window.whackHole = (idx) => {
+        if(!whack_active) return;
+        if(holes[idx]) {
+            holes[idx] = false;
+            whack_score++;
+            gameScore = whack_score;
+            SoundEffects.playCorrect();
+            render();
+        }
+    };
+    
+    const showMole = () => {
+        holes.fill(false);
+        const pos = Math.floor(Math.random()*9);
+        holes[pos] = true;
+        render();
+    };
+    
+    render();
+    whack_timer = setInterval(showMole, 1000);
+    gameTimer = setInterval(() => { if(Date.now()-gameStartTime>20000) { whack_active=false; clearInterval(whack_timer); endGame(); } }, 1000);
+}
+
+// ====== 三消游戏 ======
+let match3_board = [], match3_score = 0, match3_moving = false;
+const match3_colors = ['#FF6B6B','#4ECDC4','#FFD93D','#95E1D3','#F38181','#AA96DA'];
+function startMatch3() {
+    const config = gameConfig['match3'];
+    document.getElementById('game-title').textContent = config?.name || '💎 三消游戏';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;';
+    
+    match3_board = Array(8).fill(null).map(()=>Array(8).fill(0).map(()=>Math.floor(Math.random()*6)));
+    match3_score = 0;
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    // 消除初始匹配
+    while(findMatches().length>0) {
+        for(let y=0;y<8;y++) for(let x=0;x<8;x++) if(isPartOfMatch(x,y)) match3_board[y][x]=Math.floor(Math.random()*6);
+    }
+    
+    const render = () => {
+        board.innerHTML = `<div style="display:grid;grid-template-columns:repeat(8,36px);gap:2px;padding:8px;background:#eee;border-radius:12px;">
+            ${match3_board.flat().map((v,i)=>`<div onclick="match3Select(${i%8},${Math.floor(i/8)})" id="m3-${i%8}-${Math.floor(i/8)}" style="width:36px;height:36px;background:${match3_colors[v]};border-radius:6px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.2);"></div>`).join('')}
+        </div>`;
+        document.getElementById('game-score').textContent = match3_score;
+    };
+    
+    let selected = null;
+    window.match3Select = (x,y) => {
+        if(match3_moving) return;
+        if(selected) {
+            const [sx,sy] = selected;
+            if((Math.abs(sx-x)===1&&sy===y)||(Math.abs(sy-y)===1&&sx===x)) {
+                // 交换
+                [match3_board[sy][sx],match3_board[y][x]] = [match3_board[y][x],match3_board[sy][sx]];
+                selected = null;
+                processMatches();
+            } else {
+                selected = [x,y];
+            }
+        } else {
+            selected = [x,y];
+        }
+        render();
+    };
+    
+    const isPartOfMatch = (x,y) => {
+        const v = match3_board[y][x];
+        // 横向检查
+        if(x>=2&&match3_board[y][x-1]===v&&match3_board[y][x-2]===v) return true;
+        // 纵向检查
+        if(y>=2&&match3_board[y-1][x]===v&&match3_board[y-2][x]===v) return true;
+        return false;
+    };
+    
+    const findMatches = () => {
+        const matches = [];
+        for(let y=0;y<8;y++) for(let x=0;x<8;x++) {
+            if(x>=2&&match3_board[y][x]===match3_board[y][x-1]&&match3_board[y][x]===match3_board[y][x-2]) {
+                matches.push([x,y],[x-1,y],[x-2,y]);
+            }
+            if(y>=2&&match3_board[y][x]===match3_board[y-1][x]&&match3_board[y][x]===match3_board[y-2][x]) {
+                matches.push([x,y],[x,y-1],[x,y-2]);
+            }
+        }
+        return matches;
+    };
+    
+    const processMatches = () => {
+        match3_moving = true;
+        let matches = findMatches();
+        
+        const removeMatches = () => {
+            matches.forEach(([x,y]) => { match3_board[y][x] = -1; });
+            match3_score += matches.length;
+            gameScore = match3_score;
+            render();
+            SoundEffects.playCorrect();
+            
+            // 下落
+            setTimeout(() => {
+                for(let x=0;x<8;x++) {
+                    const column = match3_board.map(row=>row[x]).filter(v=>v>=0);
+                    while(column.length<8) column.unshift(Math.floor(Math.random()*6));
+                    for(let y=0;y<8;y++) match3_board[y][x] = column[y];
+                }
+                render();
+                
+                // 继续检查
+                if(findMatches().length>0) setTimeout(removeMatches, 300);
+                else { match3_moving = false; }
+            }, 300);
+        };
+        
+        if(matches.length>0) removeMatches();
+        else match3_moving = false;
+    };
+    
+    render();
+    gameTimer = setInterval(() => { if(Date.now()-gameStartTime>30000) endGame(); }, 1000);
+}
+
+// ====== 数字华容道 ======
+let puzzle_tiles = [], puzzle_empty = 0;
+function startPuzzle() {
+    const config = gameConfig['puzzle'];
+    document.getElementById('game-title').textContent = config?.name || '🔢 数字华容道';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;';
+    
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    // 初始化（3x3）
+    puzzle_tiles = [1,2,3,4,5,6,7,8,0];
+    puzzle_empty = 8;
+    
+    // 随机打乱（确保可解）
+    for(let i=0;i<50;i++) {
+        const moves = getValidMoves();
+        const m = moves[Math.floor(Math.random()*moves.length)];
+        [puzzle_tiles[puzzle_empty], puzzle_tiles[m]] = [puzzle_tiles[m], puzzle_tiles[puzzle_empty]];
+        puzzle_empty = m;
+    }
+    
+    const render = () => {
+        board.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,70px);gap:4px;padding:8px;background:#1A6BFF;border-radius:12px;">
+            ${puzzle_tiles.map((v,i)=>`
+                <div onclick="puzzleMove(${i})" style="width:70px;height:70px;background:${v?'#fff':'transparent'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:${v>9?24:28}px;font-weight:bold;color:#1A6BFF;cursor:${v?'pointer':'default'};box-shadow:${v?'0 2px 6px rgba(0,0,0,0.2)':'none'};">${v||''}</div>
+            `).join('')}
+        </div>
+        <div style="margin-top:12px;font-size:14px;color:#666;">目标：按1-8顺序排列</div>`;
+        document.getElementById('game-score').textContent = puzzle_tiles.filter((v,i)=>v===i+1||(i===8&&v===0)).length + '/9';
+    };
+    
+    const getValidMoves = () => {
+        const moves = [];
+        const row = Math.floor(puzzle_empty/3), col = puzzle_empty%3;
+        if(row>0) moves.push(puzzle_empty-3);
+        if(row<2) moves.push(puzzle_empty+3);
+        if(col>0) moves.push(puzzle_empty-1);
+        if(col<2) moves.push(puzzle_empty+1);
+        return moves;
+    };
+    
+    window.puzzleMove = (idx) => {
+        if(getValidMoves().includes(idx)) {
+            [puzzle_tiles[puzzle_empty], puzzle_tiles[idx]] = [puzzle_tiles[idx], puzzle_tiles[puzzle_empty]];
+            puzzle_empty = idx;
+            SoundEffects.playClick();
+            render();
+            
+            // 检查是否完成
+            if(puzzle_tiles.every((v,i)=>i===8?v===0:v===i+1)) {
+                setTimeout(() => { gameScore = 100; endGame(); }, 500);
+            }
+        }
+    };
+    
+    render();
+}
+
+// ====== 序列记忆 ======
+let seq_nums = [], seq_round = 0, seq_showing = false, seq_player = [];
+function startSequence() {
+    const config = gameConfig['sequence'];
+    document.getElementById('game-title').textContent = config?.name || '🔢 序列记忆';
+    const board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;';
+    
+    seq_nums = [];
+    seq_round = 0;
+    seq_player = [];
+    gameScore = 0;
+    gameStartTime = Date.now();
+    
+    const render = (msg='', inputMode=false) => {
+        board.innerHTML = `
+            <div style="text-align:center;">
+                <div style="font-size:18px;color:#666;margin-bottom:12px;">回合 ${seq_round}</div>
+                ${inputMode?`
+                    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;max-width:260px;">
+                        ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="seqInput(${n})" style="width:50px;height:50px;background:#1A6BFF;color:white;border:none;border-radius:8px;font-size:20px;cursor:pointer;">${n}</button>`).join('')}
+                    </div>
+                    <div style="font-size:14px;color:#666;margin-bottom:8px;">你的输入: ${seq_player.join(' → ')}</div>
+                    <div style="display:flex;gap:8px;justify-content:center;">
+                        <button onclick="seqConfirm()" style="padding:10px 20px;background:#43E97B;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">确认</button>
+                        <button onclick="seqClear()" style="padding:10px 20px;background:#FF6B6B;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">清除</button>
+                    </div>
+                `:`<div style="font-size:24px;color:#1A6BFF;font-weight:bold;margin:20px 0;">${msg||'点击开始'}</div>`}
+                <button onclick="seqStart()" style="padding:12px 24px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:14px;cursor:pointer;margin-top:16px;">开始</button>
+            </div>
+        `;
+        document.getElementById('game-score').textContent = seq_round>0?seq_round-1:0;
+    };
+    
+    window.seqStart = () => {
+        seq_round++;
+        seq_nums.push(Math.floor(Math.random()*9)+1);
+        seq_player = [];
+        seq_showing = true;
+        render('记住这个序列...');
+        SoundEffects.playClick();
+        
+        let i=0;
+        const show = setInterval(() => {
+            render(seq_nums.slice(0,i+1).join(' → '));
+            i++;
+            if(i>=seq_nums.length) {
+                clearInterval(show);
+                setTimeout(() => { seq_showing = false; render('',true); }, 500);
+            }
+        }, 800);
+    };
+    
+    window.seqInput = (n) => {
+        if(seq_showing) return;
+        seq_player.push(n);
+        render('',true);
+        SoundEffects.playClick();
+    };
+    
+    window.seqClear = () => {
+        seq_player = [];
+        render('',true);
+    };
+    
+    window.seqConfirm = () => {
+        if(seq_showing) return;
+        if(seq_player.join(',')===seq_nums.join(',')) {
+            gameScore = seq_round;
+            SoundEffects.playCorrect();
+            showToast('正确！');
+            setTimeout(() => seqStart(), 1000);
+        } else {
+            SoundEffects.playWrong();
+            showToast('错误！正确顺序: ' + seq_nums.join(' → '));
+            setTimeout(() => endGame(), 1500);
+        }
+    };
+    
+    render();
+}
+
 
 function endGame() {
     if (gameTimer) clearInterval(gameTimer);
