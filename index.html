@@ -2336,51 +2336,64 @@ function closeFullscreenPage() { const el = document.getElementById('fullscreen-
 
 // ====== 全屏页面切换 ======
 function openFullscreenPage(module) {
-    closeUserMenu();
-    const container = document.getElementById('fullscreen-container');
-    const titleEl = document.getElementById('fullscreen-title');
-    const contentEl = document.getElementById('fullscreen-content');
-    if (!container || !titleEl || !contentEl) return;
-    
-    const moduleTitles = {
-        'avatar': '🎓 AI数字分身',
-        'practice': '🎯 AI精准练',
-        'aiteacher': '👨‍🏫 AI超级老师',
-        'growth': '📈 成长中心',
-        'focus': '🎯 专注模式',
-        'map': '🧠 认知地图',
-        'plan': '📅 学习计划',
-        'topics': '📚 母题训练',
-        'method': '💡 学霸方法',
-        'thinking': '🧩 思维训练',
-        'podcast': '🎧 播客课堂',
-        'video': '📺 视频课堂',
-        'games': '🎮 训练游戏',
-        'deepseek': '🤖 DeepSeek',
-        'settings': '⚙️ 设置'
-    };
-    
-    titleEl.textContent = moduleTitles[module] || '模块';
-    
-    switch(module) {
-        case 'avatar': renderAvatar(contentEl); break;
-        case 'practice': renderPractice(contentEl); break;
-        case 'aiteacher': renderAITeacher(contentEl); break;
-        case 'growth': renderGrowth(contentEl); break;
-        case 'focus': renderFocus(contentEl); break;
-        case 'map': renderMap(contentEl); break;
-        case 'plan': renderPlan(contentEl); break;
-        case 'topics': renderTopics(contentEl); break;
-        case 'method': renderMethod(contentEl); break;
-        case 'thinking': renderThinking(contentEl); break;
-        case 'podcast': renderPodcast(contentEl); break;
-        case 'video': renderVideo(contentEl); break;
-        case 'games': renderGames(contentEl); break;
-        case 'deepseek': renderDeepseek(contentEl); break;
-        default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
+    try {
+        closeUserMenu();
+        const container = document.getElementById('fullscreen-container');
+        const titleEl = document.getElementById('fullscreen-title');
+        const contentEl = document.getElementById('fullscreen-content');
+        if (!container || !titleEl || !contentEl) {
+            console.error('全屏容器元素不存在');
+            return;
+        }
+        
+        const moduleTitles = {
+            'avatar': '🎓 AI数字分身',
+            'practice': '🎯 AI精准练',
+            'aiteacher': '👨‍🏫 AI超级老师',
+            'growth': '📈 成长中心',
+            'focus': '🎯 专注模式',
+            'map': '🧠 认知地图',
+            'plan': '📅 学习计划',
+            'topics': '📚 母题训练',
+            'method': '💡 学霸方法',
+            'thinking': '🧩 思维训练',
+            'podcast': '🎧 播客课堂',
+            'video': '📺 视频课堂',
+            'games': '🎮 训练游戏',
+            'deepseek': '🤖 DeepSeek',
+            'settings': '⚙️ 设置'
+        };
+        
+        titleEl.textContent = moduleTitles[module] || '模块';
+        
+        try {
+            switch(module) {
+                case 'avatar': renderAvatar(contentEl); break;
+                case 'practice': renderPractice(contentEl); break;
+                case 'aiteacher': renderAITeacher(contentEl); break;
+                case 'growth': renderGrowth(contentEl); break;
+                case 'focus': renderFocus(contentEl); break;
+                case 'map': renderMap(contentEl); break;
+                case 'plan': renderPlan(contentEl); break;
+                case 'topics': renderTopics(contentEl); break;
+                case 'method': renderMethod(contentEl); break;
+                case 'thinking': renderThinking(contentEl); break;
+                case 'podcast': renderPodcast(contentEl); break;
+                case 'video': renderVideo(contentEl); break;
+                case 'games': renderGames(contentEl); break;
+                case 'deepseek': renderDeepseek(contentEl); break;
+                default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
+            }
+        } catch(renderError) {
+            console.error('渲染模块错误:', renderError);
+            contentEl.innerHTML = '<div class="card"><p>⚠️ 模块加载失败，请刷新页面重试</p></div>';
+        }
+        
+        container.classList.add('active');
+    } catch(error) {
+        console.error('openFullscreenPage错误:', error);
+        showToast('页面加载失败，请刷新重试');
     }
-    
-    container.classList.add('active');
 }
 
 // 在线课堂功能
@@ -8521,46 +8534,72 @@ function startFocusChallenge() {
 
 // 设置面板功能
 function openSettingsPanel() {
-    const user = getCurrentUserData();
-    if (user) {
-        // 更新用户信息卡片
-        const avatarEl = document.getElementById('settings-avatar');
-        const nameEl = document.getElementById('settings-name');
-        const gradeEl = document.getElementById('settings-grade');
-        const diffEl = document.getElementById('settings-difficulty-display');
-        const wrongCountEl = document.getElementById('settings-wrong-count');
-        const trainCountEl = document.getElementById('settings-train-count');
-        
-        if (avatarEl) avatarEl.textContent = user.name.charAt(0);
-        if (nameEl) nameEl.textContent = user.name;
-        if (gradeEl) gradeEl.textContent = gradeNames[user.grade] + ' · Lv.' + user.difficulty;
-        if (diffEl) diffEl.textContent = 'Lv.' + user.difficulty;
-        
-        // 更新错题数量
-        const wrongNotes = user.wrongNotes || [];
-        if (wrongCountEl) wrongCountEl.textContent = '共 ' + wrongNotes.length + ' 道错题';
-        
-        // 更新训练次数
-        const trainCount = user.trainCount || 8;
-        if (trainCountEl) trainCountEl.value = trainCount;
-        
-        // 更新数据统计显示
-        if (typeof updateDataStatsDisplay === 'function') {
-            updateDataStatsDisplay();
+    try {
+        const panel = document.getElementById('settings-panel');
+        if (!panel) {
+            console.error('settings-panel元素不存在');
+            return;
         }
+        
+        const user = getCurrentUserData();
+        if (user) {
+            // 更新用户信息卡片
+            const avatarEl = document.getElementById('settings-avatar');
+            const nameEl = document.getElementById('settings-name');
+            const gradeEl = document.getElementById('settings-grade');
+            const diffEl = document.getElementById('settings-difficulty-display');
+            const wrongCountEl = document.getElementById('settings-wrong-count');
+            const trainCountEl = document.getElementById('settings-train-count');
+            
+            if (avatarEl) avatarEl.textContent = (user.name || '用户').charAt(0);
+            if (nameEl) nameEl.textContent = user.name || '用户';
+            if (gradeEl) {
+                const gradeText = (typeof gradeNames !== 'undefined' && gradeNames[user.grade]) || '初一';
+                gradeEl.textContent = gradeText + ' · Lv.' + (user.difficulty || 1);
+            }
+            if (diffEl) diffEl.textContent = 'Lv.' + (user.difficulty || 1);
+            
+            // 更新错题数量
+            const wrongNotes = user.wrongNotes || [];
+            if (wrongCountEl) wrongCountEl.textContent = '共 ' + wrongNotes.length + ' 道错题';
+            
+            // 更新训练次数
+            const trainCount = user.trainCount || 8;
+            if (trainCountEl) trainCountEl.value = trainCount;
+            
+            // 更新数据统计显示
+            try {
+                if (typeof updateDataStatsDisplay === 'function') {
+                    updateDataStatsDisplay();
+                }
+            } catch(e) { console.log('updateDataStatsDisplay跳过'); }
+        }
+        
+        // 更新API配置状态显示
+        try {
+            if (typeof updateApiStatusDisplay === 'function') {
+                updateApiStatusDisplay();
+            }
+        } catch(e) { console.log('updateApiStatusDisplay跳过'); }
+        
+        panel.style.display = 'block';
+    } catch(error) {
+        console.error('openSettingsPanel错误:', error);
+        // 即使出错也尝试打开面板
+        const panel = document.getElementById('settings-panel');
+        if (panel) panel.style.display = 'block';
     }
-    
-    // 更新API配置状态显示
-    if (typeof updateApiStatusDisplay === 'function') {
-        updateApiStatusDisplay();
-    }
-    
-    document.getElementById('settings-panel').style.display = 'block';
 }
 
 function closeSettingsPanel(e) {
-    if (!e || e.target === document.getElementById('settings-panel')) {
-        document.getElementById('settings-panel').style.display = 'none';
+    try {
+        const panel = document.getElementById('settings-panel');
+        if (!panel) return;
+        if (!e || e.target === panel) {
+            panel.style.display = 'none';
+        }
+    } catch(error) {
+        console.error('closeSettingsPanel错误:', error);
     }
 }
 
