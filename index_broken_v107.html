@@ -369,7 +369,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <body>
 
 <!-- 登录页（已停用，由下拉菜单替代） -->
-<div id="page-login" class="page active" aria-hidden="true">
+<div id="page-login" class="page login-page" style="display:none!important;" aria-hidden="true">
     <div class="login-header-bg"></div>
     <div class="login-content">
         <div class="login-logo-area">
@@ -500,7 +500,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 
 <!-- 首页 -->
-<div id="page-home" class="page">
+<div id="page-home" class="page active" style="display:block;">
     <div class="home-header">
         <div class="header-top">
             <div style="display:flex;align-items:center;">
@@ -1966,14 +1966,7 @@ function handleLogin() {
         data.currentUser = userId; 
         saveData(data); 
         // 先切换页面，再更新UI
-        // 检查是否需要显示登录页
-    if (!data.currentUser) {
-        showPage('login');
-    } else {
         showPage('home');
-        updateUI();
-        syncTodayStats();
-    }
         setTimeout(() => {
             updateUI();
             syncTodayStats();
@@ -5239,7 +5232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             completedTopics: []
         };
         data.users.push(defaultUser);
-        // 不自动设置currentUser，让用户手动选择
+        data.currentUser = defaultUser.id;
         saveData(data);
         console.log('默认用户创建成功:', defaultUser.name);
         data = loadData(); // 重新加载数据
@@ -5248,8 +5241,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始化用户列表
     renderUserList();
     
-    // 显示登录页，让用户选择账号
-    showPage('login');
+    // 显示首页
+    showPage('home');
+    updateUI();
+    syncTodayStats();
     
     // 点击外部关闭下拉菜单
     document.addEventListener('click', (e) => {
@@ -7887,14 +7882,7 @@ function registerNewUser() {
     showToast('欢迎 ' + name + '！开始你的认知训练之旅吧！');
     
     // 跳转到主页
-    // 检查是否需要显示登录页
-    if (!data.currentUser) {
-        showPage('login');
-    } else {
-        showPage('home');
-        updateUI();
-        syncTodayStats();
-    }
+    showPage('home');
     setTimeout(() => {
         showWelcomeMessage(newUser);
     }, 100);
@@ -10133,8 +10121,127 @@ function adjustColor(color, amount) {
 }
 
 
+// ==================== 登录系统初始化 ====================
 
-console.log("认知训练门户 V107 加载完成");
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("V2.5 页面加载完成");
+    const users = JSON.parse(localStorage.getItem("cognitive_training_users") || "[]");
+    const currentUserId = localStorage.getItem("cognitive_training_current_user");
+    if (users.length === 0 || !currentUserId) {
+        showLoginPage();
+    } else {
+        hideLoginPage();
+    }
+});
+
+function showLoginPage() {
+    document.getElementById("page-login").classList.add("active");
+    document.getElementById("page-home").classList.remove("active");
+    loadUserSelectList();
+}
+
+function hideLoginPage() {
+    document.getElementById("page-login").classList.remove("active");
+    document.getElementById("page-home").classList.add("active");
+}
+
+function loadUserSelectList() {
+    const users = JSON.parse(localStorage.getItem("cognitive_training_users") || "[]");
+    const container = document.getElementById("user-select-list");
+    if (!container) return;
+    let html = "";
+    users.forEach(function(u, i) {
+        html += "<div class=\"user-select-item\" onclick=\"selectUser(" + i + ")\">";
+        html += "<div class=\"item-avatar\">" + u.name.charAt(0) + "</div>";
+        html += "<div class=\"item-info\"><div class=\"item-name\">" + u.name + "</div>";
+        html += "<div class=\"item-grade\">" + (u.grade || "未设置") + "</div></div></div>";
+    });
+    html += "<div class=\"user-select-item\" onclick=\"showRegisterModal()\">";
+    html += "<div class=\"item-avatar\" style=\"background:#f0f0f0;color:#666;\">+</div>";
+    html += "<div class=\"item-info\"><div class=\"item-name\">添加新用户</div>";
+    html += "<div class=\"item-grade\">创建新账号</div></div></div>";
+    container.innerHTML = html;
+}
+
+function selectUser(index) {
+    const users = JSON.parse(localStorage.getItem("cognitive_training_users") || "[]");
+    if (users[index]) {
+        localStorage.setItem("cognitive_training_current_user", users[index].id);
+        localStorage.setItem("cognitive_training_current_user_index", index);
+        hideLoginPage();
+        showToast("登录成功，欢迎 " + users[index].name);
+    }
+}
+
+function showRegisterModal() {
+    document.getElementById("create-user-modal").classList.add("show");
+}
+
+function hideRegisterModal() {
+    document.getElementById("create-user-modal").classList.remove("show");
+}
+
+function registerNewUser() {
+    const name = document.getElementById("register-name").value.trim();
+    const phone = document.getElementById("register-phone").value.trim();
+    const password = document.getElementById("register-password").value;
+    const grade = document.getElementById("register-grade").value;
+    const difficulty = parseInt(document.getElementById("register-difficulty").value) || 1;
+    const level = document.getElementById("register-level").value || "1";
+    
+    if (!name) { showToast("请输入姓名"); return; }
+    if (!phone) { showToast("请输入手机号"); return; }
+    if (!password) { showToast("请输入密码"); return; }
+    
+    const user = {
+        id: "user_" + Date.now(),
+        name: name,
+        phone: phone,
+        password: password,
+        grade: grade,
+        difficulty: difficulty,
+        level: level,
+        avatar: null,
+        createTime: new Date().toISOString()
+    };
+    
+    const users = JSON.parse(localStorage.getItem("cognitive_training_users") || "[]");
+    users.push(user);
+    localStorage.setItem("cognitive_training_users", JSON.stringify(users));
+    localStorage.setItem("cognitive_training_current_user", user.id);
+    
+    const trainingData = { userId: user.id, userName: user.name, totalScore: 0, gamesPlayed: 0, trainingCount: 0, studyDays: 0, methodStats: {}, thinkingStats: {}, gameScores: {} };
+    localStorage.setItem("cognitive_training_v49", JSON.stringify(trainingData));
+    
+    hideRegisterModal();
+    hideLoginPage();
+    showToast("注册成功！");
+}
+
+function toggleUserDropdown() {
+    document.getElementById("user-dropdown").classList.toggle("show");
+}
+
+function switchUser() {
+    toggleUserDropdown();
+    showLoginPage();
+}
+
+function logoutAndReturn() {
+    localStorage.removeItem("cognitive_training_current_user");
+    showLoginPage();
+    showToast("已退出登录");
+}
+
+document.addEventListener("click", function(e) {
+    const dropdown = document.getElementById("user-dropdown");
+    const avatar = document.getElementById("header-avatar");
+    if (dropdown && avatar && !avatar.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove("show");
+    }
+});
+
+console.log("V2.5 初始化完成");
 </script>
 </body>
 </html>
