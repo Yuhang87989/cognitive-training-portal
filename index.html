@@ -1005,6 +1005,116 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="modal-content" id="detail-content" style="max-width:400px;"></div>
 </div>
 
+<!-- 创建用户模态框 -->
+<div class="modal-overlay" id="create-user-modal">
+    <div class="modal-content" style="max-width:350px;">
+        <div class="modal-title">➕ 创建新用户</div>
+        <div class="input-group">
+            <label class="input-label">姓名</label>
+            <input type="text" id="create-name" class="input-field" placeholder="请输入姓名" maxlength="10">
+        </div>
+        <div class="input-group">
+            <label class="input-label">年级</label>
+            <select id="create-grade" class="input-field">
+                <option value="5">五年级</option>
+                <option value="6">六年级</option>
+                <option value="7" selected>初一</option>
+                <option value="8">初二</option>
+                <option value="9">初三</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label class="input-label">难度</label>
+            <select id="create-difficulty" class="input-field">
+                <option value="1" selected>Lv.1 入门</option>
+                <option value="2">Lv.2 基础</option>
+                <option value="3">Lv.3 进阶</option>
+                <option value="4">Lv.4 挑战</option>
+                <option value="5">Lv.5 大师</option>
+            </select>
+        </div>
+        <button onclick="createNewUser()" class="login-btn login-btn-primary" style="margin-bottom:8px;">创建用户</button>
+        <button class="modal-close" onclick="closeCreateUserModal()">取消</button>
+    </div>
+</div>
+
+<!-- 切换用户模态框 -->
+<div class="modal-overlay" id="user-switch-modal">
+    <div class="modal-content" style="max-width:350px;">
+        <div class="modal-title">👤 切换用户</div>
+        <div id="switch-user-list" style="max-height:300px;overflow-y:auto;"></div>
+        <button class="modal-close" onclick="closeUserSwitchModal()" style="margin-top:16px;">关闭</button>
+    </div>
+</div>
+
+<!-- 难度选择模态框 -->
+<div class="modal-overlay" id="difficulty-modal">
+    <div class="modal-content" style="max-width:300px;">
+        <div class="modal-title">⭐ 难度调整</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            <button onclick="setDifficulty(1)" class="difficulty-option" style="padding:14px;background:#f5f7ff;border:2px solid #ddd;border-radius:12px;cursor:pointer;text-align:left;">
+                <div style="font-weight:600;">Lv.1 入门</div>
+                <div style="font-size:12px;color:#666;">适合初学者</div>
+            </button>
+            <button onclick="setDifficulty(2)" class="difficulty-option" style="padding:14px;background:#f5f7ff;border:2px solid #ddd;border-radius:12px;cursor:pointer;text-align:left;">
+                <div style="font-weight:600;">Lv.2 基础</div>
+                <div style="font-size:12px;color:#666;">巩固基础知识</div>
+            </button>
+            <button onclick="setDifficulty(3)" class="difficulty-option" style="padding:14px;background:#f5f7ff;border:2px solid #ddd;border-radius:12px;cursor:pointer;text-align:left;">
+                <div style="font-weight:600;">Lv.3 进阶</div>
+                <div style="font-size:12px;color:#666;">提升解题能力</div>
+            </button>
+            <button onclick="setDifficulty(4)" class="difficulty-option" style="padding:14px;background:#f5f7ff;border:2px solid #ddd;border-radius:12px;cursor:pointer;text-align:left;">
+                <div style="font-weight:600;">Lv.4 挑战</div>
+                <div style="font-size:12px;color:#666;">高难度训练</div>
+            </button>
+            <button onclick="setDifficulty(5)" class="difficulty-option" style="padding:14px;background:#f5f7ff;border:2px solid #ddd;border-radius:12px;cursor:pointer;text-align:left;">
+                <div style="font-weight:600;">Lv.5 大师</div>
+                <div style="font-size:12px;color:#666;">专家级挑战</div>
+            </button>
+        </div>
+        <button class="modal-close" onclick="closeDifficultyModal()" style="margin-top:16px;">取消</button>
+    </div>
+</div>
+
+<!-- 头像选择模态框 -->
+<div class="modal-overlay" id="avatar-modal">
+    <div class="modal-content" style="max-width:350px;">
+        <div class="modal-title">🎨 选择头像</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 0;">
+            <div onclick="selectAvatar('👨')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">👨</div>
+            <div onclick="selectAvatar('👩')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#FF9A63,#E87A4E);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">👩</div>
+            <div onclick="selectAvatar('👦')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#43E97B,#38F9D7);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">👦</div>
+            <div onclick="selectAvatar('👧')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#FFB6C1,#FF9A63);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">👧</div>
+            <div onclick="selectAvatar('🧑')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#4facfe,#00f2fe);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">🧑</div>
+            <div onclick="selectAvatar('👴')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#f6d365,#fda085);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">👴</div>
+            <div onclick="selectAvatar('👵')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#ff6b6b,#ff4757);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">👵</div>
+            <div onclick="selectAvatar('🦸')" class="avatar-option" style="width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#9C27B0,#E040FB);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:3px solid transparent;">🦸</div>
+        </div>
+        <button class="modal-close" onclick="closeAvatarModal()" style="margin-top:8px;">关闭</button>
+    </div>
+</div>
+
+<!-- 游戏全屏容器 -->
+<div id="game-fullscreen-container" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#f8f9fa;z-index:500;display:none;flex-direction:column;">
+    <div id="game-header" style="display:flex;align-items:center;padding:12px 16px;color:white;font-weight:600;">
+        <div onclick="closeGame()" style="cursor:pointer;padding:8px;">✕</div>
+        <div id="game-title" style="flex:1;text-align:center;font-size:16px;">游戏</div>
+        <div id="game-level-badge" style="background:rgba(255,255,255,0.2);padding:4px 12px;border-radius:12px;font-size:12px;">关卡 1</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+        <div style="margin-bottom:12px;display:flex;justify-content:center;gap:20px;font-size:14px;">
+            <span>🏆 最高分: <span id="game-best-score">0</span></span>
+            <span>⏱️ 时间: <span id="game-timer">0s</span></span>
+            <span>⭐ 得分: <span id="game-score">0</span></span>
+        </div>
+        <div id="game-board" class="game-board"></div>
+    </div>
+    <div style="padding:16px;text-align:center;">
+        <button onclick="closeGame()" style="padding:12px 40px;background:#f0f0f0;border:none;border-radius:20px;font-size:14px;cursor:pointer;">结束游戏</button>
+    </div>
+</div>
+
 
 <!-- 隐藏的音频元素 -->
 <audio id="hidden-audio" style="display:none;"></audio>
@@ -1233,6 +1343,238 @@ function closeUpdateModal() {
 function closeAboutModal() {
     const modal = document.getElementById('about-modal');
     if (modal) modal.classList.remove('show');
+}
+
+// ====== 缺失的关键函数修复 ======
+
+// Toast提示函数 - 核心缺失函数！
+let toastTimer = null;
+function showToast(message, duration = 2000) {
+    try {
+        // 移除已有的toast
+        const existingToast = document.querySelector('.toast-fixed');
+        if (existingToast) existingToast.remove();
+        
+        // 创建toast元素
+        const toast = document.createElement('div');
+        toast.className = 'toast-fixed';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 99999;
+            animation: fadeIn 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // 移除toast
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) toast.remove();
+                }, 300);
+            }
+        }, duration);
+    } catch(e) {
+        console.error('showToast错误:', e);
+    }
+}
+
+// API配置相关函数
+function openApiConfigModal(type) {
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    if (!modal || !content) return;
+    
+    if (type === 'deepseek') {
+        content.innerHTML = `
+            <div class="modal-title">🤖 DeepSeek API 配置</div>
+            <div class="input-group">
+                <label class="input-label">API Key</label>
+                <input type="password" id="api-key-input" class="input-field" placeholder="请输入DeepSeek API Key" value="${DEEPSEEK_API_KEY || ''}">
+            </div>
+            <div style="font-size:12px;color:#666;margin-bottom:16px;">
+                获取API Key：访问 <a href="https://platform.deepseek.com" target="_blank" style="color:#1A6BFF;">platform.deepseek.com</a>
+            </div>
+            <button onclick="saveApiConfig('deepseek')" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存配置</button>
+            <button class="modal-close" onclick="closeDetail()">取消</button>
+        `;
+    } else if (type === 'peerjs') {
+        content.innerHTML = `
+            <div class="modal-title">📡 PeerJS 服务器配置</div>
+            <div class="input-group">
+                <label class="input-label">服务器地址</label>
+                <input type="text" id="peerjs-server-input" class="input-field" placeholder="例：0.peerjs.com" value="0.peerjs.com">
+            </div>
+            <div class="input-group">
+                <label class="input-label">端口</label>
+                <input type="text" id="peerjs-port-input" class="input-field" placeholder="例：443" value="443">
+            </div>
+            <button onclick="saveApiConfig('peerjs')" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存配置</button>
+            <button class="modal-close" onclick="closeDetail()">取消</button>
+        `;
+    }
+    
+    modal.classList.add('show');
+}
+
+function saveApiConfig(type) {
+    if (type === 'deepseek') {
+        const input = document.getElementById('api-key-input');
+        if (input && input.value.trim()) {
+            // 保存到localStorage
+            try {
+                localStorage.setItem('deepseek_api_key', input.value.trim());
+                showToast('DeepSeek API配置已保存');
+            } catch(e) {
+                showToast('保存失败');
+            }
+        }
+    } else if (type === 'peerjs') {
+        const serverInput = document.getElementById('peerjs-server-input');
+        const portInput = document.getElementById('peerjs-port-input');
+        if (serverInput && portInput) {
+            try {
+                localStorage.setItem('peerjs_server', serverInput.value.trim());
+                localStorage.setItem('peerjs_port', portInput.value.trim());
+                showToast('PeerJS配置已保存');
+            } catch(e) {
+                showToast('保存失败');
+            }
+        }
+    }
+    closeDetail();
+}
+
+function resetApiConfig() {
+    if (!confirm('确定要恢复默认配置吗？')) return;
+    try {
+        localStorage.removeItem('deepseek_api_key');
+        localStorage.removeItem('peerjs_server');
+        localStorage.removeItem('peerjs_port');
+        showToast('已恢复默认配置');
+    } catch(e) {
+        showToast('重置失败');
+    }
+}
+
+// 显示更新弹窗
+function showUpdateModal() {
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    if (!modal || !content) return;
+    
+    content.innerHTML = `
+        <div class="modal-title">🆕 发现新版本</div>
+        <div style="text-align:center;padding:20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🎉</div>
+            <div style="font-size:16px;font-weight:600;margin-bottom:8px;">认知训练门户 V117</div>
+            <div style="font-size:13px;color:#666;margin-bottom:16px;">最新版本已更新</div>
+            <div style="background:#f5f7ff;border-radius:12px;padding:16px;text-align:left;font-size:13px;margin-bottom:16px;">
+                <div style="font-weight:600;margin-bottom:8px;">📋 更新内容：</div>
+                <div>• 优化用户体验</div>
+                <div>• 修复已知问题</div>
+                <div>• 提升性能</div>
+            </div>
+        </div>
+        <button class="modal-close" onclick="closeDetail()">知道了</button>
+    `;
+    modal.classList.add('show');
+}
+
+// 显示关于弹窗
+function showAboutModal() {
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    if (!modal || !content) return;
+    
+    content.innerHTML = `
+        <div class="modal-title">ℹ️ 关于</div>
+        <div style="text-align:center;padding:20px;">
+            <div style="font-size:64px;margin-bottom:16px;">🧠</div>
+            <div style="font-size:18px;font-weight:600;margin-bottom:8px;">认知训练门户</div>
+            <div style="font-size:14px;color:#1A6BFF;margin-bottom:16px;">V117</div>
+            <div style="font-size:13px;color:#666;margin-bottom:16px;">
+                专注于青少年认知能力训练的智能学习平台
+            </div>
+            <div style="background:#f5f7ff;border-radius:12px;padding:16px;text-align:left;font-size:13px;">
+                <div style="font-weight:600;margin-bottom:8px;">🔧 功能模块：</div>
+                <div>• AI精准练 - 薄弱点诊断</div>
+                <div>• AI超级老师 - 全科辅导</div>
+                <div>• 认知地图 - 能力可视化</div>
+                <div>• 训练游戏 - 16大认知游戏</div>
+                <div>• DeepSeek AI - 智能助手</div>
+            </div>
+        </div>
+        <button class="modal-close" onclick="closeDetail()">关闭</button>
+    `;
+    modal.classList.add('show');
+}
+
+// 视频观看记录相关函数
+function getVideoWatchRecord(videoId) {
+    try {
+        const user = getCurrentUserData();
+        if (!user || !user.videoProgress) return null;
+        return user.videoProgress[videoId] || null;
+    } catch(e) {
+        return null;
+    }
+}
+
+function updateVideoProgress() {
+    try {
+        const videoEl = document.getElementById('evp-video');
+        const progressBar = document.getElementById('evp-progress-bar');
+        const timeDisplay = document.getElementById('evp-time');
+        
+        if (!videoEl || !progressBar || !timeDisplay) return;
+        
+        const current = Math.floor(videoEl.currentTime);
+        const duration = Math.floor(videoEl.duration) || 1;
+        const progress = Math.round((current / duration) * 100);
+        
+        progressBar.style.width = progress + '%';
+        
+        // 更新时间显示
+        const currentMins = Math.floor(current / 60);
+        const currentSecs = current % 60;
+        const durationMins = Math.floor(duration / 60);
+        const durationSecs = duration % 60;
+        timeDisplay.textContent = `${currentMins}:${currentSecs.toString().padStart(2, '0')} / ${durationMins}:${durationSecs.toString().padStart(2, '0')}`;
+        
+        // 保存观看进度
+        const videoId = videoEl.dataset?.videoId;
+        if (videoId && videoEl.duration) {
+            const user = getCurrentUserData();
+            if (user) {
+                if (!user.videoProgress) user.videoProgress = {};
+                user.videoProgress[videoId] = {
+                    progress: progress,
+                    currentTime: current,
+                    duration: duration,
+                    lastWatched: Date.now()
+                };
+                syncUserData(user);
+            }
+        }
+    } catch(e) {
+        // 静默处理进度更新错误
+    }
 }
 
 // 游戏音效播放 (兼容旧调用)
@@ -8624,6 +8966,16 @@ function closeSettingsPanel(e) {
         }
     } catch(error) {
         console.error('closeSettingsPanel错误:', error);
+    }
+}
+
+// AI分身设置
+function openAvatarModal() {
+    try {
+        openFullscreenPage('avatar');
+    } catch(e) {
+        console.error('openAvatarModal错误:', e);
+        showToast('AI分身功能加载失败');
     }
 }
 
