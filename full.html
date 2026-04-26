@@ -53,6 +53,9 @@ a{text-decoration:none;color:inherit}
 .loading{text-align:center;padding:40px;color:var(--text-gray)}
 .loading::after{content:'...';animation:dots 1.5s infinite}
 @keyframes dots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes typing{0%,100%{opacity:0.3}50%{opacity:1}}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 .search-box{display:flex;gap:8px;margin-bottom:15px}
 .search-box input{flex:1;padding:10px 15px;border:1px solid #eee;border-radius:10px;font-size:14px}
 .search-box button{background:var(--blue);color:white;border:none;padding:10px 15px;border-radius:10px}
@@ -1831,82 +1834,189 @@ var podcasts = [
     {title:'学习动机：保持动力',author:'励志导师',duration:'23:45',ep:'20',category:'心理调节',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'},
     {title:'亲子教育：家长必听',author:'教育专家',duration:'35:00',ep:'21',category:'家庭教育',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'}
 ];
-var currentPodcast = null;
+var currentPodcast = -1;
 var podcastAudio = null;
+var podcastVolume = 0.8;
+var podcastCurrentSpeed = 1;
+var currentPodcastFilter = '全部';
+
 function showPodcasts() {
     var categories = [...new Set(podcasts.map(function(p) { return p.category; }))];
-    var html = '<div style="padding:10px 0"><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:15px"><button class="tab active" onclick="filterPodcasts(\'全部\', this)">全部</button>';
-    categories.forEach(function(c) { html += '<button class="tab" onclick="filterPodcasts(\'' + c + '\', this)">' + c + '</button>'; });
-    html += '</div><div id="podcast-list">';
-    podcasts.forEach(function(p, i) {
-        html += '<div onclick="playPodcast(' + i + ')" style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:10px;margin-bottom:8px;cursor:pointer">' +
-            '<div style="width:45px;height:45px;background:linear-gradient(135deg,var(--purple),var(--pink));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:14px">' + p.ep + '</div>' +
-            '<div style="flex:1"><div style="font-weight:bold;font-size:14px;color:var(--text-dark)">' + p.title + '</div><div style="font-size:12px;color:var(--text-gray)">' + p.author + ' · ' + p.duration + '</div></div>' +
-            '<div style="font-size:10px;background:var(--blue);color:white;padding:3px 8px;border-radius:10px">' + p.category + '</div></div>';
+    var html = '<div style="padding:10px 0">';
+    html += '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:15px">';
+    html += '<button class="tab ' + (currentPodcastFilter === '全部' ? 'active' : '') + '" onclick="filterPodcasts(\'全部\', this)">全部</button>';
+    categories.forEach(function(c) { 
+        html += '<button class="tab ' + (currentPodcastFilter === c ? 'active' : '') + '" onclick="filterPodcasts(\'' + c + '\', this)">' + c + '</button>'; 
     });
-    html += '</div></div>';
+    html += '</div>';
+    html += '<div id="podcast-list"></div>';
+    html += '</div>';
     document.getElementById('podcast-content').innerHTML = html;
+    renderPodcastList();
     initPodcastPlayer();
 }
-function filterPodcasts(cat, btn) {
-    document.querySelectorAll('#podcast-content .tab').forEach(function(t) { t.classList.remove('active'); });
-    btn.classList.add('active');
-    var filtered = cat === '全部' ? podcasts : podcasts.filter(function(p) { return p.category === cat; });
+
+function renderPodcastList() {
+    var filtered = currentPodcastFilter === '全部' ? podcasts : podcasts.filter(function(p) { return p.category === currentPodcastFilter; });
     var html = '';
     filtered.forEach(function(p, i) {
         var idx = podcasts.indexOf(p);
-        html += '<div onclick="playPodcast(' + idx + ')" style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:10px;margin-bottom:8px;cursor:pointer">' +
-            '<div style="width:45px;height:45px;background:linear-gradient(135deg,var(--purple),var(--pink));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:14px">' + p.ep + '</div>' +
+        var isPlaying = idx === currentPodcast;
+        html += '<div onclick="playPodcast(' + idx + ')" class="podcast-item ' + (isPlaying ? 'podcast-playing' : '') + '" style="display:flex;align-items:center;gap:12px;padding:12px;background:' + (isPlaying ? 'linear-gradient(135deg,rgba(26,107,255,0.15),rgba(139,92,246,0.15))' : '#f8f9fa') + ';border-radius:10px;margin-bottom:8px;cursor:pointer;border:' + (isPlaying ? '2px solid var(--blue)' : '2px solid transparent') + ';transition:all 0.3s">' +
+            '<div style="width:45px;height:45px;background:linear-gradient(135deg,' + (isPlaying ? 'var(--blue),var(--purple)' : 'var(--purple),var(--pink)') + ';border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:14px;position:relative">' + 
+            (isPlaying ? '<span style="animation:pulse 1s infinite">♪</span>' : p.ep) + '</div>' +
             '<div style="flex:1"><div style="font-weight:bold;font-size:14px;color:var(--text-dark)">' + p.title + '</div><div style="font-size:12px;color:var(--text-gray)">' + p.author + ' · ' + p.duration + '</div></div>' +
-            '<div style="font-size:10px;background:var(--blue);color:white;padding:3px 8px;border-radius:10px">' + p.category + '</div></div>';
+            '<div style="font-size:10px;background:var(--blue);color:white;padding:3px 8px;border-radius:10px">' + p.category + '</div>' +
+            (isPlaying ? '<div style="width:8px;height:8px;background:var(--blue);border-radius:50%;animation:pulse 1s infinite"></div>' : '') + '</div>';
     });
     document.getElementById('podcast-list').innerHTML = html;
 }
+
+function filterPodcasts(cat, btn) {
+    currentPodcastFilter = cat;
+    document.querySelectorAll('#podcast-content .tab').forEach(function(t) { t.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    renderPodcastList();
+}
+
 function initPodcastPlayer() {
     var container = document.getElementById('podcast-player-container');
     if (!container) return;
-    container.innerHTML = '<div style="background:linear-gradient(135deg,var(--blue),var(--purple));padding:20px;border-radius:16px;color:white;text-align:center"><div style="font-size:48px;margin-bottom:10px" id="podcast-cover">🎧</div><div style="font-weight:bold;font-size:16px" id="podcast-title">选择课程播放</div><div style="font-size:12px;opacity:0.8;margin-bottom:15px" id="podcast-author"></div><audio id="podcast-audio" style="display:none"></audio><div style="display:flex;justify-content:center;gap:15px;margin-bottom:15px"><button onclick="togglePodcastPlay()" style="width:50px;height:50px;background:white;color:var(--blue);border:none;border-radius:50%;font-size:20px;cursor:pointer">▶</button></div><input type="range" id="podcast-progress" value="0" min="0" max="100" style="width:100%;margin-bottom:10px;cursor:pointer"><div style="display:flex;justify-content:space-between;font-size:12px;opacity:0.8"><span id="podcast-current">00:00</span><span id="podcast-duration">00:00</span></div><div style="display:flex;justify-content:center;gap:8px;margin-top:10px"><button onclick="setPodcastSpeed(0.5)" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:5px 10px;border-radius:15px;font-size:11px;cursor:pointer">0.5x</button><button onclick="setPodcastSpeed(1)" style="background:var(--blue);border:none;color:white;padding:5px 10px;border-radius:15px;font-size:11px;cursor:pointer">1x</button><button onclick="setPodcastSpeed(1.5)" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:5px 10px;border-radius:15px;font-size:11px;cursor:pointer">1.5x</button></div></div>';
+    container.innerHTML = '<div style="background:linear-gradient(135deg,var(--blue),var(--purple));padding:20px;border-radius:16px;color:white;text-align:center">' +
+        '<div style="font-size:48px;margin-bottom:10px" id="podcast-cover">🎧</div>' +
+        '<div style="font-weight:bold;font-size:16px;margin-bottom:5px" id="podcast-title">选择课程播放</div>' +
+        '<div style="font-size:12px;opacity:0.8;margin-bottom:15px" id="podcast-author"></div>' +
+        
+        // 隐藏的audio元素
+        '<audio id="podcast-audio"></audio>' +
+        
+        // 进度条
+        '<div style="margin-bottom:15px">' +
+        '<input type="range" id="podcast-progress" value="0" min="0" max="100" style="width:100%;height:6px;-webkit-appearance:none;background:rgba(255,255,255,0.3);border-radius:3px;cursor:pointer;margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;opacity:0.8"><span id="podcast-current">00:00</span><span id="podcast-duration">00:00</span></div>' +
+        '</div>' +
+        
+        // 播放控制
+        '<div style="display:flex;justify-content:center;align-items:center;gap:20px;margin-bottom:15px">' +
+        '<button onclick="podcastPrev()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);color:white;border:none;border-radius:50%;font-size:14px;cursor:pointer">⏮</button>' +
+        '<button onclick="togglePodcastPlay()" id="podcast-play-btn" style="width:56px;height:56px;background:white;color:var(--blue);border:none;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center">▶</button>' +
+        '<button onclick="podcastNext()" style="width:36px;height:36px;background:rgba(255,255,255,0.2);color:white;border:none;border-radius:50%;font-size:14px;cursor:pointer">⏭</button>' +
+        '</div>' +
+        
+        // 音量控制
+        '<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px">' +
+        '<span style="font-size:14px">🔊</span>' +
+        '<input type="range" id="podcast-volume" value="80" min="0" max="100" style="width:100px;height:4px;-webkit-appearance:none;background:rgba(255,255,255,0.3);border-radius:2px;cursor:pointer">' +
+        '<span id="podcast-volume-text" style="font-size:12px;width:30px">80%</span>' +
+        '</div>' +
+        
+        // 倍速控制
+        '<div style="display:flex;justify-content:center;gap:8px">' +
+        '<button onclick="setPodcastSpeed(0.5)" class="speed-btn" data-speed="0.5" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:5px 12px;border-radius:15px;font-size:11px;cursor:pointer">0.5x</button>' +
+        '<button onclick="setPodcastSpeed(1)" class="speed-btn active" data-speed="1" style="background:var(--blue);border:none;color:white;padding:5px 12px;border-radius:15px;font-size:11px;cursor:pointer">1x</button>' +
+        '<button onclick="setPodcastSpeed(1.5)" class="speed-btn" data-speed="1.5" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:5px 12px;border-radius:15px;font-size:11px;cursor:pointer">1.5x</button>' +
+        '<button onclick="setPodcastSpeed(2)" class="speed-btn" data-speed="2" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);color:white;padding:5px 12px;border-radius:15px;font-size:11px;cursor:pointer">2x</button>' +
+        '</div></div>';
+    
     podcastAudio = document.getElementById('podcast-audio');
     if (podcastAudio) {
+        podcastAudio.volume = podcastVolume;
+        
         podcastAudio.addEventListener('timeupdate', function() {
-            if (!podcastAudio.duration) return;
-            document.getElementById('podcast-progress').value = (podcastAudio.currentTime / podcastAudio.duration) * 100;
+            if (!podcastAudio.duration || isNaN(podcastAudio.duration)) return;
+            var progress = (podcastAudio.currentTime / podcastAudio.duration) * 100;
+            document.getElementById('podcast-progress').value = progress;
             document.getElementById('podcast-current').textContent = formatTime(podcastAudio.currentTime);
         });
+        
         podcastAudio.addEventListener('loadedmetadata', function() {
             document.getElementById('podcast-duration').textContent = formatTime(podcastAudio.duration);
         });
+        
+        podcastAudio.addEventListener('ended', function() {
+            podcastNext();
+        });
+        
+        podcastAudio.addEventListener('play', function() {
+            document.getElementById('podcast-play-btn').innerHTML = '⏸';
+        });
+        
+        podcastAudio.addEventListener('pause', function() {
+            document.getElementById('podcast-play-btn').innerHTML = '▶';
+        });
+        
+        // 进度条拖动
         document.getElementById('podcast-progress').addEventListener('input', function() {
-            if (podcastAudio.duration) podcastAudio.currentTime = (this.value / 100) * podcastAudio.duration;
+            if (podcastAudio.duration) {
+                podcastAudio.currentTime = (this.value / 100) * podcastAudio.duration;
+            }
+        });
+        
+        // 音量控制
+        document.getElementById('podcast-volume').addEventListener('input', function() {
+            podcastVolume = this.value / 100;
+            podcastAudio.volume = podcastVolume;
+            document.getElementById('podcast-volume-text').textContent = this.value + '%';
         });
     }
 }
+
 function playPodcast(idx) {
     if (idx < 0 || idx >= podcasts.length) return;
     currentPodcast = idx;
     var p = podcasts[idx];
-    document.getElementById('podcast-cover').textContent = p.ep;
+    document.getElementById('podcast-cover').textContent = '🎵';
     document.getElementById('podcast-title').textContent = p.title;
     document.getElementById('podcast-author').textContent = p.author + ' · ' + p.duration;
     if (podcastAudio) {
         podcastAudio.src = p.url;
-        podcastAudio.play();
-        document.querySelector('#podcast-player-container button').textContent = '⏸';
+        podcastAudio.volume = podcastVolume;
+        podcastAudio.playbackRate = podcastCurrentSpeed;
+        podcastAudio.play().catch(function(e) {
+            console.log('播放被阻止:', e);
+        });
     }
+    renderPodcastList();
 }
+
 function togglePodcastPlay() {
-    if (!podcastAudio || !podcastAudio.src) return;
+    if (!podcastAudio || !podcastAudio.src) {
+        if (podcasts.length > 0) playPodcast(0);
+        return;
+    }
     if (podcastAudio.paused) {
         podcastAudio.play();
-        document.querySelector('#podcast-player-container button').textContent = '⏸';
     } else {
         podcastAudio.pause();
-        document.querySelector('#podcast-player-container button').textContent = '▶';
     }
 }
-function setPodcastSpeed(speed) {
-    if (podcastAudio) podcastAudio.playbackRate = speed;
+
+function podcastPrev() {
+    if (currentPodcast > 0) {
+        playPodcast(currentPodcast - 1);
+    }
 }
+
+function podcastNext() {
+    if (currentPodcast < podcasts.length - 1) {
+        playPodcast(currentPodcast + 1);
+    }
+}
+
+function setPodcastSpeed(speed) {
+    podcastCurrentSpeed = speed;
+    if (podcastAudio) podcastAudio.playbackRate = speed;
+    document.querySelectorAll('.speed-btn').forEach(function(btn) {
+        if (btn.dataset.speed === String(speed)) {
+            btn.style.background = 'var(--blue)';
+            btn.style.border = 'none';
+        } else {
+            btn.style.background = 'rgba(255,255,255,0.2)';
+            btn.style.border = '1px solid rgba(255,255,255,0.3)';
+        }
+    });
+}
+
 function formatTime(secs) {
     if (!secs || isNaN(secs)) return '00:00';
     var m = Math.floor(secs / 60);
@@ -1929,51 +2039,140 @@ var videos = [
     {title:'生物细胞：生命基础',teacher:'生物名师郑老师',duration:'29:45',category:'生物',thumbnail:'🧬',url:'https://www.w3schools.com/html/mov_bbb.mp4'},
     {title:'地理世界：七大洲',teacher:'地理名师冯老师',duration:'32:20',category:'地理',thumbnail:'🗺',url:'https://www.w3schools.com/html/mov_bbb.mp4'}
 ];
-var currentVideo = null;
+var currentVideo = -1;
 var videoPlayer = null;
+var videoVolume = 0.8;
+var videoCurrentSpeed = 1;
+var currentVideoFilter = '全部';
+
 function showVideos() {
     var categories = [...new Set(videos.map(function(v) { return v.category; }))];
-    var html = '<div style="padding:10px 0"><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:15px"><button class="tab active" onclick="filterVideos(\'全部\', this)">全部</button>';
-    categories.forEach(function(c) { html += '<button class="tab" onclick="filterVideos(\'' + c + '\', this)">' + c + '</button>'; });
-    html += '</div><div id="video-list">';
-    videos.forEach(function(v, i) {
-        html += '<div onclick="playVideo(' + i + ')" style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:10px;margin-bottom:8px;cursor:pointer">' +
-            '<div style="width:60px;height:45px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:white">' + v.thumbnail + '</div>' +
-            '<div style="flex:1"><div style="font-weight:bold;font-size:14px;color:var(--text-dark)">' + v.title + '</div><div style="font-size:12px;color:var(--text-gray)">' + v.teacher + ' · ' + v.duration + '</div></div></div>';
+    var html = '<div style="padding:10px 0">';
+    html += '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:15px">';
+    html += '<button class="tab ' + (currentVideoFilter === '全部' ? 'active' : '') + '" onclick="filterVideos(\'全部\', this)">全部</button>';
+    categories.forEach(function(c) { 
+        html += '<button class="tab ' + (currentVideoFilter === c ? 'active' : '') + '" onclick="filterVideos(\'' + c + '\', this)">' + c + '</button>'; 
     });
-    html += '</div><div style="margin-top:20px;padding:20px;background:#f8f9fa;border-radius:12px;border:2px dashed #ddd;text-align:center"><h4 style="margin-bottom:10px">📤 上传视频</h4><input type="file" id="video-upload" accept="video/*" onchange="handleVideoUpload(event)" style="display:none"><button class="btn btn-secondary" onclick="document.getElementById(\'video-upload\').click()">选择视频文件</button></div></div>';
+    html += '</div>';
+    html += '<div id="video-list"></div>';
+    html += '<div style="margin-top:20px;padding:20px;background:#f8f9fa;border-radius:12px;border:2px dashed #ddd;text-align:center"><h4 style="margin-bottom:10px">📤 上传视频</h4><input type="file" id="video-upload" accept="video/*" onchange="handleVideoUpload(event)" style="display:none"><button class="btn btn-secondary" onclick="document.getElementById(\'video-upload\').click()">选择视频文件</button></div>';
+    html += '</div>';
     document.getElementById('video-content').innerHTML = html;
+    renderVideoList();
     initVideoPlayer();
 }
-function filterVideos(cat, btn) {
-    document.querySelectorAll('#video-content .tab').forEach(function(t) { t.classList.remove('active'); });
-    btn.classList.add('active');
-    var filtered = cat === '全部' ? videos : videos.filter(function(v) { return v.category === cat; });
+
+function renderVideoList() {
+    var filtered = currentVideoFilter === '全部' ? videos : videos.filter(function(v) { return v.category === currentVideoFilter; });
     var html = '';
     filtered.forEach(function(v, i) {
         var idx = videos.indexOf(v);
-        html += '<div onclick="playVideo(' + idx + ')" style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:10px;margin-bottom:8px;cursor:pointer">' +
-            '<div style="width:60px;height:45px;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:white">' + v.thumbnail + '</div>' +
-            '<div style="flex:1"><div style="font-weight:bold;font-size:14px;color:var(--text-dark)">' + v.title + '</div><div style="font-size:12px;color:var(--text-gray)">' + v.teacher + ' · ' + v.duration + '</div></div></div>';
+        var isPlaying = idx === currentVideo;
+        html += '<div onclick="playVideo(' + idx + ')" class="video-item ' + (isPlaying ? 'video-playing' : '') + '" style="display:flex;align-items:center;gap:12px;padding:12px;background:' + (isPlaying ? 'linear-gradient(135deg,rgba(255,71,87,0.15),rgba(255,154,92,0.15))' : '#f8f9fa') + ';border-radius:10px;margin-bottom:8px;cursor:pointer;border:' + (isPlaying ? '2px solid var(--red)' : '2px solid transparent') + ';transition:all 0.3s">' +
+            '<div style="width:60px;height:45px;background:linear-gradient(135deg,' + (isPlaying ? 'var(--red),var(--orange)' : 'var(--orange),var(--red)') + ';border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;color:white;position:relative">' + 
+            (isPlaying ? '<span style="position:absolute">▶</span>' : v.thumbnail) + '</div>' +
+            '<div style="flex:1"><div style="font-weight:bold;font-size:14px;color:var(--text-dark)">' + v.title + '</div><div style="font-size:12px;color:var(--text-gray)">' + v.teacher + ' · ' + v.duration + '</div></div>' +
+            (isPlaying ? '<div style="width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulse 1s infinite"></div>' : '<div style="color:var(--text-light)">▶</div>') + '</div>';
     });
     document.getElementById('video-list').innerHTML = html;
 }
+
+function filterVideos(cat, btn) {
+    currentVideoFilter = cat;
+    document.querySelectorAll('#video-content .tab').forEach(function(t) { t.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    renderVideoList();
+}
+
 function initVideoPlayer() {
     var container = document.getElementById('video-player-container');
     if (!container) return;
-    container.innerHTML = '<div style="background:#000;border-radius:12px;overflow:hidden"><video id="main-video" width="100%" controls playsinline><source src="" type="video/mp4">您的浏览器不支持视频</video></div><div style="padding:10px 0"><div style="display:flex;align-items:center;gap:10px"><span id="video-time" style="font-size:12px;color:var(--text-gray)">00:00 / 00:00</span><select id="video-speed" onchange="setVideoSpeed(this.value)" style="margin-left:auto;background:#f8f9fa;border:1px solid #ddd;padding:5px 10px;border-radius:5px;font-size:12px"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div></div>';
+    container.style.display = 'block';
+    container.innerHTML = '<div style="background:#000;border-radius:12px;overflow:hidden;position:relative">' +
+        '<video id="main-video" width="100%" style="display:block" playsinline>' +
+        '<source src="" type="video/mp4">您的浏览器不支持视频播放</video>' +
+        
+        // 自定义控制条
+        '<div id="video-controls" style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));padding:15px 10px 10px">' +
+        
+        // 进度条
+        '<div style="margin-bottom:10px">' +
+        '<input type="range" id="video-progress" value="0" min="0" max="100" style="width:100%;height:4px;-webkit-appearance:none;background:rgba(255,255,255,0.3);border-radius:2px;cursor:pointer">' +
+        '</div>' +
+        
+        // 控制按钮行
+        '<div style="display:flex;align-items:center;gap:10px">' +
+        
+        // 播放/暂停
+        '<button onclick="toggleVideoPlay()" id="video-play-btn" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;padding:5px">▶</button>' +
+        
+        // 上一集
+        '<button onclick="videoPrev()" style="background:none;border:none;color:white;font-size:14px;cursor:pointer;padding:5px">⏮</button>' +
+        
+        // 下一集
+        '<button onclick="videoNext()" style="background:none;border:none;color:white;font-size:14px;cursor:pointer;padding:5px">⏭</button>' +
+        
+        // 时间显示
+        '<span id="video-time" style="font-size:11px;color:white;opacity:0.9">00:00 / 00:00</span>' +
+        
+        // 音量控制
+        '<div style="display:flex;align-items:center;margin-left:auto;gap:5px">' +
+        '<button onclick="toggleVideoMute()" id="video-mute-btn" style="background:none;border:none;color:white;font-size:14px;cursor:pointer;padding:5px">🔊</button>' +
+        '<input type="range" id="video-volume" value="80" min="0" max="100" style="width:60px;height:3px;-webkit-appearance:none;background:rgba(255,255,255,0.3);border-radius:2px;cursor:pointer">' +
+        '</div>' +
+        
+        // 倍速
+        '<select id="video-speed" onchange="setVideoSpeed(this.value)" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer">' +
+        '<option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>' +
+        
+        // 全屏
+        '<button onclick="toggleVideoFullscreen()" style="background:none;border:none;color:white;font-size:14px;cursor:pointer;padding:5px">⛶</button>' +
+        '</div></div></div>';
+    
     videoPlayer = document.getElementById('main-video');
     if (videoPlayer) {
+        videoPlayer.volume = videoVolume;
+        
         videoPlayer.addEventListener('loadedmetadata', function() {
             document.getElementById('video-time').textContent = '00:00 / ' + formatTime(videoPlayer.duration);
         });
+        
         videoPlayer.addEventListener('timeupdate', function() {
             if (videoPlayer.duration) {
+                var progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                document.getElementById('video-progress').value = progress;
                 document.getElementById('video-time').textContent = formatTime(videoPlayer.currentTime) + ' / ' + formatTime(videoPlayer.duration);
             }
         });
+        
+        videoPlayer.addEventListener('ended', function() {
+            videoNext();
+        });
+        
+        videoPlayer.addEventListener('play', function() {
+            document.getElementById('video-play-btn').textContent = '⏸';
+        });
+        
+        videoPlayer.addEventListener('pause', function() {
+            document.getElementById('video-play-btn').textContent = '▶';
+        });
+        
+        // 进度条拖动
+        document.getElementById('video-progress').addEventListener('input', function() {
+            if (videoPlayer.duration) {
+                videoPlayer.currentTime = (this.value / 100) * videoPlayer.duration;
+            }
+        });
+        
+        // 音量控制
+        document.getElementById('video-volume').addEventListener('input', function() {
+            videoVolume = this.value / 100;
+            videoPlayer.volume = videoVolume;
+            updateVolumeIcon();
+        });
     }
 }
+
 function playVideo(idx) {
     if (idx < 0 || idx >= videos.length) return;
     currentVideo = idx;
@@ -1981,12 +2180,79 @@ function playVideo(idx) {
     document.getElementById('video-player-container').style.display = 'block';
     if (videoPlayer) {
         videoPlayer.src = v.url;
-        videoPlayer.load();
+        videoPlayer.volume = videoVolume;
+        videoPlayer.playbackRate = videoCurrentSpeed;
+        videoPlayer.play().catch(function(e) {
+            console.log('播放被阻止:', e);
+        });
+    }
+    renderVideoList();
+}
+
+function toggleVideoPlay() {
+    if (!videoPlayer) return;
+    if (!videoPlayer.src) {
+        if (videos.length > 0) playVideo(0);
+        return;
+    }
+    if (videoPlayer.paused) {
+        videoPlayer.play();
+    } else {
+        videoPlayer.pause();
     }
 }
-function setVideoSpeed(speed) {
-    if (videoPlayer) videoPlayer.playbackRate = parseFloat(speed);
+
+function videoPrev() {
+    if (currentVideo > 0) {
+        playVideo(currentVideo - 1);
+    }
 }
+
+function videoNext() {
+    if (currentVideo < videos.length - 1) {
+        playVideo(currentVideo + 1);
+    }
+}
+
+function toggleVideoMute() {
+    if (!videoPlayer) return;
+    if (videoPlayer.volume > 0) {
+        videoPlayer.dataset.lastVolume = videoPlayer.volume;
+        videoPlayer.volume = 0;
+        document.getElementById('video-volume').value = 0;
+    } else {
+        videoPlayer.volume = videoPlayer.dataset.lastVolume || 0.8;
+        document.getElementById('video-volume').value = videoPlayer.volume * 100;
+    }
+    updateVolumeIcon();
+}
+
+function updateVolumeIcon() {
+    var vol = videoPlayer ? videoPlayer.volume : 0;
+    var icon = '🔊';
+    if (vol === 0) icon = '🔇';
+    else if (vol < 0.3) icon = '🔈';
+    else if (vol < 0.7) icon = '🔉';
+    else icon = '🔊';
+    document.getElementById('video-mute-btn').textContent = icon;
+}
+
+function setVideoSpeed(speed) {
+    videoCurrentSpeed = parseFloat(speed);
+    if (videoPlayer) videoPlayer.playbackRate = videoCurrentSpeed;
+}
+
+function toggleVideoFullscreen() {
+    if (!videoPlayer) return;
+    if (videoPlayer.requestFullscreen) {
+        videoPlayer.requestFullscreen();
+    } else if (videoPlayer.webkitRequestFullscreen) {
+        videoPlayer.webkitRequestFullscreen();
+    } else if (videoPlayer.msRequestFullscreen) {
+        videoPlayer.msRequestFullscreen();
+    }
+}
+
 function handleVideoUpload(e) {
     var file = e.target.files[0];
     if (file) {
@@ -2075,74 +2341,323 @@ function sendAvatarMessage() {
 var deepseekMessages = [];
 var isVoiceInput = false;
 var recognition = null;
+var uploadedMedia = { image: null, audio: null, video: null };
+
 function showDeepseek() {
-    document.getElementById('deepseek-content').innerHTML = '<div style="background:linear-gradient(135deg,var(--purple),var(--pink));padding:15px;border-radius:12px;margin-bottom:15px;display:flex;align-items:center;gap:12px"><div style="width:45px;height:45px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">🤖</div><div style="flex:1"><div style="font-weight:bold;color:white">DeepSeek AI助手</div><div style="font-size:12px;color:rgba(255,255,255,0.8)">在线 · 随时为您服务</div></div><button onclick="clearDeepseekChat()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer">清空</button></div>' +
-        '<div id="deepseek-messages" style="height:350px;overflow-y:auto;padding:10px 0"></div>' +
-        '<div id="typing-indicator" style="display:none;align-items:center;gap:5px;padding:10px;color:var(--text-gray);font-size:12px"><div style="display:flex;gap:3px"><div style="width:6px;height:6px;background:var(--blue);border-radius:50%;animation:typing 1.4s infinite"></div><div style="width:6px;height:6px;background:var(--blue);border-radius:50%;animation:typing 1.4s infinite 0.2s"></div><div style="width:6px;height:6px;background:var(--blue);border-radius:50%;animation:typing 1.4s infinite 0.4s"></div></div><span>思考中...</span></div>' +
-        '<div style="display:flex;gap:8px;padding:10px;background:#f8f9fa;border-radius:12px"><input type="text" id="deepseek-input" placeholder="输入问题..." style="flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px" onkeypress="if(event.key===\'Enter\')sendToDeepseek()"><button id="voice-btn" onclick="toggleVoiceInput()" style="width:42px;height:42px;background:#f0f0f0;border:none;border-radius:8px;cursor:pointer;font-size:18px">🎤</button><button onclick="sendToDeepseek()" style="width:42px;height:42px;background:var(--blue);color:white;border:none;border-radius:8px;cursor:pointer;font-size:18px">➤</button></div>';
+    document.getElementById('deepseek-content').innerHTML = 
+        // 头部
+        '<div style="background:linear-gradient(135deg,var(--purple),var(--pink));padding:15px;border-radius:12px;margin-bottom:15px;display:flex;align-items:center;gap:12px">' +
+            '<div style="width:45px;height:45px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">🤖</div>' +
+            '<div style="flex:1">' +
+                '<div style="font-weight:bold;color:white">DeepSeek AI助手</div>' +
+                '<div style="font-size:12px;color:rgba(255,255,255,0.8)">支持文字/语音/图片/音视频</div>' +
+            '</div>' +
+            '<button onclick="clearDeepseekChat()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer">清空</button>' +
+        '</div>' +
+        
+        // 图片预览区
+        '<div id="image-preview-area" style="display:none;margin-bottom:10px;padding:10px;background:#f8f9fa;border-radius:10px">' +
+            '<div style="display:flex;align-items:center;gap:10px">' +
+                '<img id="preview-image" style="max-width:100px;max-height:80px;border-radius:8px;object-fit:cover">' +
+                '<div style="flex:1">' +
+                    '<div id="preview-image-name" style="font-size:12px;color:var(--text-dark);font-weight:bold"></div>' +
+                    '<div style="font-size:11px;color:var(--text-gray)">点击发送给AI分析</div>' +
+                '</div>' +
+                '<button onclick="sendImageToAI()" style="background:var(--blue);color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">发送</button>' +
+                '<button onclick="clearImagePreview()" style="background:#ddd;color:#333;border:none;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer">×</button>' +
+            '</div>' +
+        '</div>' +
+        
+        // 音频/视频预览区
+        '<div id="media-preview-area" style="display:none;margin-bottom:10px;padding:10px;background:#f8f9fa;border-radius:10px">' +
+            '<div style="display:flex;align-items:center;gap:10px">' +
+                '<div id="media-preview-player"></div>' +
+                '<div style="flex:1">' +
+                    '<div id="preview-media-name" style="font-size:12px;color:var(--text-dark);font-weight:bold"></div>' +
+                    '<div id="preview-media-type" style="font-size:11px;color:var(--text-gray)"></div>' +
+                '</div>' +
+                '<button onclick="sendMediaToAI()" style="background:var(--blue);color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer">发送</button>' +
+                '<button onclick="clearMediaPreview()" style="background:#ddd;color:#333;border:none;padding:6px 10px;border-radius:6px;font-size:12px;cursor:pointer">×</button>' +
+            '</div>' +
+        '</div>' +
+        
+        // 消息区域
+        '<div id="deepseek-messages" style="height:280px;overflow-y:auto;padding:10px 0"></div>' +
+        
+        // 加载指示器
+        '<div id="typing-indicator" style="display:none;align-items:center;gap:8px;padding:10px 0;color:var(--text-gray);font-size:12px">' +
+            '<div style="display:flex;gap:3px">' +
+                '<div style="width:6px;height:6px;background:var(--blue);border-radius:50%;animation:typing 1.4s infinite"></div>' +
+                '<div style="width:6px;height:6px;background:var(--blue);border-radius:50%;animation:typing 1.4s infinite 0.2s"></div>' +
+                '<div style="width:6px;height:6px;background:var(--blue);border-radius:50%;animation:typing 1.4s infinite 0.4s"></div>' +
+            '</div>' +
+            '<span id="typing-text">思考中...</span>' +
+        '</div>' +
+        
+        // 输入工具栏
+        '<div style="background:#f8f9fa;border-radius:12px;padding:10px;margin-bottom:10px">' +
+            // 快捷工具按钮
+            '<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">' +
+                '<button onclick="toggleVoiceInput()" id="voice-btn" style="width:38px;height:38px;background:#f0f0f0;border:none;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" title="语音输入">🎤</button>' +
+                '<button onclick="document.getElementById(\'image-upload\').click()" style="width:38px;height:38px;background:#f0f0f0;border:none;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" title="图片上传">📷</button>' +
+                '<button onclick="document.getElementById(\'audio-upload\').click()" style="width:38px;height:38px;background:#f0f0f0;border:none;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" title="音频上传">🎵</button>' +
+                '<button onclick="document.getElementById(\'video-upload\').click()" style="width:38px;height:38px;background:#f0f0f0;border:none;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" title="视频上传">🎬</button>' +
+            '</div>' +
+            // 文字输入框和发送按钮
+            '<div style="display:flex;gap:8px;align-items:center">' +
+                '<input type="text" id="deepseek-input" placeholder="输入问题，Enter发送..." style="flex:1;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px" onkeypress="if(event.key===\'Enter\')sendToDeepseek()">' +
+                '<button onclick="sendToDeepseek()" style="width:48px;height:48px;background:var(--blue);color:white;border:none;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center">➤</button>' +
+            '</div>' +
+        '</div>' +
+        
+        // 隐藏的文件上传input
+        '<input type="file" id="image-upload" accept="image/*" style="display:none" onchange="handleImageUpload(event)">' +
+        '<input type="file" id="audio-upload" accept="audio/*" style="display:none" onchange="handleAudioUpload(event)">' +
+        '<input type="file" id="video-upload" accept="video/*" style="display:none" onchange="handleVideoUploadDeepseek(event)">';
+    
+    // 初始化语音识别
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
         recognition.lang = 'zh-CN';
         recognition.continuous = false;
+        recognition.interimResults = true;
         recognition.onresult = function(event) {
-            document.getElementById('deepseek-input').value = event.results[0][0].transcript;
+            var transcript = event.results[0][0].transcript;
+            document.getElementById('deepseek-input').value = transcript;
+            if (event.results[0].isFinal) {
+                isVoiceInput = false;
+                document.getElementById('voice-btn').textContent = '🎤';
+                document.getElementById('voice-btn').style.background = '#f0f0f0';
+            }
+        };
+        recognition.onerror = function() { 
+            isVoiceInput = false; 
+            document.getElementById('voice-btn').textContent = '🎤';
+            document.getElementById('voice-btn').style.background = '#f0f0f0';
+        };
+        recognition.onend = function() {
             isVoiceInput = false;
             document.getElementById('voice-btn').textContent = '🎤';
+            document.getElementById('voice-btn').style.background = '#f0f0f0';
         };
-        recognition.onerror = function() { isVoiceInput = false; document.getElementById('voice-btn').textContent = '🎤'; };
     }
     renderDeepseekMessages();
 }
+
 function toggleVoiceInput() {
-    if (!recognition) { showToast('您的浏览器不支持语音输入'); return; }
+    if (!recognition) { 
+        showToast('您的浏览器不支持语音输入'); 
+        return; 
+    }
     if (isVoiceInput) {
         recognition.stop();
         isVoiceInput = false;
         document.getElementById('voice-btn').textContent = '🎤';
+        document.getElementById('voice-btn').style.background = '#f0f0f0';
     } else {
         recognition.start();
         isVoiceInput = true;
         document.getElementById('voice-btn').textContent = '🔴';
+        document.getElementById('voice-btn').style.background = 'var(--red)';
     }
 }
+
+function handleImageUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        uploadedMedia.image = {
+            name: file.name,
+            data: e.target.result
+        };
+        document.getElementById('preview-image').src = e.target.result;
+        document.getElementById('preview-image-name').textContent = file.name;
+        document.getElementById('image-preview-area').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+}
+
+function handleAudioUpload(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    
+    var url = URL.createObjectURL(file);
+    uploadedMedia.audio = {
+        name: file.name,
+        url: url,
+        type: 'audio'
+    };
+    
+    var html = '<audio controls style="height:40px;max-width:120px"><source src="' + url + '" type="' + file.type + '">您的浏览器不支持</audio>';
+    document.getElementById('media-preview-player').innerHTML = html;
+    document.getElementById('preview-media-name').textContent = file.name;
+    document.getElementById('preview-media-type').textContent = '🎵 音频文件';
+    document.getElementById('media-preview-area').style.display = 'block';
+    event.target.value = '';
+}
+
+function handleVideoUploadDeepseek(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    
+    var url = URL.createObjectURL(file);
+    uploadedMedia.video = {
+        name: file.name,
+        url: url,
+        type: 'video'
+    };
+    
+    var html = '<video controls style="height:50px;max-width:120px;border-radius:6px"><source src="' + url + '" type="' + file.type + '">您的浏览器不支持</video>';
+    document.getElementById('media-preview-player').innerHTML = html;
+    document.getElementById('preview-media-name').textContent = file.name;
+    document.getElementById('preview-media-type').textContent = '🎬 视频文件';
+    document.getElementById('media-preview-area').style.display = 'block';
+    event.target.value = '';
+}
+
+function clearImagePreview() {
+    uploadedMedia.image = null;
+    document.getElementById('image-preview-area').style.display = 'none';
+}
+
+function clearMediaPreview() {
+    uploadedMedia.audio = null;
+    uploadedMedia.video = null;
+    document.getElementById('media-preview-area').style.display = 'none';
+}
+
+function sendImageToAI() {
+    if (!uploadedMedia.image) return;
+    
+    var imgData = uploadedMedia.image.data;
+    var userMsg = '请分析这张图片，如果是题目请给出解答和讲解，如果不是题目请描述图片内容。';
+    
+    deepseekMessages.push({
+        role: 'user', 
+        content: [
+            { type: 'text', text: userMsg },
+            { type: 'image_url', image_url: { url: imgData } }
+        ]
+    });
+    
+    renderDeepseekMessages();
+    clearImagePreview();
+    callDeepseekAPI();
+}
+
+function sendMediaToAI() {
+    if (uploadedMedia.audio) {
+        var userMsg = '请分析这个音频文件的内容。文件名：' + uploadedMedia.audio.name + '。如果是音乐请说明风格和特点，如果是语音请转录内容，如果是其他类型的音频请描述你听到的内容。';
+        deepseekMessages.push({ role: 'user', content: userMsg });
+        clearMediaPreview();
+        callDeepseekAPI();
+    } else if (uploadedMedia.video) {
+        var userMsg = '请分析这个视频文件的内容。文件名：' + uploadedMedia.video.name + '。请描述视频中发生的事情，如果包含语音请尝试转录内容。';
+        deepseekMessages.push({ role: 'user', content: userMsg });
+        clearMediaPreview();
+        callDeepseekAPI();
+    }
+}
+
 function sendToDeepseek() {
     var input = document.getElementById('deepseek-input');
     var msg = input.value.trim();
     if (!msg) return;
-    deepseekMessages.push({role:'user', content:msg});
+    
+    deepseekMessages.push({ role: 'user', content: msg });
     renderDeepseekMessages();
     input.value = '';
+    callDeepseekAPI();
+}
+
+function callDeepseekAPI() {
     document.getElementById('typing-indicator').style.display = 'flex';
+    document.getElementById('typing-text').textContent = 'DeepSeek思考中...';
+    
+    // 构建消息历史用于API调用
+    var apiMessages = deepseekMessages.map(function(m) {
+        if (Array.isArray(m.content)) {
+            return m;
+        }
+        return m;
+    });
+    
     fetch('https://api.deepseek.com/chat/completions', {
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer ' + DEEPSEEK_API_KEY},
-        body:JSON.stringify({model:'deepseek-chat',messages:deepseekMessages,max_tokens:500,temperature:0.7})
-    }).then(function(r) { return r.json(); }).then(function(data) {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + DEEPSEEK_API_KEY
+        },
+        body: JSON.stringify({
+            model: 'deepseek-chat',
+            messages: apiMessages,
+            max_tokens: 1000,
+            temperature: 0.7
+        })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
         document.getElementById('typing-indicator').style.display = 'none';
         if (data.choices && data.choices[0]) {
-            deepseekMessages.push({role:'assistant', content:data.choices[0].message.content});
+            deepseekMessages.push({ role: 'assistant', content: data.choices[0].message.content });
+        } else if (data.error) {
+            deepseekMessages.push({ role: 'assistant', content: 'API错误: ' + (data.error.message || '未知错误') });
         } else {
-            deepseekMessages.push({role:'assistant', content:'抱歉，服务暂时不可用。'});
+            deepseekMessages.push({ role: 'assistant', content: '抱歉，服务暂时不可用。' });
         }
         renderDeepseekMessages();
-    }).catch(function() {
+    })
+    .catch(function(err) {
         document.getElementById('typing-indicator').style.display = 'none';
-        deepseekMessages.push({role:'assistant', content:'网络错误，请检查连接。'});
+        deepseekMessages.push({ role: 'assistant', content: '网络错误，请检查网络连接。' });
         renderDeepseekMessages();
     });
 }
+
 function renderDeepseekMessages() {
     var container = document.getElementById('deepseek-messages');
     if (!container) return;
+    
     container.innerHTML = deepseekMessages.map(function(m) {
-        return '<div style="display:flex;gap:10px;margin-bottom:12px;' + (m.role === 'user' ? 'flex-direction:row-reverse' : '') + '">' +
-            '<div style="width:32px;height:32px;background:' + (m.role === 'user' ? 'var(--blue)' : '#f0f0f0') + ';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:' + (m.role === 'user' ? 'white' : '#333') + '">' + (m.role === 'user' ? '👤' : '🤖') + '</div>' +
-            '<div style="background:' + (m.role === 'user' ? 'var(--blue)' : '#f8f9fa') + ';color:' + (m.role === 'user' ? 'white' : '#333') + ';padding:10px 14px;border-radius:12px;max-width:75%;white-space:pre-wrap;line-height:1.5">' + escapeHtml(m.content) + '</div></div>';
+        if (m.role === 'user') {
+            // 处理多模态内容
+            var content = '';
+            if (Array.isArray(m.content)) {
+                m.content.forEach(function(item) {
+                    if (item.type === 'text') {
+                        content += escapeHtml(item.text);
+                    } else if (item.type === 'image_url') {
+                        content += '[图片] ';
+                    }
+                });
+            } else {
+                content = escapeHtml(m.content);
+            }
+            return '<div style="display:flex;gap:10px;margin-bottom:12px;flex-direction:row-reverse">' +
+                '<div style="width:32px;height:32px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:white;flex-shrink:0">👤</div>' +
+                '<div style="background:var(--blue);color:white;padding:10px 14px;border-radius:12px;max-width:75%;white-space:pre-wrap;line-height:1.5;word-break:break-all">' + content + '</div></div>';
+        } else {
+            return '<div style="display:flex;gap:10px;margin-bottom:12px">' +
+                '<div style="width:32px;height:32px;background:#f0f0f0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#333;flex-shrink:0">🤖</div>' +
+                '<div style="background:#f8f9fa;color:#333;padding:10px 14px;border-radius:12px;max-width:75%;white-space:pre-wrap;line-height:1.5;word-break:break-all">' + escapeHtml(m.content) + '</div></div>';
+        }
     }).join('');
+    
     container.scrollTop = container.scrollHeight;
 }
-function clearDeepseekChat() { deepseekMessages = []; renderDeepseekMessages(); showToast('对话已清除'); }
+
+function clearDeepseekChat() { 
+    deepseekMessages = []; 
+    uploadedMedia = { image: null, audio: null, video: null };
+    clearImagePreview();
+    clearMediaPreview();
+    renderDeepseekMessages(); 
+    showToast('对话已清除'); 
+}
 
 // ========== 成长中心 ==========
 function showProfile() {
