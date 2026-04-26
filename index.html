@@ -2284,11 +2284,6 @@ const week6Plan = {
 
 
 
-function getGradeSubjectTopics(grade, subject) {
-    const gradeMap = {5:'5',6:'6',7:'7',8:'8',9:'9'};
-    const key = (subject || 'math') + gradeMap[grade];
-    return topics[key] || [];
-}
 
 // ====== 用户管理 ======
 function toggleUserSelect() {
@@ -3065,11 +3060,6 @@ function submitPracticeQuestion() {
     showToast('正在分析题目...');
 }
 
-function selectTeacher(el, subject) {
-    document.querySelectorAll('.teacher-item').forEach(item => item.classList.remove('active'));
-    el.classList.add('active');
-    showToast('已选择' + subject + '老师');
-}
 
 function renderMap(container) {
     container.innerHTML = `
@@ -5855,15 +5845,6 @@ function seekVideo(e) { if (!vpVideo || !vpVideo.duration) return; const rect = 
 function closeVideoPlayer() { if (vpVideo) { vpVideo.pause(); vpVideo.src = ''; } document.getElementById('video-player-modal').classList.remove('show'); }
 function formatTime(s) { if (!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)+'').padStart(2,'0'); }
 
-function handleVideoUpload(input) {
-    if (!input.files[0]) return;
-    const url = URL.createObjectURL(input.files[0]);
-    const user = getCurrentUserData();
-    if (user) { user.userVideos = user.userVideos||[]; user.userVideos.push({id:Date.now(),title:input.files[0].name,url,time:Date.now()}); syncUserData(user); }
-    playVideo(input.files[0].name, url);
-    showToast('视频上传成功！');
-    input.value = '';
-}
 
 function handlePracticePhoto(input) {
     if (!input.files[0]) return;
@@ -7104,32 +7085,6 @@ const videoResources = {
 
 let currentAudio = null;
 
-function playPodcast(title, audioId) {
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    content.innerHTML = `
-        <div class="modal-title">🎧 \${title}</div>
-        <div class="audio-controls" style="margin:20px 0;">
-            <button class="audio-btn" onclick="toggleAudioPlay()" id="audio-play-btn">▶</button>
-            <div style="flex:1;">
-                <div class="audio-progress" onclick="seekAudio(event)">
-                    <div class="audio-progress-bar" id="audio-progress-bar" style="width:0%;"></div>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-top:8px;">
-                    <span id="audio-current-time" style="font-size:11px;color:var(--text-gray);">0:00</span>
-                    <span id="audio-duration" style="font-size:11px;color:var(--text-gray);">--:--</span>
-                </div>
-            </div>
-        </div>
-        <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;text-align:center;">
-            <div style="font-size:13px;color:var(--text-gray);">音频课程正在播放</div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-    currentAudio = { id: audioId, title: title, isPlaying: false, currentTime: 0, duration: 600 };
-    showToast('正在播放: ' + title);
-}
 
 function toggleAudioPlay() {
     if (!currentAudio) return;
@@ -7163,11 +7118,6 @@ function seekAudio(e) {
     updateAudioProgress();
 }
 
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return mins + ':' + (secs < 10 ? '0' : '') + secs;
-}
 
 // ====== 学霸方法训练 ======
 const methodPractices = {
@@ -7574,20 +7524,8 @@ function playPodcastCourse(courseId) {
 
 function onAudioLoaded() { var totalEl = document.getElementById('ap-total-time'); if (totalEl) totalEl.textContent = formatTimeFull(currentAudio.duration); }
 
-function updateAudioProgress() {
-    if (!currentAudio || !currentAudio.duration) return;
-    var progress = (currentAudio.currentTime / currentAudio.duration) * 100;
-    var fillEl = document.getElementById('ap-progress-fill');
-    var currentTimeEl = document.getElementById('ap-current-time');
-    var miniBarEl = document.getElementById('mini-player-progress-bar');
-    if (fillEl) fillEl.style.width = progress + '%';
-    if (currentTimeEl) currentTimeEl.textContent = formatTimeFull(currentAudio.currentTime);
-    if (miniBarEl) miniBarEl.style.width = progress + '%';
-    if (audioCtx.currentTrack) { savedPositions[audioCtx.currentTrack.id] = currentAudio.currentTime; try { localStorage.setItem('podcastPositions', JSON.stringify(savedPositions)); } catch(e) {} }
-}
 
 function onAudioEnded() { playNextTrack(); }
-function toggleAudioPlay() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
 
 function seekAudioPlayer(e) {
     if (!currentAudio || !currentAudio.duration) return;
@@ -7623,9 +7561,7 @@ function updateVolumeIcon(value) { var icon = value == 0 ? '🔇' : (value < 50 
 function closeAudioPlayer() { var playerEl = document.getElementById('audio-player-fullscreen'); var coverEl = document.getElementById('ap-cover'); if (playerEl) playerEl.classList.remove('show'); if (coverEl) coverEl.classList.remove('playing'); }
 function updatePlayButtons() { var icon = audioCtx.isPlaying ? '⏸' : '▶'; var apPlayBtn = document.getElementById('ap-play-btn'); var miniBtn = document.getElementById('mini-player-btn'); if (apPlayBtn) apPlayBtn.innerHTML = icon; if (miniBtn) miniBtn.innerHTML = icon; }
 
-function showMiniPlayer(course) { var thumbEl = document.getElementById('mini-player-thumb'); var titleEl = document.getElementById('mini-player-title'); var teacherEl = document.getElementById('mini-player-teacher'); var playerEl = document.getElementById('mini-player'); if (thumbEl) { thumbEl.innerHTML = course.icon; thumbEl.style.background = course.gradient; } if (titleEl) titleEl.textContent = course.title; if (teacherEl) teacherEl.textContent = course.teacher; if (playerEl) playerEl.classList.add('show'); }
 function toggleMiniPlayer() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
-function closeMiniPlayer() { if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; } var miniEl = document.getElementById('mini-player'); var playerEl = document.getElementById('audio-player-fullscreen'); if (miniEl) miniEl.classList.remove('show'); if (playerEl) playerEl.classList.remove('show'); document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { item.classList.remove('playing'); }); }
 
 function updatePodcastListState(courseId) { document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); if (id === courseId) { item.classList.add('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'flex'; } else { item.classList.remove('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'none'; } }); }
 
@@ -7863,11 +7799,6 @@ function toggleMediaMute() {
     updateVolumeIcon();
 }
 
-function updateVolumeIcon() {
-    var icon = mediaPlayer.volume == 0 ? '🔇' : (mediaPlayer.volume < 50 ? '🔉' : '🔊');
-    var btnEl = document.getElementById('mp-volume-btn');
-    if (btnEl) btnEl.innerHTML = icon;
-}
 
 function closeMediaPlayer() {
     var playerEl = document.getElementById('media-player');
@@ -7967,7 +7898,6 @@ function updateVideoListState(courseId) { document.querySelectorAll('.video-item
 function formatTimeFull(seconds) { if (!seconds || isNaN(seconds)) return '0:00'; var mins = Math.floor(seconds / 60); var secs = Math.floor(seconds % 60); return mins + ':' + (secs < 10 ? '0' : '') + secs; }
 
 // 兼容原有调用
-function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } showToast('播放: ' + title); }
 
 // 兼容原视频
 
@@ -8431,20 +8361,6 @@ function getDefaultCognitiveData() {
     };
 }
 
-function calculateStreakDays(user) {
-    if (!user.studyDays) return 0;
-    const today = new Date();
-    let streak = 0;
-    for (let i = 0; i < 30; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
-        if (user.studyDays[dateStr] && user.studyDays[dateStr] > 0) {
-            streak++;
-        } else if (i > 0) break;
-    }
-    return streak;
-}
 
 // 渲染能力详情卡片
 function renderCognitiveDetails(data) {
@@ -9848,12 +9764,6 @@ function toggleModal(modalId) {
     }
 }
 
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('show');
-    }
-}
 
 // 开始练习功能（用于母题训练）
 function startPractice(topicId) {
@@ -9911,27 +9821,6 @@ function submitTopicAnswer(topicId) {
 // ====== 辅助函数 ======
 
 // 难度设置
-function setDifficulty(level) {
-    try {
-        const user = getCurrentUserData();
-        if (!user) {
-            showToast('请先登录');
-            return;
-        }
-        user.difficulty = level;
-        syncUserData(user);
-        
-        // 更新UI显示
-        const diffText = document.getElementById('difficulty-text');
-        if (diffText) diffText.textContent = 'Lv.' + level;
-        
-        closeDifficultyModal();
-        showToast('难度已调整为 Lv.' + level);
-    } catch(e) {
-        console.error('setDifficulty错误:', e);
-        showToast('设置失败');
-    }
-}
 
 // 头像选择
 function selectAvatar(avatar) {
@@ -9973,94 +9862,15 @@ function updateAllAvatarDisplays() {
 }
 
 // 设置面板
-function openSettingsPanel() {
-    const panel = document.getElementById('settings-panel');
-    if (panel) panel.style.display = 'block';
-}
 
-function closeSettingsPanel(e) {
-    if (e && e.target !== e.currentTarget) return;
-    const panel = document.getElementById('settings-panel');
-    if (panel) panel.style.display = 'none';
-}
 
 // 编辑资料
-function openEditProfileModal() {
-    const user = getCurrentUserData();
-    if (!user) return;
-    
-    const nameInput = document.getElementById('edit-name');
-    const gradeSelect = document.getElementById('edit-grade');
-    
-    if (nameInput) nameInput.value = user.name || '';
-    if (gradeSelect) gradeSelect.value = user.grade || 7;
-    
-    const modal = document.getElementById('edit-profile-modal');
-    if (modal) modal.classList.add('show');
-}
 
-function closeEditProfileModal() {
-    const modal = document.getElementById('edit-profile-modal');
-    if (modal) modal.classList.remove('show');
-}
 
-function saveProfileChanges() {
-    const user = getCurrentUserData();
-    if (!user) return;
-    
-    const nameInput = document.getElementById('edit-name');
-    const gradeSelect = document.getElementById('edit-grade');
-    
-    if (nameInput && nameInput.value.trim()) {
-        user.name = nameInput.value.trim();
-    }
-    if (gradeSelect) {
-        user.grade = parseInt(gradeSelect.value);
-    }
-    
-    syncUserData(user);
-    updateUI();
-    closeEditProfileModal();
-    showToast('资料已保存');
-}
 
 // 修改密码
-function openChangePasswordModal() {
-    const modal = document.getElementById('change-password-modal');
-    if (modal) modal.classList.add('show');
-}
 
-function closeChangePasswordModal() {
-    const modal = document.getElementById('change-password-modal');
-    if (modal) modal.classList.remove('show');
-}
 
-function savePasswordChanges() {
-    const currentPwd = document.getElementById('current-password');
-    const newPwd = document.getElementById('new-password');
-    const confirmPwd = document.getElementById('confirm-password');
-    
-    if (!currentPwd || !newPwd || !confirmPwd) return;
-    
-    if (!newPwd.value || newPwd.value.length < 6) {
-        showToast('新密码至少6位');
-        return;
-    }
-    
-    if (newPwd.value !== confirmPwd.value) {
-        showToast('两次密码不一致');
-        return;
-    }
-    
-    // 简化处理：直接保存（实际应用中需要验证原密码）
-    showToast('密码修改成功');
-    closeChangePasswordModal();
-    
-    // 清空输入
-    currentPwd.value = '';
-    newPwd.value = '';
-    confirmPwd.value = '';
-}
 
 // 关闭详情弹窗
 function closeDetail() {
@@ -10069,270 +9879,34 @@ function closeDetail() {
 }
 
 // 关闭视频播放器
-function closeVideoPlayer() {
-    const modal = document.getElementById('video-player-modal');
-    const video = document.getElementById('vp-video');
-    if (modal) modal.classList.remove('show');
-    if (video) video.pause();
-}
 
 // 增强版视频播放器关闭
-function closeEnhancedVideoPlayer() {
-    const player = document.getElementById('enhanced-video-player');
-    const video = document.getElementById('evp-video');
-    if (player) player.style.display = 'none';
-    if (video) video.pause();
-}
 
 // 视频播放器控制
-function toggleVpPlay() {
-    const video = document.getElementById('vp-video');
-    const btn = document.getElementById('vp-play-btn');
-    if (!video || !btn) return;
-    
-    if (video.paused) {
-        video.play();
-        btn.textContent = '⏸';
-    } else {
-        video.pause();
-        btn.textContent = '▶';
-    }
-}
 
-function toggleVolume() {
-    const video = document.getElementById('vp-video');
-    const btn = document.getElementById('vp-volume-btn');
-    if (!video || !btn) return;
-    
-    video.muted = !video.muted;
-    btn.textContent = video.muted ? '🔇' : '🔊';
-}
 
-function seekVideo(e) {
-    const video = document.getElementById('vp-video');
-    const bar = e.currentTarget;
-    if (!video || !bar) return;
-    
-    const rect = bar.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    video.currentTime = video.duration * percent;
-}
 
 // 增强视频播放器控制
-function toggleEnhancedVideoPlay() {
-    const video = document.getElementById('evp-video');
-    const btn = document.getElementById('evp-play-btn');
-    if (!video || !btn) return;
-    
-    if (video.paused) {
-        video.play();
-        btn.textContent = '⏸';
-    } else {
-        video.pause();
-        btn.textContent = '▶';
-    }
-}
 
-function toggleEnhancedMute() {
-    const video = document.getElementById('evp-video');
-    const btn = document.getElementById('evp-volume-btn');
-    if (!video || !btn) return;
-    
-    video.muted = !video.muted;
-    btn.textContent = video.muted ? '🔇' : '🔊';
-}
 
-function seekEnhancedVideo(e) {
-    const video = document.getElementById('evp-video');
-    const progress = document.getElementById('evp-progress');
-    if (!video || !progress) return;
-    
-    const rect = progress.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    video.currentTime = video.duration * percent;
-}
 
-function seekEnhancedVideoBackward() {
-    const video = document.getElementById('evp-video');
-    if (video) video.currentTime = Math.max(0, video.currentTime - 10);
-}
 
-function seekEnhancedVideoForward() {
-    const video = document.getElementById('evp-video');
-    if (video) video.currentTime = Math.min(video.duration, video.currentTime + 10);
-}
 
-function toggleEnhancedSpeedDropdown() {
-    const video = document.getElementById('evp-video');
-    const btn = document.getElementById('evp-speed-btn');
-    if (!video || !btn) return;
-    
-    const speeds = [0.5, 1, 1.5, 2];
-    const currentSpeed = video.playbackRate;
-    const currentIndex = speeds.indexOf(currentSpeed);
-    const nextIndex = (currentIndex + 1) % speeds.length;
-    video.playbackRate = speeds[nextIndex];
-    btn.textContent = speeds[nextIndex] + 'x';
-}
 
-function toggleEnhancedFullscreen() {
-    const player = document.getElementById('enhanced-video-player');
-    if (!player) return;
-    
-    if (document.fullscreenElement) {
-        document.exitFullscreen();
-    } else {
-        player.requestFullscreen();
-    }
-}
 
-function togglePictureInPicture() {
-    const video = document.getElementById('evp-video');
-    if (!video) return;
-    
-    if (document.pictureInPictureElement) {
-        document.exitPictureInPicture();
-    } else if (document.pictureInPictureEnabled) {
-        video.requestPictureInPicture();
-    }
-}
 
 // 错题本管理
-function clearWrongNotes() {
-    if (!confirm('确定要清空错题本吗？')) return;
-    
-    const user = getCurrentUserData();
-    if (!user) return;
-    
-    user.wrongNotes = [];
-    syncUserData(user);
-    showToast('错题本已清空');
-}
 
 // 数据导入功能
-function handleImportFile(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data && Array.isArray(data.users)) {
-                saveData(data);
-                showToast('数据导入成功！');
-                location.reload();
-            } else {
-                showToast('数据格式错误');
-            }
-        } catch(err) {
-            showToast('导入失败：' + err.message);
-        }
-    };
-    reader.readAsText(file);
-}
 
 
 
 // 数据统计
-function showDataStatsModal() {
-    const user = getCurrentUserData() || {};
-    const content = document.getElementById('detail-content');
-    const modal = document.getElementById('detail-modal');
-    if (!content || !modal) return;
-    
-    content.innerHTML = `
-        <div class="modal-title">📊 数据统计</div>
-        <div class="card">
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-                <span>用户</span>
-                <span style="color:#1A6BFF;">${user.name || '未登录'}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-                <span>积分</span>
-                <span style="color:#FF9A63;">${user.points || 0}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-                <span>学习天数</span>
-                <span style="color:#43E97B;">${user.studyDays ? Object.keys(user.studyDays).length : 0}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0;">
-                <span>错题数</span>
-                <span style="color:#ff6b6b;">${user.wrongNotes ? user.wrongNotes.length : 0}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;">
-                <span>游戏次数</span>
-                <span>${user.gameCounts ? Object.values(user.gameCounts).reduce((a, b) => a + b, 0) : 0}</span>
-            </div>
-        </div>
-        <button class="modal-close" onclick="closeDetail()">关闭</button>
-    `;
-    modal.classList.add('show');
-}
 
 // 打开帮助
-function openHelp() {
-    const content = document.getElementById('detail-content');
-    const modal = document.getElementById('detail-modal');
-    if (!content || !modal) return;
-    
-    content.innerHTML = `
-        <div class="modal-title">❓ 使用帮助</div>
-        <div class="card">
-            <h4 style="margin-bottom:12px;">🎯 如何开始学习？</h4>
-            <p style="font-size:13px;color:#666;line-height:1.6;">
-                1. 选择或创建你的学习账号<br>
-                2. 进入首页选择学习模块<br>
-                3. 完成训练获取积分<br>
-                4. 坚持打卡提升等级
-            </p>
-        </div>
-        <div class="card" style="margin-top:12px;">
-            <h4 style="margin-bottom:12px;">🎮 训练游戏</h4>
-            <p style="font-size:13px;color:#666;line-height:1.6;">
-                包含16种认知训练游戏，点击首页"训练"或"训练游戏"进入。
-            </p>
-        </div>
-        <div class="card" style="margin-top:12px;">
-            <h4 style="margin-bottom:12px;">🤖 AI助手</h4>
-            <p style="font-size:13px;color:#666;line-height:1.6;">
-                DeepSeek AI助手可以帮你解答学习问题，支持文字、语音、图片输入。
-            </p>
-        </div>
-        <button class="modal-close" onclick="closeDetail()">关闭</button>
-    `;
-    modal.classList.add('show');
-}
 
 // 反馈建议
-function openFeedback() {
-    const content = document.getElementById('detail-content');
-    const modal = document.getElementById('detail-modal');
-    if (!content || !modal) return;
-    
-    content.innerHTML = `
-        <div class="modal-title">💬 反馈建议</div>
-        <div class="input-group">
-            <label class="input-label">您的建议</label>
-            <textarea id="feedback-text" class="input-field" rows="5" placeholder="请输入您的建议或问题..." style="resize:none;"></textarea>
-        </div>
-        <button onclick="submitFeedback()" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交反馈</button>
-        <button class="modal-close" onclick="closeDetail()">取消</button>
-    `;
-    modal.classList.add('show');
-}
 
-function submitFeedback() {
-    const feedback = document.getElementById('feedback-text');
-    if (!feedback || !feedback.value.trim()) {
-        showToast('请输入反馈内容');
-        return;
-    }
-    
-    // 实际应用中这里应该发送到服务器
-    showToast('感谢您的反馈！');
-    closeDetail();
-}
 
 </script>
 </body>
