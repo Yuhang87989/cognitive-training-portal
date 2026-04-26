@@ -165,6 +165,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;backg
 <div class="module" onclick="openPage('method')"><div class="module-icon">💡</div><div class="module-name">学霸方法</div><div class="module-desc">高效学习技巧</div></div>
 <div class="module" onclick="openPage('thinking')"><div class="module-icon">🧩</div><div class="module-name">思维训练</div><div class="module-desc">逻辑推理</div></div>
 <div class="module" onclick="openPage('games')"><div class="module-icon">🎮</div><div class="module-name">训练游戏</div><div class="module-desc">8款益智游戏</div></div>
+<div class="module" onclick="openPage('deepseek')"><div class="module-icon">🤖</div><div class="module-name">DeepSeek</div><div class="module-desc">AI智能助手</div></div>
 </div>
 
 <!-- 页面容器 -->
@@ -177,6 +178,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;backg
 <div id="page-thinking" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🧩 思维训练</div></div><div class="page-content" id="content-thinking"></div></div>
 <div id="page-games" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🎮 训练游戏</div></div><div class="page-content" id="content-games"></div></div>
 <div id="page-settings" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">⚙️ 设置</div></div><div class="page-content" id="content-settings"></div></div>
+<div id="page-deepseek" class="page"><div class="page-header"><div class="page-back" onclick="closePage()">←</div><div class="page-title">🤖 DeepSeek</div></div><div class="page-content" id="content-deepseek"></div></div>
 
 <!-- 通用模态框 -->
 <div class="modal" id="detail-modal">
@@ -214,6 +216,9 @@ function getDefaultData() {
             studyDays: {},
             planTasks: {},
             chatHistory: {},
+            deepseekHistory: [],
+            topicResults: {},
+            thinkingScores: { logic: 0, creative: 0, critical: 0, system: 0 },
             wrongNotes: [],
             practiceRecords: [],
             todayStats: { questions: 0, correct: 0, minutes: 0 },
@@ -338,6 +343,9 @@ function render(n, e) {
             break;
         case 'settings':
             h = renderSettings();
+            break;
+        case 'deepseek':
+            h = renderDeepSeek();
             break;
     }
     e.innerHTML = h;
@@ -1573,6 +1581,203 @@ function clearData() {
         localStorage.removeItem(STORAGE_KEY);
         location.reload();
     }
+}
+
+// ====== DeepSeek智能助手 ======
+var dsHistory = [];
+var dsIsRecording = false;
+
+function renderDeepSeek() {
+    var data = loadData();
+    dsHistory = data.user.deepseekHistory || [];
+    
+    var html = '<div class="card" style="margin-bottom:8px;"><div style="display:flex;align-items:center;gap:10px;">';
+    html += '<div style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;">🤖</div>';
+    html += '<div><div style="font-size:14px;font-weight:600;">DeepSeek智能助手</div><div style="font-size:12px;color:#666;">随时为你解答问题</div></div></div></div>';
+    
+    // 快捷问题
+    html += '<div class="card" style="padding:12px;"><div style="font-size:12px;color:#999;margin-bottom:8px;">💬 快捷问题</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+    var quickQuestions = ['帮我制定学习计划', '解释一下勾股定理', '英语语法讲解', '作文写作技巧'];
+    quickQuestions.forEach(function(q) {
+        html += '<div onclick="sendDeepSeekQuick(\'' + q + '\')" style="background:#f0f7ff;padding:6px 12px;border-radius:16px;font-size:12px;color:var(--blue);cursor:pointer;">' + q + '</div>';
+    });
+    html += '</div></div>';
+    
+    // 聊天区域
+    html += '<div class="chat-container" id="ds-chat-container" style="height:420px;margin-bottom:8px;background:#f8f9fa;border-radius:16px;overflow:hidden;">';
+    html += '<div class="chat-messages" id="ds-chat-messages">';
+    
+    if (dsHistory.length === 0) {
+        html += '<div class="chat-msg"><div class="chat-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2);">🤖</div>';
+        html += '<div class="chat-bubble">你好！我是DeepSeek AI助手 👋<br><br>我可以帮你：<br>• 解答学习问题<br>• 制定学习计划<br>• 讲解知识难点<br>• 辅导作业<br><br>有什么问题尽管问我吧！</div></div>';
+    } else {
+        dsHistory.forEach(function(msg) {
+            if (msg.role === 'user') {
+                html += '<div class="chat-msg user"><div class="chat-avatar" style="background:linear-gradient(135deg,#FF9A63,#E87A4E);">👤</div>';
+                html += '<div class="chat-bubble">' + escapeHtml(msg.content) + '</div></div>';
+            } else {
+                html += '<div class="chat-msg"><div class="chat-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2);">🤖</div>';
+                html += '<div class="chat-bubble" style="white-space:pre-wrap;">' + escapeHtml(msg.content) + '</div></div>';
+            }
+        });
+    }
+    html += '</div></div>';
+    
+    // 输入区域
+    html += '<div class="chat-input-area" style="background:white;border-radius:16px;padding:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);">';
+    html += '<input type="text" class="chat-input" id="ds-input" placeholder="输入问题..." onkeydown="if(event.key===\'Enter\')sendDeepSeek()" style="flex:1;">';
+    
+    // 语音按钮
+    html += '<button id="ds-voice-btn" onclick="toggleDeepSeekVoice()" style="width:44px;height:44px;border-radius:50%;border:none;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">🎤</button>';
+    
+    html += '<button onclick="sendDeepSeek()" style="padding:10px 18px;background:var(--blue);border:none;border-radius:20px;color:white;font-size:14px;cursor:pointer;font-weight:600;">发送</button>';
+    html += '</div>';
+    
+    // 清空按钮
+    html += '<div style="text-align:center;margin-top:12px;"><button onclick="clearDeepSeekHistory()" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;">🗑️ 清空对话</button></div>';
+    
+    return html;
+}
+
+function sendDeepSeekQuick(question) {
+    document.getElementById('ds-input').value = question;
+    sendDeepSeek();
+}
+
+function sendDeepSeek() {
+    var input = document.getElementById('ds-input');
+    if (!input || !input.value.trim()) return;
+    
+    var msg = input.value.trim();
+    input.value = '';
+    
+    var data = loadData();
+    var u = data.user;
+    u.deepseekHistory = u.deepseekHistory || [];
+    u.deepseekHistory.push({ role: 'user', content: msg });
+    saveData(data);
+    
+    var messagesEl = document.getElementById('ds-chat-messages');
+    
+    // 添加用户消息
+    messagesEl.innerHTML += '<div class="chat-msg user"><div class="chat-avatar" style="background:linear-gradient(135deg,#FF9A63,#E87A4E);">👤</div><div class="chat-bubble">' + escapeHtml(msg) + '</div></div>';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    // 添加加载动画
+    var loadingId = 'ds-loading-' + Date.now();
+    messagesEl.innerHTML += '<div class="chat-msg" id="' + loadingId + '"><div class="chat-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2);">🤖</div><div class="chat-bubble"><span class="loading-dots"><span></span><span></span><span></span></span> 思考中...</div></div>';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    // 调用DeepSeek API
+    callDeepSeekAPI(msg, function(response) {
+        var loadingEl = document.getElementById(loadingId);
+        if (loadingEl) {
+            loadingEl.querySelector('.chat-bubble').innerHTML = '<span style="white-space:pre-wrap;">' + escapeHtml(response) + '</span>';
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+        
+        // 保存AI回复
+        var data2 = loadData();
+        data2.user.deepseekHistory = data2.user.deepseekHistory || [];
+        data2.user.deepseekHistory.push({ role: 'assistant', content: response });
+        saveData(data2);
+    });
+}
+
+function callDeepSeekAPI(message, callback) {
+    var data = loadData();
+    var u = data.user;
+    var history = u.deepseekHistory || [];
+    
+    var systemPrompt = '你是一位专业、友善的AI学习助手。请用简洁、有条理的方式回答问题。如果涉及计算，请给出详细步骤。回答尽量使用Markdown格式，便于阅读。';
+    
+    var messages = [{ role: 'system', content: systemPrompt }];
+    history.forEach(function(m) {
+        messages.push({ role: m.role, content: m.content });
+    });
+    messages.push({ role: 'user', content: message });
+    
+    fetch(DEEPSEEK_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+        body: JSON.stringify({ model: 'deepseek-chat', messages: messages, temperature: 0.7, max_tokens: 1500 })
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            if (response.status === 402 || response.status === 400) {
+                throw new Error('API额度不足');
+            }
+            throw new Error('API调用失败');
+        }
+        return response.json();
+    })
+    .then(function(result) {
+        callback(result.choices[0].message.content);
+    })
+    .catch(function(error) {
+        callback('抱歉，' + error.message + '。请稍后再试，或检查API设置。\n\n💡 提示：你可以尝试简化问题或稍后重试。');
+    });
+}
+
+function clearDeepSeekHistory() {
+    if (!confirm('确定清空所有对话记录？')) return;
+    var data = loadData();
+    data.user.deepseekHistory = [];
+    saveData(data);
+    var c = document.getElementById('content-deepseek');
+    if (c) render('deepseek', c);
+    showToast('对话已清空');
+}
+
+// 语音输入功能
+function toggleDeepSeekVoice() {
+    var btn = document.getElementById('ds-voice-btn');
+    
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showToast('当前浏览器不支持语音输入');
+        return;
+    }
+    
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = new SpeechRecognition();
+    
+    recognition.lang = 'zh-CN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    if (dsIsRecording) {
+        recognition.stop();
+        return;
+    }
+    
+    dsIsRecording = true;
+    btn.style.background = '#ff6b6b';
+    btn.style.color = 'white';
+    showToast('请开始说话...');
+    
+    recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        document.getElementById('ds-input').value = transcript;
+        showToast('已识别: ' + transcript);
+    };
+    
+    recognition.onend = function() {
+        dsIsRecording = false;
+        btn.style.background = '#f0f0f0';
+        btn.style.color = 'black';
+    };
+    
+    recognition.onerror = function(event) {
+        dsIsRecording = false;
+        btn.style.background = '#f0f0f0';
+        btn.style.color = 'black';
+        if (event.error !== 'no-speech') {
+            showToast('语音识别出错: ' + event.error);
+        }
+    };
+    
+    recognition.start();
 }
 
 // ====== 初始化 ======
