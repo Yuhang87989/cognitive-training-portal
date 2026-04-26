@@ -537,6 +537,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <span>🗑️</span>
                             <span>清除数据</span>
                         </div>
+                        <div class="user-dropdown-divider"></div>
+                        <div class="user-dropdown-item" onclick="openSettingsPanel()">
+                            <span>⚙️</span>
+                            <span>设置</span>
+                        </div>
                         <div class="user-dropdown-item danger" onclick="logoutAndReturn()">
                             <span>🚪</span>
                             <span><!-- 退出登录 --></span>
@@ -633,7 +638,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-name">DeepSeek</div>
                 <div class="module-desc">AI智能助手</div>
             </button>
-            <button class="module-btn gradient-red" onclick="openSettingsPanel()">
+            <button class="module-btn gradient-red" onclick="openSettingsPanel()" style="display:none;">
                 <div class="module-icon">⚙️</div>
                 <div class="module-name">设置</div>
                 <div class="module-desc">账户与充值</div>
