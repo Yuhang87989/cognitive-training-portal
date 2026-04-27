@@ -336,6 +336,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <span>🗑️</span>
                             <span>清除数据</span>
                         </div>
+                        <div class="user-dropdown-item" onclick="showUserSwitchModal()">
+                            <span>👥</span>
+                            <span>切换用户</span>
+                        </div>
+                        <div class="user-dropdown-item" onclick="showCreateUserModal()">
+                            <span>➕</span>
+                            <span>创建用户</span>
+                        </div>
                         <div class="user-dropdown-divider"></div>
                         <div class="user-dropdown-item" onclick="openSettingsPanel()">
                             <span>⚙️</span>
@@ -629,6 +637,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- 创建用户模态框 -->
+<div id="create-user-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:350px;">
+        <div class="modal-title">👤 创建新用户</div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">姓名</label>
+            <input type="text" id="create-name" placeholder="请输入姓名" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;" />
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">年级</label>
+            <select id="create-grade" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+                <option value="7">初一</option>
+                <option value="8">初二</option>
+                <option value="9">初三</option>
+            </select>
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">初始难度</label>
+            <select id="create-difficulty" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+                <option value="1">Lv.1 入门级</option>
+                <option value="2">Lv.2 初级</option>
+                <option value="3">Lv.3 中级</option>
+            </select>
+        </div>
+        <button onclick="createNewUser()" class="login-btn login-btn-primary" style="margin-bottom:8px;">创建用户</button>
+        <button onclick="closeCreateUserModal()" class="login-btn login-btn-secondary">取消</button>
+    </div>
+</div>
+
+<!-- 用户切换模态框 -->
+<div id="user-switch-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width:350px;">
+        <div class="modal-title">👥 切换用户</div>
+        <div id="user-switch-list" style="margin-bottom:16px;max-height:300px;overflow-y:auto;">
+            <!-- 用户列表动态生成 -->
+        </div>
+        <button onclick="showCreateUserModal()" class="login-btn login-btn-primary" style="margin-bottom:8px;">+ 创建新用户</button>
+        <button onclick="closeUserSwitchModal()" class="login-btn login-btn-secondary">取消</button>
     </div>
 </div>
 
@@ -3717,7 +3766,7 @@ function showUserSwitchModal() {
         return;
     }
     
-    var container = document.getElementById('switch-user-list');
+    var container = document.getElementById('user-switch-list');
     if (!container) {
         showToast('页面加载异常');
         return;
@@ -3728,12 +3777,15 @@ function showUserSwitchModal() {
     
     data.users.forEach(function(u, i) {
         var isCurrent = u.id === data.currentUser;
-        htmlContent += '<div class="user-select-item" onclick="switchToUser(\'' + u.id + '\')" style="' + (isCurrent ? 'background:#f0f7ff;' : '') + '">';
-        htmlContent += '<div class="item-avatar" style="background:' + colors[i % 3] + ';color:white;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;">' + u.name.charAt(0) + '</div>';
-        htmlContent += '<div class="item-info" style="flex:1;margin-left:10px;">';
-        htmlContent += '<div style="font-weight:600;">' + u.name + (isCurrent ? ' (当前)' : '') + '</div>';
-        htmlContent += '<div style="font-size:11px;color:#999;">' + gradeNames[u.grade] + ' · Lv.' + u.difficulty + '</div>';
-        htmlContent += '</div></div>';
+        htmlContent += '<div style="display:flex;align-items:center;gap:8px;padding:12px;background:' + (isCurrent ? '#f0f7ff' : 'white') + ';border-radius:12px;margin-bottom:8px;">';
+        htmlContent += '<div onclick="switchToUser(\'' + u.id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;">';
+        htmlContent += '<div style="background:' + colors[i % 3] + ';color:white;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;">' + u.name.charAt(0) + '</div>';
+        htmlContent += '<div><div style="font-weight:600;">' + u.name + (isCurrent ? ' (当前)' : '') + '</div>';
+        htmlContent += '<div style="font-size:12px;color:#999;">' + gradeNames[u.grade] + ' · Lv.' + u.difficulty + '</div></div></div>';
+        if (!isCurrent) {
+            htmlContent += '<button onclick="event.stopPropagation();deleteUser(\'' + u.id + '\')" style="padding:6px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>';
+        }
+        htmlContent += '</div>';
     });
     
     container.innerHTML = htmlContent;
@@ -3758,6 +3810,35 @@ function switchToUser(userId) {
     updateUI();
     syncTodayStats();
     showToast('已切换到: ' + user.name);
+}
+
+function deleteUser(userId) {
+    if (!confirm('确定要删除此用户吗？此操作不可恢复！')) return;
+    
+    var data = loadData();
+    var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
+    
+    if (userIndex === -1) {
+        showToast('用户不存在');
+        return;
+    }
+    
+    var userName = data.users[userIndex].name;
+    data.users.splice(userIndex, 1);
+    
+    // 如果删除的是当前用户，切换到第一个用户
+    if (data.currentUser === userId) {
+        if (data.users.length > 0) {
+            data.currentUser = data.users[0].id;
+        } else {
+            data.currentUser = null;
+        }
+    }
+    
+    saveData(data);
+    showUserSwitchModal(); // 刷新用户列表
+    updateUI();
+    showToast('已删除用户: ' + userName);
 }
 
 
