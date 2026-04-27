@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V123</title>
+<title>认知训练 V124</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -919,7 +919,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v123';
+const STORAGE_KEY = 'cognitive_training_v124';
 
 // ====== 播放器全局变量 ======
 let currentAudio = null; // 音频播放器元素引用
@@ -1170,13 +1170,8 @@ const podcastList = [
     {id: 21, title: "四周训练完结！青小年蜕变复盘", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/64b06198-e977-4638-a9d3-f46478ca4702/audio_fe4b8c27-7280-471e-9014-b64ab0b8ed4b.mp3", duration: "2:24", category: "周度复盘"}
 ];
 
-const videoList = [
-    {id: 1, title: "专注力训练", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/专注力训练.mp4", duration: "5:23", category: "学霸方法"},
-    {id: 2, title: "学霸深度理解法_第1集", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/学霸深度理解法_第1集.mp4", duration: "6:18", category: "学霸方法"},
-    {id: 3, title: "数学抽象推理", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/数学抽象推理.mp4", duration: "5:06", category: "数学思维"},
-    {id: 4, title: "物理因果守恒_第1集", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/物理因果守恒_第1集.mp4", duration: "5:41", category: "物理思维"},
-    {id: 5, title: "逆向思维训练_第1集", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/逆向思维训练_第1集.mp4", duration: "3:27", category: "思维训练"}
-];
+// 视频列表（GitHub视频已失效，仅保留空数组，上传视频功能不受影响）
+const videoList = [];
 const OLD_KEYS = ['cognitive_training_v119','cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
 
 // 播放播客音频
@@ -6148,29 +6143,10 @@ var podcastCourses = [
 
 // 播客列表别名（兼容旧代码）
 
-// ====== 视频课程数据 ======
+// ====== 视频课程数据（已清理无效视频，仅保留w3schools有效测试视频）=======
 var videoCourses = [
     {id:'video1',title:'高效学习技巧',teacher:'赵老师',duration:'5:30',durationSec:330,category:'学习方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎬',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:12000},
-    {id:'video2',title:'时间管理方法',teacher:'张老师',duration:'8:15',durationSec:495,category:'学习方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🎬',url:'https://www.w3schools.com/html/movie.mp4',views:8000},
-    {id:'video3',title:'数学解题大招',teacher:'赵老师',duration:'12:00',durationSec:720,category:'数学',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'📐',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:5600},
-    {id:'video4',title:'英语口语训练',teacher:'王老师',duration:'15:45',durationSec:945,category:'英语',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🗣️',url:'https://www.w3schools.com/html/movie.mp4',views:4300},
-    {id:'video5',title:'勾股定理证明',teacher:'李老师',duration:'10:20',durationSec:620,category:'数学',gradient:'linear-gradient(135deg,#FF6B6B,#FF4757)',icon:'📐',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:7800},
-    {id:'video6',title:'一元二次方程',teacher:'孙老师',duration:'14:30',durationSec:870,category:'数学',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🔢',url:'https://www.w3schools.com/html/movie.mp4',views:6500},
-    {id:'video7',title:'力的合成与分解',teacher:'陈老师',duration:'13:15',durationSec:795,category:'物理',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'⚡',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:5200},
-    {id:'video8',title:'欧姆定律精讲',teacher:'林老师',duration:'12:00',durationSec:720,category:'物理',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'💡',url:'https://www.w3schools.com/html/movie.mp4',views:4800},
-    {id:'video9',title:'化学方程式配平',teacher:'周老师',duration:'11:30',durationSec:690,category:'化学',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'⚗️',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:4100},
-    {id:'video10',title:'质量守恒定律',teacher:'吴老师',duration:'10:45',durationSec:645,category:'化学',gradient:'linear-gradient(135deg,#f6d365,#fda085)',icon:'🧪',url:'https://www.w3schools.com/html/movie.mp4',views:3900},
-    {id:'video11',title:'三角形全等证明',teacher:'刘老师',duration:'15:00',durationSec:900,category:'数学',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'📐',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:5500},
-    {id:'video12',title:'浮力计算方法',teacher:'张老师',duration:'13:45',durationSec:825,category:'物理',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'💧',url:'https://www.w3schools.com/html/movie.mp4',views:4700},
-    {id:'video13',title:'溶液配制计算',teacher:'赵老师',duration:'12:30',durationSec:750,category:'化学',gradient:'linear-gradient(135deg,#FF6B6B,#FF4757)',icon:'🧬',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:3600},
-    {id:'video14',title:'函数图像变换',teacher:'王老师',duration:'14:15',durationSec:855,category:'数学',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📈',url:'https://www.w3schools.com/html/movie.mp4',views:6200},
-    {id:'video15',title:'机械效率计算',teacher:'李老师',duration:'11:00',durationSec:660,category:'物理',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'⚙️',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:4300},
-    {id:'video16',title:'酸碱盐反应规律',teacher:'陈老师',duration:'13:30',durationSec:810,category:'化学',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'⚗️',url:'https://www.w3schools.com/html/movie.mp4',views:3800},
-    {id:'video17',title:'圆与直线位置关系',teacher:'林老师',duration:'12:45',durationSec:765,category:'数学',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'⭕',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:5100},
-    {id:'video18',title:'电功率计算专题',teacher:'周老师',duration:'14:00',durationSec:840,category:'物理',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'⚡',url:'https://www.w3schools.com/html/movie.mp4',views:4600},
-    {id:'video19',title:'金属活动性应用',teacher:'孙老师',duration:'11:15',durationSec:675,category:'化学',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🔩',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:3500},
-    {id:'video20',title:'相似三角形判定',teacher:'吴老师',duration:'13:00',durationSec:780,category:'数学',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'📐',url:'https://www.w3schools.com/html/movie.mp4',views:4900},
-    {id:'video21',title:'能量转化与守恒',teacher:'刘老师',duration:'12:15',durationSec:735,category:'物理',gradient:'linear-gradient(135deg,#FF6B6B,#FF4757)',icon:'🔋',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:4200}
+    {id:'video2',title:'时间管理方法',teacher:'张老师',duration:'8:15',durationSec:495,category:'学习方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🎬',url:'https://www.w3schools.com/html/movie.mp4',views:8000}
 ];
 
 // 播放器状态
@@ -6193,6 +6169,13 @@ function initAudioPlayer() {
 }
 
 function playPodcastCourse(courseId) {
+    // 确保获取真正的 audio 元素，而不是可能被覆盖的 currentAudio
+    var audioEl = document.getElementById('hidden-audio');
+    if (!audioEl) {
+        console.error('播客播放器初始化失败：找不到 hidden-audio 元素');
+        showToast('播放器初始化失败，请刷新页面');
+        return;
+    }
     var course = null;
     for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === courseId) { course = podcastCourses[i]; break; } }
     if (!course) return;
@@ -6207,11 +6190,29 @@ function playPodcastCourse(courseId) {
     if (coverEl) { coverEl.innerHTML = course.icon; coverEl.style.background = course.gradient; }
     if (courseTitleEl) courseTitleEl.textContent = course.title;
     if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
-    currentAudio.src = course.url || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-    if (savedPositions[courseId]) currentAudio.currentTime = savedPositions[courseId];
-    currentAudio.playbackRate = audioCtx.playbackSpeed;
-    currentAudio.volume = audioCtx.volume;
-    currentAudio.play().catch(function(e) {});
+    
+    // 使用本地 audioEl 而不是全局 currentAudio，确保正确播放
+    audioEl.src = course.url || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+    console.log('设置音频源:', audioEl.src);
+    if (savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
+    audioEl.playbackRate = audioCtx.playbackSpeed;
+    audioEl.volume = audioCtx.volume;
+    
+    // 播放音频并处理可能的错误
+    audioEl.play().then(function() {
+        console.log('音频播放成功');
+        audioCtx.isPlaying = true;
+        updatePlayButtons();
+    }).catch(function(e) {
+        console.error('音频播放失败:', e);
+        // 自动播放被阻止时，提示用户
+        if (e.name === 'NotAllowedError') {
+            showToast('请手动点击播放按钮');
+        } else {
+            showToast('播放失败，请检查网络');
+        }
+    });
+    
     showMiniPlayer(course);
     var playerEl = document.getElementById('audio-player-fullscreen');
     var coverPlayingEl = document.getElementById('ap-cover');
