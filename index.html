@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V134</title>
+<title>认知训练 V135</title>
 <link rel="icon" type="image/x-icon" href="https://yuhang87989.github.io/cognitive-training-portal/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="192x192" href="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png"/>
 <link rel="apple-touch-icon" href="https://yuhang87989.github.io/cognitive-training-portal/apple-touch-icon.png"/>
@@ -687,7 +687,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="settings-group-inner">
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" onclick="openAbout()">
                         <div style="font-size:14px;color:#333;">版本信息</div>
-                        <div style="font-size:13px;color:#1A6BFF;">V134 →</div>
+                        <div style="font-size:13px;color:#1A6BFF;">V135 →</div>
                     </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
                         <div style="font-size:14px;color:#333;">反馈建议</div>
@@ -952,7 +952,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v134';
+const STORAGE_KEY = 'cognitive_training_v135';
 
 // ====== 播放器全局变量 ======
 let currentAudio = null; // 音频播放器元素引用
@@ -1211,7 +1211,7 @@ const videoList = [
     {id: 4, title: "青少年高效复习策略指南", shareUrl: "https://www.coze.cn/s/-FFxXRTedN0/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_07040e43-b7ad-46d4-9713-21a6c6042b74.mp3?sign=1808822280-ffd1dd4d3b-0-6431d1416b2b2a3b1f95d5f6f9e83aaef2d488610c77c115f7821dfa2f28f0d6", duration: "5:41", category: "物理思维"},
     {id: 5, title: "三招提升青少年专注力", shareUrl: "https://www.coze.cn/s/ymrXMhQcvNY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_de865d7b-5968-40eb-ab49-1c2c8267b91a.mp3?sign=1808822299-57d9bb9b64-0-3ea6ff42e8b9c864cf4cd90b0ffb7d65cb7b7b751cb41db81e82e6eb62cdd9db", duration: "3:27", category: "思维训练"}
 ];
-const OLD_KEYS = ['cognitive_training_v133', 'cognitive_training_v132', 'cognitive_training_v131', 'cognitive_training_v130', 'cognitive_training_v127', 'cognitive_training_v126', 'cognitive_training_v125', 'cognitive_training_v124', 'cognitive_training_v123', 'cognitive_training_v122', 'cognitive_training_v121', 'cognitive_training_v120', 'cognitive_training_v119', 'cognitive_training_v118', 'cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
+const OLD_KEYS = ['cognitive_training_v134', 'cognitive_training_v133', 'cognitive_training_v132', 'cognitive_training_v131', 'cognitive_training_v130', 'cognitive_training_v127', 'cognitive_training_v126', 'cognitive_training_v125', 'cognitive_training_v124', 'cognitive_training_v123', 'cognitive_training_v122', 'cognitive_training_v121', 'cognitive_training_v120', 'cognitive_training_v119', 'cognitive_training_v118', 'cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
 
 // 播放播客音频（优先shareUrl签名URL，备用backupUrl）
 async function playPodcastAudio(id) {
@@ -1245,38 +1245,7 @@ function tryFallbackAudio(audio, podcast) {
 
 // 迷你播放器显示
 let currentPodcastId = null;
-function showMiniPlayer(title, duration) {
-    let miniPlayer = document.getElementById('mini-player');
-    if (!miniPlayer) {
-        miniPlayer = document.createElement('div');
-        miniPlayer.id = 'mini-player';
-        miniPlayer.className = 'mini-player';
-        document.body.appendChild(miniPlayer);
-    }
-    
-    miniPlayer.innerHTML = `
-        <div style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🎧</div>
-        <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</div>
-            <div style="font-size:11px;color:#999;">🎧 播客 · ${duration}</div>
-        </div>
-        <button onclick="togglePlayPause()" id="mp-play-btn" style="width:36px;height:36px;border-radius:50%;background:var(--blue);border:none;color:white;font-size:14px;cursor:pointer;">▶</button>
-        <button onclick="closeMiniPlayer()" style="width:28px;height:28px;border-radius:50%;background:#f0f0f0;border:none;font-size:12px;cursor:pointer;">✕</button>
-    `;
-    
-    miniPlayer.style.display = 'flex';
-}
 
-function closeMiniPlayer() {
-    const miniPlayer = document.getElementById('mini-player');
-    if (miniPlayer) {
-        miniPlayer.style.display = 'none';
-    }
-    const audio = document.getElementById('hidden-audio');
-    if (audio) {
-        audio.pause();
-    }
-}
 
 function togglePlayPause() {
     const audio = document.getElementById('hidden-audio');
@@ -2334,107 +2303,6 @@ function closeFullscreenPage() { const el = document.getElementById('fullscreen-
 
 
 // 清理模块状态（在打开新模块前调用）
-function cleanupModuleState() {
-    // 停止所有游戏计时器
-    if (gameTimer) {
-        clearInterval(gameTimer);
-        gameTimer = null;
-    }
-    if (gameTimerDisplay) {
-        clearInterval(gameTimerDisplay);
-        gameTimerDisplay = null;
-    }
-    
-    // 停止贪吃蛇计时器
-    if (snakeGame) {
-        clearInterval(snakeGame);
-        snakeGame = null;
-    }
-    
-    // 停止俄罗斯方块计时器
-    if (tetrisGame) {
-        clearInterval(tetrisGame);
-        tetrisGame = null;
-    }
-    
-    // 停止打地鼠计时器
-    if (whackTimer) {
-        clearInterval(whackTimer);
-        whackTimer = null;
-    }
-    
-    // 停止消消乐计时器
-    if (elimTimer) {
-        clearInterval(elimTimer);
-        elimTimer = null;
-    }
-    
-    // 停止番茄钟计时器
-    if (pomodoroTimer) {
-        clearInterval(pomodoroTimer);
-        pomodoroTimer = null;
-    }
-    
-    // 清理游戏Canvas
-    const board = document.getElementById('game-board');
-    if (board) {
-        board.innerHTML = '';
-        board.style.cssText = '';
-    }
-    
-    // 停止音频播放
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
-    
-    // 停止音频进度定时器
-    if (window.audioInterval) {
-        clearInterval(window.audioInterval);
-        window.audioInterval = null;
-    }
-    
-    // 停止视频播放
-    const videoPlayer = document.getElementById('video-player');
-    if (videoPlayer) {
-        videoPlayer.pause();
-        videoPlayer.src = '';
-    }
-    
-    // 停止TTS朗读
-    stopTTSSpeech();
-    
-    // 停止语音识别
-    if (isRecording && deepseekRecognition) {
-        deepseekRecognition.stop();
-        isRecording = false;
-    }
-    
-    // 清理DeepSeek图片
-    if (currentDeepSeekImage) {
-        currentDeepSeekImage = null;
-    }
-    
-    // 关闭全屏音频播放器
-    const audioPlayerFullscreen = document.getElementById('audio-player-fullscreen');
-    if (audioPlayerFullscreen) {
-        audioPlayerFullscreen.classList.remove('show');
-    }
-    
-    // 关闭视频全屏播放器
-    const videoPlayerFullscreen = document.getElementById('enhanced-video-player');
-    if (videoPlayerFullscreen) {
-        videoPlayerFullscreen.style.display = 'none';
-    }
-    
-    // 重置游戏全屏容器
-    const gameFullscreen = document.getElementById('game-fullscreen-container');
-    if (gameFullscreen) {
-        gameFullscreen.style.display = 'none';
-    }
-    
-    console.log('模块状态已清理');
-}
 // ====== 全屏页面切换 ======
 function openFullscreenPage(module) {
     cleanupModuleState(); // 清理上一个模块的状态
@@ -5184,9 +5052,6 @@ function startMethodTraining(methodId) {
 
 // ====== 学霸方法训练题库（V99新增）======
 
-function playPodcast(title) {
-    showToast('播放：' + title);
-}
 
 
 
@@ -5257,7 +5122,6 @@ function playVideo(title, url) {
 function toggleVpPlay() { if (!vpVideo) return; vpPlaying ? vpVideo.pause() : vpVideo.play(); }
 function seekVideo(e) { if (!vpVideo || !vpVideo.duration) return; const rect = e.target.getBoundingClientRect(); vpVideo.currentTime = ((e.clientX-rect.left)/rect.width)*vpVideo.duration; }
 function closeVideoPlayer() { if (vpVideo) { vpVideo.pause(); vpVideo.src = ''; } document.getElementById('video-player-modal').classList.remove('show'); }
-function formatTime(s) { if (!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)+'').padStart(2,'0'); }
 
 
 let gameScore = 0, gameType = '', gameLevel = 1, gameTimer = null, gameStartTime = 0, schulteNext = 1;
@@ -5727,8 +5591,7 @@ function endGame() {
 
 function resetGame() { startGame(gameType); }
 
-// ==================== 娱乐游戏实现 ====================
-
+// ==================== 娱乐游戏实现 =============
 // ----- 贪吃蛇游戏 -----
 let snakeGame = null;
 function startSnake() {
@@ -7144,47 +7007,7 @@ const videoResources = {
     'video21': { url: '', title: '化学实验操作规范' }
 };
 
-function playPodcast(title, audioId) {
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    content.innerHTML = `
-        <div class="modal-title">🎧 \${title}</div>
-        <div class="audio-controls" style="margin:20px 0;">
-            <button class="audio-btn" onclick="toggleAudioPlay()" id="audio-play-btn">▶</button>
-            <div style="flex:1;">
-                <div class="audio-progress" onclick="seekAudio(event)">
-                    <div class="audio-progress-bar" id="audio-progress-bar" style="width:0%;"></div>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-top:8px;">
-                    <span id="audio-current-time" style="font-size:11px;color:var(--text-gray);">0:00</span>
-                    <span id="audio-duration" style="font-size:11px;color:var(--text-gray);">--:--</span>
-                </div>
-            </div>
-        </div>
-        <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;text-align:center;">
-            <div style="font-size:13px;color:var(--text-gray);">音频课程正在播放</div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-    currentAudio = { id: audioId, title: title, isPlaying: false, currentTime: 0, duration: 600 };
-    showToast('正在播放: ' + title);
-}
 
-function toggleAudioPlay() {
-    if (!currentAudio) return;
-    const btn = document.getElementById('audio-play-btn');
-    currentAudio.isPlaying = !currentAudio.isPlaying;
-    btn.textContent = currentAudio.isPlaying ? '⏸' : '▶';
-    if (currentAudio.isPlaying && !window.audioInterval) {
-        window.audioInterval = setInterval(() => {
-            if (currentAudio && currentAudio.isPlaying) {
-                currentAudio.currentTime += 1;
-                updateAudioProgress();
-            }
-        }, 1000);
-    }
-}
 
 function updateAudioProgress() {
     if (!currentAudio) return;
@@ -7203,11 +7026,6 @@ function seekAudio(e) {
     updateAudioProgress();
 }
 
-function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return mins + ':' + (secs < 10 ? '0' : '') + secs;
-}
 
 // ====== 学霸方法训练 ======
 const methodPractices = {
@@ -7540,7 +7358,7 @@ var podcastCourses = [
 
 // 播客列表别名（兼容旧代码）
 
-// ====== 视频课程数据（已清理无效视频，仅保留w3schools有效测试视频）=======
+// ====== 视频课程数据（已清理无效视频，仅保留w3schools有效测试视频）
 var videoCourses = [
     {id:'video1',title:'专注力训练',teacher:'心理学专家',duration:'5:23',durationSec:323,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎯',url:'videos/专注力训练.mp4',views:25000},
     {id:'video2',title:'学霸深度理解法',teacher:'特级教师',duration:'6:18',durationSec:378,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🧠',url:'videos/学霸深度理解法_第1集.mp4',views:18000},
@@ -7778,7 +7596,6 @@ function toggleMute() {
     else { setVolume((audioCtx.lastVolume || 0.8) * 100); var sliderEl = document.getElementById('ap-volume-slider'); if (sliderEl) sliderEl.value = (audioCtx.lastVolume || 0.8) * 100; }
 }
 
-function updateVolumeIcon(value) { var icon = value == 0 ? '🔇' : (value < 50 ? '🔉' : '🔊'); var btnEl = document.getElementById('ap-volume-btn'); if (btnEl) btnEl.innerHTML = icon; }
 function closeAudioPlayer() { var playerEl = document.getElementById('audio-player-fullscreen'); var coverEl = document.getElementById('ap-cover'); if (playerEl) playerEl.classList.remove('show'); if (coverEl) coverEl.classList.remove('playing'); }
 function updatePlayButtons() { var icon = audioCtx.isPlaying ? '⏸' : '▶'; var apPlayBtn = document.getElementById('ap-play-btn'); var miniBtn = document.getElementById('mini-player-btn'); if (apPlayBtn) apPlayBtn.innerHTML = icon; if (miniBtn) miniBtn.innerHTML = icon; }
 
@@ -9445,7 +9262,7 @@ function exportData() {
     
     // 添加导出元信息
     const exportData = {
-        version: 'V134',
+        version: 'V135',
         exportTime: new Date().toISOString(),
         appName: '认知训练门户',
         data: data
@@ -9757,7 +9574,7 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V134</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V135</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
