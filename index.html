@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V119</title>
+<title>认知训练 V120</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -294,6 +294,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .filter-btn:hover:not(.active){background:#f5f5f5}
 .video-card.active{transform:scale(1.02);box-shadow:0 4px 12px rgba(102,126,234,0.3);}
 .topic-item.active{transform:scale(1.01);}
+/* 设置面板折叠样式 */
+.settings-group{margin-bottom:8px;border-radius:12px;overflow:hidden;background:white;}
+.settings-group-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;transition:background 0.2s;}
+.settings-group-header:hover{background:#f8f9fa;}
+.settings-group-title{font-size:14px;font-weight:600;color:#333;display:flex;align-items:center;gap:8px;}
+.settings-group-arrow{font-size:12px;color:#999;transition:transform 0.3s ease;}
+.settings-group.open .settings-group-arrow{transform:rotate(180deg);}
+.settings-group-content{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+.settings-group.open .settings-group-content{max-height:1000px;}
+.settings-group-inner{padding:0 16px 14px;}
 </style>
 <!-- PeerJS 音视频库 -->
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
@@ -497,144 +507,190 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             </div>
         </div>
         
-        <!-- 训练设置 -->
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333;">📊 训练设置</div>
-        <div style="background:white;border-radius:12px;padding:12px;margin-bottom:16px;">
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">难度级别</div>
-                    <div style="font-size:12px;color:#999;">影响题目难度和积分奖励</div>
-                </div>
-                <div id="settings-difficulty-display" style="background:#E8F4FF;color:#1A6BFF;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer;" onclick="openDifficultyModal()">Lv.1</div>
+        <!-- 📊 训练设置 (默认展开) -->
+        <div id="group-training" class="settings-group open">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('training')">
+                <div class="settings-group-title">📊 训练设置</div>
+                <div class="settings-group-arrow">▼</div>
             </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">每日训练次数</div>
-                    <div style="font-size:12px;color:#999;">建议每天训练8次</div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">难度级别</div>
+                            <div style="font-size:12px;color:#999;">影响题目难度和积分奖励</div>
+                        </div>
+                        <div id="settings-difficulty-display" style="background:#E8F4FF;color:#1A6BFF;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer;" onclick="openDifficultyModal()">Lv.1</div>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">每日训练次数</div>
+                            <div style="font-size:12px;color:#999;">建议每天训练8次</div>
+                        </div>
+                        <select id="settings-train-count" onchange="updateTrainCount(this.value)" style="padding:6px 12px;border-radius:8px;border:1px solid #ddd;font-size:13px;cursor:pointer;">
+                            <option value="4">4次</option>
+                            <option value="6">6次</option>
+                            <option value="8" selected>8次</option>
+                            <option value="10">10次</option>
+                            <option value="12">12次</option>
+                        </select>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;"><!-- 答题音效已禁用 --></div>
+                            <div style="font-size:12px;color:#999;">正确/错误时播放提示音</div>
+                        </div>
+                        <button id="sound-toggle-btn" onclick="toggleSoundEffects()" style="padding:8px 16px;border-radius:20px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:#43E97B;color:white;">已开启</button>
+                    </div>
                 </div>
-                <select id="settings-train-count" onchange="updateTrainCount(this.value)" style="padding:6px 12px;border-radius:8px;border:1px solid #ddd;font-size:13px;cursor:pointer;">
-                    <option value="4">4次</option>
-                    <option value="6">6次</option>
-                    <option value="8" selected>8次</option>
-                    <option value="10">10次</option>
-                    <option value="12">12次</option>
-                </select>
-            </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
-                <div>
-                    <div style="font-size:14px;color:#333;"><!-- 答题音效已禁用 --></div>
-                    <div style="font-size:12px;color:#999;">正确/错误时播放提示音</div>
-                </div>
-                <button id="sound-toggle-btn" onclick="toggleSoundEffects()" style="padding:8px 16px;border-radius:20px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:#43E97B;color:white;">已开启</button>
-            </div>
-        </div>
-        
-        <!-- 错题本管理 -->
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333;">📝 错题本管理</div>
-        <div style="background:white;border-radius:12px;padding:12px;margin-bottom:16px;">
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">错题数量</div>
-                    <div id="settings-wrong-count" style="font-size:12px;color:#999;">共 0 道错题</div>
-                </div>
-                <button onclick="viewWrongNotes()" style="background:#1A6BFF;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">查看</button>
-            </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">清空错题本</div>
-                    <div style="font-size:12px;color:#999;">删除所有错题记录</div>
-                </div>
-                <button onclick="clearWrongNotes()" style="background:#ff9500;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">清空</button>
             </div>
         </div>
         
-        <!-- DeepSeek API -->
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333;">🤖 AI功能</div>
-        <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:16px;padding:16px;margin-bottom:16px;">
-            <div style="font-size:15px;font-weight:600;margin-bottom:8px;">DeepSeek API</div>
-            <div style="font-size:12px;opacity:0.9;margin-bottom:12px;">API Key已配置 · 所有AI功能可用</div>
-            <button onclick="openDeepSeekRecharge()" style="width:100%;padding:12px;background:white;color:#667eea;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">💰 充值余额</button>
+        <!-- 📕 学习管理 -->
+        <div id="group-wrongbook" class="settings-group">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('wrongbook')">
+                <div class="settings-group-title">📕 学习管理</div>
+                <div class="settings-group-arrow">▼</div>
+            </div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">错题数量</div>
+                            <div id="settings-wrong-count" style="font-size:12px;color:#999;">共 0 道错题</div>
+                        </div>
+                        <button onclick="viewWrongNotes()" style="background:#1A6BFF;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">查看</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">清空错题本</div>
+                            <div style="font-size:12px;color:#999;">删除所有错题记录</div>
+                        </div>
+                        <button onclick="clearWrongNotes()" style="background:#ff9500;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">清空</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <!-- 数据管理 -->
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333;">💾 数据管理</div>
-        <div style="background:white;border-radius:12px;padding:12px;margin-bottom:16px;">
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">📊 数据统计</div>
-                    <div id="data-stats-info" style="font-size:12px;color:#999;">加载中...</div>
-                </div>
-                <button onclick="showDataStatsModal()" style="background:#f0f0f0;color:#333;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">详情</button>
+        <!-- 🤖 AI能力 -->
+        <div id="group-ai" class="settings-group">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('ai')">
+                <div class="settings-group-title">🤖 AI能力</div>
+                <div class="settings-group-arrow">▼</div>
             </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">📤 导出数据</div>
-                    <div style="font-size:12px;color:#999;">备份所有训练数据到本地</div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:12px;padding:16px;">
+                        <div style="font-size:15px;font-weight:600;margin-bottom:8px;">DeepSeek API</div>
+                        <div style="font-size:12px;opacity:0.9;margin-bottom:12px;">API Key已配置 · 所有AI功能可用</div>
+                        <button onclick="openDeepSeekRecharge()" style="width:100%;padding:12px;background:white;color:#667eea;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">💰 充值余额</button>
+                    </div>
                 </div>
-                <button onclick="exportData()" style="background:#43E97B;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">导出</button>
             </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">📥 导入数据</div>
-                    <div style="font-size:12px;color:#999;">从备份文件恢复数据</div>
-                </div>
-                <button onclick="importData()" style="background:#4facfe;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">导入</button>
+        </div>
+        
+        <!-- 💾 数据管理 (默认展开) -->
+        <div id="group-data" class="settings-group open">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('data')">
+                <div class="settings-group-title">💾 数据管理</div>
+                <div class="settings-group-arrow">▼</div>
             </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">🔄 数据同步</div>
-                    <div id="last-sync-time" style="font-size:12px;color:#999;">上次同步：--</div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">📊 数据统计</div>
+                            <div id="data-stats-info" style="font-size:12px;color:#999;">加载中...</div>
+                        </div>
+                        <button onclick="showDataStatsModal()" style="background:#f0f0f0;color:#333;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">详情</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">📤 导出数据</div>
+                            <div style="font-size:12px;color:#999;">备份所有训练数据到本地</div>
+                        </div>
+                        <button onclick="exportData()" style="background:#43E97B;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">导出</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">📥 导入数据</div>
+                            <div style="font-size:12px;color:#999;">从备份文件恢复数据</div>
+                        </div>
+                        <button onclick="importData()" style="background:#4facfe;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">导入</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">🔄 数据同步</div>
+                            <div id="last-sync-time" style="font-size:12px;color:#999;">上次同步：--</div>
+                        </div>
+                        <button onclick="syncData()" id="sync-btn" style="background:#1A6BFF;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">同步</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">🗑️ 清除所有数据</div>
+                            <div style="font-size:12px;color:#999;">删除所有本地数据</div>
+                        </div>
+                        <button onclick="clearAllData()" style="background:#ff6b6b;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">清除</button>
+                    </div>
                 </div>
-                <button onclick="syncData()" id="sync-btn" style="background:#1A6BFF;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">同步</button>
-            </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">🗑️ 清除所有数据</div>
-                    <div style="font-size:12px;color:#999;">删除所有本地数据</div>
-                </div>
-                <button onclick="clearAllData()" style="background:#ff6b6b;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">清除</button>
             </div>
         </div>
         <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(event)"/>
-        <!-- API配置 -->
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333;">🔑 API配置</div>
-        <div style="background:white;border-radius:12px;padding:12px;margin-bottom:16px;">
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">DeepSeek API Key</div>
-                    <div id="api-deepseek-status" style="font-size:12px;color:#999;">状态：未配置</div>
-                </div>
-                <button onclick="openApiConfigModal('deepseek')" style="background:#667eea;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">配置</button>
+        
+        <!-- 🔧 API配置 -->
+        <div id="group-api" class="settings-group">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('api')">
+                <div class="settings-group-title">🔧 API配置</div>
+                <div class="settings-group-arrow">▼</div>
             </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">PeerJS 服务器</div>
-                    <div id="api-peerjs-status" style="font-size:12px;color:#999;">0.peerjs.com:443</div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">DeepSeek API Key</div>
+                            <div id="api-deepseek-status" style="font-size:12px;color:#999;">状态：未配置</div>
+                        </div>
+                        <button onclick="openApiConfigModal('deepseek')" style="background:#667eea;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">配置</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">PeerJS 服务器</div>
+                            <div id="api-peerjs-status" style="font-size:12px;color:#999;">0.peerjs.com:443</div>
+                        </div>
+                        <button onclick="openApiConfigModal('peerjs')" style="background:#4facfe;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">配置</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">恢复默认配置</div>
+                            <div style="font-size:12px;color:#999;">重置所有API配置</div>
+                        </div>
+                        <button onclick="resetApiConfig()" style="background:#ff9500;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">重置</button>
+                    </div>
                 </div>
-                <button onclick="openApiConfigModal('peerjs')" style="background:#4facfe;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">配置</button>
-            </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
-                <div>
-                    <div style="font-size:14px;color:#333;">恢复默认配置</div>
-                    <div style="font-size:12px;color:#999;">重置所有API配置</div>
-                </div>
-                <button onclick="resetApiConfig()" style="background:#ff9500;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">重置</button>
             </div>
         </div>
-        <!-- 关于 -->
-        <div style="font-size:14px;font-weight:600;margin-bottom:12px;color:#333;">ℹ️ 关于</div>
-        <div style="background:white;border-radius:12px;padding:12px;margin-bottom:16px;">
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" onclick="openAbout()">
-                <div style="font-size:14px;color:#333;">版本信息</div>
-                <div style="font-size:13px;color:#1A6BFF;">V119 →</div>
+        
+        <!-- ℹ️ 关于信息 -->
+        <div id="group-about" class="settings-group">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('about')">
+                <div class="settings-group-title">ℹ️ 关于信息</div>
+                <div class="settings-group-arrow">▼</div>
             </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                <div style="font-size:14px;color:#333;">反馈建议</div>
-                <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openFeedback()">点击反馈</div>
-            </div>
-            <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
-                <div style="font-size:14px;color:#333;">使用帮助</div>
-                <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" onclick="openAbout()">
+                        <div style="font-size:14px;color:#333;">版本信息</div>
+                        <div style="font-size:13px;color:#1A6BFF;">V120 →</div>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div style="font-size:14px;color:#333;">反馈建议</div>
+                        <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openFeedback()">点击反馈</div>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                        <div style="font-size:14px;color:#333;">使用帮助</div>
+                        <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -863,7 +919,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v119';
+const STORAGE_KEY = 'cognitive_training_v120';
 
 // ====== Toast提示系统 ======
 function showToast(message, duration = 2000) {
@@ -1117,7 +1173,7 @@ const videoList = [
     {id: 4, title: "物理因果守恒_第1集", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/物理因果守恒_第1集.mp4", duration: "5:41", category: "物理思维"},
     {id: 5, title: "逆向思维训练_第1集", url: "https://yuhang87989.github.io/cognitive-training-portal/videos/逆向思维训练_第1集.mp4", duration: "3:27", category: "思维训练"}
 ];
-const OLD_KEYS = ['cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
+const OLD_KEYS = ['cognitive_training_v119','cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
 
 // 播放播客音频
 function playPodcastAudio(id) {
@@ -5493,7 +5549,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 清除旧版本数据（只清除旧版本的key，保留当前版本数据）
     try {
-        const OLD_KEYS = ['cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
+        const OLD_KEYS = ['cognitive_training_v119','cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
         OLD_KEYS.forEach(k => localStorage.removeItem(k));
     } catch(e) {}
     
@@ -7402,6 +7458,14 @@ function openSettingsPanel() {
     document.getElementById('settings-panel').style.display = 'block';
 }
 
+// 折叠/展开设置分组
+function toggleSettingsGroup(groupId) {
+    const group = document.getElementById('group-' + groupId);
+    if (group) {
+        group.classList.toggle('open');
+    }
+}
+
 function closeSettingsPanel(e) {
     if (!e || e.target === document.getElementById('settings-panel')) {
         document.getElementById('settings-panel').style.display = 'none';
@@ -7760,7 +7824,7 @@ function exportData() {
     
     // 添加导出元信息
     const exportData = {
-        version: 'V119',
+        version: 'V120',
         exportTime: new Date().toISOString(),
         appName: '认知训练门户',
         data: data
@@ -8072,7 +8136,7 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V119</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V120</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
