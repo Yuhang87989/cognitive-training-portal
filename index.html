@@ -4,7 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V133</title><style>
+<title>认知训练 V133</title>
+<link rel="icon" type="image/x-icon" href="https://yuhang87989.github.io/cognitive-training-portal/favicon.ico"/>
+<link rel="icon" type="image/png" sizes="192x192" href="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png"/>
+<link rel="apple-touch-icon" href="https://yuhang87989.github.io/cognitive-training-portal/apple-touch-icon.png"/>
+<style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif;background:var(--bg-page);min-height:100vh;color:var(--text-dark);padding-bottom:80px;max-width:480px;margin:0 auto}
@@ -314,7 +318,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="home-header">
         <div class="header-top">
             <div style="display:flex;align-items:center;">
-                <div class="app-logo">🧠</div>
+                <div class="app-logo"><img src="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;"></div>
                 <div class="app-title">认知训练</div>
             </div>
             <div class="header-right">
@@ -358,7 +362,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <span>⚙️</span>
                             <span>设置</span>
                         </div>
-                        
+                        <div class="user-dropdown-divider"></div>
+                        <div class="user-dropdown-item" onclick="exitSystem()" style="color:#FF6B6B;">
+                            <span>🚪</span>
+                            <span>退出</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -494,7 +502,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <!-- 用户信息卡片 -->
         <div id="settings-user-card" style="background:linear-gradient(135deg,#1A6BFF,#4A90E2);color:white;border-radius:16px;padding:16px;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <div id="settings-avatar" style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;">邱</div>
+                <div id="settings-avatar" style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
                 <div>
                     <div id="settings-name" style="font-size:16px;font-weight:600;">邱宇菲</div>
                     <div id="settings-grade" style="font-size:12px;opacity:0.9;">初一 · Lv.1</div>
@@ -688,6 +696,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
                         <div style="font-size:14px;color:#333;">使用帮助</div>
                         <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 系统操作 -->
+        <div id="group-system" class="settings-group">
+            <div class="settings-group-header" onclick="toggleSettingsGroup('system')">
+                <div class="settings-group-title">🚪 系统操作</div>
+                <div class="settings-group-arrow">▼</div>
+            </div>
+            <div class="settings-group-content">
+                <div class="settings-group-inner">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">🔗 登录扣子</div>
+                            <div style="font-size:12px;color:#999;">登录后可播放在线播客音频</div>
+                        </div>
+                        <button onclick="loginCoze()" style="background:#3377FF;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">登录</button>
+                    </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+                        <div>
+                            <div style="font-size:14px;color:#FF6B6B;">🚪 退出</div>
+                            <div style="font-size:12px;color:#999;">关闭应用，下次需重新打开</div>
+                        </div>
+                        <button onclick="exitSystem()" style="background:#FF6B6B;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">退出</button>
                     </div>
                 </div>
             </div>
@@ -1177,7 +1211,7 @@ const videoList = [
     {id: 4, title: "青少年高效复习策略指南", shareUrl: "https://www.coze.cn/s/-FFxXRTedN0/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_07040e43-b7ad-46d4-9713-21a6c6042b74.mp3?sign=1808822280-ffd1dd4d3b-0-6431d1416b2b2a3b1f95d5f6f9e83aaef2d488610c77c115f7821dfa2f28f0d6", duration: "5:41", category: "物理思维"},
     {id: 5, title: "三招提升青少年专注力", shareUrl: "https://www.coze.cn/s/ymrXMhQcvNY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_de865d7b-5968-40eb-ab49-1c2c8267b91a.mp3?sign=1808822299-57d9bb9b64-0-3ea6ff42e8b9c864cf4cd90b0ffb7d65cb7b7b751cb41db81e82e6eb62cdd9db", duration: "3:27", category: "思维训练"}
 ];
-const OLD_KEYS = ['cognitive_training_v132', 'cognitive_training_v127', 'cognitive_training_v126', 'cognitive_training_v125', 'cognitive_training_v124', 'cognitive_training_v123', 'cognitive_training_v122', 'cognitive_training_v121', 'cognitive_training_v120', 'cognitive_training_v119', 'cognitive_training_v118', 'cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
+const OLD_KEYS = ['cognitive_training_v132', 'cognitive_training_v131', 'cognitive_training_v130', 'cognitive_training_v127', 'cognitive_training_v126', 'cognitive_training_v125', 'cognitive_training_v124', 'cognitive_training_v123', 'cognitive_training_v122', 'cognitive_training_v121', 'cognitive_training_v120', 'cognitive_training_v119', 'cognitive_training_v118', 'cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
 
 // 播放播客音频（优先shareUrl签名URL，备用backupUrl）
 async function playPodcastAudio(id) {
@@ -2495,88 +2529,6 @@ function renderPractice(container) {
     `;
 }
 
-function handlePracticePhoto(input) {
-    if (!input.files[0]) return;
-    const file = input.files[0];
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const base64 = e.target.result;
-        showToast('AI正在识别题目...');
-        try {
-            const response = await fetch(DEEPSEEK_API_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY},
-                body: JSON.stringify({
-                    model: 'deepseek-chat',
-                    messages: [{role: 'user', content: [
-                        {type: 'text', text: '请识别并解答这道题目，给出详细的解题步骤和答案。如果图片不是题目，请说明。'},
-                        {type: 'image_url', image_url: {url: base64}}
-                    ]}],
-                    max_tokens: 1000
-                })
-            });
-            const data = await response.json();
-            const answer = data.choices?.[0]?.message?.content || '识别失败，请重试';
-            showPracticeResult('📷 拍照识别结果', answer);
-        } catch(err) {
-            showToast('AI识别失败：' + err.message);
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-async function submitPracticeQuestion() {
-    const input = document.getElementById('practice-input');
-    if (!input || !input.value.trim()) {
-        showToast('请输入问题');
-        return;
-    }
-    const question = input.value.trim();
-    showToast('AI正在思考...');
-    try {
-        const response = await fetch(DEEPSEEK_API_URL, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY},
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    {role: 'system', content: '你是一位专业的中小学教育辅导老师，擅长用通俗易懂的方式解答学生问题。请给出详细的解题步骤、思路分析和最终答案。'},
-                    {role: 'user', content: question}
-                ],
-                max_tokens: 1500
-            })
-        });
-        const data = await response.json();
-        const answer = data.choices?.[0]?.message?.content || '解答失败，请重试';
-        showPracticeResult('🔍 AI解答', answer);
-        // 更新练习统计
-        const user = getCurrentUserData();
-        if (user) {
-            if (!user.practiceStats) user.practiceStats = {total: 0, correct: 0, weakPoints: 0};
-            user.practiceStats.total = (user.practiceStats.total || 0) + 1;
-            syncUserData(user);
-        }
-    } catch(err) {
-        showToast('AI解答失败：' + err.message);
-    }
-}
-
-function showPracticeResult(title, content) {
-    const modal = document.createElement('div');
-    modal.id = 'practice-result-modal';
-    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:3000;padding:16px;';
-    modal.innerHTML = `
-        <div style="background:white;border-radius:20px;padding:24px;max-width:380px;width:100%;max-height:80vh;overflow-y:auto;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div style="font-size:18px;font-weight:bold;">${title}</div>
-                <div onclick="document.getElementById('practice-result-modal').remove()" style="cursor:pointer;font-size:20px;padding:4px;">✕</div>
-            </div>
-            <div style="font-size:14px;line-height:1.8;color:#333;white-space:pre-wrap;">${content}</div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
-}
 
 
 function renderMap(container) {
@@ -3433,12 +3385,19 @@ function renderPodcast(container) {
         
         <div id="podcast-list">
             ${podcasts.map(p => `
-            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
+            <div class="podcast-item" style="flex-wrap:wrap;">
                 <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
-                <div class="podcast-info">
+                <div class="podcast-info" style="flex:1;min-width:0;" onclick="playPodcastCourseWithLocal('${p.id}')">
                     <div class="podcast-title">${p.title}</div>
                     <div class="podcast-meta">${p.teacher} · ${p.duration} · <span class="media-badge">${p.category}</span></div>
                     <div class="media-views">👁 ${(p.views/1000).toFixed(1)}万</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;cursor:pointer;font-size:12px;color:#3377FF;white-space:nowrap;" onclick="event.stopPropagation();">
+                        📤 上传
+                        <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
+                    </label>
+                    <button onclick="event.stopPropagation();downloadPodcastCourse('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
                 </div>
             </div>
             `).join('')}
@@ -3460,12 +3419,19 @@ function filterPodcast(category, btn) {
     
     if (list) {
         list.innerHTML = filtered.map(p => `
-            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
+            <div class="podcast-item" style="flex-wrap:wrap;">
                 <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
-                <div class="podcast-info">
+                <div class="podcast-info" style="flex:1;min-width:0;" onclick="playPodcastCourseWithLocal('${p.id}')">
                     <div class="podcast-title">${p.title}</div>
                     <div class="podcast-meta">${p.teacher} · ${p.duration} · <span class="media-badge">${p.category}</span></div>
                     <div class="media-views">👁 ${(p.views/1000).toFixed(1)}万</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;cursor:pointer;font-size:12px;color:#3377FF;white-space:nowrap;" onclick="event.stopPropagation();">
+                        📤 上传
+                        <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
+                    </label>
+                    <button onclick="event.stopPropagation();downloadPodcastCourse('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
                 </div>
             </div>
         `).join('');
@@ -3575,17 +3541,13 @@ function deleteLocalAudio(audioId) {
     showToast('音频已删除');
 }
 function renderVideo(container) {
-    // 使用videoCourses数组渲染视频列表（含上传和下载按钮）
+    // 使用videoCourses数组渲染21个视频
     const videos = videoCourses.map(function(v) {
-        return '<div class="video-item" style="flex-wrap:wrap;" onclick="playVideoFromList(\'' + v.id + '\')">' +
+        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
                '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
-               '<div class="video-info" style="flex:1;min-width:0;"><div class="video-title">' + v.title + '</div>' +
+               '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
                '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +
-               '<div class="media-views">👁 ' + (v.views ? (v.views/1000).toFixed(1) + '万' : '0') + '</div></div>' +
-               '<div style="display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation();">' +
-               '<label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;cursor:pointer;font-size:12px;color:#3377FF;white-space:nowrap;">📤 上传<input type="file" accept="video/mp4,.mp4" style="display:none;" onchange="uploadVideoFile(\'' + v.id + '\', this)"></label>' +
-               '<button onclick="downloadVideoCourse(\'' + v.id + '\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>' +
-               '</div></div>';
+               '<div class="media-views">👁 ' + (v.views ? (v.views/1000).toFixed(1) + '万' : '0') + '</div></div></div>';
     }).join('');
     
     container.innerHTML = `
@@ -3626,15 +3588,11 @@ function filterVideoCourse(category, btn) {
     
     var videos = videoCourses.filter(function(v) { return category === 'all' || v.category === category; });
     var videoHtml = videos.map(function(v) {
-        return '<div class="video-item" style="flex-wrap:wrap;" onclick="playVideoFromList(\'' + v.id + '\')">' +
+        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
                '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
-               '<div class="video-info" style="flex:1;min-width:0;"><div class="video-title">' + v.title + '</div>' +
+               '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
                '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +
-               '<div class="media-views">👁 ' + (v.views ? (v.views/1000).toFixed(1) + '万' : '0') + '</div></div>' +
-               '<div style="display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation();">' +
-               '<label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;cursor:pointer;font-size:12px;color:#3377FF;white-space:nowrap;">📤 上传<input type="file" accept="video/mp4,.mp4" style="display:none;" onchange="uploadVideoFile(\'' + v.id + '\', this)"></label>' +
-               '<button onclick="downloadVideoCourse(\'' + v.id + '\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>' +
-               '</div></div>';
+               '<div class="media-views">👁 ' + (v.views ? (v.views/1000).toFixed(1) + '万' : '0') + '</div></div></div>';
     }).join('');
     
     document.getElementById('video-list').innerHTML = videoHtml;
@@ -7461,10 +7419,26 @@ function playPodcastCourse(courseId) {
             updatePodcastListState(courseId);
             showToast('正在播放: ' + course.title);
         } else {
-            console.warn('获取音频URL失败，尝试打开分享页面');
-            // 获取失败时，打开分享页面作为fallback
-            showToast('正在跳转播放页面...');
-            window.open(course.shareUrl, '_blank');
+            console.warn('获取签名URL失败，尝试备用方式');
+            // 备用方式1：检查podcastList中是否有backupUrl
+            var plistItem = podcastList.find(function(p) { return p.shareUrl === course.shareUrl; });
+            if (plistItem && plistItem.backupUrl) {
+                audioEl.src = plistItem.backupUrl;
+                audioEl.play().then(function() {
+                    audioCtx.isPlaying = true;
+                    updatePlayButtons();
+                    showMiniPlayer(course);
+                    var playerEl = document.getElementById('audio-player-fullscreen');
+                    if (playerEl) playerEl.classList.add('show');
+                    showToast('正在播放(备用): ' + course.title);
+                }).catch(function(e) {
+                    showToast('播放失败，请检查网络');
+                });
+            } else {
+                // 备用方式2：打开分享页面
+                showToast('正在跳转播放页面...');
+                window.open(course.shareUrl, '_blank');
+            }
         }
     });
 }
@@ -7804,18 +7778,10 @@ function playVideoCourse(courseId) {
     var course = null;
     for (var i = 0; i < videoCourses.length; i++) { if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; } }
     if (!course) return;
+    // 使用openEnhancedVideoPlayer确保播放器正确初始化
+    openEnhancedVideoPlayer(course.title, course.url, course.id);
     videoCtx.currentVideo = course;
-    var titleEl = document.getElementById('evp-title');
-    if (titleEl) titleEl.textContent = course.title;
-    evpVideo.src = course.url;
-    evpVideo.playbackRate = videoCtx.playbackSpeed;
-    evpVideo.volume = videoCtx.volume;
-    var playerEl = document.getElementById('enhanced-video-player');
-    var bigPlayEl = document.getElementById('evp-big-play');
-    if (playerEl) playerEl.classList.add('show');
-    if (bigPlayEl) bigPlayEl.style.display = 'none';
     updateVideoListState(courseId);
-    evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
 }
 
 
@@ -9576,6 +9542,99 @@ function confirmClearAllData() {
 }
 
 // 退出登录返回首页
+
+
+// ====== 用户数据完整性校验 ======
+function validateUserData(user) {
+    if (!user) return null;
+    var defaults = {
+        name: '新用户',
+        grade: 7,
+        difficulty: 1,
+        points: 0,
+        wrongNotes: [],
+        todayStats: { questions: 0, correct: 0, minutes: 0 },
+        studyDays: {},
+        uploadedImages: [],
+        uploadedAudios: [],
+        uploadedVideos: [],
+        achievements: [],
+        streakDays: 0,
+        lastStudyDate: null,
+        createdAt: Date.now(),
+        avatar: 'default',
+        avatarColor: '#3377FF'
+    };
+    
+    for (var key in defaults) {
+        if (user[key] === undefined || user[key] === null) {
+            user[key] = defaults[key];
+        }
+    }
+    
+    // 确保todayStats结构完整
+    if (!user.todayStats || typeof user.todayStats !== 'object') {
+        user.todayStats = { questions: 0, correct: 0, minutes: 0 };
+    }
+    
+    return user;
+}
+
+// ====== 增强版getCurrentUserData ======
+function getCurrentUserDataSafe() {
+    try {
+        var data = loadData();
+        if (!data || !data.currentUser) {
+            // 回退到默认用户
+            var defaultUser = getOrCreateDefaultUser();
+            return validateUserData(defaultUser);
+        }
+        var user = data.users ? data.users[data.currentUser] : null;
+        if (!user) {
+            // 用户不存在，回退到默认用户
+            var defaultUser = getOrCreateDefaultUser();
+            return validateUserData(defaultUser);
+        }
+        return validateUserData(user);
+    } catch(e) {
+        console.error('获取用户数据失败:', e);
+        var defaultUser = getOrCreateDefaultUser();
+        return validateUserData(defaultUser);
+    }
+}
+
+// 获取或创建默认用户
+function getOrCreateDefaultUser() {
+    var data = loadData();
+    if (!data.users) data.users = {};
+    
+    var defaultUserId = 'user_default_qiuyufei';
+    if (!data.users[defaultUserId]) {
+        data.users[defaultUserId] = {
+            id: defaultUserId,
+            name: '邱宇菲',
+            grade: 7,
+            difficulty: 1,
+            points: 0,
+            wrongNotes: [],
+            todayStats: { questions: 0, correct: 0, minutes: 0 },
+            studyDays: {},
+            uploadedImages: [],
+            uploadedAudios: [],
+            uploadedVideos: [],
+            achievements: [],
+            streakDays: 0,
+            lastStudyDate: null,
+            createdAt: Date.now(),
+            avatar: 'default',
+            avatarColor: '#3377FF'
+        };
+    }
+    data.currentUser = defaultUserId;
+    saveData(data);
+    return data.users[defaultUserId];
+}
+
 function logoutAndReturn() {
     const user = getCurrentUserData();
     
@@ -9596,6 +9655,226 @@ function logoutAndReturn() {
     
     // 不再跳转到登录页面，而是弹出注册模态框
     openRegisterModal();
+}
+
+// 退出整个系统
+
+// ====== 模块状态清理 ======
+function cleanupModuleState() {
+    // 停止TTS
+    try { stopTTSSpeech(); } catch(e) {}
+    
+    // 停止音频播放
+    try {
+        if (typeof currentAudio !== 'undefined' && currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+        var hiddenAudio = document.getElementById('hidden-audio');
+        if (hiddenAudio) { hiddenAudio.pause(); hiddenAudio.src = ''; }
+    } catch(e) {}
+    
+    // 停止视频播放
+    try {
+        var evpVideo = document.getElementById('evp-video');
+        if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; }
+    } catch(e) {}
+    
+    // 清理番茄钟定时器
+    try {
+        if (typeof pomodoroTimer !== 'undefined' && pomodoroTimer) {
+            clearInterval(pomodoroTimer);
+            pomodoroTimer = null;
+        }
+    } catch(e) {}
+    
+    // 清理游戏定时器
+    try {
+        if (typeof memoryTimer !== 'undefined' && memoryTimer) {
+            clearInterval(memoryTimer);
+            memoryTimer = null;
+        }
+        if (typeof brainGameTimer !== 'undefined' && brainGameTimer) {
+            clearInterval(brainGameTimer);
+            brainGameTimer = null;
+        }
+        if (typeof focusTimer !== 'undefined' && focusTimer) {
+            clearInterval(focusTimer);
+            focusTimer = null;
+        }
+    } catch(e) {}
+    
+    // 关闭所有全屏页面
+    try { closeFullscreenPage(); } catch(e) {}
+    
+    // 关闭设置面板
+    try { closeSettingsPanel(); } catch(e) {}
+    
+    // 关闭用户菜单
+    try { closeUserMenu(); } catch(e) {}
+    
+    // 关闭任何模态框
+    try {
+        var modals = document.querySelectorAll('[id$="-modal"], [id$="-panel"], .modal');
+        modals.forEach(function(m) {
+            if (m.id && m.id !== 'settings-panel') m.remove();
+        });
+    } catch(e) {}
+    
+    // 重置游戏状态
+    try {
+        memoryGameState = null;
+        brainGameScore = 0;
+        brainGameLevel = 1;
+        focusMinutes = 25;
+        focusSeconds = 0;
+    } catch(e) {}
+}
+
+// 下载视频课程
+function downloadVideoCourse(courseId) {
+    var course = videoCourses.find(function(v) { return v.id === courseId; });
+    if (!course) { showToast("课程不存在"); return; }
+    var videoUrl = course.url;
+    if (videoUrl && !videoUrl.startsWith("http")) {
+        videoUrl = "https://6mz7txgx3f.coze.site/" + videoUrl;
+    }
+    if (!videoUrl) { showToast("暂无可下载的视频文件"); return; }
+    var a = document.createElement("a");
+    a.href = videoUrl;
+    a.download = course.title + ".mp4";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("开始下载：" + course.title);
+}
+
+// 下载播客课程
+function downloadPodcastCourse(courseId) {
+    var course = podcastCourses.find(function(p) { return p.id === courseId; });
+    if (!course) { showToast("课程不存在"); return; }
+    var downloadUrl = course.backupUrl || null;
+    if (!downloadUrl && course.shareUrl) {
+        window.open(course.shareUrl, "_blank");
+        showToast("已打开扣子页面，可在线收听");
+        return;
+    }
+    if (!downloadUrl) { showToast("暂无可下载的音频文件"); return; }
+    var a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = course.title + ".mp3";
+    a.target = "_blank";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("开始下载：" + course.title);
+}
+
+function exitSystem() {
+    closeUserMenu();
+    const modal = document.createElement('div');
+    modal.id = 'exit-system-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:3000;';
+    modal.innerHTML = `
+        <div style="background:white;border-radius:24px;padding:32px 24px;text-align:center;max-width:320px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+            <div style="font-size:48px;margin-bottom:16px;">👋</div>
+            <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">确认退出？</div>
+            <div style="font-size:14px;color:#666;margin-bottom:24px;">退出后需要重新打开应用</div>
+            <div style="display:flex;gap:12px;">
+                <button onclick="document.getElementById('exit-system-modal').remove()" style="flex:1;padding:14px;background:#f5f7ff;color:#667eea;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;">取消</button>
+                <button onclick="confirmExitSystem()" style="flex:1;padding:14px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;">确认退出</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function confirmExitSystem() {
+    const modal = document.getElementById('exit-system-modal');
+    if (modal) modal.remove();
+    stopTTSSpeech();
+    if (typeof pomodoroTimer !== 'undefined' && pomodoroTimer) { clearInterval(pomodoroTimer); pomodoroTimer = null; }
+    if (typeof currentAudio !== 'undefined' && currentAudio) { currentAudio.pause(); currentAudio = null; }
+    try { if (window.Android && window.Android.exitApp) { window.Android.exitApp(); return; } } catch(e) {}
+    try { window.close(); } catch(e) {}
+    // 浏览器无法关闭窗口时，显示退出页面
+    document.body.innerHTML = `
+        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;">
+            <div style="font-size:64px;margin-bottom:24px;">👋</div>
+            <div style="font-size:24px;font-weight:bold;margin-bottom:12px;">已退出</div>
+            <div style="font-size:14px;opacity:0.8;margin-bottom:32px;">感谢使用认知训练，期待下次再见！</div>
+            <button onclick="location.reload()" style="padding:14px 40px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);color:white;border-radius:12px;font-size:16px;cursor:pointer;">重新进入</button>
+        </div>
+    `;
+}
+
+// 登录扣子平台（解决播客音频需要登录态的问题）
+function loginCoze() {
+    closeUserMenu();
+    const modal = document.createElement('div');
+    modal.id = 'coze-login-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:3000;';
+    modal.innerHTML = `
+        <div style="background:white;border-radius:24px;padding:32px 24px;text-align:center;max-width:360px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+            <div style="font-size:48px;margin-bottom:16px;">🔗</div>
+            <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">登录扣子平台</div>
+            <div style="font-size:14px;color:#666;margin-bottom:20px;line-height:1.6;">登录后可解锁播客音频播放功能<br/>登录状态会自动保存</div>
+            <button onclick="openCozeLoginPage()" style="width:100%;padding:14px;background:linear-gradient(135deg,#3377FF,#4A80F5);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:12px;">前往登录</button>
+            <button onclick="document.getElementById('coze-login-modal').remove()" style="width:100%;padding:14px;background:#f5f7ff;color:#667eea;border:none;border-radius:12px;font-size:15px;cursor:pointer;">取消</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function openCozeLoginPage() {
+    const modal = document.getElementById('coze-login-modal');
+    if (modal) modal.remove();
+    
+    // 创建全屏iframe登录页
+    const loginFrame = document.createElement('div');
+    loginFrame.id = 'coze-login-frame';
+    loginFrame.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:3000;background:white;display:flex;flex-direction:column;';
+    loginFrame.innerHTML = `
+        <div style="display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f0f0;flex-shrink:0;">
+            <button onclick="closeCozeLogin()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:8px;color:#333;">✕</button>
+            <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">登录扣子平台</span>
+            <div style="width:34px;"></div>
+        </div>
+        <iframe src="https://www.coze.cn/" style="flex:1;border:none;width:100%;" id="coze-iframe"></iframe>
+    `;
+    document.body.appendChild(loginFrame);
+    
+    // 保存当前登录状态检查
+    localStorage.setItem('coze_login_time', Date.now().toString());
+}
+
+function closeCozeLogin() {
+    const frame = document.getElementById('coze-login-frame');
+    if (frame) frame.remove();
+    
+    // 检查登录状态
+    checkCozeLoginStatus();
+    showToast('已返回，播客功能可正常使用');
+}
+
+function checkCozeLoginStatus() {
+    // 简单检查：通过fetch coze.cn看是否重定向到登录页
+    fetch('https://www.coze.cn/api/user/info', { method: 'GET', credentials: 'include' })
+        .then(res => {
+            if (res.ok) {
+                const statusEl = document.getElementById('coze-login-status');
+                if (statusEl) statusEl.textContent = '已登录';
+                localStorage.setItem('coze_logged_in', 'true');
+            }
+        })
+        .catch(() => {});
+    
+    // 也通过cookie判断
+    if (document.cookie.includes('coze') || document.cookie.includes('session')) {
+        const statusEl = document.getElementById('coze-login-status');
+        if (statusEl) statusEl.textContent = '已登录';
+    }
 }
 
 // 检查是否需要弹出注册模态框
@@ -9974,23 +10253,6 @@ function renderWrongbook(container) {
                 `).join('')}
             </div>
         `}
-
-        <div style="margin-top:24px;padding-bottom:20px;">
-            <div class="card">
-                <h4 style="margin-bottom:12px;">⚙️ 系统操作</h4>
-                <div style="display:flex;flex-direction:column;gap:10px;">
-                    <button onclick="openSettingsPanel()" style="width:100%;padding:14px;background:#f5f7ff;color:#3377FF;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;">
-                        ⚙️ <span>设置</span>
-                    </button>
-                    <button onclick="loginCoze()" style="width:100%;padding:14px;background:#f5f7ff;color:#3377FF;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;">
-                        🔗 <span>登录扣子</span>
-                    </button>
-                    <button onclick="exitSystem()" style="width:100%;padding:14px;background:#fff5f5;color:#FF6B6B;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;">
-                        🚪 <span>退出系统</span>
-                    </button>
-                </div>
-            </div>
-        </div>
     `;
 }
 
@@ -10105,13 +10367,214 @@ function resetPomodoro() {
     renderPomodoro(document.getElementById('fullscreen-content'));
 }
 
+
+
+// ====== IndexedDB 文件存储 ======
+// 初始化IndexedDB
+function initFileDB() {
+    return new Promise(function(resolve, reject) {
+        var request = indexedDB.open('cognitive_training_files', 1);
+        request.onupgradeneeded = function(e) {
+            var db = e.target.result;
+            if (!db.objectStoreNames.contains('files')) {
+                db.createObjectStore('files', { keyPath: 'id' });
+            }
+        };
+        request.onsuccess = function(e) { resolve(e.target.result); };
+        request.onerror = function(e) { reject(e.target.error); };
+    });
+}
+
+// 保存文件到IndexedDB
+async function saveFileToDB(id, file) {
+    var db = await initFileDB();
+    return new Promise(function(resolve, reject) {
+        var tx = db.transaction('files', 'readwrite');
+        var store = tx.objectStore('files');
+        store.put({ id: id, file: file, name: file.name, type: file.type, uploadTime: Date.now() });
+        tx.oncomplete = function() { resolve(); };
+        tx.onerror = function(e) { reject(e.target.error); };
+    });
+}
+
+// 从IndexedDB获取文件
+async function getFileFromDB(id) {
+    var db = await initFileDB();
+    return new Promise(function(resolve, reject) {
+        var tx = db.transaction('files', 'readonly');
+        var store = tx.objectStore('files');
+        var request = store.get(id);
+        request.onsuccess = function() { resolve(request.result); };
+        request.onerror = function(e) { reject(e.target.error); };
+    });
+}
+
+// 删除IndexedDB中的文件
+async function deleteFileFromDB(id) {
+    var db = await initFileDB();
+    return new Promise(function(resolve, reject) {
+        var tx = db.transaction('files', 'readwrite');
+        var store = tx.objectStore('files');
+        store.delete(id);
+        tx.oncomplete = function() { resolve(); };
+        tx.onerror = function(e) { reject(e.target.error); };
+    });
+}
+
+// 检查文件是否已上传
+async function hasLocalFile(id) {
+    try {
+        var file = await getFileFromDB(id);
+        return file !== undefined;
+    } catch(e) {
+        return false;
+    }
+}
+
+// ====== 播客上传功能 ======
+async function uploadPodcastFile(courseId, input) {
+    var file = input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('audio/') && !file.name.endsWith('.mp3')) {
+        showToast('请上传音频文件');
+        return;
+    }
+    showToast('正在上传音频...');
+    try {
+        await saveFileToDB('podcast_' + courseId, file);
+        showToast('音频上传成功！');
+        var data = loadData();
+        if (data && data.currentView === 'podcast') {
+            var container = document.getElementById('fullscreen-content');
+            if (container) openPodcastPanel(container);
+        }
+    } catch(e) {
+        showToast('上传失败：' + e.message);
+    }
+}
+
+async function deletePodcastFile(courseId) {
+    if (!confirm('确定要删除已上传的音频吗？')) return;
+    try {
+        await deleteFileFromDB('podcast_' + courseId);
+        showToast('音频已删除');
+        var data = loadData();
+        if (data && data.currentView === 'podcast') {
+            var container = document.getElementById('fullscreen-content');
+            if (container) openPodcastPanel(container);
+        }
+    } catch(e) {
+        showToast('删除失败');
+    }
+}
+
+// ====== 视频上传功能 ======
+async function uploadVideoFile(courseId, input) {
+    var file = input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('video/') && !file.name.endsWith('.mp4')) {
+        showToast('请上传视频文件');
+        return;
+    }
+    showToast('正在上传视频...');
+    try {
+        await saveFileToDB('video_' + courseId, file);
+        showToast('视频上传成功！');
+        var data = loadData();
+        if (data && data.currentView === 'video') {
+            var container = document.getElementById('fullscreen-content');
+            if (container) renderVideo(container);
+        }
+    } catch(e) {
+        showToast('上传失败：' + e.message);
+    }
+}
+
+async function deleteVideoFile(courseId) {
+    if (!confirm('确定要删除已上传的视频吗？')) return;
+    try {
+        await deleteFileFromDB('video_' + courseId);
+        showToast('视频已删除');
+        var data = loadData();
+        if (data && data.currentView === 'video') {
+            var container = document.getElementById('fullscreen-content');
+            if (container) renderVideo(container);
+        }
+    } catch(e) {
+        showToast('删除失败');
+    }
+}
+
+// ====== 带本地文件优先的播放函数 ======
+async function playPodcastCourseWithLocal(courseId) {
+    try {
+        var localFile = await getFileFromDB('podcast_' + courseId);
+        if (localFile && localFile.file) {
+            var audioEl = document.getElementById('hidden-audio');
+            if (!audioEl) { showToast('播放器初始化失败'); return; }
+            
+            var course = null;
+            for (var i = 0; i < podcastCourses.length; i++) {
+                if (podcastCourses[i].id === courseId) { course = podcastCourses[i]; break; }
+            }
+            if (!course) return;
+            
+            audioCtx.currentTrack = course;
+            audioCtx.currentIndex = -1;
+            for (var i = 0; i < podcastCourses.length; i++) {
+                if (podcastCourses[i].id === courseId) { audioCtx.currentIndex = i; break; }
+            }
+            
+            var titleEl = document.getElementById('ap-title');
+            var coverEl = document.getElementById('ap-cover');
+            var courseTitleEl = document.getElementById('ap-course-title');
+            var courseTeacherEl = document.getElementById('ap-course-teacher');
+            if (titleEl) titleEl.textContent = '本地音频';
+            if (coverEl) { coverEl.innerHTML = course.icon; coverEl.style.background = course.gradient; }
+            if (courseTitleEl) courseTitleEl.textContent = course.title;
+            if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
+            
+            var blobUrl = URL.createObjectURL(localFile.file);
+            audioEl.src = blobUrl;
+            audioEl.playbackRate = audioCtx.playbackSpeed;
+            audioEl.volume = audioCtx.volume;
+            
+            audioEl.play().then(function() {
+                audioCtx.isPlaying = true;
+                updatePlayButtons();
+            }).catch(function(e) {
+                showToast('播放失败');
+            });
+            return;
+        }
+    } catch(e) {}
+    playPodcastCourse(courseId);
+}
+
+async function playVideoCourseWithLocal(courseId) {
+    try {
+        var localFile = await getFileFromDB('video_' + courseId);
+        if (localFile && localFile.file) {
+            var course = null;
+            for (var i = 0; i < videoCourses.length; i++) {
+                if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; }
+            }
+            if (!course) return;
+            var blobUrl = URL.createObjectURL(localFile.file);
+            openEnhancedVideoPlayer(course.title, blobUrl, course.id);
+            return;
+        }
+    } catch(e) {}
+    playVideoCourse(courseId);
+}
+
 </script>
 
 <!-- 播客全屏播放器 -->
 <div id="audio-player-fullscreen" class="audio-player-modal">
     <!-- 顶部导航栏 -->
     <div style="display:flex;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.3);">
-        <div onclick="closeAudioPlayer()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
+        <div onclick="closeAudioPlayer()" style="color:white;font-size:20px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:8px;">✕ 关闭</div>
         <div id="ap-title" style="flex:1;font-size:14px;font-weight:600;color:white;text-align:center;">音频课程</div>
         <div style="width:40px;"></div>
     </div>
@@ -10177,7 +10640,7 @@ function resetPomodoro() {
 <!-- 游戏全屏容器 -->
 <div id="game-fullscreen-container" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:5000;display:none;flex-direction:column;overflow:hidden;">
     <div id="game-header" style="display:flex;align-items:center;padding:12px 16px;background:linear-gradient(135deg,#667eea,#764ba2);">
-        <div onclick="exitGame()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
+        <div onclick="exitGame()" style="color:white;font-size:20px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:8px;">✕ 退出</div>
         <div id="game-title" style="flex:1;font-size:16px;font-weight:600;color:white;text-align:center;">游戏</div>
         <div id="game-level-badge" style="background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:12px;font-size:12px;color:white;margin-right:8px;">关卡 1</div>
     </div>
@@ -10197,7 +10660,7 @@ function resetPomodoro() {
     </div>
     <div id="game-board" style="flex:1;display:flex;align-items:center;justify-content:center;padding:16px;"></div>
     <div style="padding:16px;background:rgba(0,0,0,0.3);display:flex;gap:12px;">
-        <button onclick="exitGame()" style="flex:1;padding:14px;background:rgba(255,255,255,0.1);border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">退出</button>
+        <button onclick="exitGame()" style="flex:1;padding:14px;background:rgba(255,255,255,0.2);border:none;border-radius:12px;color:white;font-size:15px;font-weight:600;cursor:pointer;">✕ 退出游戏</button>
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
