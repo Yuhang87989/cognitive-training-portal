@@ -814,7 +814,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 
 <!-- 隐藏的音频元素 -->
-<!-- <audio id="hidden-audio" style="display:none;"></audio>
+<audio id="hidden-audio" style="display:none;"></audio>
 
 <!-- 增强版视频播放器 -->
 <div id="enhanced-video-player" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;display:none;flex-direction:column;">
@@ -1622,6 +1622,13 @@ const topicsChemistry = [
 
 
 
+// ====== 物理题目（5-9年级）======
+const topicsPhysics8 = [{id:401,title:'机械运动',diff:2,q:'一个物体做匀速直线运动，5秒内通过25米，求速度',a:'5m/s',e:'v=s/t=25/5=5m/s'},{id:402,title:'参照物',diff:2,q:'坐在行驶的汽车里，路边的树在向哪个方向运动？',a:'向后',e:'以车为参照物，树向后运动'},{id:403,title:'长度测量',diff:1,q:'用刻度尺测量物体长度，正确读数是2.35cm，测量结果应记为？',a:'2.35cm',e:'估读到分度值下一位'},{id:404,title:'时间测量',diff:2,q:'小明跑100米用了12.5秒，他的平均速度是？',a:'8m/s',e:'v=100/12.5=8m/s'},{id:405,title:'速度公式',diff:2,q:'汽车以72km/h的速度行驶，合多少m/s？',a:'20m/s',e:'72÷3.6=20m/s'},{id:406,title:'声现象',diff:2,q:'声音在15℃空气中传播速度约是多少？',a:'340m/s',e:'声速与温度有关'},{id:407,title:'音调与频率',diff:2,q:'物体振动越快，音调越？',a:'高',e:'频率越高，音调越高'},{id:408,title:'响度与振幅',diff:2,q:'用更大的力敲鼓，鼓声变？',a:'更响',e:'振幅越大，响度越大'},{id:409,title:'音色',diff:1,q:'不同乐器演奏同一首曲子，我们能区分是因为？',a:'音色不同',e:'音色由发声体本身决定'},{id:410,title:'回声测距',diff:3,q:'对着山崖喊话，2秒后听到回声，山崖距离多远？(声速340m/s)',a:'340m',e:'s=vt/2=340×2/2=340m'},{id:411,title:'温度计原理',diff:2,q:'常用温度计是利用液体什么性质制成的？',a:'热胀冷缩',e:'温度计原理'},{id:412,title:'物态变化',diff:2,q:'冬天，室外的水结冰是什么物态变化？',a:'凝固',e:'液态变固态'},{id:413,title:'熔化与凝固',diff:2,q:'0℃的冰和0℃的水，哪个内能更大？',a:'0℃的水',e:'水凝固放热，内能更大'},{id:414,title:'汽化',diff:2,q:'湿衣服变干是什么物态变化？',a:'汽化（蒸发）',e:'液态变气态'},{id:415,title:'液化',diff:2,q:'冬天呼出的白气是什么？',a:'液化的小水珠',e:'水蒸气遇冷液化'},{id:416,title:'升华与凝华',diff:3,q:'放在衣柜里的樟脑丸变小了，是什么现象？',a:'升华',e:'固态直接变气态'},{id:417,title:'光的直线传播',diff:2,q:'小孔成像说明光沿什么传播？',a:'直线',e:'光沿直线传播'},{id:418,title:'光的反射',diff:2,q:'入射光线与镜面的夹角是30°，反射角是？',a:'60°',e:'反射角=90°-30°=60°'}];
+
+const topicsPhysics9 = [{id:451,title:'欧姆定律',diff:3,q:'电阻两端的电压为6V，电阻为3Ω，电流是多少？',a:'2A',e:'I=U/R=6/3=2A'},{id:452,title:'电阻',diff:2,q:'导体的电阻与什么有关？',a:'材料、长度、横截面积、温度',e:'电阻是导体本身的性质'},{id:453,title:'串联电路',diff:3,q:'两个电阻R1=5Ω，R2=10Ω串联，总电阻是？',a:'15Ω',e:'串联R=R1+R2'},{id:454,title:'并联电路',diff:3,q:'两个电阻R1=5Ω，R2=10Ω并联，总电阻是？',a:'约3.3Ω',e:'并联1/R=1/R1+1/R2'},{id:455,title:'电功率',diff:3,q:'用电器两端电压220V，电流2A，电功率是？',a:'440W',e:'P=UI=220×2=440W'},{id:456,title:'电能',diff:2,q:'一盏灯100W，供电10小时，用电多少度？',a:'1度',e:'W=Pt=0.1kW×10h=1kWh'},{id:457,title:'焦耳定律',diff:3,q:'电流通过导体产生的热量与什么成正比？',a:'电流的平方、通电时间、电阻',e:'Q=I²Rt'},{id:458,title:'家庭电路',diff:2,q:'三孔插座中接地线的颜色通常是？',a:'黄绿双色',e:'安全用电常识'},{id:459,title:'安全用电',diff:2,q:'发现有人触电时，应该首先？',a:'切断电源',e:'安全用电原则'},{id:460,title:'磁现象',diff:2,q:'磁体上磁性最强的部位叫什么？',a:'磁极',e:'每个磁体有两个磁极'},{id:461,title:'磁场',diff:2,q:'地球周围存在的磁场叫什么？',a:'地磁场',e:'地磁场的应用'},{id:462,title:'电流的磁效应',diff:2,q:'通电导体周围存在什么？',a:'磁场',e:'奥斯特实验'},{id:463,title:'电磁铁',diff:2,q:'电磁铁磁性强弱与什么有关？',a:'电流大小、线圈匝数、有无铁芯',e:'电磁铁应用'},{id:464,title:'磁场对电流的作用',diff:3,q:'通电导体在磁场中会受到什么力？',a:'安培力',e:'左手定则判断方向'}];
+
+const topicsChemistry9 = [{id:501,title:'化学变化与物理变化',diff:2,q:'蜡烛燃烧是什么变化？',a:'化学变化',e:'有新物质生成'},{id:502,title:'分子与原子',diff:2,q:'保持水化学性质的最小粒子是？',a:'水分子',e:'分子是保持化学性质的最小粒子'},{id:503,title:'原子的构成',diff:2,q:'原子核由什么粒子构成？',a:'质子和中子',e:'原子核组成'},{id:504,title:'元素',diff:2,q:'地壳中含量最多的元素是？',a:'氧',e:'地壳元素排名'},{id:505,title:'化学式',diff:2,q:'水的化学式是什么？',a:'H₂O',e:'水由氢氧元素组成'},{id:506,title:'化合价',diff:3,q:'根据化合价，氧化铝的化学式是？',a:'Al₂O₃',e:'Al:+3, O:-2'},{id:507,title:'质量守恒定律',diff:3,q:'化学反应前后，各物质的质量总和有什么关系？',a:'相等',e:'质量守恒'},{id:508,title:'化学方程式',diff:3,q:'配平：C + O₂ → CO₂',a:'C + O₂ =点燃= CO₂',e:'方程式要配平'},{id:509,title:'空气成分',diff:2,q:'空气中最多的气体是？',a:'氮气',e:'氮气约78%'},{id:510,title:'氧气性质',diff:2,q:'氧气能支持燃烧，体现什么性质？',a:'助燃性',e:'氧气特性'},{id:511,title:'制取氧气',diff:3,q:'实验室用KMnO₄制O₂的符号表达式？',a:'KMnO₄→K₂MnO₄+MnO₂+O₂',e:'加热高锰酸钾'},{id:512,title:'燃烧条件',diff:2,q:'燃烧需要满足哪三个条件？',a:'可燃物、氧气、着火点',e:'燃烧三要素'},{id:513,title:'水的组成',diff:2,q:'电解水的实验说明水由什么组成？',a:'氢元素和氧元素',e:'正氧负氢'},{id:514,title:'硬水软水',diff:2,q:'区分硬水和软水的方法是？',a:'加肥皂水',e:'硬水泡沫少'},{id:535,title:'化学方程式配平',diff:3,q:'配平：Fe + O2 → Fe2O3',a:'4Fe + 3O2 = 2Fe2O3',e:'原子个数守恒'},{id:536,title:'溶解度',diff:3,q:'20°C时，NaCl的溶解度是36g/100g水，则该温度下的饱和溶液质量分数是？',a:'约26.5%',e:'w=36/(100+36)×100%'}];
+
 // ====== Topics整合对象（V99新增）======
 const topics = {
     math5: topicsMath5,
@@ -1652,13 +1659,6 @@ function getGradeSubjectTopics(grade, subject) {
 
 
 
-
-// ====== 物理题目（5-9年级）======
-const topicsPhysics8 = [{id:401,title:'机械运动',diff:2,q:'一个物体做匀速直线运动，5秒内通过25米，求速度',a:'5m/s',e:'v=s/t=25/5=5m/s'},{id:402,title:'参照物',diff:2,q:'坐在行驶的汽车里，路边的树在向哪个方向运动？',a:'向后',e:'以车为参照物，树向后运动'},{id:403,title:'长度测量',diff:1,q:'用刻度尺测量物体长度，正确读数是2.35cm，测量结果应记为？',a:'2.35cm',e:'估读到分度值下一位'},{id:404,title:'时间测量',diff:2,q:'小明跑100米用了12.5秒，他的平均速度是？',a:'8m/s',e:'v=100/12.5=8m/s'},{id:405,title:'速度公式',diff:2,q:'汽车以72km/h的速度行驶，合多少m/s？',a:'20m/s',e:'72÷3.6=20m/s'},{id:406,title:'声现象',diff:2,q:'声音在15℃空气中传播速度约是多少？',a:'340m/s',e:'声速与温度有关'},{id:407,title:'音调与频率',diff:2,q:'物体振动越快，音调越？',a:'高',e:'频率越高，音调越高'},{id:408,title:'响度与振幅',diff:2,q:'用更大的力敲鼓，鼓声变？',a:'更响',e:'振幅越大，响度越大'},{id:409,title:'音色',diff:1,q:'不同乐器演奏同一首曲子，我们能区分是因为？',a:'音色不同',e:'音色由发声体本身决定'},{id:410,title:'回声测距',diff:3,q:'对着山崖喊话，2秒后听到回声，山崖距离多远？(声速340m/s)',a:'340m',e:'s=vt/2=340×2/2=340m'},{id:411,title:'温度计原理',diff:2,q:'常用温度计是利用液体什么性质制成的？',a:'热胀冷缩',e:'温度计原理'},{id:412,title:'物态变化',diff:2,q:'冬天，室外的水结冰是什么物态变化？',a:'凝固',e:'液态变固态'},{id:413,title:'熔化与凝固',diff:2,q:'0℃的冰和0℃的水，哪个内能更大？',a:'0℃的水',e:'水凝固放热，内能更大'},{id:414,title:'汽化',diff:2,q:'湿衣服变干是什么物态变化？',a:'汽化（蒸发）',e:'液态变气态'},{id:415,title:'液化',diff:2,q:'冬天呼出的白气是什么？',a:'液化的小水珠',e:'水蒸气遇冷液化'},{id:416,title:'升华与凝华',diff:3,q:'放在衣柜里的樟脑丸变小了，是什么现象？',a:'升华',e:'固态直接变气态'},{id:417,title:'光的直线传播',diff:2,q:'小孔成像说明光沿什么传播？',a:'直线',e:'光沿直线传播'},{id:418,title:'光的反射',diff:2,q:'入射光线与镜面的夹角是30°，反射角是？',a:'60°',e:'反射角=90°-30°=60°'}];
-
-const topicsPhysics9 = [{id:451,title:'欧姆定律',diff:3,q:'电阻两端的电压为6V，电阻为3Ω，电流是多少？',a:'2A',e:'I=U/R=6/3=2A'},{id:452,title:'电阻',diff:2,q:'导体的电阻与什么有关？',a:'材料、长度、横截面积、温度',e:'电阻是导体本身的性质'},{id:453,title:'串联电路',diff:3,q:'两个电阻R1=5Ω，R2=10Ω串联，总电阻是？',a:'15Ω',e:'串联R=R1+R2'},{id:454,title:'并联电路',diff:3,q:'两个电阻R1=5Ω，R2=10Ω并联，总电阻是？',a:'约3.3Ω',e:'并联1/R=1/R1+1/R2'},{id:455,title:'电功率',diff:3,q:'用电器两端电压220V，电流2A，电功率是？',a:'440W',e:'P=UI=220×2=440W'},{id:456,title:'电能',diff:2,q:'一盏灯100W，供电10小时，用电多少度？',a:'1度',e:'W=Pt=0.1kW×10h=1kWh'},{id:457,title:'焦耳定律',diff:3,q:'电流通过导体产生的热量与什么成正比？',a:'电流的平方、通电时间、电阻',e:'Q=I²Rt'},{id:458,title:'家庭电路',diff:2,q:'三孔插座中接地线的颜色通常是？',a:'黄绿双色',e:'安全用电常识'},{id:459,title:'安全用电',diff:2,q:'发现有人触电时，应该首先？',a:'切断电源',e:'安全用电原则'},{id:460,title:'磁现象',diff:2,q:'磁体上磁性最强的部位叫什么？',a:'磁极',e:'每个磁体有两个磁极'},{id:461,title:'磁场',diff:2,q:'地球周围存在的磁场叫什么？',a:'地磁场',e:'地磁场的应用'},{id:462,title:'电流的磁效应',diff:2,q:'通电导体周围存在什么？',a:'磁场',e:'奥斯特实验'},{id:463,title:'电磁铁',diff:2,q:'电磁铁磁性强弱与什么有关？',a:'电流大小、线圈匝数、有无铁芯',e:'电磁铁应用'},{id:464,title:'磁场对电流的作用',diff:3,q:'通电导体在磁场中会受到什么力？',a:'安培力',e:'左手定则判断方向'}];
-
-const topicsChemistry9 = [{id:501,title:'化学变化与物理变化',diff:2,q:'蜡烛燃烧是什么变化？',a:'化学变化',e:'有新物质生成'},{id:502,title:'分子与原子',diff:2,q:'保持水化学性质的最小粒子是？',a:'水分子',e:'分子是保持化学性质的最小粒子'},{id:503,title:'原子的构成',diff:2,q:'原子核由什么粒子构成？',a:'质子和中子',e:'原子核组成'},{id:504,title:'元素',diff:2,q:'地壳中含量最多的元素是？',a:'氧',e:'地壳元素排名'},{id:505,title:'化学式',diff:2,q:'水的化学式是什么？',a:'H₂O',e:'水由氢氧元素组成'},{id:506,title:'化合价',diff:3,q:'根据化合价，氧化铝的化学式是？',a:'Al₂O₃',e:'Al:+3, O:-2'},{id:507,title:'质量守恒定律',diff:3,q:'化学反应前后，各物质的质量总和有什么关系？',a:'相等',e:'质量守恒'},{id:508,title:'化学方程式',diff:3,q:'配平：C + O₂ → CO₂',a:'C + O₂ =点燃= CO₂',e:'方程式要配平'},{id:509,title:'空气成分',diff:2,q:'空气中最多的气体是？',a:'氮气',e:'氮气约78%'},{id:510,title:'氧气性质',diff:2,q:'氧气能支持燃烧，体现什么性质？',a:'助燃性',e:'氧气特性'},{id:511,title:'制取氧气',diff:3,q:'实验室用KMnO₄制O₂的符号表达式？',a:'KMnO₄→K₂MnO₄+MnO₂+O₂',e:'加热高锰酸钾'},{id:512,title:'燃烧条件',diff:2,q:'燃烧需要满足哪三个条件？',a:'可燃物、氧气、着火点',e:'燃烧三要素'},{id:513,title:'水的组成',diff:2,q:'电解水的实验说明水由什么组成？',a:'氢元素和氧元素',e:'正氧负氢'},{id:514,title:'硬水软水',diff:2,q:'区分硬水和软水的方法是？',a:'加肥皂水',e:'硬水泡沫少'},{id:535,title:'化学方程式配平',diff:3,q:'配平：Fe + O2 → Fe2O3',a:'4Fe + 3O2 = 2Fe2O3',e:'原子个数守恒'},{id:536,title:'溶解度',diff:3,q:'20°C时，NaCl的溶解度是36g/100g水，则该温度下的饱和溶液质量分数是？',a:'约26.5%',e:'w=36/(100+36)×100%'}];
 
 // ===== 3. 学霸方法训练题库（45题）=====
 const methodTrainingQuestions = {
@@ -1814,13 +1814,7 @@ const week6Plan = {
 
 
 
-function getGradeSubjectTopics(grade, subject) {
-    const gradeMap = {5:'5',6:'6',7:'7',8:'8',9:'9'};
-    const key = (subject || 'math') + gradeMap[grade];
-    return topics[key] || [];
-}
 
-// ====== 用户管理 ======
 function toggleUserSelect() {
     document.getElementById('user-select-dropdown').classList.toggle('show');
     document.querySelector('.user-select-btn').classList.toggle('active');
@@ -4403,28 +4397,6 @@ function getMethodTraining(methodId) {
     return methodTraining[methodId] || [];
 }
 
-function startMethodTraining(methodId) {
-    const questions = getMethodTraining(methodId);
-    if (questions.length === 0) { showToast('暂无训练题'); return; }
-    const methodNames = {
-        feyman:'费曼学习法',pomodoro:'番茄工作法',ebbinghaus:'艾宾浩斯记忆法',
-        mindmap:'思维导图法',cornell:'康奈尔笔记法',sq3r:'SQ3R阅读法',
-        timeManagement:'时间管理法',noteTaking:'高效笔记法',testStrategy:'考试策略'
-    };
-    let html = '<div style="max-height:70vh;overflow-y:auto;">';
-    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:16px;text-align:center;">' + methodNames[methodId] + ' 训练 (' + questions.length + '题)</div>';
-    questions.forEach((q, i) => {
-        html += '<div class="method-card" style="margin-bottom:16px;">';
-        html += '<div style="font-size:14px;font-weight:600;margin-bottom:8px;">' + (i+1) + '. ' + q.q + '</div>';
-        html += '<div class="method-content" style="background:#f5f7ff;padding:10px;border-radius:8px;">';
-        html += '<strong>参考答案：</strong>' + q.a + '</div></div>';
-    });
-    html += '</div><button class="login-btn login-btn-primary" onclick="closeDetail()" style="width:100%;">完成训练</button>';
-    const contentEl = document.getElementById('detail-content');
-    if (contentEl) { contentEl.innerHTML = html; document.getElementById('detail-modal').classList.add('show'); }
-}
-
-// ====== 播客 ======
 
 function playPodcast(title) {
     showToast('播放：' + title);
@@ -4475,31 +4447,7 @@ function toggleWeekTask(taskId) {
 
 // ====== Week5-6训练计划（V99新增）======
 
-function getWeekPlan(weekId) { return weekPlans[weekId] || null; }
 
-function renderWeekPlan(weekId) {
-    const plan = getWeekPlan(weekId);
-    if (!plan) return '<div>暂无训练计划</div>';
-    let html = '<div style="margin-bottom:20px;">';
-    html += '<div style="font-size:18px;font-weight:bold;margin-bottom:8px;">' + plan.weekTitle + '</div>';
-    html += '<div style="font-size:13px;color:#666;margin-bottom:16px;">' + plan.weekDesc + '</div>';
-    plan.days.forEach(day => {
-        html += '<div class="card" style="margin-bottom:12px;">';
-        html += '<div style="font-weight:600;margin-bottom:10px;">Day' + day.day + '：' + day.title + '</div>';
-        day.tasks.forEach(task => {
-            const typeIcons = {video:'📹',practice:'✏️',creative:'🎨',social:'💬',review:'📖',test:'📝',writing:'📄',podcast:'🎧',planning:'📋',quiz:'❓',rest:'😴'};
-            const typeNames = {video:'视频学习',practice:'练习',creative:'创作',social:'讨论',review:'复习',test:'测试',writing:'写作',podcast:'播客',planning:'计划',quiz:'测评',rest:'休息'};
-            html += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0;">';
-            html += '<input type="checkbox" ' + (task.completed ? 'checked' : '') + ' onchange="toggleWeekTask(\'' + task.id + '\')">';
-            html += '<span style="font-size:16px;">' + (typeIcons[task.type] || '📋') + '</span>';
-            html += '<div style="flex:1;"><div style="font-size:13px;">' + task.title + '</div>';
-            html += '<div style="font-size:11px;color:#999;">' + typeNames[task.type] + (task.duration ? ' · ' + task.duration + '分钟' : '') + '</div></div></div>';
-        });
-        html += '</div>';
-    });
-    html += '</div><button class="login-btn login-btn-secondary" onclick="closeDetail()">关闭</button>';
-    return html;
-}
 
 function toggleWeekTask(taskId) {
     const user = getCurrentUserData();
@@ -5394,9 +5342,10 @@ function clickAttention(index) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('认知训练门户加载中...');
     
-    // 清除旧数据
+    // 清除旧版本数据（只清除旧版本的key，保留当前版本数据）
     try {
-        localStorage.clear();
+        const OLD_KEYS = ['cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
+        OLD_KEYS.forEach(k => localStorage.removeItem(k));
     } catch(e) {}
     
     // 创建默认用户
