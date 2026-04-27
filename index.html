@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V122</title>
+<title>认知训练 V123</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
@@ -919,7 +919,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v122';
+const STORAGE_KEY = 'cognitive_training_v123';
+
+// ====== 播放器全局变量 ======
+let currentAudio = null; // 音频播放器元素引用
+let evpVideo = null; // 视频播放器元素引用
 
 // ====== Toast提示系统 ======
 function showToast(message, duration = 2000) {
@@ -5748,8 +5752,6 @@ const videoResources = {
     'video21': { url: '', title: '化学实验操作规范' }
 };
 
-let currentAudio = null;
-
 function playPodcast(title, audioId) {
     const modal = document.getElementById('detail-modal');
     const content = document.getElementById('detail-content');
@@ -6539,7 +6541,6 @@ function updateMediaListState(courseId) {
 
 
 // ====== 增强视频播放器 ======
- null;
 
 function initEnhancedVideoPlayer() {
     evpVideo = document.getElementById('evp-video');
