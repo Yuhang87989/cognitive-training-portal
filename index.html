@@ -919,7 +919,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v125';
+const STORAGE_KEY = 'cognitive_training_v126';
 
 // ====== 播放器全局变量 ======
 let currentAudio = null; // 音频播放器元素引用
@@ -1147,31 +1147,37 @@ function closeAboutModal() {
 
 // ====== 播客音频数据 - 21个真实音频 ======
 const podcastList = [
-    {id: 1, title: "青少年高效记忆法全攻略", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/c8bb3b0e-ecba-4d86-a712-87f1f5f81681/audio_76c4432f-433a-4faa-94d5-8481cd7d858d.mp3", duration: "6:14", category: "学霸方法"},
-    {id: 2, title: "青少年高效笔记法大揭秘", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/d4a7a670-15a0-4697-ba59-484ef9deb4ab/audio_46214d4b-5ac8-4ce2-adfc-8329a5842b81.mp3", duration: "8:10", category: "学霸方法"},
-    {id: 3, title: "青少年高效时间管理秘籍", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/a24b1313-f6be-4a47-9568-f2615b278a50/audio_6fdd7411-5a5c-4c29-8873-2876897b9d9f.mp3", duration: "7:52", category: "学霸方法"},
-    {id: 4, title: "青少年高效复习策略指南", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/9f4430be-29cc-4025-8102-ac791cbff83c/audio_5ba0144b-1219-49ad-87d9-e9c1be72794e.mp3", duration: "7:30", category: "学霸方法"},
-    {id: 5, title: "三招提升青少年专注力", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/4d24d8a3-cce6-4066-b5c5-dfba8edb6fb2/audio_2c3d214a-66c3-4ed8-9375-b00e4d09e02e.mp3", duration: "10:54", category: "学霸方法"},
-    {id: 6, title: "青少年语文思维训练秘籍", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/32fb5056-b96d-47eb-9cf6-1901e6286ac8/audio_a15c9809-e450-486e-b53c-f7be13ce0e45.mp3", duration: "9:30", category: "思维训练"},
-    {id: 7, title: "青少年英语思维训练秘籍", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/16b62bb3-1200-4c8c-b722-1f1974bd4ebe/audio_36379afa-9737-4b09-a5d5-2f44d9c6b888.mp3", duration: "10:08", category: "思维训练"},
-    {id: 8, title: "青少年考试通关秘籍大公开", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/fe4d1632-3670-4d3a-a32c-dfd4bd5866de/audio_478bad14-6b2c-49d5-9fad-77a937ee43e3.mp3", duration: "10:51", category: "学霸方法"},
-    {id: 9, title: "学霸私藏！高效解题策略大揭秘", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/d48b8313-dd9b-4330-b92e-b07d158bc4c2/audio_1bd17a89-5fed-4ef2-878b-ad6280ef84ed.mp3", duration: "13:12", category: "学霸方法"},
-    {id: 10, title: "学霸秘籍：深度理解知识建构法", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/2bfc0231-a369-45f2-ab6e-82bbce1ec732/audio_080df6bb-7e56-4dee-adbe-358183a8e22a.mp3", duration: "9:42", category: "学霸方法"},
-    {id: 11, title: "揭秘数学五大思维，解题变简单！", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260412/c9b9a765-eecc-43a7-8d58-ee7aaf18b3f2/audio_0aab9a93-da9a-4fbf-9d68-943db9addf6c.mp3", duration: "3:36", category: "数学思维"},
-    {id: 12, title: "青少年数学思维：抽象与推理", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/176a52a0-26d9-4360-ade1-a65be62256a1/audio_f4839c95-9f04-41ab-8f91-4eb776be47a0.mp3", duration: "7:56", category: "数学思维"},
-    {id: 13, title: "青少年数学思维：数形结合专项", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/6e9cadec-b1df-4c1c-81a8-ddbe79205d56/audio_e26d1ba7-c4f6-447d-9325-a9771ad48689.mp3", duration: "8:58", category: "数学思维"},
-    {id: 14, title: "青少年数学建模思维入门指南", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/becbe2ea-03d6-4b2d-b756-4377de6fb189/audio_ec4848f7-a93a-4a02-b5f8-70d40b44b0f6.mp3", duration: "8:29", category: "数学思维"},
-    {id: 15, title: "青少年数学逆向思维专项课", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/2f5d873e-3dcd-4d75-9526-0091cca45cb0/audio_8d19c35a-5db4-4a45-b4d2-f471f4119ad8.mp3", duration: "9:04", category: "数学思维"},
-    {id: 16, title: "青少年物理思维：因果与守恒", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/881db938-d0ee-4c66-8eda-556966dd144d/audio_7f34f8f9-25c6-4eb3-882e-7f288b16681b.mp3", duration: "8:05", category: "物理思维"},
-    {id: 17, title: "青少年物理模型思维入门指南", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260409/8d712c8a-9d3e-4ca7-8805-943c91e57466/audio_8bb3eb9c-52ac-4e08-bc5d-96e18019b12f.mp3", duration: "6:25", category: "物理思维"},
-    {id: 18, title: "Week1复盘&Week2记忆训练计划", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/af4d7586-2308-4aa1-915f-f7a41a84ae25/audio_03b8b756-15cd-4097-aae7-9b264b2aece5.mp3", duration: "1:55", category: "周度复盘"},
-    {id: 19, title: "Week2复盘&Week3训练大揭秘", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/98dbf101-0eac-4d49-9f94-8748babaa1ee/audio_2aaa7b2e-2547-40a8-9d79-218e0bd15a0c.mp3", duration: "1:55", category: "周度复盘"},
-    {id: 20, title: "Week3复盘&Week4冲刺计划", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/24f977cd-3d2a-440a-97dc-f249d265c829/audio_2f252ee4-bf23-4536-a65b-cad08438f4ec.mp3", duration: "2:10", category: "周度复盘"},
-    {id: 21, title: "四周训练完结！青小年蜕变复盘", url: "https://lf-coze-scdn.coze.cn/7626319930325139754-data_volume/generated/20260416/64b06198-e977-4638-a9d3-f46478ca4702/audio_fe4b8c27-7280-471e-9014-b64ab0b8ed4b.mp3", duration: "2:24", category: "周度复盘"}
+    {id: 1, title: "青少年高效记忆法全攻略", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", duration: "6:14", category: "学霸方法"},
+    {id: 2, title: "青少年高效笔记法大揭秘", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", duration: "8:10", category: "学霸方法"},
+    {id: 3, title: "青少年高效时间管理秘籍", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", duration: "7:52", category: "学霸方法"},
+    {id: 4, title: "青少年高效复习策略指南", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", duration: "7:30", category: "学霸方法"},
+    {id: 5, title: "三招提升青少年专注力", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", duration: "10:54", category: "学霸方法"},
+    {id: 6, title: "青少年语文思维训练秘籍", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3", duration: "9:30", category: "思维训练"},
+    {id: 7, title: "青少年英语思维训练秘籍", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3", duration: "10:08", category: "思维训练"},
+    {id: 8, title: "青少年考试通关秘籍大公开", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", duration: "10:51", category: "学霸方法"},
+    {id: 9, title: "学霸私藏！高效解题策略大揭秘", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3", duration: "13:12", category: "学霸方法"},
+    {id: 10, title: "学霸秘籍：深度理解知识建构法", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3", duration: "9:42", category: "学霸方法"},
+    {id: 11, title: "揭秘数学五大思维，解题变简单！", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3", duration: "3:36", category: "数学思维"},
+    {id: 12, title: "青少年数学思维：抽象与推理", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3", duration: "7:56", category: "数学思维"},
+    {id: 13, title: "青少年数学思维：数形结合专项", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3", duration: "8:58", category: "数学思维"},
+    {id: 14, title: "青少年数学建模思维入门指南", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3", duration: "8:29", category: "数学思维"},
+    {id: 15, title: "青少年数学逆向思维专项课", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3", duration: "9:04", category: "数学思维"},
+    {id: 16, title: "青少年物理思维：因果与守恒", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3", duration: "8:05", category: "物理思维"},
+    {id: 17, title: "青少年物理模型思维入门指南", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3", duration: "6:25", category: "物理思维"},
+    {id: 18, title: "Week1复盘&Week2记忆训练计划", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-18.mp3", duration: "1:55", category: "周度复盘"},
+    {id: 19, title: "Week2复盘&Week3训练大揭秘", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-19.mp3", duration: "1:55", category: "周度复盘"},
+    {id: 20, title: "Week3复盘&Week4冲刺计划", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-20.mp3", duration: "2:10", category: "周度复盘"},
+    {id: 21, title: "四周训练完结！青小年蜕变复盘", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-21.mp3", duration: "2:24", category: "周度复盘"}
 ];
 
 // 视频列表（GitHub视频已失效，仅保留空数组，上传视频功能不受影响）
-const videoList = [];
+const videoList = [
+    {id: 1, title: "专注力训练", url: "videos/专注力训练.mp4", duration: "5:23", category: "学霸方法"},
+    {id: 2, title: "学霸深度理解法", url: "videos/学霸深度理解法_第1集.mp4", duration: "6:18", category: "学霸方法"},
+    {id: 3, title: "数学抽象推理", url: "videos/数学抽象推理.mp4", duration: "5:06", category: "数学思维"},
+    {id: 4, title: "物理因果守恒", url: "videos/物理因果守恒_第1集.mp4", duration: "5:41", category: "物理思维"},
+    {id: 5, title: "逆向思维训练", url: "videos/逆向思维训练_第1集.mp4", duration: "3:27", category: "思维训练"}
+];
 const OLD_KEYS = ['cognitive_training_v119','cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
 
 // 播放播客音频
@@ -6126,35 +6132,38 @@ function escapeHtml(text) {
 
 // ====== 播客音频课程数据 ======
 var podcastCourses = [
-    {id:'podcast1',title:'青少年高效记忆法全攻略',teacher:'学习方法专家',duration:'6:14',durationSec:374,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🧠',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285168048150528156.mp3',views:25000},
-    {id:'podcast2',title:'青少年高效笔记法大揭秘',teacher:'学习方法专家',duration:'5:48',durationSec:348,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📝',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167977159336252.mp3',views:18000},
-    {id:'podcast3',title:'青少年高效时间管理秘籍',teacher:'时间管理导师',duration:'7:22',durationSec:442,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'⏰',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167840798826812.mp3',views:22000},
-    {id:'podcast4',title:'三招提升青少年专注力',teacher:'心理学专家',duration:'5:55',durationSec:355,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🎯',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167732157655428.mp3',views:19500},
-    {id:'podcast5',title:'学霸私藏！高效解题策略大揭秘',teacher:'特级教师',duration:'8:30',durationSec:510,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'💡',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167618234437896.mp3',views:28000},
-    {id:'podcast6',title:'数学思维培养的黄金法则',teacher:'数学特级教师',duration:'9:15',durationSec:555,category:'数学',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'📐',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167520834334972.mp3',views:15600},
-    {id:'podcast7',title:'英语听说读写全攻略',teacher:'英语教学专家',duration:'10:20',durationSec:620,category:'英语',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📖',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167418234437896.mp3',views:21000},
-    {id:'podcast8',title:'物理概念快速理解法',teacher:'物理特级教师',duration:'8:45',durationSec:525,category:'物理',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'⚡',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167320834334972.mp3',views:12800},
-    {id:'podcast9',title:'化学实验趣味学习法',teacher:'化学教学专家',duration:'7:55',durationSec:475,category:'化学',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🧪',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167230834334972.mp3',views:9800},
-    {id:'podcast10',title:'古诗词鉴赏技巧',teacher:'语文特级教师',duration:'6:30',durationSec:390,category:'语文',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'📜',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167140834334972.mp3',views:14200},
-    {id:'podcast11',title:'作文写作模板技巧',teacher:'语文教学专家',duration:'7:10',durationSec:430,category:'语文',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'✍️',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285167050834334972.mp3',views:11500},
-    {id:'podcast12',title:'费曼学习法实战应用',teacher:'学习方法专家',duration:'5:40',durationSec:340,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'🧠',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166960834334972.mp3',views:32000},
-    {id:'podcast13',title:'番茄工作法详解',teacher:'时间管理导师',duration:'4:50',durationSec:290,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🍅',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166870834334972.mp3',views:24500},
-    {id:'podcast14',title:'艾宾浩斯记忆曲线应用',teacher:'心理学专家',duration:'6:15',durationSec:375,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🧮',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166780834334972.mp3',views:19800},
-    {id:'podcast15',title:'思维导图绘制技巧',teacher:'学习方法专家',duration:'5:25',durationSec:325,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎨',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166690834334972.mp3',views:17600},
-    {id:'podcast16',title:'康奈尔笔记法详解',teacher:'学习方法专家',duration:'4:35',durationSec:275,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📋',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166600834334972.mp3',views:15900},
-    {id:'podcast17',title:'SQ3R阅读法详解',teacher:'语文教学专家',duration:'5:05',durationSec:305,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📖',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166510834334972.mp3',views:13400},
-    {id:'podcast18',title:'学习动力提升技巧',teacher:'心理学专家',duration:'6:45',durationSec:405,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'🚀',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166420834334972.mp3',views:21800},
-    {id:'podcast19',title:'考前焦虑缓解方法',teacher:'心理辅导师',duration:'5:50',durationSec:350,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'😌',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166330834334972.mp3',views:18700},
-    {id:'podcast20',title:'错题本整理技巧',teacher:'学习方法专家',duration:'4:20',durationSec:260,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'📒',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166240834334972.mp3',views:14200},
-    {id:'podcast21',title:'学霸学习计划制定',teacher:'时间管理导师',duration:'7:30',durationSec:450,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📅',url:'https://lf-coze-scdn.coze.cn/obj/coze-cn-public/1191_cn_2f12f4b3f8e94f2ab88c5ccf1f4d60cf/audio/7285166150834334972.mp3',views:16500}
+    {id:'podcast1',title:'青少年高效记忆法全攻略',teacher:'学习方法专家',duration:'6:14',durationSec:374,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🧠',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',views:25000},
+    {id:'podcast2',title:'青少年高效笔记法大揭秘',teacher:'学习方法专家',duration:'5:48',durationSec:348,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📝',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',views:18000},
+    {id:'podcast3',title:'青少年高效时间管理秘籍',teacher:'时间管理导师',duration:'7:22',durationSec:442,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'⏰',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',views:22000},
+    {id:'podcast4',title:'三招提升青少年专注力',teacher:'心理学专家',duration:'5:55',durationSec:355,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🎯',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',views:19500},
+    {id:'podcast5',title:'学霸私藏！高效解题策略大揭秘',teacher:'特级教师',duration:'8:30',durationSec:510,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'💡',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',views:28000},
+    {id:'podcast6',title:'数学思维培养的黄金法则',teacher:'数学特级教师',duration:'9:15',durationSec:555,category:'数学',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'📐',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',views:15600},
+    {id:'podcast7',title:'英语听说读写全攻略',teacher:'英语教学专家',duration:'10:20',durationSec:620,category:'英语',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📖',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',views:21000},
+    {id:'podcast8',title:'物理概念快速理解法',teacher:'物理特级教师',duration:'8:45',durationSec:525,category:'物理',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'⚡',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',views:12800},
+    {id:'podcast9',title:'化学实验趣味学习法',teacher:'化学教学专家',duration:'7:55',durationSec:475,category:'化学',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🧪',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',views:9800},
+    {id:'podcast10',title:'古诗词鉴赏技巧',teacher:'语文特级教师',duration:'6:30',durationSec:390,category:'语文',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'📜',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',views:14200},
+    {id:'podcast11',title:'作文写作模板技巧',teacher:'语文教学专家',duration:'7:10',durationSec:430,category:'语文',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'✍️',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',views:11500},
+    {id:'podcast12',title:'费曼学习法实战应用',teacher:'学习方法专家',duration:'5:40',durationSec:340,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'🧠',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',views:32000},
+    {id:'podcast13',title:'番茄工作法详解',teacher:'时间管理导师',duration:'4:50',durationSec:290,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'🍅',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',views:24500},
+    {id:'podcast14',title:'艾宾浩斯记忆曲线应用',teacher:'心理学专家',duration:'6:15',durationSec:375,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🧮',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',views:19800},
+    {id:'podcast15',title:'思维导图绘制技巧',teacher:'学习方法专家',duration:'5:25',durationSec:325,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎨',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',views:17600},
+    {id:'podcast16',title:'康奈尔笔记法详解',teacher:'学习方法专家',duration:'4:35',durationSec:275,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📋',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',views:15900},
+    {id:'podcast17',title:'SQ3R阅读法详解',teacher:'语文教学专家',duration:'5:05',durationSec:305,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📖',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3',views:13400},
+    {id:'podcast18',title:'学习动力提升技巧',teacher:'心理学专家',duration:'6:45',durationSec:405,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'🚀',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-18.mp3',views:21800},
+    {id:'podcast19',title:'考前焦虑缓解方法',teacher:'心理辅导师',duration:'5:50',durationSec:350,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'😌',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-19.mp3',views:18700},
+    {id:'podcast20',title:'错题本整理技巧',teacher:'学习方法专家',duration:'4:20',durationSec:260,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'📒',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-20.mp3',views:14200},
+    {id:'podcast21',title:'学霸学习计划制定',teacher:'时间管理导师',duration:'7:30',durationSec:450,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📅',url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-21.mp3',views:16500}
 ]
 
 // 播客列表别名（兼容旧代码）
 
 // ====== 视频课程数据（已清理无效视频，仅保留w3schools有效测试视频）=======
 var videoCourses = [
-    {id:'video1',title:'高效学习技巧',teacher:'赵老师',duration:'5:30',durationSec:330,category:'学习方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎬',url:'https://www.w3schools.com/html/mov_bbb.mp4',views:12000},
-    {id:'video2',title:'时间管理方法',teacher:'张老师',duration:'8:15',durationSec:495,category:'学习方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🎬',url:'https://www.w3schools.com/html/movie.mp4',views:8000}
+    {id:'video1',title:'专注力训练',teacher:'心理学专家',duration:'5:23',durationSec:323,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎯',url:'videos/专注力训练.mp4',views:25000},
+    {id:'video2',title:'学霸深度理解法',teacher:'特级教师',duration:'6:18',durationSec:378,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🧠',url:'videos/学霸深度理解法_第1集.mp4',views:18000},
+    {id:'video3',title:'数学抽象推理',teacher:'数学特级教师',duration:'5:06',durationSec:306,category:'数学思维',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'📐',url:'videos/数学抽象推理.mp4',views:22000},
+    {id:'video4',title:'物理因果守恒',teacher:'物理特级教师',duration:'5:41',durationSec:341,category:'物理思维',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'⚡',url:'videos/物理因果守恒_第1集.mp4',views:15600},
+    {id:'video5',title:'逆向思维训练',teacher:'思维训练专家',duration:'3:27',durationSec:207,category:'思维训练',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'💡',url:'videos/逆向思维训练_第1集.mp4',views:12800}
 ];
 
 // 播放器状态
