@@ -4,11 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V135</title>
-<link rel="icon" type="image/x-icon" href="https://yuhang87989.github.io/cognitive-training-portal/favicon.ico"/>
-<link rel="icon" type="image/png" sizes="192x192" href="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png"/>
-<link rel="apple-touch-icon" href="https://yuhang87989.github.io/cognitive-training-portal/apple-touch-icon.png"/>
-<style>
+<title>认知训练 V129</title><style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--white:#FFFFFF;--bg-page:#F5F6FA;--text-dark:#333;--text-gray:#666;--text-light:#999;--border-gray:#F2F4F7;--gradient-orange:linear-gradient(135deg,#FF9A63,#E87A4E);--gradient-blue:linear-gradient(135deg,#3377FF,#4A80F5);--gradient-purple:linear-gradient(135deg,#667eea,#764ba2);--gradient-green:linear-gradient(135deg,#43E97B,#38F9D7);--card-shadow:0 4px 16px rgba(0,0,0,0.05);--blue:#3377FF;--orange:#E87A4E}
 body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue',Arial,sans-serif;background:var(--bg-page);min-height:100vh;color:var(--text-dark);padding-bottom:80px;max-width:480px;margin:0 auto}
@@ -318,7 +314,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="home-header">
         <div class="header-top">
             <div style="display:flex;align-items:center;">
-                <div class="app-logo"><img src="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png" style="width:100%;height:100%;border-radius:12px;object-fit:cover;"></div>
+                <div class="app-logo">🧠</div>
                 <div class="app-title">认知训练</div>
             </div>
             <div class="header-right">
@@ -362,11 +358,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <span>⚙️</span>
                             <span>设置</span>
                         </div>
-                        <div class="user-dropdown-divider"></div>
-                        <div class="user-dropdown-item" onclick="exitSystem()" style="color:#FF6B6B;">
-                            <span>🚪</span>
-                            <span>退出</span>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -502,7 +494,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <!-- 用户信息卡片 -->
         <div id="settings-user-card" style="background:linear-gradient(135deg,#1A6BFF,#4A90E2);color:white;border-radius:16px;padding:16px;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <div id="settings-avatar" style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+                <div id="settings-avatar" style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;">邱</div>
                 <div>
                     <div id="settings-name" style="font-size:16px;font-weight:600;">邱宇菲</div>
                     <div id="settings-grade" style="font-size:12px;opacity:0.9;">初一 · Lv.1</div>
@@ -687,7 +679,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="settings-group-inner">
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" onclick="openAbout()">
                         <div style="font-size:14px;color:#333;">版本信息</div>
-                        <div style="font-size:13px;color:#1A6BFF;">V135 →</div>
+                        <div style="font-size:13px;color:#1A6BFF;">V129 →</div>
                     </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
                         <div style="font-size:14px;color:#333;">反馈建议</div>
@@ -696,32 +688,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
                         <div style="font-size:14px;color:#333;">使用帮助</div>
                         <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 系统操作 -->
-        <div id="group-system" class="settings-group">
-            <div class="settings-group-header" onclick="toggleSettingsGroup('system')">
-                <div class="settings-group-title">🚪 系统操作</div>
-                <div class="settings-group-arrow">▼</div>
-            </div>
-            <div class="settings-group-content">
-                <div class="settings-group-inner">
-                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
-                        <div>
-                            <div style="font-size:14px;color:#333;">🔗 登录扣子</div>
-                            <div style="font-size:12px;color:#999;">登录后可播放在线播客音频</div>
-                        </div>
-                        <button onclick="loginCoze()" style="background:#3377FF;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">登录</button>
-                    </div>
-                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
-                        <div>
-                            <div style="font-size:14px;color:#FF6B6B;">🚪 退出</div>
-                            <div style="font-size:12px;color:#999;">关闭应用，下次需重新打开</div>
-                        </div>
-                        <button onclick="exitSystem()" style="background:#FF6B6B;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">退出</button>
                     </div>
                 </div>
             </div>
@@ -952,7 +918,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v135';
+const STORAGE_KEY = 'cognitive_training_v129';
 
 // ====== 播放器全局变量 ======
 let currentAudio = null; // 音频播放器元素引用
@@ -1180,72 +1146,88 @@ function closeAboutModal() {
 
 // ====== 播客音频数据 - 21个真实音频 ======
 const podcastList = [
-    {id: 1, title: "青少年高效记忆法全攻略", shareUrl: "https://www.coze.cn/s/3rTjJ7Xbdc0/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_b2ff66a9-c071-4912-84a7-51f174fd69a2.mp3?sign=1808822218-8a2b090761-0-db0b581cf15d5b549a623ffb6c882f7614bd5a52476bb36c7923398ca409fa2e", duration: "6:14", category: "学霸方法"},
-    {id: 2, title: "青少年高效笔记法大揭秘", shareUrl: "https://www.coze.cn/s/HAjMzHnxwvY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_2fd6258b-4ebd-49a9-b1a8-20e8a3bfc750.mp3?sign=1808822237-742cb735e5-0-7c9279fb8f5480d82654cddd5352da5266e2f317c6d5b82d9ba9d0b0ad27e949", duration: "8:10", category: "学霸方法"},
-    {id: 3, title: "青少年高效时间管理秘籍", shareUrl: "https://www.coze.cn/s/uPgU_c9cAIY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_c5a06139-dfe9-4a14-94ba-c4d7b4625415.mp3?sign=1808822260-6f500b4d28-0-22cd0458027452b72a475fefc73d0a0ba5b3d3751d601e4212544fb2a1aa9f76", duration: "7:52", category: "学霸方法"},
-    {id: 4, title: "青少年高效复习策略指南", shareUrl: "https://www.coze.cn/s/-FFxXRTedN0/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_07040e43-b7ad-46d4-9713-21a6c6042b74.mp3?sign=1808822280-ffd1dd4d3b-0-6431d1416b2b2a3b1f95d5f6f9e83aaef2d488610c77c115f7821dfa2f28f0d6", duration: "7:30", category: "学霸方法"},
-    {id: 5, title: "三招提升青少年专注力", shareUrl: "https://www.coze.cn/s/ymrXMhQcvNY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_de865d7b-5968-40eb-ab49-1c2c8267b91a.mp3?sign=1808822299-57d9bb9b64-0-3ea6ff42e8b9c864cf4cd90b0ffb7d65cb7b7b751cb41db81e82e6eb62cdd9db", duration: "10:54", category: "学霸方法"},
-    {id: 6, title: "青少年语文思维训练秘籍", shareUrl: "https://www.coze.cn/s/-w-VgFqqOrY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_dd67352a-9393-459b-a1f1-6bda3e18f981.mp3?sign=1808822317-56d7f651b3-0-28417c62e06224c9cf80f35f8af989626ffc33d2e2502c3130785368e9ce09bd", duration: "9:30", category: "思维训练"},
-    {id: 7, title: "青少年英语思维训练秘籍", shareUrl: "https://www.coze.cn/s/FxptvND8qlo/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_ac794835-56ea-4d8b-9235-c66734d871fd.mp3?sign=1808822337-025aeaf324-0-61003ca935760bda5b4b100466e092f616ea1e54b4ac66c50ca03d1a7aeaa13c", duration: "10:08", category: "思维训练"},
-    {id: 8, title: "青少年考试通关秘籍大公开", shareUrl: "https://www.coze.cn/s/mLuQHON0Zzk/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_3c6ecfdb-240c-4c43-ae42-517e9500191a.mp3?sign=1808822357-e1bb3cce5d-0-d9f0b91e85630533e0f17758561b9a94fc854681da05897c006f1648ecf0789c", duration: "10:51", category: "学霸方法"},
-    {id: 9, title: "学霸私藏！高效解题策略大揭秘", shareUrl: "https://www.coze.cn/s/UUMhRMn7SDg/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_7fde4727-ef0e-4223-b2a6-6cfb161ebe1e.mp3?sign=1808822377-6614d63cf1-0-c26f088cbea7ffde60aa608f4cb3447409f90aec8daaecef46f9f66f0bf211d5", duration: "13:12", category: "学霸方法"},
-    {id: 10, title: "学霸秘籍：深度理解知识建构法", shareUrl: "https://www.coze.cn/s/t6s2x0F0XAs/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_0aba77f8-7f80-40ff-8162-cb05249a77d4.mp3?sign=1808822396-aff28ed097-0-aed572ea8f7a273ef46a32d5c1e0251a9e5bda3c0c4b89b8c01ea57d9a34e466", duration: "9:42", category: "学霸方法"},
-    {id: 11, title: "揭秘数学五大思维，解题变简单！", shareUrl: "https://www.coze.cn/s/YiJe4WN8ErI/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_fce14f3a-0b27-4031-a759-b98a9b4f5462.mp3?sign=1808822415-02cbf44b7d-0-aec82b483efb8d5167092306269e819aa51c07b96585b476935c5c9a8dfdf916", duration: "3:36", category: "数学思维"},
-    {id: 12, title: "青少年数学思维：抽象与推理", shareUrl: "https://www.coze.cn/s/TcqwrK5jqWM/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_74377773-4613-433b-8770-6e71617143c5.mp3?sign=1808822437-e3fc320231-0-1fd1d97d9432139f1306256dcf8c0a28134fc0a1ffb56143dce1b7603e4000a2", duration: "7:56", category: "数学思维"},
-    {id: 13, title: "青少年数学思维：数形结合专项", shareUrl: null, backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_a9c2d6ef-39f7-4e9e-9ad0-dfbd617da342.mp3?sign=1808822460-e852b8517d-0-d3931869e74bedc74ff0dfea0159aa447af3b9f6f32b697fd5deca9f0e7a3697", duration: "8:58", category: "数学思维"},
-    {id: 14, title: "青少年数学建模思维入门指南", shareUrl: "https://www.coze.cn/s/9cS58bZwn1g/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_9a49ac3b-fc52-4b46-b49a-f167b9f69666.mp3?sign=1808822480-b008c57b10-0-a7decfcb0caafc899c866bddac69113034895e0a21ef1c703b501e2025a63435", duration: "8:29", category: "数学思维"},
-    {id: 15, title: "青少年数学逆向思维专项课", shareUrl: "https://www.coze.cn/s/0QgmPaZ9sUI/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_e4133953-42e9-40ab-8d38-353a0af47b67.mp3?sign=1808822502-b4486d965a-0-1963b371579adcde889413e4f09cc769baeaf20133ffa8362a8eb69bcb0f2258", duration: "9:04", category: "数学思维"},
-    {id: 16, title: "青少年物理思维：因果与守恒", shareUrl: "https://www.coze.cn/s/qAgLfdh6aPE/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_cf2e54de-0e8d-4e99-961d-177c36d77c85.mp3?sign=1808822523-a5faca0e98-0-7b07032ede86cf98f91fceceea78d5ae43de8e2fa60e8f31016865c6b780a0b9", duration: "8:05", category: "物理思维"},
-    {id: 17, title: "青少年物理模型思维入门指南", shareUrl: "https://www.coze.cn/s/9zZnticB374/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_acbd098a-be94-4246-bcb2-31648cb28f74.mp3?sign=1808822546-5f85da809d-0-4d2e65d676727ae5fb4818d7b0e886cf21d6cce96a5e72771bb5dd041988f56e", duration: "6:25", category: "物理思维"},
-    {id: 18, title: "Week1复盘&Week2记忆训练计划", shareUrl: null, backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_6d85df3b-f0c1-4db4-84cc-1fc5713a8770.mp3?sign=1808822567-1d7a431598-0-0cf9163a9cb1a7e1ebc60450eebd1ab2b5cffac744929bde2400c787f4c297b2", duration: "1:55", category: "周度复盘"},
-    {id: 19, title: "Week2复盘&Week3训练大揭秘", shareUrl: "https://www.coze.cn/s/SjBR-HOwR98/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_a88e8a8c-0057-4796-8901-1544f6c23f1a.mp3?sign=1808822587-631539fd14-0-6ac1c3d986d4eb054f5f1bcd7c9f0151331b9921750fee12bfd79847c139cbf3", duration: "1:55", category: "周度复盘"},
-    {id: 20, title: "Week3复盘&Week4冲刺计划", shareUrl: "https://www.coze.cn/s/ATJKT6u6G7E/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_7252efa2-6a55-4885-ba32-9a647e8c4dc3.mp3?sign=1808822608-b3cf17f9dc-0-1c1d14238dfba63232f0ce2ffcd9cacf10312b7a6b254d32521e40f724eafa81", duration: "2:10", category: "周度复盘"},
-    {id: 21, title: "四周训练完结！青小年蜕变复盘", shareUrl: "https://www.coze.cn/s/Illp6Wnea3A/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_e114fd3c-f458-4930-b538-c269094d2df5.mp3?sign=1808822631-9eb2c6ff85-0-51ecf4698fa33b41dc2925d44fe3b9daf19ed6f84ff90dea30233bc0832719f9", duration: "2:24", category: "周度复盘"}
+    {id: 1, title: "青少年高效记忆法全攻略", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_b2ff66a9-c071-4912-84a7-51f174fd69a2.mp3?sign=1808822218-8a2b090761-0-db0b581cf15d5b549a623ffb6c882f7614bd5a52476bb36c7923398ca409fa2e", duration: "6:14", category: "学霸方法"},
+    {id: 2, title: "青少年高效笔记法大揭秘", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_2fd6258b-4ebd-49a9-b1a8-20e8a3bfc750.mp3?sign=1808822237-742cb735e5-0-7c9279fb8f5480d82654cddd5352da5266e2f317c6d5b82d9ba9d0b0ad27e949", duration: "8:10", category: "学霸方法"},
+    {id: 3, title: "青少年高效时间管理秘籍", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_c5a06139-dfe9-4a14-94ba-c4d7b4625415.mp3?sign=1808822260-6f500b4d28-0-22cd0458027452b72a475fefc73d0a0ba5b3d3751d601e4212544fb2a1aa9f76", duration: "7:52", category: "学霸方法"},
+    {id: 4, title: "青少年高效复习策略指南", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_07040e43-b7ad-46d4-9713-21a6c6042b74.mp3?sign=1808822280-ffd1dd4d3b-0-6431d1416b2b2a3b1f95d5f6f9e83aaef2d488610c77c115f7821dfa2f28f0d6", duration: "7:30", category: "学霸方法"},
+    {id: 5, title: "三招提升青少年专注力", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_de865d7b-5968-40eb-ab49-1c2c8267b91a.mp3?sign=1808822299-57d9bb9b64-0-3ea6ff42e8b9c864cf4cd90b0ffb7d65cb7b7b751cb41db81e82e6eb62cdd9db", duration: "10:54", category: "学霸方法"},
+    {id: 6, title: "青少年语文思维训练秘籍", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_dd67352a-9393-459b-a1f1-6bda3e18f981.mp3?sign=1808822317-56d7f651b3-0-28417c62e06224c9cf80f35f8af989626ffc33d2e2502c3130785368e9ce09bd", duration: "9:30", category: "思维训练"},
+    {id: 7, title: "青少年英语思维训练秘籍", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_ac794835-56ea-4d8b-9235-c66734d871fd.mp3?sign=1808822337-025aeaf324-0-61003ca935760bda5b4b100466e092f616ea1e54b4ac66c50ca03d1a7aeaa13c", duration: "10:08", category: "思维训练"},
+    {id: 8, title: "青少年考试通关秘籍大公开", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_3c6ecfdb-240c-4c43-ae42-517e9500191a.mp3?sign=1808822357-e1bb3cce5d-0-d9f0b91e85630533e0f17758561b9a94fc854681da05897c006f1648ecf0789c", duration: "10:51", category: "学霸方法"},
+    {id: 9, title: "学霸私藏！高效解题策略大揭秘", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_7fde4727-ef0e-4223-b2a6-6cfb161ebe1e.mp3?sign=1808822377-6614d63cf1-0-c26f088cbea7ffde60aa608f4cb3447409f90aec8daaecef46f9f66f0bf211d5", duration: "13:12", category: "学霸方法"},
+    {id: 10, title: "学霸秘籍：深度理解知识建构法", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_0aba77f8-7f80-40ff-8162-cb05249a77d4.mp3?sign=1808822396-aff28ed097-0-aed572ea8f7a273ef46a32d5c1e0251a9e5bda3c0c4b89b8c01ea57d9a34e466", duration: "9:42", category: "学霸方法"},
+    {id: 11, title: "揭秘数学五大思维，解题变简单！", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_fce14f3a-0b27-4031-a759-b98a9b4f5462.mp3?sign=1808822415-02cbf44b7d-0-aec82b483efb8d5167092306269e819aa51c07b96585b476935c5c9a8dfdf916", duration: "3:36", category: "数学思维"},
+    {id: 12, title: "青少年数学思维：抽象与推理", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_74377773-4613-433b-8770-6e71617143c5.mp3?sign=1808822437-e3fc320231-0-1fd1d97d9432139f1306256dcf8c0a28134fc0a1ffb56143dce1b7603e4000a2", duration: "7:56", category: "数学思维"},
+    {id: 13, title: "青少年数学思维：数形结合专项", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_a9c2d6ef-39f7-4e9e-9ad0-dfbd617da342.mp3?sign=1808822460-e852b8517d-0-d3931869e74bedc74ff0dfea0159aa447af3b9f6f32b697fd5deca9f0e7a3697", duration: "8:58", category: "数学思维"},
+    {id: 14, title: "青少年数学建模思维入门指南", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_9a49ac3b-fc52-4b46-b49a-f167b9f69666.mp3?sign=1808822480-b008c57b10-0-a7decfcb0caafc899c866bddac69113034895e0a21ef1c703b501e2025a63435", duration: "8:29", category: "数学思维"},
+    {id: 15, title: "青少年数学逆向思维专项课", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_e4133953-42e9-40ab-8d38-353a0af47b67.mp3?sign=1808822502-b4486d965a-0-1963b371579adcde889413e4f09cc769baeaf20133ffa8362a8eb69bcb0f2258", duration: "9:04", category: "数学思维"},
+    {id: 16, title: "青少年物理思维：因果与守恒", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_cf2e54de-0e8d-4e99-961d-177c36d77c85.mp3?sign=1808822523-a5faca0e98-0-7b07032ede86cf98f91fceceea78d5ae43de8e2fa60e8f31016865c6b780a0b9", duration: "8:05", category: "物理思维"},
+    {id: 17, title: "青少年物理模型思维入门指南", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_acbd098a-be94-4246-bcb2-31648cb28f74.mp3?sign=1808822546-5f85da809d-0-4d2e65d676727ae5fb4818d7b0e886cf21d6cce96a5e72771bb5dd041988f56e", duration: "6:25", category: "物理思维"},
+    {id: 18, title: "Week1复盘&Week2记忆训练计划", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_6d85df3b-f0c1-4db4-84cc-1fc5713a8770.mp3?sign=1808822567-1d7a431598-0-0cf9163a9cb1a7e1ebc60450eebd1ab2b5cffac744929bde2400c787f4c297b2", duration: "1:55", category: "周度复盘"},
+    {id: 19, title: "Week2复盘&Week3训练大揭秘", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_a88e8a8c-0057-4796-8901-1544f6c23f1a.mp3?sign=1808822587-631539fd14-0-6ac1c3d986d4eb054f5f1bcd7c9f0151331b9921750fee12bfd79847c139cbf3", duration: "1:55", category: "周度复盘"},
+    {id: 20, title: "Week3复盘&Week4冲刺计划", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_7252efa2-6a55-4885-ba32-9a647e8c4dc3.mp3?sign=1808822608-b3cf17f9dc-0-1c1d14238dfba63232f0ce2ffcd9cacf10312b7a6b254d32521e40f724eafa81", duration: "2:10", category: "周度复盘"},
+    {id: 21, title: "四周训练完结！青小年蜕变复盘", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_e114fd3c-f458-4930-b538-c269094d2df5.mp3?sign=1808822631-9eb2c6ff85-0-51ecf4698fa33b41dc2925d44fe3b9daf19ed6f84ff90dea30233bc0832719f9", duration: "2:24", category: "周度复盘"}
 ];
 
 // 视频列表（GitHub视频已失效，仅保留空数组，上传视频功能不受影响）
 const videoList = [
-    {id: 1, title: "青少年高效记忆法全攻略", shareUrl: "https://www.coze.cn/s/3rTjJ7Xbdc0/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_b2ff66a9-c071-4912-84a7-51f174fd69a2.mp3?sign=1808822218-8a2b090761-0-db0b581cf15d5b549a623ffb6c882f7614bd5a52476bb36c7923398ca409fa2e", duration: "5:23", category: "学霸方法"},
-    {id: 2, title: "青少年高效笔记法大揭秘", shareUrl: "https://www.coze.cn/s/HAjMzHnxwvY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_2fd6258b-4ebd-49a9-b1a8-20e8a3bfc750.mp3?sign=1808822237-742cb735e5-0-7c9279fb8f5480d82654cddd5352da5266e2f317c6d5b82d9ba9d0b0ad27e949", duration: "6:18", category: "学霸方法"},
-    {id: 3, title: "青少年高效时间管理秘籍", shareUrl: "https://www.coze.cn/s/uPgU_c9cAIY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_c5a06139-dfe9-4a14-94ba-c4d7b4625415.mp3?sign=1808822260-6f500b4d28-0-22cd0458027452b72a475fefc73d0a0ba5b3d3751d601e4212544fb2a1aa9f76", duration: "5:06", category: "数学思维"},
-    {id: 4, title: "青少年高效复习策略指南", shareUrl: "https://www.coze.cn/s/-FFxXRTedN0/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_07040e43-b7ad-46d4-9713-21a6c6042b74.mp3?sign=1808822280-ffd1dd4d3b-0-6431d1416b2b2a3b1f95d5f6f9e83aaef2d488610c77c115f7821dfa2f28f0d6", duration: "5:41", category: "物理思维"},
-    {id: 5, title: "三招提升青少年专注力", shareUrl: "https://www.coze.cn/s/ymrXMhQcvNY/", backupUrl: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_de865d7b-5968-40eb-ab49-1c2c8267b91a.mp3?sign=1808822299-57d9bb9b64-0-3ea6ff42e8b9c864cf4cd90b0ffb7d65cb7b7b751cb41db81e82e6eb62cdd9db", duration: "3:27", category: "思维训练"}
+    {id: 1, title: "专注力训练", url: "videos/专注力训练.mp4", duration: "5:23", category: "学霸方法"},
+    {id: 2, title: "学霸深度理解法", url: "videos/学霸深度理解法_第1集.mp4", duration: "6:18", category: "学霸方法"},
+    {id: 3, title: "数学抽象推理", url: "videos/数学抽象推理.mp4", duration: "5:06", category: "数学思维"},
+    {id: 4, title: "物理因果守恒", url: "videos/物理因果守恒_第1集.mp4", duration: "5:41", category: "物理思维"},
+    {id: 5, title: "逆向思维训练", url: "videos/逆向思维训练_第1集.mp4", duration: "3:27", category: "思维训练"}
 ];
-const OLD_KEYS = ['cognitive_training_v134', 'cognitive_training_v133', 'cognitive_training_v132', 'cognitive_training_v131', 'cognitive_training_v130', 'cognitive_training_v127', 'cognitive_training_v126', 'cognitive_training_v125', 'cognitive_training_v124', 'cognitive_training_v123', 'cognitive_training_v122', 'cognitive_training_v121', 'cognitive_training_v120', 'cognitive_training_v119', 'cognitive_training_v118', 'cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
+const OLD_KEYS = ['cognitive_training_v119','cognitive_training_v118','cognitive_training_v43', 'cognitive_training_v42', 'cognitive_training_v41', 'cognitive_training_v40', 'cognitive_training_v33', 'cognitive_training_v32'];
 
-// 播放播客音频（优先shareUrl签名URL，备用backupUrl）
-async function playPodcastAudio(id) {
+// 播放播客音频
+function playPodcastAudio(id) {
     const podcast = podcastList.find(p => p.id === id);
-    if (!podcast) return;
-    const audio = document.getElementById('hidden-audio');
-    if (!audio) return;
-    showMiniPlayer(podcast.title, podcast.duration);
-    currentPodcastId = id;
-    if (podcast.shareUrl) {
-        showToast('正在获取音频...');
-        try {
-            const signedUrl = await getPodcastAudioUrl(podcast.shareUrl, 'plist_' + id);
-            if (signedUrl) {
-                audio.src = signedUrl;
-                audio.play().catch(e => { tryFallbackAudio(audio, podcast); });
-                return;
-            }
-        } catch(e) { console.warn('shareUrl获取失败，尝试备用URL:', e); }
-    }
-    tryFallbackAudio(audio, podcast);
-}
-function tryFallbackAudio(audio, podcast) {
-    if (podcast.backupUrl) {
-        audio.src = podcast.backupUrl;
-        audio.play().catch(e => { showToast('播放失败，请检查网络连接'); });
-    } else {
-        showToast('该播客暂不可用');
+    if (podcast) {
+        const audio = document.getElementById('hidden-audio');
+        if (!audio) return;
+        audio.src = podcast.url;
+        audio.play().catch(e => {
+            showToast('播放失败，请检查网络连接');
+        });
+        showMiniPlayer(podcast.title, podcast.duration);
+        currentPodcastId = id;
     }
 }
 
 // 迷你播放器显示
 let currentPodcastId = null;
+function showMiniPlayer(title, duration) {
+    let miniPlayer = document.getElementById('mini-player');
+    if (!miniPlayer) {
+        miniPlayer = document.createElement('div');
+        miniPlayer.id = 'mini-player';
+        miniPlayer.className = 'mini-player';
+        document.body.appendChild(miniPlayer);
+    }
+    
+    miniPlayer.innerHTML = `
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🎧</div>
+        <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${title}</div>
+            <div style="font-size:11px;color:#999;">🎧 播客 · ${duration}</div>
+        </div>
+        <button onclick="togglePlayPause()" id="mp-play-btn" style="width:36px;height:36px;border-radius:50%;background:var(--blue);border:none;color:white;font-size:14px;cursor:pointer;">▶</button>
+        <button onclick="closeMiniPlayer()" style="width:28px;height:28px;border-radius:50%;background:#f0f0f0;border:none;font-size:12px;cursor:pointer;">✕</button>
+    `;
+    
+    miniPlayer.style.display = 'flex';
+}
 
+function closeMiniPlayer() {
+    const miniPlayer = document.getElementById('mini-player');
+    if (miniPlayer) {
+        miniPlayer.style.display = 'none';
+    }
+    const audio = document.getElementById('hidden-audio');
+    if (audio) {
+        audio.pause();
+    }
+}
 
 function togglePlayPause() {
     const audio = document.getElementById('hidden-audio');
@@ -2303,6 +2285,101 @@ function closeFullscreenPage() { const el = document.getElementById('fullscreen-
 
 
 // 清理模块状态（在打开新模块前调用）
+function cleanupModuleState() {
+    // 停止所有游戏计时器
+    if (gameTimer) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+    }
+    if (gameTimerDisplay) {
+        clearInterval(gameTimerDisplay);
+        gameTimerDisplay = null;
+    }
+    
+    // 停止贪吃蛇计时器
+    if (snakeGame) {
+        clearInterval(snakeGame);
+        snakeGame = null;
+    }
+    
+    // 停止俄罗斯方块计时器
+    if (tetrisGame) {
+        clearInterval(tetrisGame);
+        tetrisGame = null;
+    }
+    
+    // 停止打地鼠计时器
+    if (whackTimer) {
+        clearInterval(whackTimer);
+        whackTimer = null;
+    }
+    
+    // 停止消消乐计时器
+    if (elimTimer) {
+        clearInterval(elimTimer);
+        elimTimer = null;
+    }
+    
+    // 停止番茄钟计时器
+    if (pomodoroTimer) {
+        clearInterval(pomodoroTimer);
+        pomodoroTimer = null;
+    }
+    
+    // 清理游戏Canvas
+    const board = document.getElementById('game-board');
+    if (board) {
+        board.innerHTML = '';
+        board.style.cssText = '';
+    }
+    
+    // 停止音频播放
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+    
+    // 停止视频播放
+    const videoPlayer = document.getElementById('video-player');
+    if (videoPlayer) {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+    }
+    
+    // 停止TTS朗读
+    stopTTSSpeech();
+    
+    // 停止语音识别
+    if (isRecording && deepseekRecognition) {
+        deepseekRecognition.stop();
+        isRecording = false;
+    }
+    
+    // 清理DeepSeek图片
+    if (currentDeepSeekImage) {
+        currentDeepSeekImage = null;
+    }
+    
+    // 关闭全屏音频播放器
+    const audioPlayerFullscreen = document.getElementById('audio-player-fullscreen');
+    if (audioPlayerFullscreen) {
+        audioPlayerFullscreen.classList.remove('show');
+    }
+    
+    // 关闭视频全屏播放器
+    const videoPlayerFullscreen = document.getElementById('enhanced-video-player');
+    if (videoPlayerFullscreen) {
+        videoPlayerFullscreen.style.display = 'none';
+    }
+    
+    // 重置游戏全屏容器
+    const gameFullscreen = document.getElementById('game-fullscreen-container');
+    if (gameFullscreen) {
+        gameFullscreen.style.display = 'none';
+    }
+    
+    console.log('模块状态已清理');
+}
 // ====== 全屏页面切换 ======
 function openFullscreenPage(module) {
     cleanupModuleState(); // 清理上一个模块的状态
@@ -2397,89 +2474,27 @@ function renderPractice(container) {
     `;
 }
 
-
-
-// ====== AI精准练 - 拍照识别 ======
-async function handlePracticePhoto(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        const base64 = e.target.result;
-        showToast('AI正在识别中...');
-        try {
-            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-                },
-                body: JSON.stringify({
-                    model: 'deepseek-chat',
-                    messages: [
-                        { role: 'system', content: '你是一位专业的初中教育辅导老师，擅长识别题目并详细讲解。请识别图片中的题目，给出详细解答过程。' },
-                        { role: 'user', content: [
-                            { type: 'text', text: '请识别这道题目并给出详细解答：' },
-                            { type: 'image_url', image_url: { url: base64 } }
-                        ]}
-                    ]
-                })
-            });
-            const data = await response.json();
-            const aiContent = data.choices?.[0]?.message?.content || 'AI识别失败，请稍后重试';
-            showPracticeResult(aiContent);
-        } catch (err) {
-            showToast('AI识别失败，请检查网络');
-        }
-    };
-    reader.readAsDataURL(file);
+function handlePracticePhoto(input) {
+    if (!input.files[0]) return;
+    showToast('正在识别题目...');
+    // TODO: 调用AI识别图片
+    setTimeout(() => {
+        showToast('AI识别功能开发中');
+    }, 1000);
 }
 
-// ====== AI精准练 - 手动输入解答 ======
 async function submitPracticeQuestion() {
     const input = document.getElementById('practice-input');
     if (!input || !input.value.trim()) {
         showToast('请输入问题');
         return;
     }
-    const question = input.value.trim();
-    showToast('AI正在解答中...');
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一位专业的初中教育辅导老师，擅长解答各科题目。请给出详细的解题步骤和思路分析。' },
-                    { role: 'user', content: question }
-                ]
-            })
-        });
-        const data = await response.json();
-        const aiContent = data.choices?.[0]?.message?.content || 'AI解答失败，请稍后重试';
-        showPracticeResult(aiContent);
-    } catch (err) {
-        showToast('AI解答失败，请检查网络');
-    }
-}
-
-// ====== AI精准练 - 显示结果 ======
-function showPracticeResult(content) {
-    const modal = document.getElementById('detail-modal');
-    const detailContent = document.getElementById('detail-content');
-    if (!modal || !detailContent) return;
-    modal.classList.add('show');
-    detailContent.innerHTML = `
-        <div class="modal-title">🤖 AI解答</div>
-        <div style="padding:16px;background:#f5f7ff;border-radius:12px;max-height:60vh;overflow-y:auto;line-height:1.8;font-size:14px;">
-            ${content.replace(/\n/g, '<br/>')}
-        </div>
-        <button class="login-btn login-btn-primary" onclick="closeDetail()" style="margin-top:12px;">关闭</button>
-    `;
+    
+    showToast('AI正在思考...');
+    // TODO: 调用DeepSeek API
+    setTimeout(() => {
+        showToast('AI解答功能开发中');
+    }, 1000);
 }
 
 
@@ -2571,16 +2586,6 @@ function renderTopics(container) {
     const userGrade = currentUser ? currentUser.grade : 7;
     
     container.innerHTML = `
-        <div class="card" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;margin-bottom:12px;cursor:pointer;" onclick="openTopicsAIModal()">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div style="font-size:32px;">🤖</div>
-                <div style="flex:1;">
-                    <div style="font-size:15px;font-weight:600;margin-bottom:4px;">AI智能分析</div>
-                    <div style="font-size:12px;opacity:0.9;">输入任何问题，AI帮你解答</div>
-                </div>
-                <div style="font-size:20px;">→</div>
-            </div>
-        </div>
         <div class="card">
             <h3 style="margin-bottom:12px;">📚 母题训练</h3>
             <p style="color:#666;font-size:13px;margin-bottom:16px;">精选母题，举一反三，掌握核心知识点</p>
@@ -2719,7 +2724,6 @@ function openTopicQuestion(topicId) {
             <div class="practice-input">
                 <input type="text" id="topic-answer-input" placeholder="输入你的答案..." style="flex:1;" />
                 <button onclick="checkTopicAnswer(${topicId})" style="padding:10px 16px;background:#3377FF;color:white;border:none;border-radius:8px;cursor:pointer;">提交</button>
-                <button onclick="analyzeTopicWithAI(${topicId})" style="padding:8px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">AI分析</button>
             </div>
             <div id="topic-result-area"></div>
         </div>
@@ -2840,208 +2844,6 @@ async function analyzeTopicWithAI(topicId) {
         `;
     } catch (err) {
         resultArea.innerHTML = '<div style="margin-top:12px;color:#ff6b6b;">AI分析失败，请检查网络</div>';
-    }
-}
-
-// 学霸方法AI分析函数
-async function analyzeMethodWithAI(methodId, questionIdx) {
-    const questions = methodTrainingQuestions[methodId];
-    const q = questions[questionIdx];
-    if (!q) return;
-    
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    
-    content.innerHTML = `
-        <div class="modal-title">🤖 AI分析</div>
-        <div style="font-size:13px;color:#666;margin-bottom:12px;text-align:center;">第${questionIdx + 1}题</div>
-        <div class="card" style="margin-bottom:12px;">
-            <div style="font-size:13px;color:#1A6BFF;font-weight:600;margin-bottom:8px;">题目</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:12px;">${q.q}</div>
-            <div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px;">参考答案</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;">${q.a}</div>
-        </div>
-        <div class="card">
-            <div id="method-ai-result" style="min-height:100px;">
-                <div class="ai-loading" style="text-align:center;padding:20px;">🤖 AI正在分析中...</div>
-            </div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-    
-    const prompt = `请详细讲解这道题目：
-题目：${q.q}
-参考答案：${q.a}
-
-请提供：
-1. 知识点分析
-2. 详细解题步骤
-3. 易错点提示
-4. 举一反三的类似题目`;
-
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解题目，帮助学生理解知识点，举一反三。' },
-                    { role: 'user', content: prompt }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        const aiContent = data.choices?.[0]?.message?.content || 'AI分析失败，请稍后重试';
-        
-        document.getElementById('method-ai-result').innerHTML = `
-            <div style="padding:12px;background:#f5f7ff;border-radius:12px;max-height:300px;overflow-y:auto;">
-                <div style="font-size:14px;line-height:1.8;">${aiContent.replace(/\n/g, '<br/>')}</div>
-            </div>
-        `;
-    } catch (err) {
-        document.getElementById('method-ai-result').innerHTML = '<div style="color:#ff6b6b;text-align:center;padding:20px;">AI分析失败，请检查网络</div>';
-    }
-}
-
-// 思维训练AI分析函数
-async function analyzeThinkingWithAI(type, questionIdx) {
-    const questions = thinkingQuestions[type];
-    const q = questions[questionIdx];
-    if (!q) return;
-    
-    const typeNames = {
-        logic: '逻辑思维', creative: '创意思维', critical: '批判思维', system: '系统思维',
-        reverse: '逆向思维', divergent: '发散思维', converge: '收敛思维', spatial: '空间思维',
-        abstract: '抽象思维'
-    };
-    
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    
-    const answerText = q.opts ? q.opts[q.a] : q.a;
-    
-    content.innerHTML = `
-        <div class="modal-title">🤖 AI分析</div>
-        <div style="font-size:13px;color:#666;margin-bottom:12px;text-align:center;">${typeNames[type]} - 第${questionIdx + 1}题</div>
-        <div class="card" style="margin-bottom:12px;">
-            <div style="font-size:13px;color:#1A6BFF;font-weight:600;margin-bottom:8px;">题目</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:12px;">${q.q}</div>
-            ${answerText ? `
-            <div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px;">参考答案</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;">${answerText}</div>
-            ` : ''}
-        </div>
-        <div class="card">
-            <div id="thinking-ai-result" style="min-height:100px;">
-                <div class="ai-loading" style="text-align:center;padding:20px;">🤖 AI正在分析中...</div>
-            </div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-    
-    const prompt = `请详细讲解这道题目：
-题目：${q.q}
-${answerText ? '参考答案：' + answerText : ''}
-
-请提供：
-1. 知识点分析
-2. 详细解题思路
-3. 易错点提示
-4. 举一反三的类似题目`;
-
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解题目，帮助学生理解知识点，举一反三。' },
-                    { role: 'user', content: prompt }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        const aiContent = data.choices?.[0]?.message?.content || 'AI分析失败，请稍后重试';
-        
-        document.getElementById('thinking-ai-result').innerHTML = `
-            <div style="padding:12px;background:#f5f7ff;border-radius:12px;max-height:300px;overflow-y:auto;">
-                <div style="font-size:14px;line-height:1.8;">${aiContent.replace(/\n/g, '<br/>')}</div>
-            </div>
-        `;
-    } catch (err) {
-        document.getElementById('thinking-ai-result').innerHTML = '<div style="color:#ff6b6b;text-align:center;padding:20px;">AI分析失败，请检查网络</div>';
-    }
-}
-
-// 母题训练AI问答弹窗
-function openTopicsAIModal() {
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    
-    content.innerHTML = `
-        <div class="modal-title">🤖 AI智能分析</div>
-        <p style="text-align:center;color:#666;font-size:13px;margin-bottom:16px;">输入你的问题，AI帮你解答</p>
-        <textarea id="topics-ai-question" placeholder="例如：帮我讲解一元二次方程的解法..." style="width:100%;height:100px;padding:12px;border:2px solid #ddd;border-radius:12px;font-size:14px;resize:none;box-sizing:border-box;"></textarea>
-        <div class="card" style="margin-top:16px;">
-            <div id="topics-ai-result" style="min-height:80px;">
-                <div style="text-align:center;color:#999;font-size:13px;">AI分析结果将显示在这里</div>
-            </div>
-        </div>
-        <button onclick="submitTopicsAIQuestion()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:12px;">🔍 提问</button>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-}
-
-// 提交母题训练AI问题
-async function submitTopicsAIQuestion() {
-    const question = document.getElementById('topics-ai-question').value.trim();
-    if (!question) {
-        showToast('请输入问题');
-        return;
-    }
-    
-    const resultDiv = document.getElementById('topics-ai-result');
-    resultDiv.innerHTML = '<div class="ai-loading" style="text-align:center;padding:20px;">🤖 AI正在分析中...</div>';
-    
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解题目，帮助学生理解知识点，举一反三。' },
-                    { role: 'user', content: question }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        const aiContent = data.choices?.[0]?.message?.content || 'AI分析失败，请稍后重试';
-        
-        resultDiv.innerHTML = `
-            <div style="padding:12px;background:#f5f7ff;border-radius:12px;max-height:300px;overflow-y:auto;">
-                <div style="font-size:14px;line-height:1.8;">${aiContent.replace(/\n/g, '<br/>')}</div>
-            </div>
-        `;
-    } catch (err) {
-        resultDiv.innerHTML = '<div style="color:#ff6b6b;text-align:center;padding:20px;">AI分析失败，请检查网络</div>';
     }
 }
 
@@ -3273,7 +3075,6 @@ function submitMethodAnswers(methodId, page) {
                     <div style="display:flex;gap:8px;">
                         <button onclick="rateMethodAnswer('${methodId}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
                         <button onclick="rateMethodAnswer('${methodId}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
-                        <button onclick="analyzeMethodWithAI('${methodId}', ${startIndex + idx})" style="padding:8px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">AI分析</button>
                     </div>
                 </div>
             `).join('')}
@@ -3551,19 +3352,12 @@ function renderPodcast(container) {
         
         <div id="podcast-list">
             ${podcasts.map(p => `
-            <div class="podcast-item" style="flex-wrap:wrap;">
+            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
                 <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
-                <div class="podcast-info" style="flex:1;min-width:0;" onclick="playPodcastCourseWithLocal('${p.id}')">
+                <div class="podcast-info">
                     <div class="podcast-title">${p.title}</div>
                     <div class="podcast-meta">${p.teacher} · ${p.duration} · <span class="media-badge">${p.category}</span></div>
                     <div class="media-views">👁 ${(p.views/1000).toFixed(1)}万</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;">
-                    <label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;cursor:pointer;font-size:12px;color:#3377FF;white-space:nowrap;" onclick="event.stopPropagation();">
-                        📤 上传
-                        <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
-                    </label>
-                    <button onclick="event.stopPropagation();downloadPodcastCourse('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
                 </div>
             </div>
             `).join('')}
@@ -3585,19 +3379,12 @@ function filterPodcast(category, btn) {
     
     if (list) {
         list.innerHTML = filtered.map(p => `
-            <div class="podcast-item" style="flex-wrap:wrap;">
+            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
                 <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
-                <div class="podcast-info" style="flex:1;min-width:0;" onclick="playPodcastCourseWithLocal('${p.id}')">
+                <div class="podcast-info">
                     <div class="podcast-title">${p.title}</div>
                     <div class="podcast-meta">${p.teacher} · ${p.duration} · <span class="media-badge">${p.category}</span></div>
                     <div class="media-views">👁 ${(p.views/1000).toFixed(1)}万</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;">
-                    <label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;cursor:pointer;font-size:12px;color:#3377FF;white-space:nowrap;" onclick="event.stopPropagation();">
-                        📤 上传
-                        <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
-                    </label>
-                    <button onclick="event.stopPropagation();downloadPodcastCourse('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
                 </div>
             </div>
         `).join('');
@@ -4825,7 +4612,6 @@ function submitThinkingAnswers(type, page) {
                         <div style="display:flex;gap:8px;">
                             <button onclick="rateThinkingAnswer('${type}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
                             <button onclick="rateThinkingAnswer('${type}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
-                            <button onclick="analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="padding:8px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">AI分析</button>
                         </div>
                     </div>
                 `;
@@ -5052,6 +4838,9 @@ function startMethodTraining(methodId) {
 
 // ====== 学霸方法训练题库（V99新增）======
 
+function playPodcast(title) {
+    showToast('播放：' + title);
+}
 
 
 
@@ -5122,6 +4911,7 @@ function playVideo(title, url) {
 function toggleVpPlay() { if (!vpVideo) return; vpPlaying ? vpVideo.pause() : vpVideo.play(); }
 function seekVideo(e) { if (!vpVideo || !vpVideo.duration) return; const rect = e.target.getBoundingClientRect(); vpVideo.currentTime = ((e.clientX-rect.left)/rect.width)*vpVideo.duration; }
 function closeVideoPlayer() { if (vpVideo) { vpVideo.pause(); vpVideo.src = ''; } document.getElementById('video-player-modal').classList.remove('show'); }
+function formatTime(s) { if (!s||isNaN(s)) return '0:00'; return Math.floor(s/60)+':'+(Math.floor(s%60)+'').padStart(2,'0'); }
 
 
 let gameScore = 0, gameType = '', gameLevel = 1, gameTimer = null, gameStartTime = 0, schulteNext = 1;
@@ -5591,7 +5381,8 @@ function endGame() {
 
 function resetGame() { startGame(gameType); }
 
-// ==================== 娱乐游戏实现 =============
+// ==================== 娱乐游戏实现 ====================
+
 // ----- 贪吃蛇游戏 -----
 let snakeGame = null;
 function startSnake() {
@@ -7007,7 +6798,47 @@ const videoResources = {
     'video21': { url: '', title: '化学实验操作规范' }
 };
 
+function playPodcast(title, audioId) {
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    modal.classList.add('show');
+    content.innerHTML = `
+        <div class="modal-title">🎧 \${title}</div>
+        <div class="audio-controls" style="margin:20px 0;">
+            <button class="audio-btn" onclick="toggleAudioPlay()" id="audio-play-btn">▶</button>
+            <div style="flex:1;">
+                <div class="audio-progress" onclick="seekAudio(event)">
+                    <div class="audio-progress-bar" id="audio-progress-bar" style="width:0%;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                    <span id="audio-current-time" style="font-size:11px;color:var(--text-gray);">0:00</span>
+                    <span id="audio-duration" style="font-size:11px;color:var(--text-gray);">--:--</span>
+                </div>
+            </div>
+        </div>
+        <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;text-align:center;">
+            <div style="font-size:13px;color:var(--text-gray);">音频课程正在播放</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">关闭</button>
+    `;
+    currentAudio = { id: audioId, title: title, isPlaying: false, currentTime: 0, duration: 600 };
+    showToast('正在播放: ' + title);
+}
 
+function toggleAudioPlay() {
+    if (!currentAudio) return;
+    const btn = document.getElementById('audio-play-btn');
+    currentAudio.isPlaying = !currentAudio.isPlaying;
+    btn.textContent = currentAudio.isPlaying ? '⏸' : '▶';
+    if (currentAudio.isPlaying && !window.audioInterval) {
+        window.audioInterval = setInterval(() => {
+            if (currentAudio && currentAudio.isPlaying) {
+                currentAudio.currentTime += 1;
+                updateAudioProgress();
+            }
+        }, 1000);
+    }
+}
 
 function updateAudioProgress() {
     if (!currentAudio) return;
@@ -7026,6 +6857,11 @@ function seekAudio(e) {
     updateAudioProgress();
 }
 
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
+}
 
 // ====== 学霸方法训练 ======
 const methodPractices = {
@@ -7358,7 +7194,7 @@ var podcastCourses = [
 
 // 播客列表别名（兼容旧代码）
 
-// ====== 视频课程数据（已清理无效视频，仅保留w3schools有效测试视频）
+// ====== 视频课程数据（已清理无效视频，仅保留w3schools有效测试视频）=======
 var videoCourses = [
     {id:'video1',title:'专注力训练',teacher:'心理学专家',duration:'5:23',durationSec:323,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎯',url:'videos/专注力训练.mp4',views:25000},
     {id:'video2',title:'学霸深度理解法',teacher:'特级教师',duration:'6:18',durationSec:378,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'🧠',url:'videos/学霸深度理解法_第1集.mp4',views:18000},
@@ -7536,26 +7372,10 @@ function playPodcastCourse(courseId) {
             updatePodcastListState(courseId);
             showToast('正在播放: ' + course.title);
         } else {
-            console.warn('获取签名URL失败，尝试备用方式');
-            // 备用方式1：检查podcastList中是否有backupUrl
-            var plistItem = podcastList.find(function(p) { return p.shareUrl === course.shareUrl; });
-            if (plistItem && plistItem.backupUrl) {
-                audioEl.src = plistItem.backupUrl;
-                audioEl.play().then(function() {
-                    audioCtx.isPlaying = true;
-                    updatePlayButtons();
-                    showMiniPlayer(course);
-                    var playerEl = document.getElementById('audio-player-fullscreen');
-                    if (playerEl) playerEl.classList.add('show');
-                    showToast('正在播放(备用): ' + course.title);
-                }).catch(function(e) {
-                    showToast('播放失败，请检查网络');
-                });
-            } else {
-                // 备用方式2：打开分享页面
-                showToast('正在跳转播放页面...');
-                window.open(course.shareUrl, '_blank');
-            }
+            console.warn('获取音频URL失败，尝试打开分享页面');
+            // 获取失败时，打开分享页面作为fallback
+            showToast('正在跳转播放页面...');
+            window.open(course.shareUrl, '_blank');
         }
     });
 }
@@ -7596,6 +7416,7 @@ function toggleMute() {
     else { setVolume((audioCtx.lastVolume || 0.8) * 100); var sliderEl = document.getElementById('ap-volume-slider'); if (sliderEl) sliderEl.value = (audioCtx.lastVolume || 0.8) * 100; }
 }
 
+function updateVolumeIcon(value) { var icon = value == 0 ? '🔇' : (value < 50 ? '🔉' : '🔊'); var btnEl = document.getElementById('ap-volume-btn'); if (btnEl) btnEl.innerHTML = icon; }
 function closeAudioPlayer() { var playerEl = document.getElementById('audio-player-fullscreen'); var coverEl = document.getElementById('ap-cover'); if (playerEl) playerEl.classList.remove('show'); if (coverEl) coverEl.classList.remove('playing'); }
 function updatePlayButtons() { var icon = audioCtx.isPlaying ? '⏸' : '▶'; var apPlayBtn = document.getElementById('ap-play-btn'); var miniBtn = document.getElementById('mini-player-btn'); if (apPlayBtn) apPlayBtn.innerHTML = icon; if (miniBtn) miniBtn.innerHTML = icon; }
 
@@ -7894,10 +7715,18 @@ function playVideoCourse(courseId) {
     var course = null;
     for (var i = 0; i < videoCourses.length; i++) { if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; } }
     if (!course) return;
-    // 使用openEnhancedVideoPlayer确保播放器正确初始化
-    openEnhancedVideoPlayer(course.title, course.url, course.id);
     videoCtx.currentVideo = course;
+    var titleEl = document.getElementById('evp-title');
+    if (titleEl) titleEl.textContent = course.title;
+    evpVideo.src = course.url;
+    evpVideo.playbackRate = videoCtx.playbackSpeed;
+    evpVideo.volume = videoCtx.volume;
+    var playerEl = document.getElementById('enhanced-video-player');
+    var bigPlayEl = document.getElementById('evp-big-play');
+    if (playerEl) playerEl.classList.add('show');
+    if (bigPlayEl) bigPlayEl.style.display = 'none';
     updateVideoListState(courseId);
+    evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
 }
 
 
@@ -9262,7 +9091,7 @@ function exportData() {
     
     // 添加导出元信息
     const exportData = {
-        version: 'V135',
+        version: 'V129',
         exportTime: new Date().toISOString(),
         appName: '认知训练门户',
         data: data
@@ -9574,7 +9403,7 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V135</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V129</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
@@ -9658,99 +9487,6 @@ function confirmClearAllData() {
 }
 
 // 退出登录返回首页
-
-
-// ====== 用户数据完整性校验 ======
-function validateUserData(user) {
-    if (!user) return null;
-    var defaults = {
-        name: '新用户',
-        grade: 7,
-        difficulty: 1,
-        points: 0,
-        wrongNotes: [],
-        todayStats: { questions: 0, correct: 0, minutes: 0 },
-        studyDays: {},
-        uploadedImages: [],
-        uploadedAudios: [],
-        uploadedVideos: [],
-        achievements: [],
-        streakDays: 0,
-        lastStudyDate: null,
-        createdAt: Date.now(),
-        avatar: 'default',
-        avatarColor: '#3377FF'
-    };
-    
-    for (var key in defaults) {
-        if (user[key] === undefined || user[key] === null) {
-            user[key] = defaults[key];
-        }
-    }
-    
-    // 确保todayStats结构完整
-    if (!user.todayStats || typeof user.todayStats !== 'object') {
-        user.todayStats = { questions: 0, correct: 0, minutes: 0 };
-    }
-    
-    return user;
-}
-
-// ====== 增强版getCurrentUserData ======
-function getCurrentUserDataSafe() {
-    try {
-        var data = loadData();
-        if (!data || !data.currentUser) {
-            // 回退到默认用户
-            var defaultUser = getOrCreateDefaultUser();
-            return validateUserData(defaultUser);
-        }
-        var user = data.users ? data.users[data.currentUser] : null;
-        if (!user) {
-            // 用户不存在，回退到默认用户
-            var defaultUser = getOrCreateDefaultUser();
-            return validateUserData(defaultUser);
-        }
-        return validateUserData(user);
-    } catch(e) {
-        console.error('获取用户数据失败:', e);
-        var defaultUser = getOrCreateDefaultUser();
-        return validateUserData(defaultUser);
-    }
-}
-
-// 获取或创建默认用户
-function getOrCreateDefaultUser() {
-    var data = loadData();
-    if (!data.users) data.users = {};
-    
-    var defaultUserId = 'user_default_qiuyufei';
-    if (!data.users[defaultUserId]) {
-        data.users[defaultUserId] = {
-            id: defaultUserId,
-            name: '邱宇菲',
-            grade: 7,
-            difficulty: 1,
-            points: 0,
-            wrongNotes: [],
-            todayStats: { questions: 0, correct: 0, minutes: 0 },
-            studyDays: {},
-            uploadedImages: [],
-            uploadedAudios: [],
-            uploadedVideos: [],
-            achievements: [],
-            streakDays: 0,
-            lastStudyDate: null,
-            createdAt: Date.now(),
-            avatar: 'default',
-            avatarColor: '#3377FF'
-        };
-    }
-    data.currentUser = defaultUserId;
-    saveData(data);
-    return data.users[defaultUserId];
-}
-
 function logoutAndReturn() {
     const user = getCurrentUserData();
     
@@ -9771,226 +9507,6 @@ function logoutAndReturn() {
     
     // 不再跳转到登录页面，而是弹出注册模态框
     openRegisterModal();
-}
-
-// 退出整个系统
-
-// ====== 模块状态清理 ======
-function cleanupModuleState() {
-    // 停止TTS
-    try { stopTTSSpeech(); } catch(e) {}
-    
-    // 停止音频播放
-    try {
-        if (typeof currentAudio !== 'undefined' && currentAudio) {
-            currentAudio.pause();
-            currentAudio = null;
-        }
-        var hiddenAudio = document.getElementById('hidden-audio');
-        if (hiddenAudio) { hiddenAudio.pause(); hiddenAudio.src = ''; }
-    } catch(e) {}
-    
-    // 停止视频播放
-    try {
-        var evpVideo = document.getElementById('evp-video');
-        if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; }
-    } catch(e) {}
-    
-    // 清理番茄钟定时器
-    try {
-        if (typeof pomodoroTimer !== 'undefined' && pomodoroTimer) {
-            clearInterval(pomodoroTimer);
-            pomodoroTimer = null;
-        }
-    } catch(e) {}
-    
-    // 清理游戏定时器
-    try {
-        if (typeof memoryTimer !== 'undefined' && memoryTimer) {
-            clearInterval(memoryTimer);
-            memoryTimer = null;
-        }
-        if (typeof brainGameTimer !== 'undefined' && brainGameTimer) {
-            clearInterval(brainGameTimer);
-            brainGameTimer = null;
-        }
-        if (typeof focusTimer !== 'undefined' && focusTimer) {
-            clearInterval(focusTimer);
-            focusTimer = null;
-        }
-    } catch(e) {}
-    
-    // 关闭所有全屏页面
-    try { closeFullscreenPage(); } catch(e) {}
-    
-    // 关闭设置面板
-    try { closeSettingsPanel(); } catch(e) {}
-    
-    // 关闭用户菜单
-    try { closeUserMenu(); } catch(e) {}
-    
-    // 关闭任何模态框
-    try {
-        var modals = document.querySelectorAll('[id$="-modal"], [id$="-panel"], .modal');
-        modals.forEach(function(m) {
-            if (m.id && m.id !== 'settings-panel') m.remove();
-        });
-    } catch(e) {}
-    
-    // 重置游戏状态
-    try {
-        memoryGameState = null;
-        brainGameScore = 0;
-        brainGameLevel = 1;
-        focusMinutes = 25;
-        focusSeconds = 0;
-    } catch(e) {}
-}
-
-// 下载视频课程
-function downloadVideoCourse(courseId) {
-    var course = videoCourses.find(function(v) { return v.id === courseId; });
-    if (!course) { showToast("课程不存在"); return; }
-    var videoUrl = course.url;
-    if (videoUrl && !videoUrl.startsWith("http")) {
-        videoUrl = "https://6mz7txgx3f.coze.site/" + videoUrl;
-    }
-    if (!videoUrl) { showToast("暂无可下载的视频文件"); return; }
-    var a = document.createElement("a");
-    a.href = videoUrl;
-    a.download = course.title + ".mp4";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast("开始下载：" + course.title);
-}
-
-// 下载播客课程
-function downloadPodcastCourse(courseId) {
-    var course = podcastCourses.find(function(p) { return p.id === courseId; });
-    if (!course) { showToast("课程不存在"); return; }
-    var downloadUrl = course.backupUrl || null;
-    if (!downloadUrl && course.shareUrl) {
-        window.open(course.shareUrl, "_blank");
-        showToast("已打开扣子页面，可在线收听");
-        return;
-    }
-    if (!downloadUrl) { showToast("暂无可下载的音频文件"); return; }
-    var a = document.createElement("a");
-    a.href = downloadUrl;
-    a.download = course.title + ".mp3";
-    a.target = "_blank";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast("开始下载：" + course.title);
-}
-
-function exitSystem() {
-    closeUserMenu();
-    const modal = document.createElement('div');
-    modal.id = 'exit-system-modal';
-    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:3000;';
-    modal.innerHTML = `
-        <div style="background:white;border-radius:24px;padding:32px 24px;text-align:center;max-width:320px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
-            <div style="font-size:48px;margin-bottom:16px;">👋</div>
-            <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">确认退出？</div>
-            <div style="font-size:14px;color:#666;margin-bottom:24px;">退出后需要重新打开应用</div>
-            <div style="display:flex;gap:12px;">
-                <button onclick="document.getElementById('exit-system-modal').remove()" style="flex:1;padding:14px;background:#f5f7ff;color:#667eea;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;">取消</button>
-                <button onclick="confirmExitSystem()" style="flex:1;padding:14px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;">确认退出</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
-
-function confirmExitSystem() {
-    const modal = document.getElementById('exit-system-modal');
-    if (modal) modal.remove();
-    stopTTSSpeech();
-    if (typeof pomodoroTimer !== 'undefined' && pomodoroTimer) { clearInterval(pomodoroTimer); pomodoroTimer = null; }
-    if (typeof currentAudio !== 'undefined' && currentAudio) { currentAudio.pause(); currentAudio = null; }
-    try { if (window.Android && window.Android.exitApp) { window.Android.exitApp(); return; } } catch(e) {}
-    try { window.close(); } catch(e) {}
-    // 浏览器无法关闭窗口时，显示退出页面
-    document.body.innerHTML = `
-        <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;">
-            <div style="font-size:64px;margin-bottom:24px;">👋</div>
-            <div style="font-size:24px;font-weight:bold;margin-bottom:12px;">已退出</div>
-            <div style="font-size:14px;opacity:0.8;margin-bottom:32px;">感谢使用认知训练，期待下次再见！</div>
-            <button onclick="location.reload()" style="padding:14px 40px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.5);color:white;border-radius:12px;font-size:16px;cursor:pointer;">重新进入</button>
-        </div>
-    `;
-}
-
-// 登录扣子平台（解决播客音频需要登录态的问题）
-function loginCoze() {
-    closeUserMenu();
-    const modal = document.createElement('div');
-    modal.id = 'coze-login-modal';
-    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:3000;';
-    modal.innerHTML = `
-        <div style="background:white;border-radius:24px;padding:32px 24px;text-align:center;max-width:360px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.2);">
-            <div style="font-size:48px;margin-bottom:16px;">🔗</div>
-            <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">登录扣子平台</div>
-            <div style="font-size:14px;color:#666;margin-bottom:20px;line-height:1.6;">登录后可解锁播客音频播放功能<br/>登录状态会自动保存</div>
-            <button onclick="openCozeLoginPage()" style="width:100%;padding:14px;background:linear-gradient(135deg,#3377FF,#4A80F5);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-bottom:12px;">前往登录</button>
-            <button onclick="document.getElementById('coze-login-modal').remove()" style="width:100%;padding:14px;background:#f5f7ff;color:#667eea;border:none;border-radius:12px;font-size:15px;cursor:pointer;">取消</button>
-        </div>
-    `;
-    document.body.appendChild(modal);
-}
-
-function openCozeLoginPage() {
-    const modal = document.getElementById('coze-login-modal');
-    if (modal) modal.remove();
-    
-    // 创建全屏iframe登录页
-    const loginFrame = document.createElement('div');
-    loginFrame.id = 'coze-login-frame';
-    loginFrame.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:3000;background:white;display:flex;flex-direction:column;';
-    loginFrame.innerHTML = `
-        <div style="display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f0f0;flex-shrink:0;">
-            <button onclick="closeCozeLogin()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:8px;color:#333;">✕</button>
-            <span style="flex:1;text-align:center;font-size:16px;font-weight:600;">登录扣子平台</span>
-            <div style="width:34px;"></div>
-        </div>
-        <iframe src="https://www.coze.cn/" style="flex:1;border:none;width:100%;" id="coze-iframe"></iframe>
-    `;
-    document.body.appendChild(loginFrame);
-    
-    // 保存当前登录状态检查
-    localStorage.setItem('coze_login_time', Date.now().toString());
-}
-
-function closeCozeLogin() {
-    const frame = document.getElementById('coze-login-frame');
-    if (frame) frame.remove();
-    
-    // 检查登录状态
-    checkCozeLoginStatus();
-    showToast('已返回，播客功能可正常使用');
-}
-
-function checkCozeLoginStatus() {
-    // 简单检查：通过fetch coze.cn看是否重定向到登录页
-    fetch('https://www.coze.cn/api/user/info', { method: 'GET', credentials: 'include' })
-        .then(res => {
-            if (res.ok) {
-                const statusEl = document.getElementById('coze-login-status');
-                if (statusEl) statusEl.textContent = '已登录';
-                localStorage.setItem('coze_logged_in', 'true');
-            }
-        })
-        .catch(() => {});
-    
-    // 也通过cookie判断
-    if (document.cookie.includes('coze') || document.cookie.includes('session')) {
-        const statusEl = document.getElementById('coze-login-status');
-        if (statusEl) statusEl.textContent = '已登录';
-    }
 }
 
 // 检查是否需要弹出注册模态框
@@ -10483,214 +9999,13 @@ function resetPomodoro() {
     renderPomodoro(document.getElementById('fullscreen-content'));
 }
 
-
-
-// ====== IndexedDB 文件存储 ======
-// 初始化IndexedDB
-function initFileDB() {
-    return new Promise(function(resolve, reject) {
-        var request = indexedDB.open('cognitive_training_files', 1);
-        request.onupgradeneeded = function(e) {
-            var db = e.target.result;
-            if (!db.objectStoreNames.contains('files')) {
-                db.createObjectStore('files', { keyPath: 'id' });
-            }
-        };
-        request.onsuccess = function(e) { resolve(e.target.result); };
-        request.onerror = function(e) { reject(e.target.error); };
-    });
-}
-
-// 保存文件到IndexedDB
-async function saveFileToDB(id, file) {
-    var db = await initFileDB();
-    return new Promise(function(resolve, reject) {
-        var tx = db.transaction('files', 'readwrite');
-        var store = tx.objectStore('files');
-        store.put({ id: id, file: file, name: file.name, type: file.type, uploadTime: Date.now() });
-        tx.oncomplete = function() { resolve(); };
-        tx.onerror = function(e) { reject(e.target.error); };
-    });
-}
-
-// 从IndexedDB获取文件
-async function getFileFromDB(id) {
-    var db = await initFileDB();
-    return new Promise(function(resolve, reject) {
-        var tx = db.transaction('files', 'readonly');
-        var store = tx.objectStore('files');
-        var request = store.get(id);
-        request.onsuccess = function() { resolve(request.result); };
-        request.onerror = function(e) { reject(e.target.error); };
-    });
-}
-
-// 删除IndexedDB中的文件
-async function deleteFileFromDB(id) {
-    var db = await initFileDB();
-    return new Promise(function(resolve, reject) {
-        var tx = db.transaction('files', 'readwrite');
-        var store = tx.objectStore('files');
-        store.delete(id);
-        tx.oncomplete = function() { resolve(); };
-        tx.onerror = function(e) { reject(e.target.error); };
-    });
-}
-
-// 检查文件是否已上传
-async function hasLocalFile(id) {
-    try {
-        var file = await getFileFromDB(id);
-        return file !== undefined;
-    } catch(e) {
-        return false;
-    }
-}
-
-// ====== 播客上传功能 ======
-async function uploadPodcastFile(courseId, input) {
-    var file = input.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('audio/') && !file.name.endsWith('.mp3')) {
-        showToast('请上传音频文件');
-        return;
-    }
-    showToast('正在上传音频...');
-    try {
-        await saveFileToDB('podcast_' + courseId, file);
-        showToast('音频上传成功！');
-        var data = loadData();
-        if (data && data.currentView === 'podcast') {
-            var container = document.getElementById('fullscreen-content');
-            if (container) openPodcastPanel(container);
-        }
-    } catch(e) {
-        showToast('上传失败：' + e.message);
-    }
-}
-
-async function deletePodcastFile(courseId) {
-    if (!confirm('确定要删除已上传的音频吗？')) return;
-    try {
-        await deleteFileFromDB('podcast_' + courseId);
-        showToast('音频已删除');
-        var data = loadData();
-        if (data && data.currentView === 'podcast') {
-            var container = document.getElementById('fullscreen-content');
-            if (container) openPodcastPanel(container);
-        }
-    } catch(e) {
-        showToast('删除失败');
-    }
-}
-
-// ====== 视频上传功能 ======
-async function uploadVideoFile(courseId, input) {
-    var file = input.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('video/') && !file.name.endsWith('.mp4')) {
-        showToast('请上传视频文件');
-        return;
-    }
-    showToast('正在上传视频...');
-    try {
-        await saveFileToDB('video_' + courseId, file);
-        showToast('视频上传成功！');
-        var data = loadData();
-        if (data && data.currentView === 'video') {
-            var container = document.getElementById('fullscreen-content');
-            if (container) renderVideo(container);
-        }
-    } catch(e) {
-        showToast('上传失败：' + e.message);
-    }
-}
-
-async function deleteVideoFile(courseId) {
-    if (!confirm('确定要删除已上传的视频吗？')) return;
-    try {
-        await deleteFileFromDB('video_' + courseId);
-        showToast('视频已删除');
-        var data = loadData();
-        if (data && data.currentView === 'video') {
-            var container = document.getElementById('fullscreen-content');
-            if (container) renderVideo(container);
-        }
-    } catch(e) {
-        showToast('删除失败');
-    }
-}
-
-// ====== 带本地文件优先的播放函数 ======
-async function playPodcastCourseWithLocal(courseId) {
-    try {
-        var localFile = await getFileFromDB('podcast_' + courseId);
-        if (localFile && localFile.file) {
-            var audioEl = document.getElementById('hidden-audio');
-            if (!audioEl) { showToast('播放器初始化失败'); return; }
-            
-            var course = null;
-            for (var i = 0; i < podcastCourses.length; i++) {
-                if (podcastCourses[i].id === courseId) { course = podcastCourses[i]; break; }
-            }
-            if (!course) return;
-            
-            audioCtx.currentTrack = course;
-            audioCtx.currentIndex = -1;
-            for (var i = 0; i < podcastCourses.length; i++) {
-                if (podcastCourses[i].id === courseId) { audioCtx.currentIndex = i; break; }
-            }
-            
-            var titleEl = document.getElementById('ap-title');
-            var coverEl = document.getElementById('ap-cover');
-            var courseTitleEl = document.getElementById('ap-course-title');
-            var courseTeacherEl = document.getElementById('ap-course-teacher');
-            if (titleEl) titleEl.textContent = '本地音频';
-            if (coverEl) { coverEl.innerHTML = course.icon; coverEl.style.background = course.gradient; }
-            if (courseTitleEl) courseTitleEl.textContent = course.title;
-            if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
-            
-            var blobUrl = URL.createObjectURL(localFile.file);
-            audioEl.src = blobUrl;
-            audioEl.playbackRate = audioCtx.playbackSpeed;
-            audioEl.volume = audioCtx.volume;
-            
-            audioEl.play().then(function() {
-                audioCtx.isPlaying = true;
-                updatePlayButtons();
-            }).catch(function(e) {
-                showToast('播放失败');
-            });
-            return;
-        }
-    } catch(e) {}
-    playPodcastCourse(courseId);
-}
-
-async function playVideoCourseWithLocal(courseId) {
-    try {
-        var localFile = await getFileFromDB('video_' + courseId);
-        if (localFile && localFile.file) {
-            var course = null;
-            for (var i = 0; i < videoCourses.length; i++) {
-                if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; }
-            }
-            if (!course) return;
-            var blobUrl = URL.createObjectURL(localFile.file);
-            openEnhancedVideoPlayer(course.title, blobUrl, course.id);
-            return;
-        }
-    } catch(e) {}
-    playVideoCourse(courseId);
-}
-
 </script>
 
 <!-- 播客全屏播放器 -->
 <div id="audio-player-fullscreen" class="audio-player-modal">
     <!-- 顶部导航栏 -->
     <div style="display:flex;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.3);">
-        <div onclick="closeAudioPlayer()" style="color:white;font-size:20px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:8px;">✕ 关闭</div>
+        <div onclick="closeAudioPlayer()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
         <div id="ap-title" style="flex:1;font-size:14px;font-weight:600;color:white;text-align:center;">音频课程</div>
         <div style="width:40px;"></div>
     </div>
@@ -10756,7 +10071,7 @@ async function playVideoCourseWithLocal(courseId) {
 <!-- 游戏全屏容器 -->
 <div id="game-fullscreen-container" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:5000;display:none;flex-direction:column;overflow:hidden;">
     <div id="game-header" style="display:flex;align-items:center;padding:12px 16px;background:linear-gradient(135deg,#667eea,#764ba2);">
-        <div onclick="exitGame()" style="color:white;font-size:20px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:8px;">✕ 退出</div>
+        <div onclick="exitGame()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
         <div id="game-title" style="flex:1;font-size:16px;font-weight:600;color:white;text-align:center;">游戏</div>
         <div id="game-level-badge" style="background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:12px;font-size:12px;color:white;margin-right:8px;">关卡 1</div>
     </div>
@@ -10776,7 +10091,7 @@ async function playVideoCourseWithLocal(courseId) {
     </div>
     <div id="game-board" style="flex:1;display:flex;align-items:center;justify-content:center;padding:16px;"></div>
     <div style="padding:16px;background:rgba(0,0,0,0.3);display:flex;gap:12px;">
-        <button onclick="exitGame()" style="flex:1;padding:14px;background:rgba(255,255,255,0.2);border:none;border-radius:12px;color:white;font-size:15px;font-weight:600;cursor:pointer;">✕ 退出游戏</button>
+        <button onclick="exitGame()" style="flex:1;padding:14px;background:rgba(255,255,255,0.1);border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">退出</button>
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
