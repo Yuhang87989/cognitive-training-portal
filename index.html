@@ -760,6 +760,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     </div>
 </div>
 
+<!-- API配置模态框 -->
+<div id="api-config-modal" class="modal-overlay">
+    <div class="modal-content" id="api-config-content" style="max-width:350px;"></div>
+</div>
+
+<!-- 头像选择模态框 -->
+<div id="avatar-modal" class="modal-overlay">
+    <div class="modal-content" id="avatar-modal-content" style="max-width:380px;"></div>
+</div>
+
 <!-- 全屏子页面 -->
 <div class="fullscreen-page" id="fullscreen-container">
     <div class="fp-header">
@@ -7498,6 +7508,184 @@ function viewWrongNotes() {
     openFullscreenPage('wrongNotes');
 }
 
+// ====== API配置功能 ======
+
+// API配置数据存储
+const API_CONFIG_KEY = 'cognitive_api_config';
+function getApiConfig() {
+    try {
+        const config = localStorage.getItem(API_CONFIG_KEY);
+        return config ? JSON.parse(config) : { deepseek: '', peerjs: '0.peerjs.com' };
+    } catch(e) {
+        return { deepseek: '', peerjs: '0.peerjs.com' };
+    }
+}
+function saveApiConfig(config) {
+    localStorage.setItem(API_CONFIG_KEY, JSON.stringify(config));
+}
+
+// 打开API配置弹窗
+function openApiConfigModal(type) {
+    const config = getApiConfig();
+    const modal = document.getElementById('api-config-modal');
+    const content = document.getElementById('api-config-content');
+    
+    if (!modal || !content) return;
+    
+    if (type === 'deepseek') {
+        content.innerHTML = `
+            <div class="modal-title">🔑 DeepSeek API 配置</div>
+            <div style="margin-bottom:16px;">
+                <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">API Key</label>
+                <input type="password" id="api-key-input" class="input-field" placeholder="请输入 DeepSeek API Key" value="${config.deepseek || ''}">
+                <div style="font-size:11px;color:#999;margin-top:6px;">用于AI智能助手和所有AI功能</div>
+            </div>
+            <button onclick="saveApiConfigModal('deepseek')" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存配置</button>
+            <button onclick="closeApiConfigModal()" class="login-btn login-btn-secondary">取消</button>
+        `;
+    } else if (type === 'peerjs') {
+        content.innerHTML = `
+            <div class="modal-title">🔗 PeerJS 服务器配置</div>
+            <div style="margin-bottom:16px;">
+                <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">服务器地址</label>
+                <input type="text" id="api-key-input" class="input-field" placeholder="请输入 PeerJS 服务器地址" value="${config.peerjs || '0.peerjs.com'}">
+                <div style="font-size:11px;color:#999;margin-top:6px;">用于音视频通话功能</div>
+            </div>
+            <button onclick="saveApiConfigModal('peerjs')" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存配置</button>
+            <button onclick="closeApiConfigModal()" class="login-btn login-btn-secondary">取消</button>
+        `;
+    }
+    
+    modal.classList.add('show');
+}
+
+function closeApiConfigModal() {
+    const modal = document.getElementById('api-config-modal');
+    if (modal) modal.classList.remove('show');
+}
+
+function saveApiConfigModal(type) {
+    const input = document.getElementById('api-key-input');
+    if (!input) return;
+    
+    const config = getApiConfig();
+    const value = input.value.trim();
+    
+    if (type === 'deepseek') {
+        config.deepseek = value;
+        showToast(value ? 'DeepSeek API Key 已保存' : 'DeepSeek API Key 已清除');
+    } else if (type === 'peerjs') {
+        config.peerjs = value || '0.peerjs.com';
+        showToast('PeerJS 服务器已配置');
+    }
+    
+    saveApiConfig(config);
+    updateApiStatusDisplay();
+    closeApiConfigModal();
+}
+
+function resetApiConfig() {
+    if (!confirm('确定要恢复默认配置吗？')) return;
+    
+    localStorage.removeItem(API_CONFIG_KEY);
+    showToast('API配置已重置为默认值');
+    updateApiStatusDisplay();
+}
+
+function updateApiStatusDisplay() {
+    const config = getApiConfig();
+    const deepseekStatus = document.getElementById('api-deepseek-status');
+    if (deepseekStatus) {
+        deepseekStatus.textContent = '状态：' + (config.deepseek ? '已配置' : '未配置');
+    }
+}
+
+// ====== 头像选择功能 ======
+
+// 头像列表
+const AVATAR_LIST = [
+    { emoji: '🧒', gradient: 'linear-gradient(135deg,#FFD4B8,#FFB6C1)' },
+    { emoji: '👧', gradient: 'linear-gradient(135deg,#B8D4FF,#A8C4FF)' },
+    { emoji: '👦', gradient: 'linear-gradient(135deg,#B8FFD4,#A8E4C1)' },
+    { emoji: '👨', gradient: 'linear-gradient(135deg,#E4B8FF,#D4A8FF)' },
+    { emoji: '👩', gradient: 'linear-gradient(135deg,#FFE4B8,#FFD8A8)' },
+    { emoji: '🧑', gradient: 'linear-gradient(135deg,#B8E4FF,#A8D8FF)' },
+    { emoji: '🤖', gradient: 'linear-gradient(135deg,#667eea,#764ba2)' },
+    { emoji: '🦸', gradient: 'linear-gradient(135deg,#ff6b6b,#ff4757)' },
+    { emoji: '🦊', gradient: 'linear-gradient(135deg,#FF9A63,#E87A4E)' },
+    { emoji: '🐱', gradient: 'linear-gradient(135deg,#43E97B,#38F9D7)' },
+    { emoji: '🐶', gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
+    { emoji: '🐰', gradient: 'linear-gradient(135deg,#f6d365,#fda085)' }
+];
+
+// 打开头像选择弹窗
+function openAvatarModal() {
+    const user = getCurrentUserData();
+    const modal = document.getElementById('avatar-modal');
+    const content = document.getElementById('avatar-modal-content');
+    
+    if (!modal || !content) return;
+    
+    // 获取当前头像
+    const currentAvatar = user ? user.avatar || AVATAR_LIST[0].emoji : AVATAR_LIST[0].emoji;
+    
+    let avatarHtml = '<div class="modal-title">🎨 选择头像</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">';
+    
+    AVATAR_LIST.forEach((avatar, index) => {
+        const isSelected = avatar.emoji === currentAvatar;
+        avatarHtml += `
+            <div onclick="selectAvatar('${avatar.emoji}')" style="
+                width:60px;height:60px;
+                background:${avatar.gradient};
+                border-radius:50%;
+                display:flex;align-items:center;justify-content:center;
+                font-size:28px;
+                cursor:pointer;
+                border:${isSelected ? '3px solid #667eea' : '3px solid transparent'};
+                box-shadow:${isSelected ? '0 4px 12px rgba(102,126,234,0.4)' : 'none'};
+                transition:all 0.2s;
+            ">${avatar.emoji}</div>
+        `;
+    });
+    
+    avatarHtml += '</div>';
+    avatarHtml += '<button onclick="closeAvatarModal()" class="login-btn login-btn-secondary">取消</button>';
+    
+    content.innerHTML = avatarHtml;
+    modal.classList.add('show');
+    closeUserMenu();
+}
+
+function closeAvatarModal() {
+    const modal = document.getElementById('avatar-modal');
+    if (modal) modal.classList.remove('show');
+}
+
+function selectAvatar(emoji) {
+    const user = getCurrentUserData();
+    if (user) {
+        user.avatar = emoji;
+        syncUserData(user);
+        updateAllAvatarDisplays();
+        showToast('头像已更换');
+    }
+    closeAvatarModal();
+}
+
+function updateAllAvatarDisplays() {
+    const user = getCurrentUserData();
+    if (!user) return;
+    
+    const avatar = user.avatar || AVATAR_LIST[0].emoji;
+    const headerAvatar = document.getElementById('header-avatar');
+    const dropdownAvatar = document.getElementById('dropdown-avatar');
+    const settingsAvatar = document.getElementById('settings-avatar');
+    
+    if (headerAvatar) headerAvatar.textContent = avatar;
+    if (dropdownAvatar) dropdownAvatar.textContent = avatar;
+    if (settingsAvatar) settingsAvatar.textContent = user.name.charAt(0);
+}
+
 // 清空错题本
 function clearWrongNotes() {
     if (!confirm('确定要清空所有错题记录吗？')) return;
@@ -8474,6 +8662,73 @@ function resetPomodoro() {
 }
 
 </script>
+
+<!-- 播客全屏播放器 -->
+<div id="audio-player-fullscreen" class="audio-player-modal">
+    <!-- 顶部导航栏 -->
+    <div style="display:flex;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.3);">
+        <div onclick="closeAudioPlayer()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
+        <div id="ap-title" style="flex:1;font-size:14px;font-weight:600;color:white;text-align:center;">音频课程</div>
+        <div style="width:40px;"></div>
+    </div>
+    
+    <!-- 封面区域 -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;">
+        <div id="ap-cover" class="playing" style="width:200px;height:200px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:24px;box-shadow:0 8px 32px rgba(102,126,234,0.4);transition:all 0.3s;">
+            🎧
+        </div>
+        <div id="ap-course-title" style="color:white;font-size:18px;font-weight:600;text-align:center;margin-bottom:8px;">课程名称</div>
+        <div id="ap-course-teacher" style="color:rgba(255,255,255,0.7);font-size:14px;text-align:center;">讲师 · 分类</div>
+    </div>
+    
+    <!-- 进度条 -->
+    <div style="padding:0 20px 8px;">
+        <div id="ap-progress-bar" onclick="seekAudioPlayer(event)" style="width:100%;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;cursor:pointer;position:relative;">
+            <div id="ap-progress-fill" style="height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:3px;width:0%;transition:width 0.1s;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+            <span id="ap-current-time" style="color:rgba(255,255,255,0.7);font-size:12px;">0:00</span>
+            <span id="ap-total-time" style="color:rgba(255,255,255,0.7);font-size:12px;">0:00</span>
+        </div>
+    </div>
+    
+    <!-- 播放控制按钮 -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;padding:16px 20px;">
+        <button onclick="playPrevTrack()" style="background:none;border:none;color:white;font-size:28px;cursor:pointer;padding:8px;">⏮</button>
+        <button onclick="toggleAudioPlay()" id="ap-play-btn" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:white;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(102,126,234,0.4);">▶</button>
+        <button onclick="playNextTrack()" style="background:none;border:none;color:white;font-size:28px;cursor:pointer;padding:8px;">⏭</button>
+    </div>
+    
+    <!-- 倍速和音量控制 -->
+    <div style="display:flex;align-items:center;justify-content:space-around;padding:8px 20px 24px;">
+        <div style="position:relative;">
+            <button onclick="toggleSpeedDropdown()" id="ap-speed-btn" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:8px 16px;border-radius:16px;font-size:14px;cursor:pointer;">1x</button>
+            <div id="ap-speed-dropdown" style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#2a2a4a;border-radius:12px;padding:8px;display:none;margin-bottom:8px;">
+                <div onclick="setPlaybackSpeed(0.5)" class="ap-speed-option" style="padding:8px 16px;color:white;cursor:pointer;border-radius:8px;text-align:center;">0.5x</div>
+                <div onclick="setPlaybackSpeed(0.75)" class="ap-speed-option" style="padding:8px 16px;color:white;cursor:pointer;border-radius:8px;text-align:center;">0.75x</div>
+                <div onclick="setPlaybackSpeed(1)" class="ap-speed-option active" style="padding:8px 16px;color:white;cursor:pointer;border-radius:8px;text-align:center;">1x</div>
+                <div onclick="setPlaybackSpeed(1.25)" class="ap-speed-option" style="padding:8px 16px;color:white;cursor:pointer;border-radius:8px;text-align:center;">1.25x</div>
+                <div onclick="setPlaybackSpeed(1.5)" class="ap-speed-option" style="padding:8px 16px;color:white;cursor:pointer;border-radius:8px;text-align:center;">1.5x</div>
+                <div onclick="setPlaybackSpeed(2)" class="ap-speed-option" style="padding:8px 16px;color:white;cursor:pointer;border-radius:8px;text-align:center;">2x</div>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <button onclick="toggleMute()" id="ap-volume-btn" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">🔊</button>
+            <input type="range" id="ap-volume-slider" min="0" max="100" value="80" onchange="setVolume(this.value)" style="width:80px;height:4px;-webkit-appearance:none;background:rgba(255,255,255,0.3);border-radius:2px;">
+        </div>
+    </div>
+</div>
+
+<!-- 迷你播放器 -->
+<div id="mini-player" class="mini-player" style="display:none;">
+    <div id="mini-player-thumb" style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎧</div>
+    <div style="flex:1;min-width:0;margin-left:10px;">
+        <div id="mini-player-title" style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">课程名称</div>
+        <div id="mini-player-teacher" style="font-size:11px;color:#999;">讲师</div>
+    </div>
+    <button onclick="toggleMiniPlayer()" id="mini-player-btn" style="width:36px;height:36px;border-radius:50%;background:var(--blue);border:none;color:white;font-size:14px;cursor:pointer;margin-right:8px;">▶</button>
+    <button onclick="closeMiniPlayer()" style="width:28px;height:28px;border-radius:50%;background:#f0f0f0;border:none;font-size:12px;cursor:pointer;">✕</button>
+</div>
 
 <!-- 游戏全屏容器 -->
 <div id="game-fullscreen-container" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:5000;display:none;flex-direction:column;overflow:hidden;">
