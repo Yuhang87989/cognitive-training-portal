@@ -2207,8 +2207,75 @@ function switchMainTab(tab, element) {
 function closeFullscreenPage() { const el = document.getElementById('fullscreen-container'); if (el) el.classList.remove('active'); }
 
 
+
+// 清理模块状态（在打开新模块前调用）
+function cleanupModuleState() {
+    // 停止所有游戏计时器
+    if (gameTimer) {
+        clearInterval(gameTimer);
+        gameTimer = null;
+    }
+    if (gameTimerDisplay) {
+        clearInterval(gameTimerDisplay);
+        gameTimerDisplay = null;
+    }
+    
+    // 停止番茄钟计时器
+    if (pomodoroTimer) {
+        clearInterval(pomodoroTimer);
+        pomodoroTimer = null;
+    }
+    
+    // 停止音频播放
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+    
+    // 停止视频播放
+    const videoPlayer = document.getElementById('video-player');
+    if (videoPlayer) {
+        videoPlayer.pause();
+        videoPlayer.src = '';
+    }
+    
+    // 停止TTS朗读
+    stopTTSSpeech();
+    
+    // 停止语音识别
+    if (isRecording && deepseekRecognition) {
+        deepseekRecognition.stop();
+        isRecording = false;
+    }
+    
+    // 清理DeepSeek图片
+    if (currentDeepSeekImage) {
+        currentDeepSeekImage = null;
+    }
+    
+    // 关闭全屏音频播放器
+    const audioPlayerFullscreen = document.getElementById('audio-player-fullscreen');
+    if (audioPlayerFullscreen) {
+        audioPlayerFullscreen.classList.remove('show');
+    }
+    
+    // 关闭视频全屏播放器
+    const videoPlayerFullscreen = document.getElementById('enhanced-video-player');
+    if (videoPlayerFullscreen) {
+        videoPlayerFullscreen.style.display = 'none';
+    }
+    
+    // 重置游戏全屏容器
+    const gameFullscreen = document.getElementById('game-fullscreen-container');
+    if (gameFullscreen) {
+        gameFullscreen.style.display = 'none';
+    }
+    
+    console.log('模块状态已清理');
+}
 // ====== 全屏页面切换 ======
 function openFullscreenPage(module) {
+    cleanupModuleState(); // 清理上一个模块的状态
     closeUserMenu();
     const container = document.getElementById('fullscreen-container');
     const titleEl = document.getElementById('fullscreen-title');
@@ -3181,6 +3248,108 @@ function filterPodcast(category, btn) {
     }
 }
 
+
+// 处理音频上传
+function handleAudioUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // 检查文件类型
+    if (!file.type.startsWith('audio/')) {
+        showToast('请上传音频文件');
+        return;
+    }
+
+    // 检查文件大小（限制50MB）
+    if (file.size > 50 * 1024 * 1024) {
+        showToast('音频文件不能超过50MB');
+        return;
+    }
+
+    const user = getCurrentUserData();
+    if (!user.localAudios) user.localAudios = [];
+
+    // 创建音频URL
+    const audioUrl = URL.createObjectURL(file);
+
+    // 添加到用户数据
+    const audioData = {
+        id: 'local-audio-' + Date.now(),
+        title: file.name.replace(/\.[^/.]+$/, ''),
+        url: audioUrl,
+        size: file.size,
+        type: file.type,
+        uploadTime: new Date().toLocaleString(),
+        duration: '未知'
+    };
+
+    user.localAudios.push(audioData);
+    syncUserData(user);
+
+    // 获取音频时长
+    const tempAudio = new Audio();
+    tempAudio.src = audioUrl;
+    tempAudio.onloadedmetadata = function() {
+        const mins = Math.floor(tempAudio.duration / 60);
+        const secs = Math.floor(tempAudio.duration % 60);
+        audioData.duration = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        syncUserData(user);
+        renderLocalAudioList();
+    };
+
+    showToast('音频上传成功！');
+    renderLocalAudioList();
+}
+
+// 渲染本地音频列表
+function renderLocalAudioList() {
+    const user = getCurrentUserData();
+    const localAudios = user?.localAudios || [];
+    const listEl = document.getElementById('local-audio-list');
+
+    if (!listEl) return;
+
+    if (localAudios.length === 0) {
+        listEl.innerHTML = '<div style="font-size:12px;color:#999;text-align:center;padding:12px;">暂无本地音频</div>';
+        return;
+    }
+
+    listEl.innerHTML = localAudios.map(audio => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:#f5f7ff;border-radius:8px;margin-bottom:8px;">
+            <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">${audio.title}</div>
+                <div style="font-size:11px;color:#999;">${audio.duration} · ${audio.uploadTime}</div>
+            </div>
+            <button onclick="playLocalAudio('${audio.id}')" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">播放</button>
+            <button onclick="deleteLocalAudio('${audio.id}')" style="padding:6px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>
+        </div>
+    `).join('');
+}
+
+// 播放本地音频
+function playLocalAudio(audioId) {
+    const user = getCurrentUserData();
+    const audio = user?.localAudios?.find(a => a.id === audioId);
+    if (!audio) return;
+
+    // 播放音频
+    const tempAudio = new Audio(audio.url);
+    tempAudio.play();
+    showToast('正在播放: ' + audio.title);
+}
+
+// 删除本地音频
+function deleteLocalAudio(audioId) {
+    if (!confirm('确定要删除这个音频吗？')) return;
+
+    const user = getCurrentUserData();
+    if (!user.localAudios) return;
+
+    user.localAudios = user.localAudios.filter(a => a.id !== audioId);
+    syncUserData(user);
+    renderLocalAudioList();
+    showToast('音频已删除');
+}
 function renderVideo(container) {
     // 使用videoCourses数组渲染21个视频
     const videos = videoCourses.map(function(v) {
