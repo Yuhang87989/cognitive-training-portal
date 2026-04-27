@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
-<title>认知训练 V131</title>
+<title>认知训练 V132</title>
 <link rel="icon" type="image/x-icon" href="https://yuhang87989.github.io/cognitive-training-portal/favicon.ico"/>
 <link rel="icon" type="image/png" sizes="192x192" href="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png"/>
 <link rel="apple-touch-icon" href="https://yuhang87989.github.io/cognitive-training-portal/apple-touch-icon.png"/><style>
@@ -361,6 +361,65 @@ function uploadPodcastFile(courseId, input) {
     };
     request.onerror = function() {
         showToast('数据库打开失败');
+    };
+}
+
+
+// 从扣子平台下载播客音频
+function downloadPodcastFromCoze(courseId) {
+    const course = podcastCourses.find(p => p.id === courseId);
+    if (!course) {
+        showToast('找不到该播客');
+        return;
+    }
+    
+    // 先检查本地是否有上传的音频
+    const dbName = 'cognitive_audio_db';
+    const request = indexedDB.open(dbName, 1);
+    request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('audioFiles')) {
+            db.createObjectStore('audioFiles', {keyPath: 'courseId'});
+        }
+    };
+    request.onsuccess = function(e) {
+        const db = e.target.result;
+        const tx = db.transaction('audioFiles', 'readonly');
+        const store = tx.objectStore('audioFiles');
+        const getReq = store.get(courseId);
+        getReq.onsuccess = function() {
+            if (getReq.result) {
+                // 有本地音频，下载它
+                const blob = new Blob([getReq.result.data], {type: 'audio/mpeg'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = (course.title || courseId) + '.mp3';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('正在下载本地音频');
+            } else if (course.shareUrl) {
+                // 没有本地音频，打开扣子平台页面让用户下载
+                window.open(course.shareUrl, '_blank');
+                showToast('已打开扣子平台页面，可在页面中下载');
+            } else {
+                showToast('该播客暂无可下载的音频');
+            }
+        };
+        getReq.onerror = function() {
+            if (course.shareUrl) {
+                window.open(course.shareUrl, '_blank');
+            } else {
+                showToast('下载失败');
+            }
+        };
+    };
+    request.onerror = function() {
+        if (course.shareUrl) {
+            window.open(course.shareUrl, '_blank');
+        } else {
+            showToast('下载失败');
+        }
     };
 }
 
@@ -750,7 +809,7 @@ function uploadPodcastFile(courseId, input) {
                 <div class="settings-group-inner">
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" onclick="openAbout()">
                         <div style="font-size:14px;color:#333;">版本信息</div>
-                        <div style="font-size:13px;color:#1A6BFF;">V131 →</div>
+                        <div style="font-size:13px;color:#1A6BFF;">V132 →</div>
                     </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
                         <div style="font-size:14px;color:#333;">反馈建议</div>
@@ -989,7 +1048,7 @@ function uploadPodcastFile(courseId, input) {
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v131';
+const STORAGE_KEY = 'cognitive_training_v132';
 
 // ====== 播放器全局变量 ======
 let currentAudio = null; // 音频播放器元素引用
@@ -3436,6 +3495,7 @@ function renderPodcast(container) {
                         📤 上传
                         <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
                     </label>
+                    <button onclick="event.stopPropagation();downloadPodcastFromCoze('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
                 </div>
             </div>
             `).join('')}
@@ -3470,6 +3530,7 @@ function filterPodcast(category, btn) {
                         📤 上传
                         <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
                     </label>
+                    <button onclick="event.stopPropagation();downloadPodcastFromCoze('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
                 </div>
             </div>
         `).join('');
@@ -9176,7 +9237,7 @@ function exportData() {
     
     // 添加导出元信息
     const exportData = {
-        version: 'V131',
+        version: 'V132',
         exportTime: new Date().toISOString(),
         appName: '认知训练门户',
         data: data
@@ -9488,7 +9549,7 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V131</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V132</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
@@ -10137,6 +10198,65 @@ function uploadPodcastFile(courseId, input) {
     };
     request.onerror = function() {
         showToast('数据库打开失败');
+    };
+}
+
+
+// 从扣子平台下载播客音频
+function downloadPodcastFromCoze(courseId) {
+    const course = podcastCourses.find(p => p.id === courseId);
+    if (!course) {
+        showToast('找不到该播客');
+        return;
+    }
+    
+    // 先检查本地是否有上传的音频
+    const dbName = 'cognitive_audio_db';
+    const request = indexedDB.open(dbName, 1);
+    request.onupgradeneeded = function(e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('audioFiles')) {
+            db.createObjectStore('audioFiles', {keyPath: 'courseId'});
+        }
+    };
+    request.onsuccess = function(e) {
+        const db = e.target.result;
+        const tx = db.transaction('audioFiles', 'readonly');
+        const store = tx.objectStore('audioFiles');
+        const getReq = store.get(courseId);
+        getReq.onsuccess = function() {
+            if (getReq.result) {
+                // 有本地音频，下载它
+                const blob = new Blob([getReq.result.data], {type: 'audio/mpeg'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = (course.title || courseId) + '.mp3';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('正在下载本地音频');
+            } else if (course.shareUrl) {
+                // 没有本地音频，打开扣子平台页面让用户下载
+                window.open(course.shareUrl, '_blank');
+                showToast('已打开扣子平台页面，可在页面中下载');
+            } else {
+                showToast('该播客暂无可下载的音频');
+            }
+        };
+        getReq.onerror = function() {
+            if (course.shareUrl) {
+                window.open(course.shareUrl, '_blank');
+            } else {
+                showToast('下载失败');
+            }
+        };
+    };
+    request.onerror = function() {
+        if (course.shareUrl) {
+            window.open(course.shareUrl, '_blank');
+        } else {
+            showToast('下载失败');
+        }
     };
 }
 
