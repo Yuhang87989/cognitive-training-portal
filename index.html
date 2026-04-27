@@ -2530,6 +2530,97 @@ function renderPractice(container) {
 }
 
 
+// ====== AI精准练 - 拍照识别 ======
+async function handlePracticePhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const base64 = e.target.result;
+        showToast('AI正在识别中...');
+        
+        try {
+            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: '你是一位专业的初中教育辅导老师，擅长识别题目并详细讲解。请识别图片中的题目，给出详细解答过程。' },
+                        { role: 'user', content: [
+                            { type: 'text', text: '请识别这道题目并给出详细解答：' },
+                            { type: 'image_url', image_url: { url: base64 } }
+                        ]}
+                    ]
+                })
+            });
+            
+            const data = await response.json();
+            const aiContent = data.choices?.[0]?.message?.content || 'AI识别失败，请稍后重试';
+            showPracticeResult(aiContent);
+        } catch (err) {
+            showToast('AI识别失败，请检查网络');
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+// ====== AI精准练 - 手动输入解答 ======
+async function submitPracticeQuestion() {
+    const input = document.getElementById('practice-input');
+    if (!input || !input.value.trim()) {
+        showToast('请输入问题');
+        return;
+    }
+    
+    const question = input.value.trim();
+    showToast('AI正在解答中...');
+    
+    try {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [
+                    { role: 'system', content: '你是一位专业的初中教育辅导老师，擅长解答各科题目。请给出详细的解题步骤和思路分析。' },
+                    { role: 'user', content: question }
+                ]
+            })
+        });
+        
+        const data = await response.json();
+        const aiContent = data.choices?.[0]?.message?.content || 'AI解答失败，请稍后重试';
+        showPracticeResult(aiContent);
+    } catch (err) {
+        showToast('AI解答失败，请检查网络');
+    }
+}
+
+// ====== AI精准练 - 显示结果 ======
+function showPracticeResult(content) {
+    const modal = document.getElementById('detail-modal');
+    const detailContent = document.getElementById('detail-content');
+    if (!modal || !detailContent) return;
+    
+    modal.classList.add('show');
+    detailContent.innerHTML = `
+        <div class="modal-title">🤖 AI解答</div>
+        <div style="padding:16px;background:#f5f7ff;border-radius:12px;max-height:60vh;overflow-y:auto;line-height:1.8;font-size:14px;">
+            ${content.replace(/\n/g, '<br/>')}
+        </div>
+        <button class="login-btn login-btn-primary" onclick="closeDetail()" style="margin-top:12px;">关闭</button>
+    `;
+}
+
+
 
 function renderMap(container) {
     container.innerHTML = `
