@@ -323,13 +323,22 @@ async function analyzePhotoWithAI(photoId) {
         {role: 'user', content: analysisPrompt}
     ];
     
-    await callDeepSeek(messages, null, function(content) {
-        content.innerHTML = '<div class="modal-title">📝 AI分析结果</div>' +
-            '<div class="card" style="padding:16px;max-height:400px;overflow-y:auto;">' +
-                '<div style="font-size:14px;line-height:1.8;">' + content.replace(/\n/g, '<br/>') + '</div>' +
-            '</div>' +
-            '<button class="login-btn login-btn-secondary" style="margin-top:12px;width:100%;" onclick="closeDetail()">关闭</button>';
-    }.bind(content));
+    try {
+        var aiResult = await callDeepSeekAPI(messages);
+        if (aiResult.success) {
+            content.innerHTML = '<div class="modal-title">📝 AI分析结果</div>' +
+                '<div class="card" style="padding:16px;max-height:400px;overflow-y:auto;">' +
+                    '<div style="font-size:14px;line-height:1.8;">' + aiResult.content.replace(/\n/g, '<br/>') + '</div>' +
+                '</div>' +
+                '<button class="login-btn login-btn-secondary" style="margin-top:12px;width:100%;" onclick="closeDetail()">关闭</button>';
+        } else {
+            content.innerHTML = '<div class="modal-title">❌ AI分析失败</div>' +
+                '<div class="card" style="padding:16px;text-align:center;">' + (aiResult.message || '请稍后重试') + '</div>';
+        }
+    } catch(e) {
+        content.innerHTML = '<div class="modal-title">❌ 错误</div>' +
+            '<div class="card" style="padding:16px;text-align:center;">网络错误</div>';
+    }
 }
 
 function handleDeepSeekImage(input) {
