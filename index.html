@@ -288,7 +288,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 .audio-player-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:2000;display:none;flex-direction:column;}
 .audio-player-modal.show{display:flex}
-.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
+.mini-player.show{display:flex!important}.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
 
 
 .filter-btn{padding:6px 12px;border-radius:16px;border:1px solid #e0e0e0;background:white;font-size:12px;cursor:pointer;transition:all 0.2s}
@@ -7358,46 +7358,86 @@ async function getPodcastAudioUrl(shareUrl, courseId) {
     }
     
     try {
-        console.log('正在获取签名URL:', shareUrl);
+        console.log('正在获取播客音频:', shareUrl);
         
-        // 1. fetch分享URL，跟随302获取.podcast JSON
-        var resp = await fetch(shareUrl, {redirect: 'follow', credentials: 'include'});
-        if (!resp.ok && resp.status !== 302) {
-            throw new Error('分享URL请求失败: ' + resp.status);
+        // 方法1: 直接fetch分享URL，跟随重定向获取.podcast JSON
+        try {
+            var resp = await fetch(shareUrl, {redirect: 'follow'});
+            if (resp.ok) {
+                var podcastData = await resp.json();
+                var audioUri = podcastData.audio_uri;
+                
+                if (audioUri) {
+                    console.log('获取到audio_uri:', audioUri);
+                    
+                    // 尝试调用coze API获取签名URL
+                    try {
+                        var signResp = await fetch('https://www.coze.cn/api/coze_space/get_url', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({uri: audioUri})
+                        });
+                        
+                        var signData = await signResp.json();
+                        
+                        if (signData.code === 0 && signData.data && signData.data.url) {
+                            var signedUrl = signData.data.url;
+                            console.log('获取到签名URL:', signedUrl);
+                            podcastUrlCache.cache[courseId] = signedUrl;
+                            podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
+                            return signedUrl;
+                        }
+                        console.warn('get_url API返回异常:', signData);
+                    } catch(signErr) {
+                        console.warn('get_url API调用失败:', signErr.message);
+                    }
+                    
+                    // 方法2: 直接用audio_uri构建static.coze.site URL（需要sign）
+                    // 此方法通常需要签名，无法直接访问
+                }
+            }
+        } catch(fetchErr) {
+            console.warn('fetch分享URL失败:', fetchErr.message);
         }
         
-        var podcastData = await resp.json();
-        var audioUri = podcastData.audio_uri;
-        
-        if (!audioUri) {
-            throw new Error('分享页面未返回audio_uri');
+        // 方法3: 尝试手动处理302重定向
+        try {
+            var resp2 = await fetch(shareUrl, {redirect: 'manual'});
+            if (resp2.status === 302 || resp2.status === 301) {
+                var redirectUrl = resp2.headers.get('Location');
+                console.log('获取到重定向URL:', redirectUrl);
+                if (redirectUrl) {
+                    var resp3 = await fetch(redirectUrl);
+                    if (resp3.ok) {
+                        var podcastData2 = await resp3.json();
+                        var audioUri2 = podcastData2.audio_uri;
+                        if (audioUri2) {
+                            // 尝试获取签名URL
+                            try {
+                                var signResp2 = await fetch('https://www.coze.cn/api/coze_space/get_url', {
+                                    method: 'POST',
+                                    credentials: 'include',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({uri: audioUri2})
+                                });
+                                var signData2 = await signResp2.json();
+                                if (signData2.code === 0 && signData2.data && signData2.data.url) {
+                                    podcastUrlCache.cache[courseId] = signData2.data.url;
+                                    podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
+                                    return signData2.data.url;
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+            }
+        } catch(e) {
+            console.warn('手动重定向处理失败:', e.message);
         }
         
-        console.log('获取到audio_uri:', audioUri);
-        
-        // 2. 调用coze内部API获取签名URL
-        var signResp = await fetch('https://www.coze.cn/api/coze_space/get_url', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({uri: audioUri})
-        });
-        
-        var signData = await signResp.json();
-        
-        if (signData.code === 0 && signData.data && signData.data.url) {
-            var signedUrl = signData.data.url;
-            console.log('获取到签名URL:', signedUrl);
-            
-            // 缓存结果
-            podcastUrlCache.cache[courseId] = signedUrl;
-            podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
-            
-            return signedUrl;
-        }
-        
-        console.warn('get_url API返回异常:', signData);
-        throw new Error('get_url failed: ' + (signData.msg || 'unknown'));
+        console.error('所有获取音频URL的方法均失败');
+        return null;
         
     } catch(e) {
         console.error('获取播客音频URL失败:', e);
@@ -7471,6 +7511,14 @@ function playPodcastCourse(courseId) {
     showToast('正在获取音频...');
     
     // 动态获取签名URL
+    // 先显示播放器UI
+    showMiniPlayer(course);
+    var playerEl = document.getElementById('audio-player-fullscreen');
+    var coverPlayingEl = document.getElementById('ap-cover');
+    if (playerEl) playerEl.classList.add('show');
+    if (coverPlayingEl) coverPlayingEl.classList.add('playing');
+    updatePodcastListState(courseId);
+    
     getPodcastAudioUrl(course.shareUrl, courseId).then(function(audioUrl) {
         if (audioUrl) {
             console.log('设置音频源:', audioUrl);
@@ -7487,6 +7535,7 @@ function playPodcastCourse(courseId) {
                 console.log('音频播放成功');
                 audioCtx.isPlaying = true;
                 updatePlayButtons();
+                showToast('正在播放: ' + course.title);
             }).catch(function(e) {
                 console.error('音频播放失败:', e);
                 if (e.name === 'NotAllowedError') {
@@ -7495,20 +7544,18 @@ function playPodcastCourse(courseId) {
                     showToast('播放失败，请检查网络');
                 }
             });
-            
-            showMiniPlayer(course);
-            var playerEl = document.getElementById('audio-player-fullscreen');
-            var coverPlayingEl = document.getElementById('ap-cover');
-            if (playerEl) playerEl.classList.add('show');
-            if (coverPlayingEl) coverPlayingEl.classList.add('playing');
-            updatePodcastListState(courseId);
-            showToast('正在播放: ' + course.title);
         } else {
-            console.warn('获取音频URL失败，尝试打开分享页面');
-            // 获取失败时，打开分享页面作为fallback
-            showToast('正在跳转播放页面...');
-            window.open(course.shareUrl, '_blank');
+            console.warn('获取音频URL失败');
+            // 获取失败时，提示用户在浏览器中打开
+            showToast('音频加载失败，请点击🔗链接在浏览器中播放');
+            audioCtx.isPlaying = false;
+            updatePlayButtons();
         }
+    }).catch(function(e) {
+        console.error('获取音频URL异常:', e);
+        showToast('音频加载失败，请点击🔗链接在浏览器中播放');
+        audioCtx.isPlaying = false;
+        updatePlayButtons();
     });
 }
 
@@ -10338,7 +10385,7 @@ async function askPracticeAI() {
 </div>
 
 <!-- 迷你播放器 -->
-<div id="mini-player" class="mini-player" style="display:none;">
+<div id="mini-player" class="mini-player">
     <div id="mini-player-thumb" style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎧</div>
     <div style="flex:1;min-width:0;margin-left:10px;">
         <div id="mini-player-title" style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">课程名称</div>
