@@ -718,6 +718,3 @@ window.analyzeMethodWithAI = analyzeMethodWithAI;
 window.conserveAnswer = conserveAnswer;
 window.closeDetail = closeDetail;
 window.closeModal = closeModal;
-window.startThinkingQuiz = startThinkingQuiz;
-window.rateThinkingAnswer = rateThinkingAnswer;
-window.analyzeThinkingWithAI = analyzeThinkingWithAI;
