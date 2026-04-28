@@ -438,3 +438,7 @@ function deleteThinkingNote(noteId) {
 
 
 }
+// Window exports for onclick handlers
+window.renderThinking = renderThinking;
+window.renderThinkingNotes = renderThinkingNotes;
+window.selectThinkingOpt = selectThinkingOpt;
