@@ -105,7 +105,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .fullscreen-page{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-page);z-index:200;display:none;flex-direction:column;overflow:hidden}
 .fullscreen-page.active{display:flex}
 .fp-header{display:flex;align-items:center;padding:12px 16px;background:white;border-bottom:1px solid #f0f0f0}
-.fp-back{font-size:20px;cursor:pointer;padding:8px}
+.fp-back{display:flex;align-items:center;gap:4px;font-size:16px;font-weight:600;cursor:pointer;padding:10px 16px;background:linear-gradient(135deg,#f0f0f0,#e8e8e8);border-radius:10px;color:#333;transition:all 0.2s;min-width:70px;justify-content:center}
 .fp-title{flex:1;font-size:16px;font-weight:bold;text-align:center}
 .fp-content{flex:1;overflow-y:auto;padding:12px;background:var(--bg-page)}
 .fp-nav{display:flex;background:white;border-top:1px solid #f0f0f0;padding:8px 0}
@@ -846,7 +846,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <!-- 全屏子页面 -->
 <div class="fullscreen-page" id="fullscreen-container">
     <div class="fp-header">
-        <div class="fp-back" onclick="closeFullscreenPage()">←</div>
+        <div class="fp-back" onclick="closeFullscreenPage()">← 返回</div>
         <div class="fp-title" id="fullscreen-title">页面标题</div>
         <div style="width:40px;"></div>
     </div>
