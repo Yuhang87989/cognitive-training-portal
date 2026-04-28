@@ -646,11 +646,16 @@
 
 <script>
 (function() {
-    const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/ui.js', 'js/modules/ai.js'];
+    // 加载顺序必须与ui.js中的loadOrder一致
+    const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/ai.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/ui.js'];
     let loaded = 0;
     function loadNext() {
         if (loaded >= loadOrder.length) {
-            // All modules loaded, register Service Worker
+            // All modules loaded, initialize app
+            if (typeof initPortal === 'function') {
+                initPortal();
+            }
+            // Register Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(reg => console.log('SW registered'))

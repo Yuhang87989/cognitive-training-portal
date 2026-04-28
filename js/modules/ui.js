@@ -1524,6 +1524,95 @@ if('serviceWorker' in navigator){
 
 
 // ============================================================
+// 初始化函数 - 页面加载完成后执行
+// ============================================================
+
+// 更新首页用户信息显示
+function updateHomeUserInfo(user) {
+    if (!user) {
+        user = getCurrentUserData();
+    }
+    if (!user) return;
+    
+    const gradeNames = {5:'五年级',6:'六年级',7:'初一',8:'初二',9:'初三'};
+    const name = user.name || '同学';
+    const grade = gradeNames[user.grade] || '未知';
+    const difficulty = user.difficulty || 1;
+    const avatar = user.avatar || '👤';
+    
+    // 更新问候语
+    const greetingEl = document.getElementById('greeting-name');
+    if (greetingEl) greetingEl.textContent = name;
+    
+    // 更新下拉菜单
+    const dropdownNameEl = document.getElementById('dropdown-name');
+    if (dropdownNameEl) dropdownNameEl.textContent = name;
+    
+    const dropdownInfoEl = document.getElementById('dropdown-info');
+    if (dropdownInfoEl) dropdownInfoEl.textContent = grade + ' · Lv.' + difficulty;
+    
+    // 更新难度标签
+    const diffTextEl = document.getElementById('difficulty-text');
+    if (diffTextEl) diffTextEl.textContent = 'Lv.' + difficulty;
+    
+    // 更新头像
+    updateAllAvatarDisplays();
+    
+    // 更新今日统计
+    updateTodayStats();
+}
+
+// 更新今日统计
+function updateTodayStats() {
+    const user = getCurrentUserData();
+    if (!user) return;
+    
+    const today = new Date().toDateString();
+    const todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0, streak: 0 };
+    
+    // 如果不是今天，重置统计
+    if (todayStats.date !== today) {
+        todayStats = { date: today, questions: 0, correct: 0, minutes: 0, streak: user.streak || 0 };
+        user.todayStats = todayStats;
+        syncUserData(user);
+    }
+    
+    // 更新显示
+    const questionsEl = document.getElementById('today-questions');
+    const correctEl = document.getElementById('today-correct');
+    const minutesEl = document.getElementById('today-minutes');
+    const streakEl = document.getElementById('today-streak');
+    
+    if (questionsEl) questionsEl.textContent = todayStats.questions;
+    if (correctEl) correctEl.textContent = todayStats.questions > 0 ? Math.round(todayStats.correct / todayStats.questions * 100) + '%' : '0%';
+    if (minutesEl) minutesEl.textContent = todayStats.minutes;
+    if (streakEl) streakEl.textContent = todayStats.streak || 0;
+}
+
+// 应用初始化入口函数
+function initPortal() {
+    // 检查是否有用户数据
+    const userData = getCurrentUserData();
+    
+    if (userData && userData.name) {
+        // 已登录，更新首页用户信息
+        updateHomeUserInfo(userData);
+    } else {
+        // 未登录，显示默认状态（同学）
+        updateHomeUserInfo(null);
+    }
+    
+    // 显示首页（默认就是显示的，这里确保状态正确）
+    const homePage = document.getElementById('page-home');
+    if (homePage) {
+        homePage.style.display = 'block';
+        homePage.classList.add('active');
+    }
+    
+    console.log('Portal initialized');
+}
+
+// ============================================================
 // 模块化加载器
 // ============================================================
 (function() {
@@ -1560,7 +1649,11 @@ if('serviceWorker' in navigator){
     let loaded = 0;
     function loadNext() {
         if (loaded >= loadOrder.length) {
-            // 全部加载完成后，注册Service Worker
+            // 全部加载完成后，初始化应用
+            if (typeof initPortal === 'function') {
+                initPortal();
+            }
+            // 注册Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('service-worker.js')
                     .then(reg => console.log('SW registered'))
