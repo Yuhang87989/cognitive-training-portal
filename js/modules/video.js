@@ -87,3 +87,40 @@ window.renderLocalVideoList = renderLocalVideoList;
 // ============================================================
 // Player - 播放器
 // ============================================================
+
+
+// ============================================================
+// 从V139提取的缺失函数
+// ============================================================
+
+function filterVideoCourse(category, btn) {
+    document.querySelectorAll('.subject-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    
+    var videos = videoCourses.filter(function(v) { return category === 'all' || v.category === category; });
+    var videoHtml = videos.map(function(v) {
+        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
+               '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
+               '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
+               '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +
+               '<div class="media-views">👁 ' + (v.views ? (v.views/1000).toFixed(1) + '万' : '0') + '</div></div></div>';
+    }).join('');
+    
+    document.getElementById('video-list').innerHTML = videoHtml;
+}
+
+function playVideoFromList(id) {
+    var course = videoCourses.find(function(v) { return v.id === id; });
+    if (course) {
+        // 使用增强版视频播放器，传入videoId用于记录观看进度
+        openEnhancedVideoPlayer(course.title, course.url, course.id);
+    }
+}
+
+// ============================================================
+// Window Exports
+// ============================================================
+window.filterVideoCourse = filterVideoCourse;
+window.playVideoFromList = playVideoFromList;
+window.playLocalVideo = playLocalVideo;
+window.deleteLocalVideo = deleteLocalVideo;

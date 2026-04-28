@@ -475,3 +475,17 @@ function viewWrongNotes() {
 window.clearWrongNotes = clearWrongNotes;
 window.viewWrongNotes = viewWrongNotes;
 window.openFeedback = openFeedback;
+
+// ============================================================
+// Window Exports
+// ============================================================
+window.handleWrongNoteClick = handleWrongNoteClick;
+window.showWrongNotesBySource = showWrongNotesBySource;
+window.openWrongPhotoCapture = openWrongPhotoCapture;
+window.deleteWrongPhoto = deleteWrongPhoto;
+window.removeWrongNote = removeWrongNote;
+window.showPhotoPreview = showPhotoPreview;
+window.showWrongPhotoGallery = showWrongPhotoGallery;
+window.submitFeedback = submitFeedback;
+window.closeDetail = closeDetail;
+window.closeModal = closeModal;

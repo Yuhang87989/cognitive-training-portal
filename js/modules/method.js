@@ -525,3 +525,199 @@ window.filterMethod = filterMethod;
 window.handleMethodNoteUpload = handleMethodNoteUpload;
 window.renderMethodNotes = renderMethodNotes;
 window.showMethodNote = showMethodNote;
+
+
+// ============================================================
+// 从V139提取的缺失函数
+// ============================================================
+
+function startMethodQuiz(methodId, page = 0) {
+    const questions = methodTrainingQuestions[methodId];
+    if (!questions || questions.length === 0) {
+        showToast('暂无练习题');
+        return;
+    }
+    
+    // 初始化页码
+    if (!currentMethodPage[methodId]) currentMethodPage[methodId] = 0;
+    if (page !== undefined) currentMethodPage[methodId] = page;
+    
+    const currentPage = currentMethodPage[methodId];
+    const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+    const startIndex = currentPage * QUESTIONS_PER_PAGE;
+    const pageQuestions = questions.slice(startIndex, startIndex + QUESTIONS_PER_PAGE);
+    
+    const methodNames = {
+        feyman: '费曼学习法',
+        pomodoro: '番茄工作法',
+        ebbinghaus: '艾宾浩斯遗忘曲线',
+        mindmap: '思维导图法',
+        cornell: '康奈尔笔记法',
+        sq3r: 'SQ3R阅读法',
+        timeManagement: '时间管理法'
+    };
+    
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    modal.classList.add('show');
+    
+    content.innerHTML = `
+        <div class="modal-title">📝 ${methodNames[methodId]} - 练习</div>
+        <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">
+            第 ${currentPage + 1} / ${totalPages} 页（共${questions.length}题）
+        </div>
+        <div style="max-height:400px;overflow-y:auto;margin-bottom:16px;">
+            ${pageQuestions.map((q, idx) => `
+                <div style="background:#f5f7ff;border-radius:12px;padding:12px;margin-bottom:12px;">
+                    <div style="font-size:13px;color:#1A6BFF;font-weight:600;margin-bottom:8px;">
+                        第${startIndex + idx + 1}题
+                    </div>
+                    <div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:8px;">
+                        ${q.q}
+                    </div>
+                    <textarea id="method-answer-${idx}" style="width:100%;height:60px;border:1px solid #ddd;border-radius:8px;padding:8px;font-size:13px;resize:none;" placeholder="输入你的答案..."></textarea>
+                </div>
+            `).join('')}
+        </div>
+        <button onclick="submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <div style="display:flex;gap:8px;">
+            ${currentPage > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
+            ${currentPage < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
+        </div>
+        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;">关闭</button>
+    `;
+}
+
+function rateMethodAnswer(methodId, isCorrect, questionIndex) {
+    // 播放正确/错误音效
+    if (isCorrect) {
+        SoundEffects.playCorrect();
+    } else {
+        SoundEffects.playWrong();
+    }
+    
+    const user = getCurrentUserData();
+    if (!user.methodStats) user.methodStats = {};
+    if (!user.methodStats[methodId]) user.methodStats[methodId] = { completed: 0, correct: 0, answeredQuestions: [] };
+    
+    // 避免重复统计同一题
+    if (!user.methodStats[methodId].answeredQuestions.includes(questionIndex)) {
+        user.methodStats[methodId].completed++;
+        if (isCorrect) user.methodStats[methodId].correct++;
+        user.methodStats[methodId].answeredQuestions.push(questionIndex);
+    }
+    
+    // 如果答错，自动加入错题本
+    if (!isCorrect) {
+        const questions = methodTrainingQuestions[methodId];
+        const question = questions[questionIndex];
+        if (question) {
+            const wrongKey = 'method-' + methodId + '-' + questionIndex;
+            if (!user.wrongNotes) user.wrongNotes = [];
+            // 避免重复添加同一错题
+            if (!user.wrongNotes.find(n => n.wrongKey === wrongKey)) {
+                user.wrongNotes.push({
+                    wrongKey: wrongKey,
+                    source: 'method',
+                    sourceName: '学霸方法',
+                    topicId: questionIndex,
+                    question: question.q,
+                    answer: question.a,
+                    explanation: '参考答案：' + question.a,
+                    userAnswer: '未达标',
+                    time: Date.now()
+                });
+            }
+        }
+    }
+    
+    syncUserData(user);
+    updateMethodStats();
+    showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
+}
+
+async function analyzeMethodWithAI(methodId, questionIdx) {
+    try {
+        const questions = methodTrainingQuestions[methodId];
+        if (!questions || !questions[questionIdx]) {
+            showToast('题目数据不存在');
+            return;
+        }
+        const q = questions[questionIdx];
+        const resultId = 'method-ai-result-' + methodId + '-' + questionIdx;
+        const resultEl = document.getElementById(resultId);
+        if (!resultEl) {
+            showToast('结果区域未找到，请重新打开此模块');
+            return;
+        }
+        resultEl.innerHTML = '<div style="text-align:center;padding:20px;"><div style="display:inline-block;width:24px;height:24px;border:3px solid #667eea;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="margin-top:8px;color:#666;font-size:13px;">🤖 AI正在深度分析中...</div></div>';
+
+        const prompt = '请详细讲解这道学习方法题目：\n题目：' + q.q + '\n' + (q.a ? '参考答案：' + q.a : '') + '\n\n请提供：\n1. 知识点分析\n2. 详细解题步骤\n3. 易错点提示\n4. 举一反三的类似题目（2-3道）';
+
+        const response = await fetch(DEEPSEEK_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+            body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [
+                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解学习方法题目，帮助学生理解知识点并举一反三。请用简洁易懂的语言回答。' },
+                    { role: 'user', content: prompt }
+                ]
+            })
+        });
+
+        if (response.status === 402) {
+            resultEl.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足，请先充值后再使用AI功能<br><button onclick="showDeepSeekBalanceAlert()" style="margin-top:8px;padding:6px 16px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+            return;
+        }
+
+        const data = await response.json();
+        const aiContent = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'AI分析失败，请稍后重试';
+
+        resultEl.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;max-height:400px;overflow-y:auto;">' +
+            '<div style="font-size:12px;color:#667eea;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:4px;">🤖 AI深度分析</div>' +
+            '<div style="font-size:14px;line-height:1.8;color:#333;">' + aiContent.replace(/\n/g, '<br>') + '</div>' +
+            '</div>';
+    } catch (err) {
+        const resultId = 'method-ai-result-' + methodId + '-' + questionIdx;
+        const resultEl = document.getElementById(resultId);
+        if (resultEl) {
+            resultEl.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">AI分析失败，请检查网络连接</div>';
+        }
+    }
+}
+
+function conserveAnswer(idx) {
+    const data = window._conserveData;
+    if (!data) return;
+    if (idx === data.questions[data.current].correct) data.score++;
+    data.current++;
+    showConserveQuestion();
+}
+
+function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+
+function closeModal(modalId) {
+    if (!modalId) {
+        // 如果没有指定 modalId，默认关闭 detail-modal
+        const modal = document.getElementById('detail-modal');
+        if (modal) modal.classList.remove('show');
+    } else {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.classList.remove('show');
+    }
+}
+
+
+// ============================================================
+// Window Exports
+// ============================================================
+window.startMethodQuiz = startMethodQuiz;
+window.rateMethodAnswer = rateMethodAnswer;
+window.analyzeMethodWithAI = analyzeMethodWithAI;
+window.conserveAnswer = conserveAnswer;
+window.closeDetail = closeDetail;
+window.closeModal = closeModal;
+window.startThinkingQuiz = startThinkingQuiz;
+window.rateThinkingAnswer = rateThinkingAnswer;
+window.analyzeThinkingWithAI = analyzeThinkingWithAI;

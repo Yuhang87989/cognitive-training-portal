@@ -768,3 +768,19 @@ function saveApiConfigModal(type) {
 
 // Window exports for onclick handlers
 window.openDeepSeekRecharge = openDeepSeekRecharge;
+
+// ============================================================
+// Window Exports
+// ============================================================
+window.sendToDeepSeek = sendToDeepSeek;
+window.clearDeepSeekImage = clearDeepSeekImage;
+window.askTemplate = askTemplate;
+window.toggleDeepSeekVoice = toggleDeepSeekVoice;
+window.queryDeepSeekBalance = queryDeepSeekBalance;
+window.showDeepSeekBalanceAlert = showDeepSeekBalanceAlert;
+window.analyzePhotoWithAI = analyzePhotoWithAI;
+window.sendMentorMessage = sendMentorMessage;
+window.toggleVoiceInput = toggleVoiceInput;
+window.closeDetail = closeDetail;
+window.selectRechargePackage = selectRechargePackage;
+window.closeModal = closeModal;

@@ -1227,3 +1227,218 @@ window.exportData = exportData;
 window.importData = importData;
 window.showDataStatsModal = showDataStatsModal;
 window.syncData = syncData;
+
+
+// ============================================================
+// 从V139提取的缺失函数
+// ============================================================
+
+function filterPodcast(category, btn) {
+    document.querySelectorAll('.subject-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // 使用全局podcastCourses数组
+    const podcasts = podcastCourses;
+    const filtered = category === 'all' ? podcasts : podcasts.filter(p => p.category === category);
+    const list = document.getElementById('podcast-list');
+    
+    if (list) {
+        list.innerHTML = filtered.map(p => `
+            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
+                <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
+                <div class="podcast-info">${p.title}<div class="podcast-meta">${p.teacher} · ${p.duration} · ${p.category}</div></div>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;" onclick="event.stopPropagation();">
+                    ${p.shareUrl ? `<a href="${p.shareUrl}" target="_blank" style="font-size:11px;color:#3377FF;text-decoration:none;">🔗</a>` : ''}
+                    <label style="cursor:pointer;font-size:11px;color:#4CAF50;">📤<input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)"></label>
+                    <button onclick="downloadPodcastFromCoze('${p.id}')" style="font-size:11px;color:#FF6B6B;background:none;border:none;cursor:pointer;padding:0;">⬇️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function playPodcastCourse(courseId) {
+    var audioEl = document.getElementById('hidden-audio');
+    if (!audioEl) {
+        showToast('播放器初始化失败，请刷新页面');
+        return;
+    }
+    var course = null;
+    for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === courseId) { course = podcastCourses[i]; break; } }
+    if (!course) return;
+    audioCtx.currentTrack = course;
+    audioCtx.currentIndex = -1;
+    for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === courseId) { audioCtx.currentIndex = i; break; } }
+    var titleEl = document.getElementById('ap-title');
+    var coverEl = document.getElementById('ap-cover');
+    var courseTitleEl = document.getElementById('ap-course-title');
+    var courseTeacherEl = document.getElementById('ap-course-teacher');
+    if (titleEl) titleEl.textContent = '音频课程';
+    if (coverEl) { coverEl.innerHTML = course.icon; coverEl.style.background = course.gradient; }
+    if (courseTitleEl) courseTitleEl.textContent = course.title;
+    if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
+    
+    if (!course.shareUrl) {
+        showToast('该播客暂不可用');
+        return;
+    }
+    
+    // 显示播放器UI
+    showMiniPlayer(course);
+    var playerEl = document.getElementById('audio-player-fullscreen');
+    var coverPlayingEl = document.getElementById('ap-cover');
+    if (playerEl) playerEl.classList.add('show');
+    if (coverPlayingEl) coverPlayingEl.classList.add('playing');
+    updatePodcastListState(courseId);
+    
+    // 尝试获取播客数据（包含字幕文本）
+    showToast('正在加载播客...');
+    fetch(course.shareUrl, {redirect: 'follow'}).then(function(resp) {
+        if (!resp.ok) throw new Error('fetch failed');
+        return resp.json();
+    }).then(function(podcastData) {
+        // 保存字幕数据供TTS使用
+        if (podcastData.captions) {
+            window._currentPodcastCaptions = podcastData.captions;
+        }
+        // 保存audio_uri
+        var audioUri = podcastData.audio_uri;
+        if (audioUri) {
+            window._currentAudioUri = audioUri;
+        }
+        
+        // 尝试获取签名音频URL
+        return tryGetSignedAudioUrl(audioUri, courseId, audioEl);
+    }).then(function(signedUrl) {
+        if (signedUrl) {
+            // 有签名URL，直接播放原声
+            audioEl.src = signedUrl;
+            if (savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
+            audioEl.playbackRate = audioCtx.playbackSpeed;
+            audioEl.volume = audioCtx.volume;
+            audioEl.play().then(function() {
+                audioCtx.isPlaying = true;
+                updatePlayButtons();
+                showToast('正在播放: ' + course.title);
+            }).catch(function(e) {
+                showToast('播放失败，尝试语音朗读模式');
+                startPodcastTTS();
+            });
+        } else {
+            // 没有签名URL，使用TTS朗读模式
+            showToast('使用语音朗读模式播放');
+            startPodcastTTS();
+        }
+    }).catch(function(e) {
+        console.error('播客加载失败:', e);
+        showToast('加载失败，尝试语音朗读');
+        startPodcastTTS();
+    });
+}
+
+function playLocalAudio(audioId) {
+    const user = getCurrentUserData();
+    const audio = user?.localAudios?.find(a => a.id === audioId);
+    if (!audio) return;
+
+    // 播放音频
+    const tempAudio = new Audio(audio.url);
+    tempAudio.play();
+    showToast('正在播放: ' + audio.title);
+}
+
+function playLocalVideo(videoId) {
+    const user = getCurrentUserData();
+    const video = user?.localVideos?.find(v => v.id === videoId);
+    if (!video) return;
+    
+    // 使用增强版视频播放器
+    openEnhancedVideoPlayer(video.title, video.url);
+}
+
+function deleteLocalAudio(audioId) {
+    if (!confirm('确定要删除这个音频吗？')) return;
+
+    const user = getCurrentUserData();
+    if (!user.localAudios) return;
+
+    user.localAudios = user.localAudios.filter(a => a.id !== audioId);
+    syncUserData(user);
+    renderLocalAudioList();
+    showToast('音频已删除');
+}
+
+function deleteLocalVideo(videoId) {
+    if (!confirm('确定删除这个视频吗？')) return;
+    
+    const user = getCurrentUserData();
+    user.localVideos = user.localVideos.filter(v => v.id !== videoId);
+    syncUserData(user);
+    renderLocalVideoList();
+    showToast('视频已删除');
+}
+
+async function analyzeTopicWithAI(topicId) {
+    const topic = findTopic(topicId);
+    if (!topic) return;
+    
+    const resultArea = document.getElementById('topic-result-area');
+    resultArea.innerHTML = '<div class="ai-loading">🤖 AI正在分析中...</div>';
+    
+    const prompt = `请详细讲解这道题目：
+题目：${topic.q}
+正确答案：${topic.a}
+基础解析：${topic.e}
+
+请提供：
+1. 知识点分析
+2. 详细解题步骤
+3. 易错点提示
+4. 举一反三的类似题目（2-3道）`;
+
+    try {
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [
+                    { role: 'system', content: '你是一位专业的初中数学老师，擅长详细讲解题目，帮助学生理解知识点。' },
+                    { role: 'user', content: prompt }
+                ]
+            })
+        });
+        
+        const data = await response.json();
+        const aiContent = data.choices?.[0]?.message?.content || 'AI分析失败，请稍后重试';
+        
+        resultArea.innerHTML = `
+            <div style="margin-top:12px;padding:16px;background:#f5f7ff;border-radius:12px;max-height:300px;overflow-y:auto;">
+                <div style="font-size:14px;line-height:1.8;">${aiContent.replace(/\n/g, '<br/>')}</div>
+            </div>
+        `;
+    } catch (err) {
+        resultArea.innerHTML = '<div style="margin-top:12px;color:#ff6b6b;">AI分析失败，请检查网络</div>';
+    }
+}
+
+// ============================================================
+// Window Exports
+// ============================================================
+window.stopTTSSpeech = stopTTSSpeech;
+window.filterPodcast = filterPodcast;
+window.playPodcastCourse = playPodcastCourse;
+window.playLocalAudio = playLocalAudio;
+window.playLocalVideo = playLocalVideo;
+window.deleteLocalAudio = deleteLocalAudio;
+window.deleteLocalVideo = deleteLocalVideo;
+window.downloadPodcastFromCoze = downloadPodcastFromCoze;
+window.loginCozePlatform = loginCozePlatform;
+window.checkCozeLogin = checkCozeLogin;
+window.analyzeTopicWithAI = analyzeTopicWithAI;
+window.checkTopicAnswer = checkTopicAnswer;
+window.closeDetail = closeDetail;
+window.closeModal = closeModal;

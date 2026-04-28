@@ -6133,5 +6133,44 @@ function whackMole(idx) {
 }
 
 // ============================================================
-// DeepSeek - AI对话
+// Window Exports - 游戏模块
 // ============================================================
+window.startGame = startGame;
+window.exitGame = exitGame;
+window.resetGame = resetGame;
+window.checkSchulte = checkSchulte;
+window.clickAttention = clickAttention;
+window.startAttentionSeq = startAttentionSeq;
+window.checkDigit = checkDigit;
+window.checkPattern = checkPattern;
+window.checkMathAnswer = checkMathAnswer;
+window.checkVisual = checkVisual;
+window.textMemoryStartTest = textMemoryStartTest;
+window.textMemoryCheck = textMemoryCheck;
+window.textMemoryNext = textMemoryNext;
+window.checkWordAssoc = checkWordAssoc;
+window.classifyItem = classifyItem;
+window.unclassifyItem = unclassifyItem;
+window.checkClassification = checkClassification;
+window.checkDiff = checkDiff;
+window.checkReason = checkReason;
+window.checkShapeReason = checkShapeReason;
+window.checkSpaceRotate = checkSpaceRotate;
+window.playSound = playSound;
+window.shuffleSlide = shuffleSlide;
+window.tapTarget = tapTarget;
+window.reset2048 = reset2048;
+window.whackMole = whackMole;
+window.networkSelect = networkSelect;
+window.experimentSelect = experimentSelect;
+window.startClassification = startClassification;
+window.startVisualTracking = startVisualTracking;
+window.clickLink = clickLink;
+window.flipCard = flipCard;
+window.closeGame = closeGame;
+window.updateGameLevelBadge = updateGameLevelBadge;
+window.updateTrainCount = updateTrainCount;
+window.numshapeAnswer = numshapeAnswer;
+window.reverseAnswer = reverseAnswer;
+window.stroopAnswer = stroopAnswer;
+window.palaceClick = palaceClick;
