@@ -429,4 +429,4 @@ window.showCreateUserModal = showCreateUserModal;
 window.showUserSwitchModal = showUserSwitchModal;
 window.toggleUserMenu = toggleUserMenu;
 window.selectAvatar = selectAvatar;
-window.selectGrade = selectGrade;
+if (typeof selectGrade !== "undefined") window.selectGrade = selectGrade;
