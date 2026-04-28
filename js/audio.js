@@ -161,3 +161,130 @@ const SoundEffects = {
 // ============================================================
 // Utils - 工具函数
 // ============================================================
+// ============================================================
+// TTS - 文字转语音
+// ============================================================
+
+let ttsUtterance = null;
+let isTTSPlaying = false;
+
+function speakText(text) {
+    if (!('speechSynthesis' in window)) {
+        console.log('Speech synthesis not supported');
+        return;
+    }
+    
+    // 停止之前的朗读
+    stopTTSSpeech();
+    
+    // 清理文本（移除Markdown和多余空白）
+    let cleanText = text.replace(/\*\*/g, '').replace(/`/g, '').replace(/<[^>]*>/g, '');
+    
+    ttsUtterance = new SpeechSynthesisUtterance(cleanText);
+    ttsUtterance.lang = 'zh-CN';
+    ttsUtterance.rate = 1.0;
+    ttsUtterance.pitch = 1.0;
+    
+    // 尝试选择中文语音
+    const voices = speechSynthesis.getVoices();
+    const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN'));
+    if (chineseVoice) {
+        ttsUtterance.voice = chineseVoice;
+    }
+    
+    ttsUtterance.onstart = function() {
+        isTTSPlaying = true;
+        const stopBtn = document.getElementById('tts-stop-btn');
+        if (stopBtn) stopBtn.style.display = 'inline-block';
+    };
+    
+    ttsUtterance.onend = function() {
+        isTTSPlaying = false;
+        const stopBtn = document.getElementById('tts-stop-btn');
+        if (stopBtn) stopBtn.style.display = 'none';
+    };
+    
+    ttsUtterance.onerror = function() {
+        isTTSPlaying = false;
+        const stopBtn = document.getElementById('tts-stop-btn');
+        if (stopBtn) stopBtn.style.display = 'none';
+    };
+    
+    speechSynthesis.speak(ttsUtterance);
+}
+
+function stopTTSSpeech() {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+    }
+    isTTSPlaying = false;
+    const stopBtn = document.getElementById('tts-stop-btn');
+    if (stopBtn) stopBtn.style.display = 'none';
+}
+
+// 导出到window
+window.speakText = speakText;
+window.stopTTSSpeech = stopTTSSpeech;
+
+// ============================================================
+// DeepSeek语音输入
+// ============================================================
+
+let deepseekRecognition = null;
+let isRecording = false;
+
+function toggleDeepSeekVoice() {
+    const btn = document.getElementById('deepseek-voice-btn');
+    const input = document.getElementById('deepseek-input');
+    if (!input) return;
+    
+    if (!deepseekRecognition) {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            showToast('您的浏览器不支持语音输入');
+            return;
+        }
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        deepseekRecognition = new SpeechRecognition();
+        deepseekRecognition.lang = 'zh-CN';
+        deepseekRecognition.continuous = false;
+        deepseekRecognition.interimResults = false;
+        
+        deepseekRecognition.onstart = function() {
+            isRecording = true;
+            if (btn) btn.textContent = '🔴';
+            showToast('正在聆听...');
+        };
+        
+        deepseekRecognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            input.value = transcript;
+            if (btn) btn.textContent = '🎤';
+            showToast('已识别: ' + transcript);
+        };
+        
+        deepseekRecognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            isRecording = false;
+            if (btn) btn.textContent = '🎤';
+            if (event.error !== 'no-speech') {
+                showToast('语音识别错误: ' + event.error);
+            }
+        };
+        
+        deepseekRecognition.onend = function() {
+            isRecording = false;
+            if (btn) btn.textContent = '🎤';
+        };
+    }
+    
+    if (isRecording) {
+        deepseekRecognition.stop();
+        isRecording = false;
+        if (btn) btn.textContent = '🎤';
+    } else {
+        deepseekRecognition.start();
+    }
+}
+
+window.toggleDeepSeekVoice = toggleDeepSeekVoice;

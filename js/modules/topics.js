@@ -1,12 +1,5 @@
 // 版本: V140
-
-
-let currentTopicsSubject = 'math';
-CTM.registerModule('topics', {
-    name: 'topics',
-    icon: '🎯',
-    render: renderTopics
-});
+// 母题训练模块
 
 function renderTopics(container) {
     // 获取当前用户年级
@@ -40,6 +33,100 @@ function renderTopics(container) {
     loadTopicsList();
 }
 
+let currentTopicsGrade = 7;
+let currentTopicsSubject = 'math';
+let currentTopicsPage = 1;
+const topicsPerPage = 8;
+
+function selectTopicsGrade(btn, grade) {
+    document.querySelectorAll('.grade-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTopicsGrade = grade;
+    currentTopicsPage = 1;
+    loadTopicsList();
+}
+
+function selectTopicsSubject(btn, subject) {
+    document.querySelectorAll('.subject-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentTopicsSubject = subject;
+    currentTopicsPage = 1;
+    loadTopicsList();
+}
+
+function getTopicsList() {
+    const key = currentTopicsSubject + currentTopicsGrade;
+    return topics[key] || [];
+}
+
+function loadTopicsList() {
+    const container = document.getElementById('topics-list-container');
+    if (!container) return;
+    
+    const topicsList = getTopicsList();
+    const total = topicsList.length;
+    const totalPages = Math.ceil(total / topicsPerPage);
+    const start = (currentTopicsPage - 1) * topicsPerPage;
+    const end = Math.min(start + topicsPerPage, total);
+    const pageTopics = topicsList.slice(start, end);
+    
+    if (total === 0) {
+        container.innerHTML = '<div class="card"><div style="text-align:center;padding:30px;color:#999;">暂无该科目题目</div></div>';
+        return;
+    }
+    
+    const gradients = ['gradient-blue', 'gradient-orange', 'gradient-green', 'gradient-purple', 'gradient-pink', 'gradient-cyan'];
+    
+    container.innerHTML = `
+        <div class="card" style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;color:#666;">共 ${total} 道母题</span>
+                <span style="font-size:12px;color:#999;">第 ${currentTopicsPage}/${totalPages} 页</span>
+            </div>
+        </div>
+        ${pageTopics.map((t, i) => `
+            <div class="topic-card" onclick="openTopicQuestion(${t.id})">
+                <div class="topic-header ${gradients[i % gradients.length]}">
+                    <div class="topic-title">${t.title}</div>
+                    <div class="topic-subtitle">难度: ${'⭐'.repeat(t.diff || 2)}</div>
+                </div>
+                <div class="topic-footer">
+                    <span class="topic-difficulty">ID: ${t.id}</span>
+                    <span style="color:#3377FF;">开始练习 →</span>
+                </div>
+            </div>
+        `).join('')}
+        <div style="display:flex;gap:12px;padding:12px;">
+            <button class="game-btn btn-orange" style="flex:1;" onclick="prevTopicsPage()" ${currentTopicsPage <= 1 ? 'disabled style="opacity:0.5;"' : ''}>上一页</button>
+            <button class="game-btn btn-blue" style="flex:1;" onclick="nextTopicsPage()" ${currentTopicsPage >= totalPages ? 'disabled style="opacity:0.5;"' : ''}>下一页</button>
+        </div>
+    `;
+}
+
+function prevTopicsPage() {
+    if (currentTopicsPage > 1) {
+        currentTopicsPage--;
+        loadTopicsList();
+    }
+}
+
+function nextTopicsPage() {
+    const total = getTopicsList().length;
+    const totalPages = Math.ceil(total / topicsPerPage);
+    if (currentTopicsPage < totalPages) {
+        currentTopicsPage++;
+        loadTopicsList();
+    }
+}
+
+function findTopic(topicId) {
+    for (let key in topics) {
+        const found = topics[key].find(t => t.id === topicId);
+        if (found) return found;
+    }
+    return null;
+}
+
 function openTopicQuestion(topicId) {
     const topic = findTopic(topicId);
     if (!topic) {
@@ -71,12 +158,16 @@ function openTopicQuestion(topicId) {
     `;
 }
 
-function submitTopicAnswer(topicId) {
-    const answer = document.getElementById('practice-answer').value.trim();
-    const topic = topicsMath7.find(t => t.id === topicId) || 
-                  topicsEnglish7.find(t => t.id === topicId) ||
-                  topicsChinese7.find(t => t.id === topicId);
-    if (!topic) return;
+function checkTopicAnswer(topicId) {
+    const input = document.getElementById('topic-answer-input');
+    const resultArea = document.getElementById('topic-result-area');
+    const answer = input.value.trim();
+    const topic = findTopic(topicId);
+    
+    if (!answer) {
+        showToast('请输入答案');
+        return;
+    }
     
     const isCorrect = answer.toLowerCase() === topic.a.toLowerCase();
     
@@ -87,35 +178,39 @@ function submitTopicAnswer(topicId) {
         SoundEffects.playWrong();
     }
     
-    const resultDiv = document.getElementById('practice-result');
-    resultDiv.className = 'practice-result ' + (isCorrect ? 'correct' : 'wrong');
-    resultDiv.innerHTML = isCorrect 
-        ? '<span class="answer-highlight">✅ 回答正确！</span>' 
-        : '<span>❌ 回答错误，正确答案是：<span class="answer-highlight">' + topic.a + '</span></span><div class="explanation">📝 解析：' + topic.e + '</div>';
-    resultDiv.innerHTML = isCorrect 
-        ? '<span class="answer-highlight">✅ 回答正确！</span>' 
-        : '<span>❌ 回答错误，正确答案是：<span class="answer-highlight">' + topic.a + '</span></span><div class="explanation">📝 解析：' + topic.e + '</div>';
-    resultDiv.innerHTML = isCorrect 
-        ? '<span class="answer-highlight">✅ 回答正确！</span>' 
-        : '<span>❌ 回答错误，正确答案是：<span class="answer-highlight">' + topic.a + '</span></span><div class="explanation">📝 解析：' + topic.e + '</div>';
-    resultDiv.innerHTML = isCorrect 
-        ? '<span class="answer-highlight">✅ 回答正确！</span>' 
-        : '<span>❌ 回答错误，正确答案是：<span class="answer-highlight">' + topic.a + '</span></span><div class="explanation">📝 解析：' + topic.e + '</div>';
+    resultArea.className = 'practice-result ' + (isCorrect ? 'correct' : 'wrong');
+    resultArea.innerHTML = isCorrect 
+        ? `<div style="margin-top:12px;">✅ 回答正确！</div>
+           <div style="margin-top:8px;font-size:13px;color:#666;">解析：${topic.e}</div>
+           <button class="game-btn btn-blue" style="margin-top:12px;" onclick="analyzeTopicWithAI(${topicId})">🤖 AI详细解说</button>`
+        : `<div style="margin-top:12px;">❌ 回答错误</div>
+           <div style="margin-top:8px;">正确答案：<strong style="color:#3377FF;">${topic.a}</strong></div>
+           <div style="margin-top:8px;font-size:13px;color:#666;">解析：${topic.e}</div>
+           <button class="game-btn btn-blue" style="margin-top:12px;" onclick="analyzeTopicWithAI(${topicId})">🤖 AI详细解说</button>`;
     
-    // 更新用户数据
+    // 更新用户统计
     const userData = getCurrentUserData();
     if (userData) {
         if (!userData.topicStats) userData.topicStats = {};
-        userData.topicStats[topicId] = { correct: isCorrect, attempts: (userData.topicStats[topicId]?.attempts || 0) + 1 };
-        syncUserData(userData);
-    }
-}
-
-window.renderTopics = renderTopics;
-window.openTopicQuestion = openTopicQuestion;
-window.submitTopicAnswer = submitTopicAnswer;
-
-
-// ============================================================
-// Method - 学法指导
-// ============================================================
+        userData.topicStats[topicId] = { 
+            correct: isCorrect, 
+            attempts: (userData.topicStats[topicId]?.attempts || 0) + 1,
+            lastTime: Date.now()
+        };
+        
+        // 错题自动加入错题本
+        if (!isCorrect) {
+            if (!userData.wrongNotes) userData.wrongNotes = [];
+            const wrongKey = 'topic-' + topicId;
+            // 避免重复
+            if (!userData.wrongNotes.find(n => n.wrongKey === wrongKey)) {
+                userData.wrongNotes.push({
+                    wrongKey: wrongKey,
+                    source: 'topic',
+                    sourceName: '母题训练',
+                    topicId: topicId,
+                    question: topic.q,
+                    answer: topic.a,
+                    explanation: topic.e,
+                    userAnswer: answer,
+                    time: Date.now()
