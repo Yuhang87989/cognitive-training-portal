@@ -912,7 +912,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <!-- 增强版视频播放器 -->
 <div id="enhanced-video-player" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;display:none;flex-direction:column;">
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:12px 16px;background:linear-gradient(rgba(0,0,0,0.6),transparent);">
-        <div onclick="closeEnhancedVideoPlayer()" style="color:white;font-size:20px;cursor:pointer;padding:8px 12px;display:flex;align-items:center;gap:6px;">← 返回</div>
+        <div onclick="closeEnhancedVideoPlayer()" style="color:white;font-size:18px;cursor:pointer;padding:8px 12px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:8px;">← 退出</div>
         <div id="evp-title" style="color:white;font-size:14px;font-weight:bold;margin-left:8px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
     </div>
     <video id="evp-video" playsinline style="width:100%;height:100%;object-fit:contain;"></video>
@@ -7595,12 +7595,39 @@ function toggleMute() {
     else { setVolume((audioCtx.lastVolume || 0.8) * 100); var sliderEl = document.getElementById('ap-volume-slider'); if (sliderEl) sliderEl.value = (audioCtx.lastVolume || 0.8) * 100; }
 }
 
-function closeAudioPlayer() { var playerEl = document.getElementById('audio-player-fullscreen'); var coverEl = document.getElementById('ap-cover'); if (playerEl) playerEl.classList.remove('show'); if (coverEl) coverEl.classList.remove('playing'); }
+function closeAudioPlayer() { 
+    // 暂停音频（不重置进度）
+    if (currentAudio) { currentAudio.pause(); audioCtx.isPlaying = false; }
+    // 隐藏全屏播放器
+    var playerEl = document.getElementById('audio-player-fullscreen'); 
+    var coverEl = document.getElementById('ap-cover'); 
+    if (playerEl) playerEl.classList.remove('show'); 
+    if (coverEl) coverEl.classList.remove('playing');
+    // 显示迷你播放器（用户可以在底部继续控制）
+    if (audioCtx.currentTrack) {
+        var miniEl = document.getElementById('mini-player');
+        if (miniEl) miniEl.classList.add('show');
+    }
+    updatePlayButtons();
+}
 function updatePlayButtons() { var icon = audioCtx.isPlaying ? '⏸' : '▶'; var apPlayBtn = document.getElementById('ap-play-btn'); var miniBtn = document.getElementById('mini-player-btn'); if (apPlayBtn) apPlayBtn.innerHTML = icon; if (miniBtn) miniBtn.innerHTML = icon; }
 
 function showMiniPlayer(course) { var thumbEl = document.getElementById('mini-player-thumb'); var titleEl = document.getElementById('mini-player-title'); var teacherEl = document.getElementById('mini-player-teacher'); var playerEl = document.getElementById('mini-player'); if (thumbEl) { thumbEl.innerHTML = course.icon; thumbEl.style.background = course.gradient; } if (titleEl) titleEl.textContent = course.title; if (teacherEl) teacherEl.textContent = course.teacher; if (playerEl) playerEl.classList.add('show'); }
 function toggleMiniPlayer() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
-function closeMiniPlayer() { if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; } var miniEl = document.getElementById('mini-player'); var playerEl = document.getElementById('audio-player-fullscreen'); if (miniEl) miniEl.classList.remove('show'); if (playerEl) playerEl.classList.remove('show'); document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { item.classList.remove('playing'); }); }
+function closeMiniPlayer() { 
+    // 完全停止音频
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.src = ''; } 
+    audioCtx.isPlaying = false; 
+    audioCtx.currentTrack = null;
+    // 隐藏迷你播放器和全屏播放器
+    var miniEl = document.getElementById('mini-player'); 
+    var playerEl = document.getElementById('audio-player-fullscreen'); 
+    if (miniEl) miniEl.classList.remove('show'); 
+    if (playerEl) playerEl.classList.remove('show');
+    // 清除播放状态
+    document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { item.classList.remove('playing'); });
+    updatePlayButtons();
+}
 
 function updatePodcastListState(courseId) { document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); if (id === courseId) { item.classList.add('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'flex'; } else { item.classList.remove('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'none'; } }); }
 
@@ -7935,7 +7962,15 @@ function toggleEnhancedSpeedDropdown() { var speeds = [0.5, 1, 1.25, 1.5, 2]; va
 function setEnhancedPlaybackSpeed(speed) { videoCtx.playbackSpeed = speed; if (evpVideo) evpVideo.playbackRate = speed; var speedBtnEl = document.getElementById('evp-speed-btn'); if (speedBtnEl) speedBtnEl.textContent = speed + 'x'; }
 function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { showToast('画中画模式不支持'); }); } }
 function toggleEnhancedFullscreen() { var playerEl = document.getElementById('enhanced-video-player'); if (!playerEl) return; if (document.fullscreenElement) { document.exitFullscreen().catch(function(e) {}); } else { playerEl.requestFullscreen().catch(function(e) {}); } }
-function closeEnhancedVideoPlayer() { if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; } var playerEl = document.getElementById('enhanced-video-player'); if (playerEl) playerEl.style.display = 'none'; }
+function closeEnhancedVideoPlayer() { 
+    if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; } 
+    videoCtx.isPlaying = false; 
+    videoCtx.currentVideo = null;
+    var playerEl = document.getElementById('enhanced-video-player'); 
+    if (playerEl) playerEl.style.display = 'none';
+    // 退出全屏模式
+    if (document.fullscreenElement) { document.exitFullscreen().catch(function() {}); }
+}
 function updateEnhancedPlayButtons() { var icon = videoCtx.isPlaying ? '⏸' : '▶'; var playBtnEl = document.getElementById('evp-play-btn'); var bigPlayEl = document.getElementById('evp-big-play'); if (playBtnEl) playBtnEl.innerHTML = icon; if (bigPlayEl) bigPlayEl.innerHTML = icon; }
 function updateVideoListState(courseId) { document.querySelectorAll('.video-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); item.classList.toggle('playing', id === courseId); }); }
 function formatTimeFull(seconds) { if (!seconds || isNaN(seconds)) return '0:00'; var mins = Math.floor(seconds / 60); var secs = Math.floor(seconds % 60); return mins + ':' + (secs < 10 ? '0' : '') + secs; }
@@ -10332,9 +10367,9 @@ async function askPracticeAI() {
 <div id="audio-player-fullscreen" class="audio-player-modal">
     <!-- 顶部导航栏 -->
     <div style="display:flex;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.3);">
-        <div onclick="closeAudioPlayer()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
+        <div onclick="closeAudioPlayer()" style="color:white;font-size:20px;cursor:pointer;padding:8px;display:flex;align-items:center;gap:4px;">← 返回</div>
         <div id="ap-title" style="flex:1;font-size:14px;font-weight:600;color:white;text-align:center;">音频课程</div>
-        <div style="width:40px;"></div>
+        <div onclick="closeMiniPlayer()" style="color:white;font-size:14px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.15);border-radius:8px;">停止</div>
     </div>
     
     <!-- 封面区域 -->
