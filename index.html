@@ -173,25 +173,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .radar-container{position:relative;margin:10px auto}
 .heatmap-grid{display:grid;gap:4px;margin-top:12px}
 .heatmap-cell{aspect-ratio:1;border-radius:4px;background:var(--border-gray)}
-.plan-calendar{background:#f8f9fa;border-radius:12px;padding:12px;margin-bottom:12px}
-.calendar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-weight:bold}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-.calendar-day{padding:8px 4px;border-radius:8px;background:#fff;cursor:pointer;transition:all 0.2s;border:2px solid transparent}
-.calendar-day:hover{background:#e8f0ff}
-.calendar-day.today{background:#fff3e0;border-color:#ff9800}
-.calendar-day.selected{background:#e3f2fd;border-color:#2196f3}
-.calendar-day.checked{background:#e8f5e9;border-color:#4caf50}
-.calendar-day .day-num{font-weight:bold;font-size:14px}
-.calendar-day .day-title{font-size:10px;color:#666;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.plan-task{display:flex;align-items:center;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;border:1px solid #eee}
-.plan-task:hover{box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-.plan-task.completed{background:#f5f5f5;opacity:0.8}
-.plan-task .task-checkbox{width:24px;height:24px;border-radius:50%;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;margin-right:12px;font-size:14px;color:#fff;transition:all 0.2s}
-.plan-task .task-checkbox.checked{background:#4caf50;border-color:#4caf50}
-.plan-task .task-info{flex:1}
-.plan-task .task-text{font-size:14px;font-weight:500}
-.plan-task .task-meta{font-size:11px;color:#999;margin-top:2px}
-.plan-task .task-time{font-size:12px;color:#666;white-space:nowrap}
+.plan-calendar{background:white;border-radius:12px;padding:12px;margin-top:12px}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calendar-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:12px;cursor:pointer}
+.calendar-day.checked{background:var(--blue);color:white}
+.calendar-day.today{background:rgba(255,149,0,0.2);color:var(--orange);font-weight:bold}
+.calendar-day.disabled{color:#ccc;cursor:not-allowed}
+.plan-task{display:flex;align-items:center;gap:12px;padding:12px;background:var(--border-gray);border-radius:12px;margin-bottom:8px;cursor:pointer}
+.plan-task.completed{opacity:0.6}
+.task-checkbox{width:24px;height:24px;border-radius:50%;border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.task-checkbox.checked{background:var(--blue);color:white}
+.task-text{flex:1;font-size:14px}
+.task-time{font-size:11px;color:var(--text-light)}
 .audio-controls{display:flex;align-items:center;gap:12px}
 .audio-progress{flex:1;height:4px;background:#e0e0e0;border-radius:2px;cursor:pointer}
 .audio-progress-bar{height:100%;background:var(--blue);border-radius:2px;transition:width 0.1s}
@@ -294,7 +288,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 .audio-player-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:2000;display:none;flex-direction:column;}
 .audio-player-modal.show{display:flex}
-.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
+.mini-player.show{display:flex!important}.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
 
 
 .filter-btn{padding:6px 12px;border-radius:16px;border:1px solid #e0e0e0;background:white;font-size:12px;cursor:pointer;transition:all 0.2s}
@@ -314,8 +308,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .settings-group-inner{padding:0 16px 14px;}
 </style>
 <!-- PeerJS 音视频库 -->
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js">
 
+
+// 上传播客音频文件到IndexedDB
+
+
+// 从扣子平台下载播客音频
+
+
+// AI精准练 - AI解说功能
+
+</script>
 </head>
 <body>
 
@@ -907,6 +911,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 <!-- 增强版视频播放器 -->
 <div id="enhanced-video-player" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;display:none;flex-direction:column;">
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:12px 16px;background:linear-gradient(rgba(0,0,0,0.6),transparent);">
+        <div onclick="closeEnhancedVideoPlayer()" style="color:white;font-size:18px;cursor:pointer;padding:8px 12px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:8px;">← 退出</div>
+        <div id="evp-title" style="color:white;font-size:14px;font-weight:bold;margin-left:8px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+    </div>
     <video id="evp-video" playsinline style="width:100%;height:100%;object-fit:contain;"></video>
     <!-- 控制面板 -->
     <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.8));padding:20px;">
@@ -936,70 +944,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 
 <script>
-// ==================== 1. 全局变量与配置 ====================
-// ===== 认知训练门户模块管理器 V139 =====
-const CTM = {
-    version: 'V139',
-    modules: {},        // 模块注册表
-    plans: {},          // 训练计划注册表
-    games: {},          // 游戏注册表
-    hooks: {},          // 钩子系统（预留升级接口）
-    
-    // 注册模块
-    registerModule(id, config) {
-        this.modules[id] = config;
-    },
-    
-    // 注册训练计划
-    registerPlan(weekId, planData) {
-        this.plans[weekId] = planData;
-    },
-    
-    // 注册游戏
-    registerGame(gameId, gameConfig) {
-        this.games[gameId] = gameConfig;
-    },
-    
-    // 钩子系统 - 预留升级接口
-    addHook(hookName, callback) {
-        if (!this.hooks[hookName]) this.hooks[hookName] = [];
-        this.hooks[hookName].push(callback);
-    },
-    
-    triggerHook(hookName, data) {
-        (this.hooks[hookName] || []).forEach(cb => cb(data));
-    },
-    
-    // 获取当前用户周次
-    getCurrentWeek() {
-        const user = getCurrentUserData();
-        return user.currentWeek || 1;
-    },
-    
-    // 获取当前用户训练配置
-    getTrainingConfig() {
-        const user = getCurrentUserData();
-        return {
-            week: user.currentWeek || 1,
-            difficulty: user.difficulty || 1,
-            grade: user.grade || 7,
-            dailySessions: user.dailySessions || 8
-        };
-    }
-};
-
 // ====== 全局配置 ======
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat'; // DeepSeek模型，新用户有免费额度
-const STORAGE_KEY = 'cognitive_training_v139';
+const STORAGE_KEY = 'cognitive_training_v137';
 
-// ==================== 1. 全局变量与配置 ====================
 // ====== 播放器全局变量 ======
 let currentAudio = null; // 音频播放器元素引用
 let evpVideo = null; // 视频播放器元素引用
 
-// ==================== 3. 音效系统 ====================
 // ====== Toast提示系统 ======
 function showToast(message, duration = 2000) {
     const existing = document.getElementById('custom-toast');
@@ -1031,7 +985,6 @@ function showToast(message, duration = 2000) {
     }, duration);
 }
 
-// ==================== 3. 音效系统 ====================
 // ====== 音效系统 ======
 const SoundEffects = {
     audioContext: null,
@@ -1221,8 +1174,7 @@ function closeAboutModal() {
     if (modal) modal.classList.remove('show');
 }
 
-// ==================== 2. 数据定义 ====================
-// ====== 播客音频数据 ======
+// ====== 播客音频数据 - 21个真实音频 ======
 const podcastList = [
     {id: 1, title: "青少年高效记忆法全攻略", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_b2ff66a9-c071-4912-84a7-51f174fd69a2.mp3?sign=1808822218-8a2b090761-0-db0b581cf15d5b549a623ffb6c882f7614bd5a52476bb36c7923398ca409fa2e", duration: "6:14", category: "学霸方法"},
     {id: 2, title: "青少年高效笔记法大揭秘", url: "https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_2fd6258b-4ebd-49a9-b1a8-20e8a3bfc750.mp3?sign=1808822237-742cb735e5-0-7c9279fb8f5480d82654cddd5352da5266e2f317c6d5b82d9ba9d0b0ad27e949", duration: "8:10", category: "学霸方法"},
@@ -1316,7 +1268,6 @@ function migrateData() {
     }
 }
 
-// ==================== 4. 初始化与数据管理 ====================
 // ====== 默认用户配置 ======
 const DEFAULT_USER = {
     id: 'user_default_qiuyufei',
@@ -1325,7 +1276,6 @@ const DEFAULT_USER = {
     difficulty: 1, // 难度级别1
     points: 1142, // 初始积分
     createdAt: new Date().toISOString(),
-    currentWeek: 1, // 当前周次
     stats: {
         totalQuestions: 0,
         correctAnswers: 0,
@@ -1334,14 +1284,12 @@ const DEFAULT_USER = {
         lastActiveDate: null
     },
     weeklyProgress: {},
-    completedTasks: {}, // 任务完成状态 {taskId: true}
     wrongNotes: [],
     completedTopics: [],
     studyDays: {},
     todayStats: { date: new Date().toDateString(), questions: 0, correct: 0, minutes: 0 }
 };
 
-// ==================== 4. 初始化与数据管理 ====================
 // ====== 数据存储 ======
 function loadData() {
     try {
@@ -1441,7 +1389,7 @@ const topicsMath7 = [
 
     {id:122,title:'有理数比较',diff:2,q:'比较大小：-3 ○ -5',a:'-3 > -5',e:'负数比较，绝对值大的反而小'},
     {id:123,title:'整式加减',diff:3,q:'化简：3x + 2y - x + 3y = ?',a:'2x + 5y',e:'合并同类项'},
-    {id:124,title:'一元一次方程',diff:3,q:'解方程：2(x+3)=10',a:'x=2',e:'去括号，移项'},
+    {id:124,title:'一元一次方程',diff:3,q:'解方程：2(x+3)=10',a:'x=2',e:'去括号，移项'}
 ];
 
 const topicsEnglish7 = [
@@ -1468,7 +1416,7 @@ const topicsEnglish7 = [
     {id:221,title:'动词短语',diff:2,q:'Please turn ____ the radio. It\'s too noisy.',a:'down/off',e:'turn down关小/off关掉'},
     {id:222,title:'现在进行时',diff:2,q:'Look! The students ___ their homework.',a:'are doing',e:'Look提示进行时'},
     {id:223,title:'可数不可数',diff:2,q:'There is some ___ on the table.',a:'water',e:'water是不可数名词'},
-    {id:224,title:'特殊疑问词',diff:2,q:'___ is your birthday?',a:'When',e:'When问时间'},
+    {id:224,title:'特殊疑问词',diff:2,q:'___ is your birthday?',a:'When',e:'When问时间'}
 ];
 
 const topicsChinese7 = [
@@ -1496,7 +1444,7 @@ const topicsChinese7 = [
 
     {id:322,title:'文言实词',diff:2,q:'温故而知新中故的意思是？',a:'学过的知识',e:'故：旧的、以前的'},
     {id:323,title:'说明方法',diff:2,q:'赵州桥是一座石拱桥，长约50米用了什么说明方法？',a:'列数字',e:'用具体数据说明'},
-    {id:324,title:'病句修改',diff:3,q:'修改病句：同学们基本都到齐了。',a:'去掉基本或都',e:'前后矛盾'},
+    {id:324,title:'病句修改',diff:3,q:'修改病句：同学们基本都到齐了。',a:'去掉基本或都',e:'前后矛盾'}
 ];
 
 const topicsMath5 = [
@@ -1524,7 +1472,7 @@ const topicsMath5 = [
 
     {id:122,title:'数的整除',diff:3,q:'在1-100中，既能被3整除又能被5整除的数有？',a:'33,66,99',e:'能被15整除的数'},
     {id:123,title:'最大公因数应用',diff:4,q:'用正方形地砖铺房间，长36dm宽24dm，最小需几块？',a:'6块',e:'36和24的最大公因数是12'},
-    {id:124,title:'分数比大小',diff:2,q:'比较大小：3/5 ○ 5/8',a:'3/5 < 5/8',e:'通分后比较'},
+    {id:124,title:'分数比大小',diff:2,q:'比较大小：3/5 ○ 5/8',a:'3/5 < 5/8',e:'通分后比较'}
 ];
 
 const topicsEnglish5 = [
@@ -1552,7 +1500,7 @@ const topicsEnglish5 = [
 
     {id:222,title:'一般现在时',diff:2,q:'She ___ breakfast every morning.',a:'eats',e:'第三人称单数用eats'},
     {id:223,title:'方位介词',diff:2,q:'The cat is ___ the table.',a:'under',e:'under表示在下面'},
-    {id:224,title:'复数形式',diff:2,q:'How many ___ do you have?',a:'books',e:'book的复数是books'},
+    {id:224,title:'复数形式',diff:2,q:'How many ___ do you have?',a:'books',e:'book的复数是books'}
 ];
 
 const topicsChinese5 = [
@@ -1580,7 +1528,7 @@ const topicsChinese5 = [
 
     {id:322,title:'古诗理解',diff:2,q:'《静夜思》中举头望明月的下一句是？',a:'低头思故乡',e:'李白思乡名句'},
     {id:323,title:'词语搭配',diff:2,q:'下列词语搭配正确的是？',a:'保护环境',e:'动词与名词搭配'},
-    {id:324,title:'句子排序',diff:3,q:'将句子排序：(1)天黑了 (2)我回家了 (3)放学了 (4)写作业',a:'3-1-2-4',e:'按事情发展顺序'},
+    {id:324,title:'句子排序',diff:3,q:'将句子排序：(1)天黑了 (2)我回家了 (3)放学了 (4)写作业',a:'3-1-2-4',e:'按事情发展顺序'}
 ];
 
 const topicsMath6 = [
@@ -1608,7 +1556,7 @@ const topicsMath6 = [
 
     {id:122,title:'比例应用',diff:3,q:'图上距离5cm，实际距离100km，比例尺是？',a:'1:2000000',e:'5cm:100km=1:2000000'},
     {id:123,title:'圆周率',diff:2,q:'圆的直径是10cm，周长约是？',a:'31.4cm',e:'C=πd≈3.14×10'},
-    {id:124,title:'折扣问题',diff:3,q:'原价200元，打8折后再降10%，现价？',a:'144元',e:'200×0.8×0.9=144'},
+    {id:124,title:'折扣问题',diff:3,q:'原价200元，打8折后再降10%，现价？',a:'144元',e:'200×0.8×0.9=144'}
 ];
 
 const topicsEnglish6 = [
@@ -1636,7 +1584,7 @@ const topicsEnglish6 = [
 
     {id:222,title:'一般过去时',diff:2,q:'Yesterday, I ___ to school.',a:'went',e:'go的过去式是went'},
     {id:223,title:'情态动词',diff:2,q:'___ I help you?',a:'Can',e:'can表示能力或许可'},
-    {id:224,title:'there be句型',diff:2,q:'___ a book and a pen on the desk.',a:'There are',e:'复数用are'},
+    {id:224,title:'there be句型',diff:2,q:'___ a book and a pen on the desk.',a:'There are',e:'复数用are'}
 ];
 
 const topicsChinese6 = [
@@ -1664,7 +1612,7 @@ const topicsChinese6 = [
 
     {id:322,title:'修辞手法',diff:2,q:'太阳公公露出了笑脸是什么修辞？',a:'拟人',e:'把太阳当成人来写'},
     {id:323,title:'词语理解',diff:2,q:'眉开眼笑的意思是？',a:'形容高兴的样子',e:'眉头舒展，眼睛带笑'},
-    {id:324,title:'段落大意',diff:3,q:'概括段落主要内容的常用方法是？',a:'找中心句',e:'中心句通常在段首或段尾'},
+    {id:324,title:'段落大意',diff:3,q:'概括段落主要内容的常用方法是？',a:'找中心句',e:'中心句通常在段首或段尾'}
 ];
 
 const topicsMath8 = [{id:401,title:'全等三角形',diff:3,q:'AB=DE，AC=DF，BC=EF，能判定△ABC≌△DEF吗？',a:'能，SSS',e:'三边对应相等全等'},{id:402,title:'等腰三角形',diff:3,q:'等腰三角形一个底角为50°，顶角为？',a:'80°',e:'底角×2+顶角=180°'},{id:403,title:'勾股定理',diff:3,q:'直角三角形两直角边为5和12，斜边为？',a:'13',e:'5²+12²=25+144=169=13²'},{id:404,title:'一次函数',diff:3,q:'函数y=2x-3，x=4时，y=？',a:'5',e:'代入计算：2×4-3=5'},{id:405,title:'一次函数图像',diff:3,q:'y=kx+b，k>0，b<0，图像经过哪些象限？',a:'一、三、四象限',e:'k>0过一三，b<0与y轴负半轴相交'},{id:406,title:'二元一次方程组',diff:3,q:'解方程组：3x+2y=13, x-y=3',a:'x=19/5, y=4/5',e:'代入法或加减消元法'},{id:407,title:'分式方程',diff:3,q:'解方程：1/(x-1)=2/x',a:'x=2',e:'去分母，检验增根'},{id:408,title:'反比例函数',diff:3,q:'反比例函数y=6/x，当x=3时，y=？',a:'2',e:'代入：6÷3=2'},{id:409,title:'四边形',diff:3,q:'平行四边形的对角线具有什么性质？',a:'互相平分',e:'平行四边形对角线互相平分'},{id:410,title:'菱形判定',diff:4,q:'对角线互相垂直平分的四边形是什么？',a:'菱形',e:'菱形的判定定理'},{id:411,title:'矩形性质',diff:3,q:'矩形的对角线长度相等吗？',a:'相等',e:'矩形对角线相等'},{id:412,title:'梯形中位线',diff:3,q:'梯形上底2，下底4，中位线长为？',a:'3',e:'中位线=(上底+下底)÷2'},{id:413,title:'数据分析',diff:3,q:'数据2,3,4,5,6的方差是？',a:'2',e:'先求平均数，再求方差'},{id:414,title:'概率计算',diff:3,q:'袋中有3红2白球，摸到红球的概率是？',a:'3/5',e:'概率=红球数÷总球数'},{id:415,title:'相似三角形',diff:4,q:'两个相似三角形相似比3:2，面积比是？',a:'9:4',e:'面积比=相似比的平方'},{id:416,title:'黄金分割',diff:3,q:'点C把线段AB分成AC/AB=BC/AC，则AC/AB=？',a:'(√5-1)/2≈0.618',e:'黄金分割比'},{id:417,title:'三角函数',diff:3,q:'在Rt△ABC中，∠C=90°，AC=3，BC=4，sinA=？',a:'4/5',e:'sinA=对边/斜边'},{id:418,title:'圆的基本性质',diff:3,q:'圆的半径为5，圆上一点到圆心的距离是？',a:'5',e:'圆上点到圆心距离等于半径'},{id:419,title:'一次函数与方程',diff:3,q:'直线y=2x-5与x轴的交点坐标是？',a:'(2.5,0)',e:'令y=0，解2x-5=0'},{id:420,title:'一次函数综合',diff:4,q:'已知一次函数y=kx+b，经过(1,3)和(2,5)，求k和b',a:'k=2,b=1',e:'代入两点求方程组'},{id:421,title:'四边形判定',diff:4,q:'一组邻边相等的平行四边形是什么？',a:'菱形',e:'菱形的定义'},{id:422,title:'正方形性质',diff:3,q:'正方形的对角线具有哪些性质？',a:'相等、垂直、平分',e:'正方形具有矩形和菱形的全部性质'},{id:423,title:'数据分析综合',diff:3,q:'数据3,5,7,9,11的中位数是？',a:'7',e:'中位数是排序后的中间值'},{id:424,title:'概率应用',diff:3,q:'同时抛两枚硬币，至少有一枚正面朝上的概率是？',a:'3/4',e:'总情况4种，至少一正有3种'}];
@@ -1706,7 +1654,7 @@ const topicsPhysics = [
     // 能量部分
     {id: 'P-018', question: '下列能量转化中，机械能转化为电能的是？', options: ['发电机发电', '电动机工作', '电池充电', '电炉发热'], answer: 0, explanation: '发电机利用电磁感应原理，将机械能转化为电能。'},
     {id: 'P-019', question: '不计阻力，从同一高度自由下落的苹果和羽毛，哪个先落地？', options: ['苹果先落地', '羽毛先落地', '同时落地', '无法确定'], answer: 0, explanation: '不考虑空气阻力时，所有物体下落加速度相同，但苹果密度大，空气阻力影响小，先落地。'},
-    {id: 'P-020', question: '核能属于哪种能源？', options: ['化石能源', '可再生能源', '一次能源', '二次能源'], answer: 2, explanation: '核能是直接从自然界获取的能源，属于一次能源；也是不可再生能源。'},
+    {id: 'P-020', question: '核能属于哪种能源？', options: ['化石能源', '可再生能源', '一次能源', '二次能源'], answer: 2, explanation: '核能是直接从自然界获取的能源，属于一次能源；也是不可再生能源。'}
 ];
 
 // 化学母题
@@ -1737,7 +1685,7 @@ const topicsChemistry = [
     // 碳和碳的氧化物
     {id: 'C-018', question: '金刚石和石墨的物理性质差异很大的原因是？', options: ['原子种类不同', '原子数目不同', '碳原子排列方式不同', '它们是完全不同的物质'], answer: 2, explanation: '金刚石和石墨都由碳原子构成，但原子排列方式不同导致物理性质差异。'},
     {id: 'C-019', question: '检验CO₂的方法是？', options: ['点燃', '加入澄清石灰水', '加入紫色石蕊', '称量质量'], answer: 1, explanation: 'CO₂能使澄清石灰水变浑浊：Ca(OH)₂ + CO₂ → CaCO₃↓ + H₂O。'},
-    {id: 'C-020', question: '下列气体中，能使带火星的木条复燃的是？', options: ['空气', '氮气', '氧气', '二氧化碳'], answer: 2, explanation: '氧气能支持燃烧，使带火星的木条复燃。'},
+    {id: 'C-020', question: '下列气体中，能使带火星的木条复燃的是？', options: ['空气', '氮气', '氧气', '二氧化碳'], answer: 2, explanation: '氧气能支持燃烧，使带火星的木条复燃。'}
 ];
 
 
@@ -1850,177 +1798,256 @@ const methodTrainingQuestions = {
     ]
 };
 
-// ===== 3. Week1-4训练计划 =====
-// ===== Week1: 注意力与记忆力基础训练周 =====
+// ===== 4. Week5-6训练计划 =====
+const week5Plan = {
+// ===== CTM模块管理器 (V139新增) =====
+const CTM = {
+    version: 'V139',
+    modules: {},
+    plans: {},
+    games: {},
+    hooks: {},
+    registerModule(id, config) { this.modules[id] = config; },
+    registerPlan(weekId, planData) { this.plans[weekId] = planData; },
+    registerGame(gameId, gameConfig) { this.games[gameId] = gameConfig; },
+    addHook(hookName, callback) {
+        if (!this.hooks[hookName]) this.hooks[hookName] = [];
+        this.hooks[hookName].push(callback);
+    },
+    triggerHook(hookName, data) {
+        (this.hooks[hookName] || []).forEach(cb => { try { cb(data); } catch(e) { console.warn('Hook error:', hookName, e); } });
+    },
+    getCurrentWeek() {
+        try { const u = getCurrentUserData(); return u.currentWeek || 1; } catch(e) { return 1; }
+    },
+    getTrainingConfig() {
+        try {
+            const u = getCurrentUserData();
+            return { week: u.currentWeek || 1, difficulty: u.difficulty || 1, grade: u.grade || 7, dailySessions: u.dailySessions || 8 };
+        } catch(e) { return { week: 1, difficulty: 1, grade: 7, dailySessions: 8 }; }
+    }
+};
+// 预留钩子点: beforeRenderPlan, afterRenderPlan, beforeStartGame, afterGameEnd, beforeWeekChange, afterWeekChange, onTaskComplete, onUserLogin, onDifficultyChange, beforeModuleRender, afterModuleRender, customTrainingGenerate, customGameConfig
+
+// ===== Week1训练计划 =====
 const week1Plan = {
-    weekId:'week1',
-    weekTitle:'Week1：注意力与记忆力基础训练周',
-    weekDesc:'建立每日训练习惯，掌握基础注意力与记忆力训练方法',
+    weekId:'week1',weekTitle:'Week1：注意力与记忆力基础训练周',
+    weekDesc:'建立每日训练习惯，掌握基础注意力与记忆力训练方法，学习记忆宫殿、费曼技巧等科学方法',
     days:[
         {day:1,title:'视觉注意力基础训练',tasks:[
             {id:'w1d1t1',title:'视觉追踪训练',type:'attention',duration:7,completed:false},
             {id:'w1d1t2',title:'图片记忆训练',type:'memory',duration:7,completed:false},
-            {id:'w1d1t3',title:'记忆宫殿法学习',type:'strategy',duration:6,completed:false}
+            {id:'w1d1t3',title:'记忆宫殿法学习与实践',type:'strategy',duration:6,completed:false}
         ]},
         {day:2,title:'听觉注意力强化',tasks:[
-            {id:'w1d2t1',title:'听觉警觉训练',type:'attention',duration:7,completed:false},
-            {id:'w1d2t2',title:'故事记忆训练',type:'memory',duration:7,completed:false},
-            {id:'w1d2t3',title:'费曼技巧学习',type:'strategy',duration:6,completed:false}
+            {id:'w1d2t1',title:'听觉警觉与声音识别',type:'attention',duration:7,completed:false},
+            {id:'w1d2t2',title:'故事记忆与词语链训练',type:'memory',duration:7,completed:false},
+            {id:'w1d2t3',title:'费曼技巧学习与实践',type:'strategy',duration:6,completed:false}
         ]},
         {day:3,title:'短时记忆扩展训练',tasks:[
-            {id:'w1d3t1',title:'视觉对比训练',type:'attention',duration:7,completed:false},
-            {id:'w1d3t2',title:'空间位置记忆',type:'memory',duration:7,completed:false},
-            {id:'w1d3t3',title:'间隔重复法学习',type:'strategy',duration:6,completed:false}
+            {id:'w1d3t1',title:'视觉对比与持续注意',type:'attention',duration:7,completed:false},
+            {id:'w1d3t2',title:'位置记忆与图片联想',type:'memory',duration:7,completed:false},
+            {id:'w1d3t3',title:'间隔重复法学习与实践',type:'strategy',duration:6,completed:false}
         ]},
         {day:4,title:'反应速度与信息处理',tasks:[
-            {id:'w1d4t1',title:'快速反应训练',type:'attention',duration:7,completed:false},
-            {id:'w1d4t2',title:'工作记忆刷新',type:'memory',duration:7,completed:false},
-            {id:'w1d4t3',title:'番茄工作法学习',type:'strategy',duration:6,completed:false}
+            {id:'w1d4t1',title:'快速反应与警觉训练',type:'attention',duration:7,completed:false},
+            {id:'w1d4t2',title:'瞬时记忆与简单配对',type:'memory',duration:7,completed:false},
+            {id:'w1d4t3',title:'番茄工作法学习与实践',type:'strategy',duration:6,completed:false}
         ]},
         {day:5,title:'综合认知能力训练',tasks:[
-            {id:'w1d5t1',title:'综合注意力训练',type:'attention',duration:7,completed:false},
-            {id:'w1d5t2',title:'综合记忆训练',type:'memory',duration:7,completed:false},
+            {id:'w1d5t1',title:'综合注意控制挑战',type:'attention',duration:7,completed:false},
+            {id:'w1d5t2',title:'综合记忆策略应用',type:'memory',duration:7,completed:false},
             {id:'w1d5t3',title:'学习策略整合应用',type:'strategy',duration:6,completed:false}
         ]},
         {day:6,title:'复习与巩固',tasks:[
-            {id:'w1d6t1',title:'注意力模块复习',type:'review',duration:15,completed:false},
-            {id:'w1d6t2',title:'记忆策略复习',type:'review',duration:15,completed:false}
+            {id:'w1d6t1',title:'自主选择弱项模块复习',type:'review',duration:15,completed:false},
+            {id:'w1d6t2',title:'尝试提升难度级别',type:'practice',duration:10,completed:false},
+            {id:'w1d6t3',title:'深化记忆策略练习',type:'strategy',duration:10,completed:false}
         ]},
         {day:7,title:'周度复盘',tasks:[
-            {id:'w1d7t1',title:'收听周度复盘播客',type:'podcast',duration:15,completed:false},
-            {id:'w1d7t2',title:'撰写训练感受',type:'writing',duration:15,completed:false}
+            {id:'w1d7t1',title:'查看本周训练数据',type:'review',duration:10,completed:false},
+            {id:'w1d7t2',title:'反思有效策略与方法',type:'writing',duration:10,completed:false},
+            {id:'w1d7t3',title:'制定Week2训练目标',type:'strategy',duration:5,completed:false}
         ]}
     ]
 };
+CTM.registerPlan('week1', week1Plan);
 
-// ===== Week2: 学霸方法与听课习惯周 =====
+// ===== Week2训练计划 =====
 const week2Plan = {
-    weekId:'week2',
-    weekTitle:'Week2：学霸方法与听课习惯培养周',
-    weekDesc:'深化学习策略，培养高效听课习惯',
+    weekId:'week2',weekTitle:'Week2：学霸方法与听课习惯培养周',
+    weekDesc:'深化注意力与记忆力训练，引入学霸学习方法专题和听课习惯培养',
     days:[
         {day:1,title:'高级视觉注意与知识建构',tasks:[
-            {id:'w2d1t1',title:'多重目标追踪训练',type:'attention',duration:8,completed:false},
-            {id:'w2d1t2',title:'复杂图像记忆',type:'memory',duration:8,completed:false},
-            {id:'w2d1t3',title:'概念图构建学习',type:'strategy',duration:8,completed:false}
+            {id:'w2d1t1',title:'多目标视觉追踪训练',type:'attention',duration:7,completed:false},
+            {id:'w2d1t2',title:'复杂图像记忆与分类提取',type:'memory',duration:7,completed:false},
+            {id:'w2d1t3',title:'学霸专题：深度理解与概念图构建',type:'strategy',duration:8,completed:false}
         ]},
         {day:2,title:'听觉注意与听课习惯',tasks:[
-            {id:'w2d2t1',title:'多声源定位训练',type:'attention',duration:8,completed:false},
-            {id:'w2d2t2',title:'工作记忆刷新训练',type:'memory',duration:8,completed:false},
-            {id:'w2d2t3',title:'课前预习方法学习',type:'strategy',duration:8,completed:false}
+            {id:'w2d2t1',title:'多声源定位与模式识别',type:'attention',duration:7,completed:false},
+            {id:'w2d2t2',title:'序列记忆扩展与刷新',type:'memory',duration:7,completed:false},
+            {id:'w2d2t3',title:'听课习惯：课前预习与课中专注',type:'strategy',duration:8,completed:false}
         ]},
         {day:3,title:'多任务注意与解题策略',tasks:[
-            {id:'w2d3t1',title:'双重任务协调训练',type:'attention',duration:8,completed:false},
-            {id:'w2d3t2',title:'空间记忆扩展',type:'memory',duration:8,completed:false},
-            {id:'w2d3t3',title:'高效解题策略学习',type:'strategy',duration:8,completed:false}
+            {id:'w2d3t1',title:'双重任务协调与切换',type:'attention',duration:7,completed:false},
+            {id:'w2d3t2',title:'空间记忆扩展与策略应用',type:'memory',duration:7,completed:false},
+            {id:'w2d3t3',title:'学霸专题：高效解题策略与错题分析',type:'strategy',duration:8,completed:false}
         ]},
         {day:4,title:'冲突抑制与复习习惯',tasks:[
-            {id:'w2d4t1',title:'Stroop任务训练',type:'attention',duration:8,completed:false},
-            {id:'w2d4t2',title:'语义关联记忆',type:'memory',duration:8,completed:false},
-            {id:'w2d4t3',title:'课后复习方法学习',type:'strategy',duration:8,completed:false}
+            {id:'w2d4t1',title:'Stroop冲突抑制训练',type:'attention',duration:7,completed:false},
+            {id:'w2d4t2',title:'语义关联记忆与信息整合',type:'memory',duration:7,completed:false},
+            {id:'w2d4t3',title:'听课习惯：课后复习与笔记整理',type:'strategy',duration:8,completed:false}
         ]},
-        {day:5,title:'综合认知与学习方法整合',tasks:[
-            {id:'w2d5t1',title:'综合注意力挑战',type:'attention',duration:8,completed:false},
-            {id:'w2d5t2',title:'记忆策略整合',type:'memory',duration:8,completed:false},
-            {id:'w2d5t3',title:'考试技巧学习',type:'strategy',duration:8,completed:false}
+        {day:5,title:'综合认知控制与学习方法整合',tasks:[
+            {id:'w2d5t1',title:'综合认知负荷管理',type:'attention',duration:7,completed:false},
+            {id:'w2d5t2',title:'记忆策略体系构建',type:'memory',duration:7,completed:false},
+            {id:'w2d5t3',title:'考试技巧与长期学习规划',type:'strategy',duration:8,completed:false}
         ]},
         {day:6,title:'复习与自主强化',tasks:[
-            {id:'w2d6t1',title:'学霸方法专项复习',type:'review',duration:20,completed:false},
-            {id:'w2d6t2',title:'听课习惯强化',type:'practice',duration:15,completed:false}
+            {id:'w2d6t1',title:'自主选择弱项模块复习',type:'review',duration:15,completed:false},
+            {id:'w2d6t2',title:'挑战提升难度级别',type:'practice',duration:10,completed:false},
+            {id:'w2d6t3',title:'学霸方法组合应用练习',type:'strategy',duration:10,completed:false}
         ]},
-        {day:7,title:'周度复盘',tasks:[
-            {id:'w2d7t1',title:'收听周度复盘播客',type:'podcast',duration:15,completed:false},
-            {id:'w2d7t2',title:'学霸方法应用反思',type:'writing',duration:15,completed:false}
+        {day:7,title:'周度复盘与学霸方法评估',tasks:[
+            {id:'w2d7t1',title:'查看本周训练与学霸方法数据',type:'review',duration:10,completed:false},
+            {id:'w2d7t2',title:'评估听课习惯应用效果',type:'writing',duration:10,completed:false},
+            {id:'w2d7t3',title:'制定Week3训练目标',type:'strategy',duration:5,completed:false}
         ]}
     ]
 };
+CTM.registerPlan('week2', week2Plan);
 
-// ===== Week3: 数学物理思维入门周 =====
+// ===== Week3训练计划 =====
 const week3Plan = {
-    weekId:'week3',
-    weekTitle:'Week3：数学物理思维入门周',
-    weekDesc:'建立数学逻辑推理基础，掌握物理模型构建方法',
+    weekId:'week3',weekTitle:'Week3：数学物理思维系统化整合入门周',
+    weekDesc:'完成从基础认知训练向学科思维训练的过渡，系统化引入数学物理思维双轨训练',
     days:[
-        {day:1,title:'数学思维入门-逻辑推理',tasks:[
-            {id:'w3d1t1',title:'数字谜题训练',type:'practice',duration:10,completed:false},
-            {id:'w3d1t2',title:'图形推理训练',type:'practice',duration:10,completed:false},
-            {id:'w3d1t3',title:'逆向思维基础',type:'strategy',duration:8,completed:false}
+        {day:1,title:'数学思维入门-逻辑推理基础',tasks:[
+            {id:'w3d1t1',title:'逻辑推理游戏基础训练',type:'game',duration:10,completed:false},
+            {id:'w3d1t2',title:'抽象思维意识建立',type:'practice',duration:10,completed:false},
+            {id:'w3d1t3',title:'数形结合初步能力训练',type:'practice',duration:10,completed:false}
         ]},
-        {day:2,title:'逻辑谜题与逆向推理',tasks:[
-            {id:'w3d2t1',title:'逻辑排除法训练',type:'practice',duration:10,completed:false},
-            {id:'w3d2t2',title:'逆向推理策略',type:'practice',duration:10,completed:false},
-            {id:'w3d2t3',title:'反证法初步',type:'strategy',duration:8,completed:false}
+        {day:2,title:'数学思维专项-逻辑谜题与逆向推理',tasks:[
+            {id:'w3d2t1',title:'逻辑谜题挑战训练',type:'game',duration:10,completed:false},
+            {id:'w3d2t2',title:'逆向思维基础训练',type:'practice',duration:10,completed:false},
+            {id:'w3d2t3',title:'反证法初步学习',type:'strategy',duration:10,completed:false}
         ]},
-        {day:3,title:'物理思维入门-模型构建',tasks:[
-            {id:'w3d3t1',title:'物理现象观察',type:'practice',duration:10,completed:false},
-            {id:'w3d3t2',title:'简单模型建立',type:'practice',duration:10,completed:false},
-            {id:'w3d3t3',title:'实验思维基础',type:'strategy',duration:8,completed:false}
+        {day:3,title:'物理思维入门-模型构建基础',tasks:[
+            {id:'w3d3t1',title:'物理模型构建概念学习',type:'video',duration:10,completed:false},
+            {id:'w3d3t2',title:'理想化思维习惯训练',type:'practice',duration:10,completed:false},
+            {id:'w3d3t3',title:'简单实验思维方法',type:'practice',duration:10,completed:false}
         ]},
-        {day:4,title:'物理现象探索与逆向分析',tasks:[
-            {id:'w3d4t1',title:'物理过程分析',type:'practice',duration:10,completed:false},
-            {id:'w3d4t2',title:'逆向实验设计',type:'practice',duration:10,completed:false},
-            {id:'w3d4t3',title:'科学探究方法',type:'strategy',duration:8,completed:false}
+        {day:4,title:'物理思维专项-现象探索与逆向分析',tasks:[
+            {id:'w3d4t1',title:'物理现象探索训练',type:'practice',duration:10,completed:false},
+            {id:'w3d4t2',title:'逆向分析法应用',type:'practice',duration:10,completed:false},
+            {id:'w3d4t3',title:'物理因果推理训练',type:'practice',duration:10,completed:false}
         ]},
         {day:5,title:'数学物理综合应用',tasks:[
-            {id:'w3d5t1',title:'交叉问题分析',type:'practice',duration:10,completed:false},
-            {id:'w3d5t2',title:'综合建模练习',type:'practice',duration:10,completed:false},
-            {id:'w3d5t3',title:'解题策略优化',type:'strategy',duration:8,completed:false}
+            {id:'w3d5t1',title:'数学物理交叉问题基础',type:'practice',duration:15,completed:false},
+            {id:'w3d5t2',title:'数形结合实战训练',type:'game',duration:10,completed:false},
+            {id:'w3d5t3',title:'听课习惯：课堂思维跟进',type:'strategy',duration:10,completed:false}
         ]},
-        {day:6,title:'复习巩固',tasks:[
-            {id:'w3d6t1',title:'逻辑推理综合复习',type:'review',duration:15,completed:false},
-            {id:'w3d6t2',title:'模型构建强化',type:'review',duration:15,completed:false}
+        {day:6,title:'复习巩固-逻辑与建模能力强化',tasks:[
+            {id:'w3d6t1',title:'逻辑推理能力强化',type:'review',duration:15,completed:false},
+            {id:'w3d6t2',title:'物理建模能力巩固',type:'review',duration:10,completed:false},
+            {id:'w3d6t3',title:'学霸方法：深度理解应用',type:'strategy',duration:10,completed:false}
         ]},
-        {day:7,title:'周度复盘',tasks:[
-            {id:'w3d7t1',title:'收听周度复盘播客',type:'podcast',duration:15,completed:false},
-            {id:'w3d7t2',title:'数学物理思维总结',type:'writing',duration:15,completed:false}
+        {day:7,title:'Week3复盘报告与评估',tasks:[
+            {id:'w3d7t1',title:'查看本周数学物理思维数据',type:'review',duration:10,completed:false},
+            {id:'w3d7t2',title:'反思逻辑与建模进步',type:'writing',duration:10,completed:false},
+            {id:'w3d7t3',title:'制定Week4训练目标',type:'strategy',duration:5,completed:false}
         ]}
     ]
 };
+CTM.registerPlan('week3', week3Plan);
 
-// ===== Week4: 解题策略与实验思维深化周 =====
+// ===== Week4训练计划 =====
 const week4Plan = {
-    weekId:'week4',
-    weekTitle:'Week4：解题策略与实验思维深化周',
-    weekDesc:'系统深化解题策略，培养物理实验思维',
+    weekId:'week4',weekTitle:'Week4：解题策略与实验思维深化周',
+    weekDesc:'系统深化解题策略与实验思维能力，培养科学探究习惯与逆向思维进阶应用',
     days:[
-        {day:1,title:'数学思维专项-解题策略',tasks:[
-            {id:'w4d1t1',title:'题型分类训练',type:'practice',duration:10,completed:false},
-            {id:'w4d1t2',title:'分步解题练习',type:'practice',duration:10,completed:false},
-            {id:'w4d1t3',title:'错题分析方法',type:'strategy',duration:8,completed:false}
+        {day:1,title:'数学思维专项-解题策略系统训练',tasks:[
+            {id:'w4d1t1',title:'题型分类方法学习',type:'strategy',duration:10,completed:false},
+            {id:'w4d1t2',title:'解题步骤系统化训练',type:'practice',duration:15,completed:false},
+            {id:'w4d1t3',title:'错题本科学用法实践',type:'strategy',duration:10,completed:false}
         ]},
-        {day:2,title:'物理思维入门-实验设计',tasks:[
-            {id:'w4d2t1',title:'探究流程学习',type:'practice',duration:10,completed:false},
-            {id:'w4d2t2',title:'变量控制训练',type:'practice',duration:10,completed:false},
-            {id:'w4d2t3',title:'实验设计基础',type:'strategy',duration:8,completed:false}
+        {day:2,title:'物理思维入门-实验设计基础',tasks:[
+            {id:'w4d2t1',title:'实验设计原则学习',type:'video',duration:10,completed:false},
+            {id:'w4d2t2',title:'简单实验设计练习',type:'practice',duration:15,completed:false},
+            {id:'w4d2t3',title:'听课习惯：实验笔记记录',type:'strategy',duration:10,completed:false}
         ]},
-        {day:3,title:'物理思维专项-实验思维',tasks:[
-            {id:'w4d3t1',title:'数据处理训练',type:'practice',duration:10,completed:false},
-            {id:'w4d3t2',title:'误差分析练习',type:'practice',duration:10,completed:false},
-            {id:'w4d3t3',title:'科学探究深化',type:'strategy',duration:8,completed:false}
+        {day:3,title:'物理思维专项-实验思维系统培养',tasks:[
+            {id:'w4d3t1',title:'数据分析方法训练',type:'practice',duration:10,completed:false},
+            {id:'w4d3t2',title:'误差分析意识建立',type:'practice',duration:10,completed:false},
+            {id:'w4d3t3',title:'实验设计综合训练',type:'game',duration:10,completed:false}
         ]},
-        {day:4,title:'逆向推理进阶',tasks:[
-            {id:'w4d4t1',title:'多步骤逆向分析',type:'practice',duration:10,completed:false},
-            {id:'w4d4t2',title:'反证法系统应用',type:'practice',duration:10,completed:false},
-            {id:'w4d4t3',title:'逆向思维综合',type:'strategy',duration:8,completed:false}
+        {day:4,title:'数学思维深化-逆向推理进阶',tasks:[
+            {id:'w4d4t1',title:'反证法进阶应用',type:'practice',duration:10,completed:false},
+            {id:'w4d4t2',title:'复杂问题逆向分析',type:'practice',duration:15,completed:false},
+            {id:'w4d4t3',title:'多角度逆向推理训练',type:'game',duration:10,completed:false}
         ]},
-        {day:5,title:'数学物理综合应用',tasks:[
-            {id:'w4d5t1',title:'真实问题建模',type:'practice',duration:10,completed:false},
-            {id:'w4d5t2',title:'综合问题解决',type:'practice',duration:10,completed:false},
-            {id:'w4d5t3',title:'创新思维培养',type:'strategy',duration:8,completed:false}
+        {day:5,title:'数学物理综合-交叉问题进阶',tasks:[
+            {id:'w4d5t1',title:'数学物理交叉问题进阶',type:'practice',duration:15,completed:false},
+            {id:'w4d5t2',title:'综合解题策略应用',type:'practice',duration:10,completed:false},
+            {id:'w4d5t3',title:'学霸方法：考试技巧初步',type:'strategy',duration:10,completed:false}
         ]},
-        {day:6,title:'复习巩固',tasks:[
-            {id:'w4d6t1',title:'解题策略系统复习',type:'review',duration:15,completed:false},
-            {id:'w4d6t2',title:'实验思维强化',type:'review',duration:15,completed:false}
+        {day:6,title:'复习巩固-解题策略与实验思维',tasks:[
+            {id:'w4d6t1',title:'解题策略体系回顾',type:'review',duration:15,completed:false},
+            {id:'w4d6t2',title:'实验思维方法巩固',type:'review',duration:10,completed:false},
+            {id:'w4d6t3',title:'听课习惯：系统化复习法',type:'strategy',duration:10,completed:false}
         ]},
-        {day:7,title:'周度复盘',tasks:[
-            {id:'w4d7t1',title:'收听周度复盘播客',type:'podcast',duration:15,completed:false},
-            {id:'w4d7t2',title:'解题能力提升反思',type:'writing',duration:15,completed:false}
+        {day:7,title:'Week4复盘报告与评估',tasks:[
+            {id:'w4d7t1',title:'查看本周解题策略与实验数据',type:'review',duration:10,completed:false},
+            {id:'w4d7t2',title:'评估解题能力进步',type:'writing',duration:10,completed:false},
+            {id:'w4d7t3',title:'制定Week5训练目标',type:'strategy',duration:5,completed:false}
         ]}
     ]
 };
+CTM.registerPlan('week4', week4Plan);
 
-// ===== 4. Week5-6训练计划 =====
-const week5Plan = {
+// ===== Week7训练计划 =====
+const week7Plan = {
+    weekId:'week7',weekTitle:'Week7：元认知深化与综合能力迁移周',
+    weekDesc:'元认知深化+习惯固化+能力迁移三轨并行，实现从"知道方法"到"自动化运用"的跨越',
+    days:[
+        {day:1,title:'元认知深化-从意识到到调控好',tasks:[
+            {id:'w7d1t1',title:'元认知监控训练',type:'practice',duration:10,completed:false},
+            {id:'w7d1t2',title:'思维过程自我调节',type:'strategy',duration:10,completed:false},
+            {id:'w7d1t3',title:'学习策略主动调控',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:2,title:'自主学习习惯固化-让计划成为自然',tasks:[
+            {id:'w7d2t1',title:'计划-执行-复盘闭环训练',type:'practice',duration:15,completed:false},
+            {id:'w7d2t2',title:'自我管理效率优化',type:'strategy',duration:10,completed:false},
+            {id:'w7d2t3',title:'学习节奏自然化练习',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:3,title:'能力迁移专项-从训练场到真实战场',tasks:[
+            {id:'w7d3t1',title:'认知策略迁移训练',type:'practice',duration:15,completed:false},
+            {id:'w7d3t2',title:'学科场景应用实战',type:'practice',duration:10,completed:false},
+            {id:'w7d3t3',title:'真实问题解决模拟',type:'game',duration:10,completed:false}
+        ]},
+        {day:4,title:'综合能力整合-融会贯通',tasks:[
+            {id:'w7d4t1',title:'多策略综合应用训练',type:'practice',duration:15,completed:false},
+            {id:'w7d4t2',title:'跨学科问题系统解决',type:'practice',duration:10,completed:false},
+            {id:'w7d4t3',title:'学霸方法内化训练',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:5,title:'真实场景实战-学校作业中的超能力',tasks:[
+            {id:'w7d5t1',title:'学校作业场景模拟',type:'practice',duration:15,completed:false},
+            {id:'w7d5t2',title:'考试策略实战应用',type:'practice',duration:10,completed:false},
+            {id:'w7d5t3',title:'学习-训练良性互动',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:6,title:'周度复盘与自我评估',tasks:[
+            {id:'w7d6t1',title:'综合能力自我评估',type:'review',duration:15,completed:false},
+            {id:'w7d6t2',title:'学习进化反思与记录',type:'writing',duration:10,completed:false},
+            {id:'w7d6t3',title:'个人学习操作系统构建',type:'creative',duration:15,completed:false}
+        ]},
+        {day:7,title:'Week7复盘报告与Week8展望',tasks:[
+            {id:'w7d7t1',title:'查看Week7综合数据',type:'review',duration:10,completed:false},
+            {id:'w7d7t2',title:'撰写7周训练总结',type:'writing',duration:15,completed:false},
+            {id:'w7d7t3',title:'制定Week8进阶目标',type:'strategy',duration:5,completed:false}
+        ]}
+    ]
+};
+CTM.registerPlan('week7', week7Plan);
     weekId:'week5',weekTitle:'Week5：系统性思维与守恒思维综合周',
     weekDesc:'本周围绕系统性思维和守恒思维进行深度训练',
     days:[
@@ -2380,49 +2407,6 @@ function createNewUser() {
         gameCounts: {},
         gameTimes: {}
     };
-
-// ===== Week7: 元认知深化与能力迁移周 =====
-const week7Plan = {
-    weekId:'week7',
-    weekTitle:'Week7：元认知深化与能力迁移周',
-    weekDesc:'深化元认知能力，实现学习能力的自动化运行与迁移',
-    days:[
-        {day:1,title:'元认知深化-主动调控',tasks:[
-            {id:'w7d1t1',title:'自我监控训练',type:'practice',duration:10,completed:false},
-            {id:'w7d1t2',title:'自我调节策略',type:'strategy',duration:10,completed:false},
-            {id:'w7d1t3',title:'元认知日志练习',type:'writing',duration:8,completed:false}
-        ]},
-        {day:2,title:'自主学习习惯固化',tasks:[
-            {id:'w7d2t1',title:'学习仪式建立',type:'practice',duration:10,completed:false},
-            {id:'w7d2t2',title:'习惯回路训练',type:'strategy',duration:10,completed:false},
-            {id:'w7d2t3',title:'习惯追踪记录',type:'writing',duration:8,completed:false}
-        ]},
-        {day:3,title:'能力迁移专项',tasks:[
-            {id:'w7d3t1',title:'迁移识别训练',type:'practice',duration:10,completed:false},
-            {id:'w7d3t2',title:'方法对接练习',type:'practice',duration:10,completed:false},
-            {id:'w7d3t3',title:'真实场景应用',type:'strategy',duration:8,completed:false}
-        ]},
-        {day:4,title:'综合能力整合',tasks:[
-            {id:'w7d4t1',title:'能力模块整合',type:'practice',duration:10,completed:false},
-            {id:'w7d4t2',title:'跨模块挑战',type:'practice',duration:10,completed:false},
-            {id:'w7d4t3',title:'综合应用总结',type:'strategy',duration:8,completed:false}
-        ]},
-        {day:5,title:'真实场景实战',tasks:[
-            {id:'w7d5t1',title:'学校作业超能力计划',type:'practice',duration:10,completed:false},
-            {id:'w7d5t2',title:'作业过程记录',type:'writing',duration:10,completed:false},
-            {id:'w7d5t3',title:'成就感日记',type:'writing',duration:8,completed:false}
-        ]},
-        {day:6,title:'周度复盘与自我评估',tasks:[
-            {id:'w7d6t1',title:'成长记录整理',type:'review',duration:15,completed:false},
-            {id:'w7d6t2',title:'习惯形成评估',type:'review',duration:15,completed:false}
-        ]},
-        {day:7,title:'Week7总结与展望',tasks:[
-            {id:'w7d7t1',title:'综合复盘报告',type:'writing',duration:15,completed:false},
-            {id:'w7d7t2',title:'未来规划制定',type:'strategy',duration:15,completed:false}
-        ]}
-    ]
-};
-
     
     data.users.push(newUser);
     data.currentUser = newUser.id;
@@ -2461,7 +2445,6 @@ function clearAllData() {
     localStorage.removeItem(STORAGE_KEY); location.reload();
 }
 
-// ==================== 5. 用户管理 ====================
 // ====== UI更新 ======
 function updateUI() {
     updateAllAvatarDisplays();
@@ -2509,7 +2492,6 @@ function syncTodayStats() {
     if (streakEl) streakEl.textContent = streak;
 }
 
-// ==================== 6. 页面导航与模块切换 ====================
 // ====== 页面切换 ======
 function showPage(pageId) {
     // 隐藏所有页面
@@ -2652,7 +2634,6 @@ function cleanupModuleState() {
     
     console.log('模块状态已清理');
 }
-// ==================== 6. 页面导航与模块切换 ====================
 // ====== 全屏页面切换 ======
 function openFullscreenPage(module) {
     cleanupModuleState(); // 清理上一个模块的状态
@@ -2699,7 +2680,6 @@ function openFullscreenPage(module) {
     container.classList.add('active');
 }
 
-// ==================== 6. 页面导航与模块切换 ====================
 // ====== 模块渲染函数 ======
 
 function renderPractice(container) {
@@ -2864,390 +2844,159 @@ function generateHeatmap() {
     return html;
 }
 
-// ===== 学习计划模块 =====
-let currentPlanWeek = 1;
-let currentPlanDay = 1;
 
-function getUserCurrentWeek() {
-    const user = getCurrentUserData();
-    return user && user.currentWeek ? user.currentWeek : 1;
-}
-
-function setUserCurrentWeek(week) {
-    const user = getCurrentUserData();
-    if (user) {
-        user.currentWeek = week;
-        syncUserData(user);
-    }
-}
-
-function getTaskCompleted(taskId) {
-    const user = getCurrentUserData();
-    return user && user.completedTasks && user.completedTasks[taskId] === true;
-}
-
-function toggleWeekTask(taskId) {
-    const user = getCurrentUserData();
-    if (!user) return;
-    if (!user.completedTasks) user.completedTasks = {};
-    user.completedTasks[taskId] = !user.completedTasks[taskId];
-    syncUserData(user);
-    // 更新UI
-    const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
-    if (checkbox) {
-        checkbox.classList.toggle('checked', user.completedTasks[taskId]);
-        checkbox.textContent = user.completedTasks[taskId] ? '✓' : '';
-    }
-    const taskEl = document.querySelector(`[data-task-id="${taskId}"]`);
-    if (taskEl) {
-        taskEl.classList.toggle('completed', user.completedTasks[taskId]);
-    }
-    // 更新进度统计
-    updatePlanStats();
-}
-
-function updatePlanStats() {
-    const user = getCurrentUserData();
-    if (!user) return;
-    const plan = getWeekPlan('week' + currentPlanWeek);
-    if (!plan) return;
-    
-    let completedCount = 0;
-    let totalCount = 0;
-    let streakDays = 0;
-    
-    plan.days.forEach(day => {
-        let dayCompleted = true;
-        day.tasks.forEach(task => {
-            totalCount++;
-            if (getTaskCompleted(task.id)) {
-                completedCount++;
-            } else {
-                dayCompleted = false;
-            }
-        });
-        if (dayCompleted) streakDays++;
-    });
-    
-    const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-    
-    // 更新页面上的统计
-    const weekCompletedEl = document.getElementById('week-plan-completed');
-    const weekStreakEl = document.getElementById('week-plan-streak');
-    const weekProgressEl = document.getElementById('week-plan-progress');
-    
-    if (weekCompletedEl) weekCompletedEl.textContent = completedCount;
-    if (weekStreakEl) weekStreakEl.textContent = streakDays;
-    if (weekProgressEl) weekProgressEl.textContent = progress + '%';
-}
-
-function changePlanWeek(dir) {
-    const newWeek = currentPlanWeek + dir;
-    if (newWeek < 1 || newWeek > 7) {
-        showToast(newWeek < 1 ? '已是第1周' : '已是第7周');
-        return;
-    }
-    currentPlanWeek = newWeek;
-    setUserCurrentWeek(newWeek);
-    renderPlan(document.getElementById('plan-container'));
-    showToast('已切换到第' + newWeek + '周');
-}
-
-function selectPlanDay(day) {
-    currentPlanDay = day;
-    renderPlanTasks();
-}
-
-function getTaskTypeIcon(type) {
-    const icons = {
-        'attention': '👁️',
-        'memory': '🧠',
-        'strategy': '💡',
-        'practice': '✏️',
-        'review': '📖',
-        'test': '📝',
-        'video': '🎬',
-        'podcast': '🎧',
-        'writing': '📄',
-        'game': '🎮',
-        'social': '👥',
-        'rest': '😴'
-    };
-    return icons[type] || '📌';
-}
-
-function getTaskTypeName(type) {
-    const names = {
-        'attention': '注意力',
-        'memory': '记忆力',
-        'strategy': '策略',
-        'practice': '练习',
-        'review': '复习',
-        'test': '测试',
-        'video': '视频',
-        'podcast': '播客',
-        'writing': '写作',
-        'game': '游戏',
-        'social': '社交',
-        'rest': '休息'
-    };
-    return names[type] || '任务';
-}
-
-// ===== 重写的renderPlan函数（基于CTM） =====
-window._planWeek = CTM.getCurrentWeek();
+// ===== V139: 重写renderPlan函数 =====
+// 注意：此函数替换原有的renderPlan（约第2602行）
 
 function renderPlan(container) {
     const user = getCurrentUserData();
-    const weekId = 'week' + window._planWeek;
-    const plan = CTM.plans[weekId];
+    const currentWeek = user.currentWeek || 1;
+    const today = new Date().getDay() || 7;
     
-    if (!plan) {
-        container.innerHTML = '<div class="card"><p style="text-align:center;color:#666;">暂无训练计划</p></div>';
-        return;
+    if (!window._planWeek) window._planWeek = currentWeek;
+    if (!window._planDay) window._planDay = today;
+    
+    const plan = getWeekPlan('week' + window._planWeek);
+    const userTasks = (user.weekTasks || {});
+    
+    CTM.triggerHook('beforeRenderPlan', {week: window._planWeek, plan});
+    
+    // 计算本周完成统计
+    let completedCount = 0, totalCount = 0;
+    if (plan && plan.days) {
+        plan.days.forEach(d => {
+            d.tasks.forEach(t => {
+                totalCount++;
+                if (userTasks[t.id]) completedCount++;
+            });
+        });
     }
     
-    // 触发钩子
-    CTM.triggerHook('beforeRenderPlan', {weekId, plan});
+    const weekNames = ['','Week1：注意力与记忆力','Week2：学霸方法与听课习惯','Week3：数学物理思维入门','Week4：解题策略与实验思维','Week5：系统性思维与守恒思维','Week6：学科深度整合与自主学习','Week7：元认知深化与能力迁移'];
     
-    // 获取用户任务完成状态
-    user.weekTasks = user.weekTasks || {};
+    const typeIcons = {attention:'👁️',memory:'🧠',strategy:'📚',practice:'✏️',creative:'🎨',video:'🎬',podcast:'🎧',game:'🎮',review:'📝',test:'📊',writing:'✍️',rest:'😴',social:'🤝',planning:'📋',quiz:'❓'};
     
-    // 计算统计数据
-    let totalTasks = 0;
-    let completedTasks = 0;
-    plan.days.forEach(day => {
-        day.tasks.forEach(task => {
-            totalTasks++;
-            if (user.weekTasks[task.id]) completedTasks++;
+    const dayNames = ['','周一','周二','周三','周四','周五','周六','周日'];
+    
+    let html = '';
+    
+    // 周次导航
+    html += '<div class="card">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
+    html += '<span onclick="changeWeek(-1)" style="cursor:pointer;font-size:20px;padding:4px 12px;border-radius:8px;background:#f0f0f0;">◀</span>';
+    html += '<div style="text-align:center;"><div style="font-size:16px;font-weight:bold;color:#1A6BFF;">第 ' + window._planWeek + ' 周</div>';
+    html += '<div style="font-size:12px;color:#666;margin-top:2px;">' + (weekNames[window._planWeek] || '') + '</div></div>';
+    html += '<span onclick="changeWeek(1)" style="cursor:pointer;font-size:20px;padding:4px 12px;border-radius:8px;background:#f0f0f0;">▶</span>';
+    html += '</div>';
+    
+    // 7天日历
+    if (plan && plan.days) {
+        html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px;">';
+        plan.days.forEach(d => {
+            const isToday = d.day === window._planDay;
+            const dayTasks = d.tasks.length;
+            const dayDone = d.tasks.filter(t => userTasks[t.id]).length;
+            const dayComplete = dayDone === dayTasks;
+            const bgColor = dayComplete ? '#43E97B' : isToday ? '#1A6BFF' : '#f5f5f5';
+            const textColor = (dayComplete || isToday) ? 'white' : '#333';
+            html += '<div onclick="switchPlanDay(' + d.day + ')" style="text-align:center;padding:8px 2px;border-radius:10px;cursor:pointer;background:' + bgColor + ';color:' + textColor + ';">';
+            html += '<div style="font-size:11px;">' + dayNames[d.day] + '</div>';
+            html += '<div style="font-size:13px;font-weight:bold;">D' + d.day + '</div>';
+            if (dayDone > 0) html += '<div style="font-size:9px;">' + dayDone + '/' + dayTasks + '</div>';
+            html += '</div>';
         });
-    });
+        html += '</div>';
+    }
     
-    const today = new Date().getDay();
-    const todayIndex = today === 0 ? 6 : today - 1;
-    
-    container.innerHTML = '<div class="card">' +
-        '<h3 style="margin-bottom:16px;">📅 ' + plan.weekTitle + '</h3>' +
-        '<div style="font-size:12px;color:#666;margin-bottom:12px;">' + plan.weekDesc + '</div>' +
-        '<div class="plan-calendar">' +
-            '<div class="calendar-header">' +
-                '<span onclick="changeWeek(-1)" style="cursor:pointer;font-size:18px;">◀</span>' +
-                '<span id="week-title" style="font-weight:600;">第 ' + window._planWeek + ' 周</span>' +
-                '<span onclick="changeWeek(1)" style="cursor:pointer;font-size:18px;">▶</span>' +
-            '</div>' +
-            '<div class="calendar-grid" id="calendar-grid">' +
-                plan.days.map((day, idx) => {
-                    let dayTasks = 0, dayCompleted = 0;
-                    day.tasks.forEach(t => { dayTasks++; if (user.weekTasks[t.id]) dayCompleted++; });
-                    const isToday = idx === todayIndex;
-                    const isCompleted = dayCompleted === dayTasks && dayTasks > 0;
-                    return '<div class="calendar-day ' + (isToday ? 'today' : '') + ' ' + (isCompleted ? 'checked' : '') + '" onclick="jumpToDay(' + (idx + 1) + ')">' + (['一', '二', '三', '四', '五', '六', '日'][idx]) + '</div>';
-                }).join('') +
-            '</div>' +
-        '</div>' +
-    '</div>' +
-    
-    '<div class="card" id="today-tasks-card">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
-            '<h4>📋 今日任务</h4>' +
-            '<span id="day-title" style="font-size:12px;color:#666;"></span>' +
-        '</div>' +
-        '<div id="day-tasks-list"></div>' +
-    '</div>' +
-    
-    '<div class="card">' +
-        '<h4 style="margin-bottom:12px;">📊 学习进度</h4>' +
-        '<div style="display:flex;justify-content:space-around;text-align:center;">' +
-            '<div><div id="stat-completed" style="font-size:24px;font-weight:bold;color:#3377FF;">' + completedTasks + '</div><div style="font-size:11px;color:#666;">本周完成</div></div>' +
-            '<div><div id="stat-total" style="font-size:24px;font-weight:bold;color:#43E97B;">' + totalTasks + '</div><div style="font-size:11px;color:#666;">总任务</div></div>' +
-            '<div><div id="stat-percent" style="font-size:24px;font-weight:bold;color:#667eea;">' + (totalTasks > 0 ? Math.round(completedTasks / totalTasks * 100) : 0) + '%</div><div style="font-size:11px;color:#666;">目标达成</div></div>' +
-        '</div>' +
-    '</div>' +
-    
-    '<div class="card" style="margin-top:12px;">' +
-        '<button onclick="expandAllDays()" class="login-btn login-btn-outline" style="width:100%;margin-bottom:8px;">查看全部任务</button>' +
-        '<div id="all-days-list" style="display:none;"></div>' +
-    '</div>';
-    
-    // 渲染今日任务
-    setTimeout(() => renderDayTasks(todayIndex + 1), 50);
-    
-    CTM.triggerHook('afterRenderPlan', {weekId, plan, completedTasks, totalTasks});
-}
-
-// 渲染指定天的任务
-function renderDayTasks(dayNum) {
-    const weekId = 'week' + window._planWeek;
-    const plan = CTM.plans[weekId];
-    const user = getCurrentUserData();
-    user.weekTasks = user.weekTasks || {};
-    
-    const day = plan.days.find(d => d.day === dayNum);
-    if (!day) return;
-    
-    const dayTitle = document.getElementById('day-title');
-    if (dayTitle) dayTitle.textContent = 'Day' + day.day + '：' + day.title;
-    
-    const tasksList = document.getElementById('day-tasks-list');
-    if (!tasksList) return;
-    
-    const typeIcons = {
-        attention: '👁', memory: '🧠', strategy: '💡', practice: '✏️',
-        creative: '🎨', video: '📺', podcast: '🎧', game: '🎮',
-        review: '📝', test: '📋', writing: '✍️', rest: '☕'
-    };
-    const typeNames = {
-        attention: '注意力', memory: '记忆力', strategy: '策略', practice: '练习',
-        creative: '创意', video: '视频', podcast: '播客', game: '游戏',
-        review: '复习', test: '测试', writing: '写作', rest: '休息'
-    };
-    
-    tasksList.innerHTML = day.tasks.map(task => {
-        const completed = user.weekTasks[task.id];
-        const icon = typeIcons[task.type] || '📌';
-        const typeName = typeNames[task.type] || task.type;
-        return '<div class="plan-task ' + (completed ? 'completed' : '') + '" onclick="toggleWeekTask(\'' + task.id + '\', this)">' +
-            '<div class="task-checkbox ' + (completed ? 'checked' : '') + '">' + (completed ? '✓' : '') + '</div>' +
-            '<div class="task-text">' + task.title + '</div>' +
-            '<div class="task-time" style="font-size:10px;color:#999;">' + icon + ' ' + task.duration + '分钟</div>' +
-        '</div>';
-    }).join('');
-}
-
-// 切换任务完成状态
-function toggleWeekTask(taskId, el) {
-    const user = getCurrentUserData();
-    user.weekTasks = user.weekTasks || {};
-    user.weekTasks[taskId] = !user.weekTasks[taskId];
-    saveUserData(user);
-    
-    // 更新UI
-    if (el) {
-        el.classList.toggle('completed', user.weekTasks[taskId]);
-        const checkbox = el.querySelector('.task-checkbox');
-        if (checkbox) {
-            checkbox.classList.toggle('checked', user.weekTasks[taskId]);
-            checkbox.textContent = user.weekTasks[taskId] ? '✓' : '';
+    // 当日任务
+    if (plan && plan.days) {
+        const dayData = plan.days.find(d => d.day === window._planDay);
+        if (dayData) {
+            html += '<div style="margin-bottom:8px;font-size:14px;font-weight:bold;color:#333;">📋 ' + dayData.title + '</div>';
+            dayData.tasks.forEach(task => {
+                const done = userTasks[task.id];
+                const icon = typeIcons[task.type] || '📌';
+                html += '<div class="plan-task ' + (done ? 'completed' : '') + '" onclick="toggleWeekTask(\'' + task.id + '\')" style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (done ? '#e8f5e9' : '#fafafa') + ';cursor:pointer;">';
+                html += '<div class="task-checkbox ' + (done ? 'checked' : '') + '" style="width:22px;height:22px;border-radius:6px;border:2px solid ' + (done ? '#43E97B' : '#ccc') + ';display:flex;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0;">' + (done ? '✓' : '') + '</div>';
+                html += '<div style="flex:1;"><div style="font-size:13px;' + (done ? 'text-decoration:line-through;color:#999;' : '') + '">' + icon + ' ' + task.title + '</div></div>';
+                html += '<div style="font-size:11px;color:#999;margin-left:8px;">' + task.duration + '分钟</div>';
+                html += '</div>';
+            });
         }
     }
+    html += '</div>';
     
-    // 触发钩子
-    CTM.triggerHook('onTaskComplete', {taskId, completed: user.weekTasks[taskId]});
+    // 学习进度
+    html += '<div class="card" style="margin-top:12px;">';
+    html += '<div style="font-size:14px;font-weight:bold;margin-bottom:12px;">📊 学习进度</div>';
+    html += '<div style="display:flex;justify-content:space-around;text-align:center;">';
+    html += '<div><div style="font-size:22px;font-weight:bold;color:#1A6BFF;">' + completedCount + '</div><div style="font-size:11px;color:#666;">本周完成</div></div>';
+    html += '<div><div style="font-size:22px;font-weight:bold;color:#43E97B;">' + (totalCount > 0 ? Math.round(completedCount/totalCount*100) : 0) + '%</div><div style="font-size:11px;color:#666;">完成率</div></div>';
+    html += '<div><div style="font-size:22px;font-weight:bold;color:#667eea;">' + (user.streak || 0) + '</div><div style="font-size:11px;color:#666;">连续天数</div></div>';
+    html += '</div>';
+    html += '</div>';
     
-    // 更新统计数据
-    updatePlanStats();
-    
-    // 播放音效
-    if (user.weekTasks[taskId]) {
-        SoundEffects && SoundEffects.playCorrect && SoundEffects.playCorrect();
+    // 周度描述
+    if (plan && plan.weekDesc) {
+        html += '<div class="card" style="margin-top:12px;">';
+        html += '<div style="font-size:13px;color:#666;line-height:1.6;">💡 ' + plan.weekDesc + '</div>';
+        html += '</div>';
     }
     
-    // 重新渲染当日任务
-    const today = new Date().getDay();
-    const todayIndex = today === 0 ? 6 : today - 1;
-    renderDayTasks(todayIndex + 1);
+    container.innerHTML = html;
+    CTM.triggerHook('afterRenderPlan', {week: window._planWeek});
 }
 
-// 更新统计
-function updatePlanStats() {
-    const weekId = 'week' + window._planWeek;
-    const plan = CTM.plans[weekId];
-    const user = getCurrentUserData();
-    user.weekTasks = user.weekTasks || {};
-    
-    let totalTasks = 0, completedTasks = 0;
-    plan.days.forEach(day => {
-        day.tasks.forEach(task => {
-            totalTasks++;
-            if (user.weekTasks[task.id]) completedTasks++;
-        });
-    });
-    
-    const statCompleted = document.getElementById('stat-completed');
-    const statTotal = document.getElementById('stat-total');
-    const statPercent = document.getElementById('stat-percent');
-    if (statCompleted) statCompleted.textContent = completedTasks;
-    if (statTotal) statTotal.textContent = totalTasks;
-    if (statPercent) statPercent.textContent = (totalTasks > 0 ? Math.round(completedTasks / totalTasks * 100) : 0) + '%';
-}
-
-// 跳转到指定天
-function jumpToDay(dayNum) {
-    const container = document.getElementById('module-content');
-    if (container) {
-        renderDayTasks(dayNum);
-        document.getElementById('today-tasks-card')?.scrollIntoView({behavior: 'smooth'});
-    }
-}
-
-// 展开全部天
-function expandAllDays() {
-    const allDaysList = document.getElementById('all-days-list');
-    const weekId = 'week' + window._planWeek;
-    const plan = CTM.plans[weekId];
-    const user = getCurrentUserData();
-    user.weekTasks = user.weekTasks || {};
-    
-    if (!allDaysList || !plan) return;
-    
-    const typeIcons = {
-        attention: '👁', memory: '🧠', strategy: '💡', practice: '✏️',
-        creative: '🎨', video: '📺', podcast: '🎧', game: '🎮',
-        review: '📝', test: '📋', writing: '✍️', rest: '☕'
-    };
-    
-    if (allDaysList.style.display === 'none') {
-        allDaysList.style.display = 'block';
-        allDaysList.innerHTML = plan.days.map(day => {
-            let dayCompleted = 0;
-            day.tasks.forEach(t => { if (user.weekTasks[t.id]) dayCompleted++; });
-            return '<div style="margin-bottom:12px;">' +
-                '<div style="font-weight:600;margin-bottom:8px;color:#333;">Day' + day.day + '：' + day.title + ' <span style="font-size:11px;color:#666;">(' + dayCompleted + '/' + day.tasks.length + ')</span></div>' +
-                day.tasks.map(task => {
-                    const completed = user.weekTasks[task.id];
-                    return '<div class="plan-task ' + (completed ? 'completed' : '') + '" onclick="toggleWeekTask(\'' + task.id + '\', this)">' +
-                        '<div class="task-checkbox ' + (completed ? 'checked' : '') + '">' + (completed ? '✓' : '') + '</div>' +
-                        '<div class="task-text" style="font-size:13px;">' + task.title + '</div>' +
-                        '<div class="task-time">' + (typeIcons[task.type] || '📌') + ' ' + task.duration + '分钟</div>' +
-                    '</div>';
-                }).join('') +
-            '</div>';
-        }).join('');
-    } else {
-        allDaysList.style.display = 'none';
-    }
-}
-
-// 切换周次
-function changeWeek(dir) {
-    CTM.triggerHook('beforeWeekChange', {from: window._planWeek, dir});
-    window._planWeek = Math.max(1, Math.min(7, (window._planWeek || 1) + dir));
-    CTM.triggerHook('afterWeekChange', {to: window._planWeek});
-    
-    // 保存当前周次到用户数据
-    const user = getCurrentUserData();
-    user.currentWeek = window._planWeek;
-    saveUserData(user);
-    
+function switchPlanDay(day) {
+    window._planDay = day;
     const el = document.getElementById('module-content');
     if (el) renderPlan(el);
 }
 
-// 保留旧函数兼容性
-function getWeekNumber() { return window._planWeek || 1; }
-function generateCalendar() {
-    const days = ['一', '二', '三', '四', '五', '六', '日'];
-    const today = new Date().getDay();
-    const todayIndex = today === 0 ? 6 : today - 1;
-    return days.map((d, i) => {
-        const isToday = i === todayIndex;
-        return '<div class="calendar-day ' + (isToday ? 'today' : '') + '">' + d + '</div>';
-    }).join('');
+function changeWeek(dir) {
+    CTM.triggerHook('beforeWeekChange', {from: window._planWeek, dir: dir});
+    window._planWeek = Math.max(1, Math.min(7, (window._planWeek || 1) + dir));
+    window._planDay = 1;
+    CTM.triggerHook('afterWeekChange', {to: window._planWeek});
+    const el = document.getElementById('module-content');
+    if (el) renderPlan(el);
 }
 
+function toggleWeekTask(taskId) {
+    const user = getCurrentUserData();
+    user.weekTasks = user.weekTasks || {};
+    user.weekTasks[taskId] = !user.weekTasks[taskId];
+    saveUserData(user);
+    CTM.triggerHook('onTaskComplete', {taskId: taskId, completed: user.weekTasks[taskId]});
+    const el = document.getElementById('module-content');
+    if (el) renderPlan(el);
+}
 
+function getWeekNumber() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    return Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7);
+}
 
-// ==================== 8. 母题训练模块 ====================
+function generateCalendar() {
+    const days = ['一', '二', '三', '四', '五', '六', '日'];
+    let html = '';
+    days.forEach((d, i) => {
+        const isToday = i === new Date().getDay() - 1;
+        const checked = Math.random() > 0.5;
+        html += '<div class="calendar-day ' + (isToday ? 'today' : '') + ' ' + (checked ? 'checked' : '') + '">' + d + '</div>';
+    });
+    return html;
+}
+
+function changeWeek(dir) { showToast('周次切换'); }
+
+function toggleTask(el) {
+    const checkbox = el.querySelector('.task-checkbox');
+    checkbox.classList.toggle('checked');
+    el.classList.toggle('completed');
+}
+
 function renderTopics(container) {
     // 获取当前用户年级
     const currentUser = getCurrentUserData();
@@ -3477,150 +3226,6 @@ async function analyzeTopicWithAI(topicId) {
     
     const prompt = `请详细讲解这道题目：
 题目：${topic.q}
-// 学霸方法AI分析函数
-async function analyzeMethodWithAI(methodId, questionIdx) {
-    const questions = methodTrainingQuestions[methodId];
-    const q = questions[questionIdx];
-    if (!q) return;
-    
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    
-    content.innerHTML = `
-        <div class="modal-title">🤖 AI分析</div>
-        <div style="font-size:13px;color:#666;margin-bottom:12px;text-align:center;">第${questionIdx + 1}
-// 思维训练AI分析函数
-async function analyzeThinkingWithAI(type, questionIdx) {
-    const questions = thinkingQuestions[type];
-    const q = questions[questionIdx];
-    if (!q) return;
-    
-    const typeNames = {
-        logic: '逻辑思维', creative: '创意思维', critical: '批判思维', system: '系统思维',
-        reverse: '逆向思维', divergent: '发散思维', converge: '收敛思维', spatial: '空间思维',
-        abstract: '抽象思维'
-    };
-    
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
-    
-    const answerText = q.opts ? q.opts[q.a] : q.a;
-    
-    content.innerHTML = `
-        <div class="modal-title">🤖 AI分析</div>
-        <div style="font-size:13px;color:#666;margin-bottom:12px;text-align:center;">${typeNames[type]} - 第${questionIdx + 1}题</div>
-        <div class="card" style="margin-bottom:12px;">
-            <div style="font-size:13px;color:#1A6BFF;font-weight:600;margin-bottom:8px;">题目</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:12px;">${q.q}</div>
-            ${answerText ? `
-            <div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px;">参考答案</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;">${answerText}</div>
-            ` : ''}
-        </div>
-        <div class="card">
-            <div id="thinking-ai-result" style="min-height:100px;">
-                <div class="ai-loading" style="text-align:center;padding:20px;">🤖 AI正在分析中...</div>
-            </div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-    
-    const prompt = `请详细讲解这道思维训练题目：
-题目：${q.q}
-${answerText ? '参考答案：' + answerText : ''}
-
-请提供：
-1. 知识点分析
-2. 详细解题思路
-3. 易错点提示
-4. 举一反三的类似题目`;
-
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解题目，帮助学生理解知识点，举一反三。' },
-                    { role: 'user', content: prompt }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        const aiContent = data.choices?.[0]?.message?.content || 'AI分析失败，请稍后重试';
-        
-        document.getElementById('thinking-ai-result').innerHTML = `
-            <div style="padding:12px;background:#f5f7ff;border-radius:12px;max-height:300px;overflow-y:auto;">
-                <div style="font-size:14px;line-height:1.8;">${aiContent.replace(/\n/g, '<br/>')}</div>
-            </div>
-        `;
-    } catch (err) {
-        document.getElementById('thinking-ai-result').innerHTML = '<div style="color:#ff6b6b;text-align:center;padding:20px;">AI分析失败，请检查网络</div>';
-    }
-}
-
-题</div>
-        <div class="card" style="margin-bottom:12px;">
-            <div style="font-size:13px;color:#1A6BFF;font-weight:600;margin-bottom:8px;">题目</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;margin-bottom:12px;">${q.q}</div>
-            <div style="font-size:13px;color:#4CAF50;font-weight:600;margin-bottom:8px;">参考答案</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;">${q.a}</div>
-        </div>
-        <div class="card">
-            <div id="method-ai-result" style="min-height:100px;">
-                <div class="ai-loading" style="text-align:center;padding:20px;">🤖 AI正在分析中...</div>
-            </div>
-        </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
-    `;
-    
-    const prompt = `请详细讲解这道学习方法题目：
-题目：${q.q}
-参考答案：${q.a}
-
-请提供：
-1. 知识点分析
-2. 详细解题步骤
-3. 易错点提示
-4. 举一反三的类似题目`;
-
-    try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer sk-8413f72a3f084fb08c84389555a76d37'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解题目，帮助学生理解知识点，举一反三。' },
-                    { role: 'user', content: prompt }
-                ]
-            })
-        });
-        
-        const data = await response.json();
-        const aiContent = data.choices?.[0]?.message?.content || 'AI分析失败，请稍后重试';
-        
-        document.getElementById('method-ai-result').innerHTML = `
-            <div style="padding:12px;background:#f5f7ff;border-radius:12px;max-height:300px;overflow-y:auto;">
-                <div style="font-size:14px;line-height:1.8;">${aiContent.replace(/\n/g, '<br/>')}</div>
-            </div>
-        `;
-    } catch (err) {
-        document.getElementById('method-ai-result').innerHTML = '<div style="color:#ff6b6b;text-align:center;padding:20px;">AI分析失败，请检查网络</div>';
-    }
-}
-
-
 正确答案：${topic.a}
 基础解析：${topic.e}
 
@@ -3656,6 +3261,114 @@ ${answerText ? '参考答案：' + answerText : ''}
         `;
     } catch (err) {
         resultArea.innerHTML = '<div style="margin-top:12px;color:#ff6b6b;">AI分析失败，请检查网络</div>';
+    }
+}
+
+
+// ==================== 学霸方法AI分析模块 ====================
+async function analyzeMethodWithAI(methodId, questionIdx) {
+    try {
+        const questions = methodTrainingQuestions[methodId];
+        if (!questions || !questions[questionIdx]) {
+            showToast('题目数据不存在');
+            return;
+        }
+        const q = questions[questionIdx];
+        const resultId = 'method-ai-result-' + methodId + '-' + questionIdx;
+        const resultEl = document.getElementById(resultId);
+        if (!resultEl) {
+            showToast('结果区域未找到，请重新打开此模块');
+            return;
+        }
+        resultEl.innerHTML = '<div style="text-align:center;padding:20px;"><div style="display:inline-block;width:24px;height:24px;border:3px solid #667eea;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="margin-top:8px;color:#666;font-size:13px;">🤖 AI正在深度分析中...</div></div>';
+
+        const prompt = '请详细讲解这道学习方法题目：\n题目：' + q.q + '\n' + (q.a ? '参考答案：' + q.a : '') + '\n\n请提供：\n1. 知识点分析\n2. 详细解题步骤\n3. 易错点提示\n4. 举一反三的类似题目（2-3道）';
+
+        const response = await fetch(DEEPSEEK_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+            body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [
+                    { role: 'system', content: '你是一位专业的青少年教育辅导老师，擅长详细讲解学习方法题目，帮助学生理解知识点并举一反三。请用简洁易懂的语言回答。' },
+                    { role: 'user', content: prompt }
+                ]
+            })
+        });
+
+        if (response.status === 402) {
+            resultEl.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足，请先充值后再使用AI功能<br><button onclick="showDeepSeekBalanceAlert()" style="margin-top:8px;padding:6px 16px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+            return;
+        }
+
+        const data = await response.json();
+        const aiContent = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'AI分析失败，请稍后重试';
+
+        resultEl.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;max-height:400px;overflow-y:auto;">' +
+            '<div style="font-size:12px;color:#667eea;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:4px;">🤖 AI深度分析</div>' +
+            '<div style="font-size:14px;line-height:1.8;color:#333;">' + aiContent.replace(/\n/g, '<br>') + '</div>' +
+            '</div>';
+    } catch (err) {
+        const resultId = 'method-ai-result-' + methodId + '-' + questionIdx;
+        const resultEl = document.getElementById(resultId);
+        if (resultEl) {
+            resultEl.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">AI分析失败，请检查网络连接</div>';
+        }
+    }
+}
+
+// ==================== 思维训练AI分析模块 ====================
+async function analyzeThinkingWithAI(type, questionIdx) {
+    try {
+        const questions = thinkingQuestions[type];
+        if (!questions || !questions[questionIdx]) {
+            showToast('题目数据不存在');
+            return;
+        }
+        const q = questions[questionIdx];
+        const resultId = 'thinking-ai-result-' + type + '-' + questionIdx;
+        const resultEl = document.getElementById(resultId);
+        if (!resultEl) {
+            showToast('结果区域未找到，请重新打开此模块');
+            return;
+        }
+        resultEl.innerHTML = '<div style="text-align:center;padding:20px;"><div style="display:inline-block;width:24px;height:24px;border:3px solid #667eea;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="margin-top:8px;color:#666;font-size:13px;">🤖 AI正在深度分析中...</div></div>';
+
+        const typeNames = { logic: '逻辑思维', creative: '创意思维', critical: '批判思维', system: '系统思维', reverse: '逆向思维', divergent: '发散思维', converge: '收敛思维', spatial: '空间思维', abstract: '抽象思维' };
+        const answerText = q.opts ? q.opts[q.a] : (q.a || '');
+
+        const prompt = '请详细讲解这道思维训练题目：\n题目：' + q.q + '\n' + (answerText ? '参考答案：' + answerText : '') + '\n\n请提供：\n1. 知识点分析\n2. 详细解题思路\n3. 易错点提示\n4. 举一反三的类似题目（2-3道）';
+
+        const response = await fetch(DEEPSEEK_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+            body: JSON.stringify({
+                model: DEEPSEEK_MODEL,
+                messages: [
+                    { role: 'system', content: '你是一位专业的青少年思维训练老师，擅长详细讲解思维训练题目，帮助学生提升思维能力。请用简洁易懂的语言回答。' },
+                    { role: 'user', content: prompt }
+                ]
+            })
+        });
+
+        if (response.status === 402) {
+            resultEl.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足，请先充值后再使用AI功能<br><button onclick="showDeepSeekBalanceAlert()" style="margin-top:8px;padding:6px 16px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+            return;
+        }
+
+        const data = await response.json();
+        const aiContent = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'AI分析失败，请稍后重试';
+
+        resultEl.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;max-height:400px;overflow-y:auto;">' +
+            '<div style="font-size:12px;color:#667eea;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:4px;">🤖 ' + (typeNames[type] || '思维训练') + 'AI深度分析</div>' +
+            '<div style="font-size:14px;line-height:1.8;color:#333;">' + aiContent.replace(/\n/g, '<br>') + '</div>' +
+            '</div>';
+    } catch (err) {
+        const resultId = 'thinking-ai-result-' + type + '-' + questionIdx;
+        const resultEl = document.getElementById(resultId);
+        if (resultEl) {
+            resultEl.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">AI分析失败，请检查网络连接</div>';
+        }
     }
 }
 
@@ -3886,8 +3599,10 @@ function submitMethodAnswers(methodId, page) {
                     </div>
                     <div style="display:flex;gap:8px;">
                         <button onclick="rateMethodAnswer('${methodId}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
-                        <button onclick="rateMethodAnswer('${methodId}', false, ${startIndex + idx})"</button><button onclick="analyzeMethodWithAI('${methodId}', ${startIndex + idx})" style="padding:8px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🤖 AI分析 style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
+                        <button onclick="rateMethodAnswer('${methodId}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
                     </div>
+                    <button onclick="analyzeMethodWithAI('${methodId}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
+                    <div id="method-ai-result-${methodId}-${startIndex + idx}" style="margin-top:8px;"></div>
                 </div>
             `).join('')}
         </div>
@@ -4138,7 +3853,23 @@ function renderPodcast(container) {
     
     container.innerHTML = `
         <div class="card">
-            <h3 style="margin-bottom:16px;">🎧 播客课堂 <span style="font-size:12px;color:#999;">共${podcasts.length}个音频</span></h3>
+            <h3 style="margin-bottom:12px;">🎧 播客课堂 <span style="font-size:12px;color:#999;">共${podcasts.length}个音频</span></h3>
+            <div id="coze-login-banner" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="color:white;">
+                    <div style="font-size:14px;font-weight:600;">🔑 登录扣子平台</div>
+                    <div style="font-size:11px;opacity:0.8;margin-top:2px;">登录后可在线播放原声音频</div>
+                </div>
+                <button onclick="loginCozePlatform()" style="background:white;color:#667eea;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">去登录</button>
+            </div>
+            <div id="coze-login-status" style="display:none;background:#e8f5e9;border-radius:12px;padding:14px 16px;margin-bottom:12px;display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <div style="color:#2e7d32;">
+                        <div style="font-size:14px;font-weight:600;">✅ 扣子已登录</div>
+                        <div style="font-size:11px;margin-top:2px;">可以正常播放原声音频</div>
+                    </div>
+                    <button onclick="checkCozeLogin()" style="background:#2e7d32;color:white;border:none;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;">刷新状态</button>
+                </div>
+            </div>
             <div class="subject-tab" style="flex-wrap:wrap;">
                 <button class="subject-tab-btn active" onclick="filterPodcast('all', this)">全部</button>
                 <button class="subject-tab-btn" onclick="filterPodcast('学霸方法', this)">学霸方法</button>
@@ -4164,20 +3895,13 @@ function renderPodcast(container) {
         
         <div id="podcast-list">
             ${podcasts.map(p => `
-            <div class="podcast-item" style="flex-wrap:wrap;">
+            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
                 <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
-                <div class="podcast-info" style="flex:1;min-width:0;" onclick="playPodcastCourse('${p.id}')">
-                    <div class="podcast-title">${p.title}</div>
-                    <div class="podcast-meta">${p.teacher} · ${p.duration} · <span class="media-badge">${p.category}</span></div>
-                    <div class="media-views">👁 ${(p.views/1000).toFixed(1)}万</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
-                    ${p.shareUrl ? `<a href="${p.shareUrl}" target="_blank" onclick="event.stopPropagation();" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;font-size:12px;color:#3377FF;text-decoration:none;white-space:nowrap;">🔗 扣子</a>` : ''}
-                    <label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#e8f5e9;border-radius:8px;cursor:pointer;font-size:12px;color:#4CAF50;white-space:nowrap;" onclick="event.stopPropagation();">
-                        📤 上传
-                        <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
-                    </label>
-                    <button onclick="event.stopPropagation();downloadPodcastFromCoze('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
+                <div class="podcast-info">${p.title}<div class="podcast-meta">${p.teacher} · ${p.duration} · ${p.category}</div></div>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;" onclick="event.stopPropagation();">
+                    ${p.shareUrl ? `<a href="${p.shareUrl}" target="_blank" style="font-size:11px;color:#3377FF;text-decoration:none;">🔗</a>` : ''}
+                    <label style="cursor:pointer;font-size:11px;color:#4CAF50;">📤<input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)"></label>
+                    <button onclick="downloadPodcastFromCoze('${p.id}')" style="font-size:11px;color:#FF6B6B;background:none;border:none;cursor:pointer;padding:0;">⬇️</button>
                 </div>
             </div>
             `).join('')}
@@ -4199,20 +3923,13 @@ function filterPodcast(category, btn) {
     
     if (list) {
         list.innerHTML = filtered.map(p => `
-            <div class="podcast-item" style="flex-wrap:wrap;">
+            <div class="podcast-item" onclick="playPodcastCourse('${p.id}')">
                 <div class="podcast-thumb" style="background:${p.gradient};">${p.icon}</div>
-                <div class="podcast-info" style="flex:1;min-width:0;" onclick="playPodcastCourse('${p.id}')">
-                    <div class="podcast-title">${p.title}</div>
-                    <div class="podcast-meta">${p.teacher} · ${p.duration} · <span class="media-badge">${p.category}</span></div>
-                    <div class="media-views">👁 ${(p.views/1000).toFixed(1)}万</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
-                    ${p.shareUrl ? `<a href="${p.shareUrl}" target="_blank" onclick="event.stopPropagation();" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f5f7ff;border-radius:8px;font-size:12px;color:#3377FF;text-decoration:none;white-space:nowrap;">🔗 扣子</a>` : ''}
-                    <label style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#e8f5e9;border-radius:8px;cursor:pointer;font-size:12px;color:#4CAF50;white-space:nowrap;" onclick="event.stopPropagation();">
-                        📤 上传
-                        <input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)">
-                    </label>
-                    <button onclick="event.stopPropagation();downloadPodcastFromCoze('${p.id}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#fff5f5;border-radius:8px;cursor:pointer;font-size:12px;color:#FF6B6B;border:none;white-space:nowrap;">⬇️ 下载</button>
+                <div class="podcast-info">${p.title}<div class="podcast-meta">${p.teacher} · ${p.duration} · ${p.category}</div></div>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;" onclick="event.stopPropagation();">
+                    ${p.shareUrl ? `<a href="${p.shareUrl}" target="_blank" style="font-size:11px;color:#3377FF;text-decoration:none;">🔗</a>` : ''}
+                    <label style="cursor:pointer;font-size:11px;color:#4CAF50;">📤<input type="file" accept="audio/mp3,audio/mpeg,.mp3" style="display:none;" onchange="uploadPodcastFile('${p.id}', this)"></label>
+                    <button onclick="downloadPodcastFromCoze('${p.id}')" style="font-size:11px;color:#FF6B6B;background:none;border:none;cursor:pointer;padding:0;">⬇️</button>
                 </div>
             </div>
         `).join('');
@@ -4552,21 +4269,20 @@ function renderGames(container) {
 	        {id:'audio',icon:'🎧',name:'听音辨位',desc:'听觉训练',gradient:'linear-gradient(135deg,#89f7fe,#66a6ff)'},
 	        {id:'word',icon:'💬',name:'词汇联想',desc:'语言训练',gradient:'linear-gradient(135deg,#fddb92,#d1fdff)'},
 	        {id:'classify',icon:'📂',name:'分类归纳',desc:'思维训练',gradient:'linear-gradient(135deg,#c1dfc4,#deecfd)'},
-	        {id:'attention',icon:'🎯',name:'注意力追踪',desc:'专注训练',gradient:'linear-gradient(135deg,#ff9a9e,#fecfef)'},
-	        // Week1-7 新增认知训练游戏
-	        {id:'palace',icon:'🏛️',name:'记忆宫殿',desc:'空间记忆法',gradient:'linear-gradient(135deg,#8B4513,#D2691E)'},
-	        {id:'stroop',icon:'🎯',name:'Stroop冲突',desc:'冲突抑制',gradient:'linear-gradient(135deg,#DC143C,#FF6347)'},
-	        {id:'numshape',icon:'📐',name:'数形结合',desc:'数形转换',gradient:'linear-gradient(135deg,#4169E1,#6495ED)'},
-	        {id:'conserve',icon:'⚖️',name:'守恒推理',desc:'守恒思维',gradient:'linear-gradient(135deg,#2E8B57,#3CB371)'},
-	        {id:'network',icon:'🕸️',name:'知识网络',desc:'系统思维',gradient:'linear-gradient(135deg,#9370DB,#BA55D3)'},
-	        {id:'reverse',icon:'🔄',name:'逆向推理',desc:'逆向思维',gradient:'linear-gradient(135deg,#FF8C00,#FFA500)'},
-	        {id:'experiment',icon:'🧪',name:'实验设计',desc:'科学探究',gradient:'linear-gradient(135deg,#20B2AA,#48D1CC)'}
+	        {id:'attention',icon:'🎯',name:'注意力追踪',desc:'专注训练',gradient:'linear-gradient(135deg,#ff9a9e,#fecfef)'}
+        {id:'palace',icon:'🏛️',name:'记忆宫殿',desc:'空间记忆法',gradient:'linear-gradient(135deg,#6a3093,#a044ff)'},
+        {id:'stroop',icon:'🎯',name:'Stroop冲突',desc:'冲突抑制',gradient:'linear-gradient(135deg,#fa709a,#fee140)'},
+        {id:'numshape',icon:'📐',name:'数形结合',desc:'数形转换',gradient:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+        {id:'conserve',icon:'⚖️',name:'守恒推理',desc:'守恒思维',gradient:'linear-gradient(135deg,#a18cd1,#fbc2eb)'},
+        {id:'network',icon:'🕸️',name:'知识网络',desc:'系统思维',gradient:'linear-gradient(135deg,#667eea,#764ba2)'},
+        {id:'reverse',icon:'🔄',name:'逆向推理',desc:'逆向思维',gradient:'linear-gradient(135deg,#f093fb,#f5576c)'},
+        {id:'experiment',icon:'🧪',name:'实验设计',desc:'科学探究',gradient:'linear-gradient(135deg,#89f7fe,#66a6ff)'}
 	    ];
     
     container.innerHTML = `
         <div class="card">
             <h3 style="margin-bottom:12px;">🎮 认知训练游戏</h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">23大游戏全面提升认知能力！</p>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">16大游戏全面提升认知能力！</p>
             
             <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
                 ${games.map(g => `
@@ -5206,7 +4922,6 @@ function handleWrongNoteClick(source, wrongKey, topicId) {
 
 function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
 
-// ==================== 10. 思维训练模块 ====================
 // ====== 思维训练 ======
 const thinkingQuestions = {
     logic: [
@@ -5448,8 +5163,10 @@ function submitThinkingAnswers(type, page) {
                         ` : ''}
                         <div style="display:flex;gap:8px;">
                             <button onclick="rateThinkingAnswer('${type}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
-                            <button onclick="rateThinkingAnswer('${type}', false, ${startIndex + idx})"</button><button onclick="analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="padding:8px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🤖 AI分析 style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
+                            <button onclick="rateThinkingAnswer('${type}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
                         </div>
+                        <button onclick="analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
+                        <div id="thinking-ai-result-${type}-${startIndex + idx}" style="margin-top:8px;"></div>
                     </div>
                 `;
             }).join('')}
@@ -5608,7 +5325,6 @@ function deleteThinkingNote(noteId) {
     showToast('笔记已删除');
 }
 
-// ==================== 9. 学霸方法模块 ====================
 // ====== 学霸方法详情 ======
 const methodDetails = {
     feyman: {title:'🧠 费曼学习法',desc:'把学到的知识用自己的话讲给别人听，如果别人能听懂，说明你真正掌握了。',steps:['选择一个你想要理解的概念','想象你要把这个概念教给一个完全不懂的人','如果讲解过程中卡住了，就回顾原始材料','用自己的话重新组织，确保通俗易懂'],tip:'💡 最佳实践：每天用费曼学习法复习一个知识点，坚持21天形成习惯。'},
@@ -5643,8 +5359,7 @@ function showMethodDetail(id) {
 
 
 
-// ==================== 9. 学霸方法模块 ====================
-// ====== 学霸方法训练题库 ======
+// ====== 学霸方法训练题库（V99新增）======
 const methodTraining = methodTrainingQuestions;
 
 function getMethodTraining(methodId) {
@@ -5680,16 +5395,8 @@ function startMethodTraining(methodId) {
 
 
 
-// ==================== 18. 学习计划模块 ====================
-// ====== Week5-6训练计划 ======
-// 训练计划注册表
-const weekPlans = {
-    week1: week1Plan, week2: week2Plan, week3: week3Plan, week4: week4Plan,
-    week5: week5Plan, week6: week6Plan, week7: week7Plan
-};
-
-// 注册所有训练计划到CTM
-Object.keys(weekPlans).forEach(k => CTM.registerPlan(k, weekPlans[k]));
+// ====== Week5-6训练计划（V99新增）======
+const weekPlans = {week1:week1Plan,week2:week2Plan,week3:week3Plan,week4:week4Plan,week5:week5Plan,week6:week6Plan,week7:week7Plan};
 
 function getWeekPlan(weekId) { return weekPlans[weekId] || null; }
 
@@ -5717,6 +5424,19 @@ function renderWeekPlan(weekId) {
     return html;
 }
 
+function toggleWeekTask(taskId) {
+    const user = getCurrentUserData();
+    if (!user) return;
+    user.weekTasks = user.weekTasks || {};
+    user.weekTasks[taskId] = !user.weekTasks[taskId];
+    syncUserData(user);
+    showToast('任务状态已更新');
+}
+
+
+
+
+// ====== Week5-6训练计划（V99新增）======
 
 
 
@@ -5764,6 +5484,13 @@ const gameConfig = {
     word: {name:'💬 词汇联想',color:'#FDDB92',gradient:'linear-gradient(135deg,#fddb92,#d1fdff)'},
     classify: {name:'📂 分类归纳',color:'#C1DFC4',gradient:'linear-gradient(135deg,#c1dfc4,#deecfd)'},
     attention: {name:'🎯 注意力追踪',color:'#FF9A9E',gradient:'linear-gradient(135deg,#ff9a9e,#fecfef)'},
+    palace: {name:'🏛️ 记忆宫殿',color:'#6a3093',gradient:'linear-gradient(135deg,#6a3093,#a044ff)'},
+    stroop: {name:'🎯 Stroop冲突',color:'#fa709a',gradient:'linear-gradient(135deg,#fa709a,#fee140)'},
+    numshape: {name:'📐 数形结合',color:'#43e97b',gradient:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+    conserve: {name:'⚖️ 守恒推理',color:'#a18cd1',gradient:'linear-gradient(135deg,#a18cd1,#fbc2eb)'},
+    network: {name:'🕸️ 知识网络',color:'#667eea',gradient:'linear-gradient(135deg,#667eea,#764ba2)'},
+    reverse: {name:'🔄 逆向推理',color:'#f093fb',gradient:'linear-gradient(135deg,#f093fb,#f5576c)'},
+    experiment: {name:'🧪 实验设计',color:'#89f7fe',gradient:'linear-gradient(135deg,#89f7fe,#66a6ff)'}
     // 娱乐游戏配置
     snake: {name:'🐍 贪吃蛇',color:'#43A047',gradient:'linear-gradient(135deg,#43A047,#66BB6A)'},
     tetris: {name:'🧱 俄罗斯方块',color:'#E53935',gradient:'linear-gradient(135deg,#E53935,#EF5350)'},
@@ -5772,15 +5499,7 @@ const gameConfig = {
     g2048: {name:'🎮 2048',color:'#EDC22E',gradient:'linear-gradient(135deg,#EDC22E,#F0D060)'},
     whack: {name:'🔨 打地鼠',color:'#8E24AA',gradient:'linear-gradient(135deg,#8E24AA,#AB47BC)'},
     linkup: {name:'🔗 连连看',color:'#00897B',gradient:'linear-gradient(135deg,#00897B,#26A69A)'},
-    eliminate: {name:'💎 消消乐',color:'#F4511E',gradient:'linear-gradient(135deg,#F4511E,#FF7043)'},
-    // Week1-7 新增认知训练游戏
-    palace: {name:'🏛️ 记忆宫殿',color:'#8B4513',gradient:'linear-gradient(135deg,#8B4513,#D2691E)'},
-    stroop: {name:'🎯 Stroop冲突',color:'#DC143C',gradient:'linear-gradient(135deg,#DC143C,#FF6347)'},
-    numshape: {name:'📐 数形结合',color:'#4169E1',gradient:'linear-gradient(135deg,#4169E1,#6495ED)'},
-    conserve: {name:'⚖️ 守恒推理',color:'#2E8B57',gradient:'linear-gradient(135deg,#2E8B57,#3CB371)'},
-    network: {name:'🕸️ 知识网络',color:'#9370DB',gradient:'linear-gradient(135deg,#9370DB,#BA55D3)'},
-    reverse: {name:'🔄 逆向推理',color:'#FF8C00',gradient:'linear-gradient(135deg,#FF8C00,#FFA500)'},
-    experiment: {name:'🧪 实验设计',color:'#20B2AA',gradient:'linear-gradient(135deg,#20B2AA,#48D1CC)'}
+    eliminate: {name:'💎 消消乐',color:'#F4511E',gradient:'linear-gradient(135deg,#F4511E,#FF7043)'}
 };
 
 let gameTimerDisplay = null;
@@ -5854,6 +5573,13 @@ function startGame(type) {
             case 'word': startWordAssociation(); break;
             case 'classify': startClassification(); break;
             case 'attention': startAttentionTrack(); break;
+            case 'palace': startPalace(); break;
+            case 'stroop': startStroop(); break;
+            case 'numshape': startNumshape(); break;
+            case 'conserve': startConserve(); break;
+            case 'network': startNetwork(); break;
+            case 'reverse': startReverse(); break;
+            case 'experiment': startExperiment(); break;
             case 'snake': startSnake(); break;
             case 'tetris': startTetris(); break;
             case 'flipcard': startFlipCard(); break;
@@ -5862,14 +5588,6 @@ function startGame(type) {
             case 'whack': startWhack(); break;
             case 'linkup': startLinkUp(); break;
             case 'eliminate': startEliminate(); break;
-            // Week1-7 新增认知训练游戏
-            case 'palace': startPalace(); break;
-            case 'stroop': startStroop(); break;
-            case 'numshape': startNumShape(); break;
-            case 'conserve': startConserve(); break;
-            case 'network': startNetwork(); break;
-            case 'reverse': startReverse(); break;
-            case 'experiment': startExperiment(); break;
         }
     }, 100);
 }
@@ -7160,7 +6878,6 @@ function closeGame() {
 }
 
 
-// ==================== 13. 训练游戏模块 ====================
 // ====== 8大新游戏函数 ======
 
 // 文字记忆游戏
@@ -7546,7 +7263,6 @@ function clickAttention(index) {
     }
 }
 
-// ==================== 20. 设置与系统 ====================
 // ====== 初始化 ======
 document.addEventListener('DOMContentLoaded', () => {
     console.log('认知训练门户加载中...');
@@ -7597,7 +7313,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ==================== 11. 播客课堂模块 ====================
 // ====== 播客音频播放 ======
 const audioResources = {
     'audio1': { url: '', title: '英语听力训练技巧' },
@@ -7672,7 +7387,6 @@ function formatTime(seconds) {
     return mins + ':' + (secs < 10 ? '0' : '') + secs;
 }
 
-// ==================== 9. 学霸方法模块 ====================
 // ====== 学霸方法训练 ======
 const methodPractices = {
     feyman: { title: '🧠 费曼学习法训练', tasks: ['选择一个你学过的知识点', '用最简单的语言解释给"小白"听', '找出讲解中不清楚的地方', '重新组织语言，简化解释', '用比喻或类比让解释更生动'] },
@@ -7697,7 +7411,6 @@ function startMethodPractice(method) {
     content.innerHTML = html;
 }
 
-// ==================== 14. DeepSeek AI模块 ====================
 // ====== DeepSeek充值 ======
 // DeepSeek 充值中心
 async function openDeepSeekRecharge() {
@@ -7863,8 +7576,7 @@ function selectRechargePackage(amount) {
 
 
 
-// ==================== 14. DeepSeek AI模块 ====================
-// ====== DeepSeek API ======
+// ====== DeepSeek API V50 ======
 
 async function callDeepSeekAPI(messages, temperature) {
     try {
@@ -7902,7 +7614,6 @@ function showDeepSeekBalanceAlert() {
     }
 }
 
-// ==================== 14. DeepSeek AI模块 ====================
 // ====== 语音输入功能 ======
 function initVoiceInput(inputField) {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -8035,46 +7746,86 @@ async function getPodcastAudioUrl(shareUrl, courseId) {
     }
     
     try {
-        console.log('正在获取签名URL:', shareUrl);
+        console.log('正在获取播客音频:', shareUrl);
         
-        // 1. fetch分享URL，跟随302获取.podcast JSON
-        var resp = await fetch(shareUrl, {redirect: 'follow', credentials: 'include'});
-        if (!resp.ok && resp.status !== 302) {
-            throw new Error('分享URL请求失败: ' + resp.status);
+        // 方法1: 直接fetch分享URL，跟随重定向获取.podcast JSON
+        try {
+            var resp = await fetch(shareUrl, {redirect: 'follow'});
+            if (resp.ok) {
+                var podcastData = await resp.json();
+                var audioUri = podcastData.audio_uri;
+                
+                if (audioUri) {
+                    console.log('获取到audio_uri:', audioUri);
+                    
+                    // 尝试调用coze API获取签名URL
+                    try {
+                        var signResp = await fetch('https://www.coze.cn/api/coze_space/get_url', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({uri: audioUri})
+                        });
+                        
+                        var signData = await signResp.json();
+                        
+                        if (signData.code === 0 && signData.data && signData.data.url) {
+                            var signedUrl = signData.data.url;
+                            console.log('获取到签名URL:', signedUrl);
+                            podcastUrlCache.cache[courseId] = signedUrl;
+                            podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
+                            return signedUrl;
+                        }
+                        console.warn('get_url API返回异常:', signData);
+                    } catch(signErr) {
+                        console.warn('get_url API调用失败:', signErr.message);
+                    }
+                    
+                    // 方法2: 直接用audio_uri构建static.coze.site URL（需要sign）
+                    // 此方法通常需要签名，无法直接访问
+                }
+            }
+        } catch(fetchErr) {
+            console.warn('fetch分享URL失败:', fetchErr.message);
         }
         
-        var podcastData = await resp.json();
-        var audioUri = podcastData.audio_uri;
-        
-        if (!audioUri) {
-            throw new Error('分享页面未返回audio_uri');
+        // 方法3: 尝试手动处理302重定向
+        try {
+            var resp2 = await fetch(shareUrl, {redirect: 'manual'});
+            if (resp2.status === 302 || resp2.status === 301) {
+                var redirectUrl = resp2.headers.get('Location');
+                console.log('获取到重定向URL:', redirectUrl);
+                if (redirectUrl) {
+                    var resp3 = await fetch(redirectUrl);
+                    if (resp3.ok) {
+                        var podcastData2 = await resp3.json();
+                        var audioUri2 = podcastData2.audio_uri;
+                        if (audioUri2) {
+                            // 尝试获取签名URL
+                            try {
+                                var signResp2 = await fetch('https://www.coze.cn/api/coze_space/get_url', {
+                                    method: 'POST',
+                                    credentials: 'include',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({uri: audioUri2})
+                                });
+                                var signData2 = await signResp2.json();
+                                if (signData2.code === 0 && signData2.data && signData2.data.url) {
+                                    podcastUrlCache.cache[courseId] = signData2.data.url;
+                                    podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
+                                    return signData2.data.url;
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                }
+            }
+        } catch(e) {
+            console.warn('手动重定向处理失败:', e.message);
         }
         
-        console.log('获取到audio_uri:', audioUri);
-        
-        // 2. 调用coze内部API获取签名URL
-        var signResp = await fetch('https://www.coze.cn/api/coze_space/get_url', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({uri: audioUri})
-        });
-        
-        var signData = await signResp.json();
-        
-        if (signData.code === 0 && signData.data && signData.data.url) {
-            var signedUrl = signData.data.url;
-            console.log('获取到签名URL:', signedUrl);
-            
-            // 缓存结果
-            podcastUrlCache.cache[courseId] = signedUrl;
-            podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
-            
-            return signedUrl;
-        }
-        
-        console.warn('get_url API返回异常:', signData);
-        throw new Error('get_url failed: ' + (signData.msg || 'unknown'));
+        console.error('所有获取音频URL的方法均失败');
+        return null;
         
     } catch(e) {
         console.error('获取播客音频URL失败:', e);
@@ -8116,10 +7867,8 @@ function initAudioPlayer() {
 }
 
 function playPodcastCourse(courseId) {
-    // 确保获取真正的 audio 元素，而不是可能被覆盖的 currentAudio
     var audioEl = document.getElementById('hidden-audio');
     if (!audioEl) {
-        console.error('播客播放器初始化失败：找不到 hidden-audio 元素');
         showToast('播放器初始化失败，请刷新页面');
         return;
     }
@@ -8138,62 +7887,174 @@ function playPodcastCourse(courseId) {
     if (courseTitleEl) courseTitleEl.textContent = course.title;
     if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
     
-    // 如果没有shareUrl，显示提示
     if (!course.shareUrl) {
         showToast('该播客暂不可用');
         return;
     }
     
-    // 显示加载状态
-    showToast('正在获取音频...');
+    // 显示播放器UI
+    showMiniPlayer(course);
+    var playerEl = document.getElementById('audio-player-fullscreen');
+    var coverPlayingEl = document.getElementById('ap-cover');
+    if (playerEl) playerEl.classList.add('show');
+    if (coverPlayingEl) coverPlayingEl.classList.add('playing');
+    updatePodcastListState(courseId);
     
-    // 动态获取签名URL
-    getPodcastAudioUrl(course.shareUrl, courseId).then(function(audioUrl) {
-        if (audioUrl) {
-            console.log('设置音频源:', audioUrl);
-            audioEl.src = audioUrl;
-            
-            // 恢复播放进度
-            if (savedPositions[courseId]) {
-                audioEl.currentTime = savedPositions[courseId];
-            }
+    // 尝试获取播客数据（包含字幕文本）
+    showToast('正在加载播客...');
+    fetch(course.shareUrl, {redirect: 'follow'}).then(function(resp) {
+        if (!resp.ok) throw new Error('fetch failed');
+        return resp.json();
+    }).then(function(podcastData) {
+        // 保存字幕数据供TTS使用
+        if (podcastData.captions) {
+            window._currentPodcastCaptions = podcastData.captions;
+        }
+        // 保存audio_uri
+        var audioUri = podcastData.audio_uri;
+        if (audioUri) {
+            window._currentAudioUri = audioUri;
+        }
+        
+        // 尝试获取签名音频URL
+        return tryGetSignedAudioUrl(audioUri, courseId, audioEl);
+    }).then(function(signedUrl) {
+        if (signedUrl) {
+            // 有签名URL，直接播放原声
+            audioEl.src = signedUrl;
+            if (savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
             audioEl.playbackRate = audioCtx.playbackSpeed;
             audioEl.volume = audioCtx.volume;
-            
             audioEl.play().then(function() {
-                console.log('音频播放成功');
                 audioCtx.isPlaying = true;
                 updatePlayButtons();
+                showToast('正在播放: ' + course.title);
             }).catch(function(e) {
-                console.error('音频播放失败:', e);
-                if (e.name === 'NotAllowedError') {
-                    showToast('请手动点击播放按钮');
-                } else {
-                    showToast('播放失败，请检查网络');
-                }
+                showToast('播放失败，尝试语音朗读模式');
+                startPodcastTTS();
             });
-            
-            showMiniPlayer(course);
-            var playerEl = document.getElementById('audio-player-fullscreen');
-            var coverPlayingEl = document.getElementById('ap-cover');
-            if (playerEl) playerEl.classList.add('show');
-            if (coverPlayingEl) coverPlayingEl.classList.add('playing');
-            updatePodcastListState(courseId);
-            showToast('正在播放: ' + course.title);
         } else {
-            console.warn('获取音频URL失败，尝试打开分享页面');
-            // 获取失败时，打开分享页面作为fallback
-            showToast('正在跳转播放页面...');
-            window.open(course.shareUrl, '_blank');
+            // 没有签名URL，使用TTS朗读模式
+            showToast('使用语音朗读模式播放');
+            startPodcastTTS();
         }
+    }).catch(function(e) {
+        console.error('播客加载失败:', e);
+        showToast('加载失败，尝试语音朗读');
+        startPodcastTTS();
     });
 }
+
+// 尝试获取签名音频URL（需要扣子登录）
+function tryGetSignedAudioUrl(audioUri, courseId, audioEl) {
+    if (!audioUri) return Promise.resolve(null);
+    
+    // 检查缓存
+    var now = Date.now();
+    if (podcastUrlCache.cache[courseId] && podcastUrlCache.cacheExpiry[courseId] && now < podcastUrlCache.cacheExpiry[courseId]) {
+        return Promise.resolve(podcastUrlCache.cache[courseId]);
+    }
+    
+    // 尝试调用get_url API（需要coze.cn cookie）
+    return fetch('https://www.coze.cn/api/coze_space/get_url', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({uri: audioUri})
+    }).then(function(resp) {
+        return resp.json();
+    }).then(function(data) {
+        if (data.code === 0 && data.data && data.data.url) {
+            var signedUrl = data.data.url;
+            podcastUrlCache.cache[courseId] = signedUrl;
+            podcastUrlCache.cacheExpiry[courseId] = now + podcastUrlCache.CACHE_DURATION;
+            return signedUrl;
+        }
+        return null;
+    }).catch(function(e) {
+        return null;
+    });
+}
+
+// TTS朗读播客内容
+var ttsCaptionIndex = 0;
+var ttsTimer = null;
+
+function startPodcastTTS() {
+    var captions = window._currentPodcastCaptions;
+    if (!captions || captions.length === 0) {
+        showToast('暂无播客内容');
+        return;
+    }
+    
+    ttsCaptionIndex = 0;
+    audioCtx.isPlaying = true;
+    updatePlayButtons();
+    speakNextCaption();
+}
+
+function speakNextCaption() {
+    var captions = window._currentPodcastCaptions;
+    if (!captions || ttsCaptionIndex >= captions.length) {
+        audioCtx.isPlaying = false;
+        updatePlayButtons();
+        showToast('播客朗读完成');
+        return;
+    }
+    if (!audioCtx.isPlaying) return;
+    
+    var caption = captions[ttsCaptionIndex];
+    // 清理文本
+    var text = caption.text || '';
+    if (!text) { ttsCaptionIndex++; speakNextCaption(); return; }
+    
+    // 使用TTS朗读
+    stopTTSSpeech();
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = audioCtx.playbackSpeed > 1 ? audioCtx.playbackSpeed : 1.0;
+    utterance.pitch = 1.0;
+    
+    // 选择中文语音
+    var voices = speechSynthesis.getVoices();
+    var zhVoice = voices.find(function(v) { return v.lang.indexOf('zh') >= 0; });
+    if (zhVoice) utterance.voice = zhVoice;
+    
+    utterance.onend = function() {
+        ttsCaptionIndex++;
+        // 段间短暂停顿
+        ttsTimer = setTimeout(speakNextCaption, 300);
+    };
+    utterance.onerror = function() {
+        ttsCaptionIndex++;
+        speakNextCaption();
+    };
+    
+    speechSynthesis.speak(utterance);
+}
+
+function stopPodcastTTS() {
+    stopTTSSpeech();
+    if (ttsTimer) { clearTimeout(ttsTimer); ttsTimer = null; }
+    audioCtx.isPlaying = false;
+    updatePlayButtons();
+}
+
 
 function onAudioLoaded() { var totalEl = document.getElementById('ap-total-time'); if (totalEl) totalEl.textContent = formatTimeFull(currentAudio.duration); }
 
 
 function onAudioEnded() { playNextTrack(); }
-function toggleAudioPlay() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
+function toggleAudioPlay() {
+    // 如果正在TTS朗读，控制TTS
+    if (window._currentPodcastCaptions && !currentAudio.src) {
+        if (audioCtx.isPlaying) { stopPodcastTTS(); }
+        else { audioCtx.isPlaying = true; updatePlayButtons(); speakNextCaption(); }
+        return;
+    }
+    if (!currentAudio) return;
+    if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play();
+}
 
 function seekAudioPlayer(e) {
     if (!currentAudio || !currentAudio.duration) return;
@@ -8225,18 +8086,47 @@ function toggleMute() {
     else { setVolume((audioCtx.lastVolume || 0.8) * 100); var sliderEl = document.getElementById('ap-volume-slider'); if (sliderEl) sliderEl.value = (audioCtx.lastVolume || 0.8) * 100; }
 }
 
-function closeAudioPlayer() { var playerEl = document.getElementById('audio-player-fullscreen'); var coverEl = document.getElementById('ap-cover'); if (playerEl) playerEl.classList.remove('show'); if (coverEl) coverEl.classList.remove('playing'); }
+function closeAudioPlayer() { 
+    // 停止音频和TTS
+    if (currentAudio) { currentAudio.pause(); audioCtx.isPlaying = false; }
+    stopPodcastTTS();
+    // 隐藏全屏播放器
+    var playerEl = document.getElementById('audio-player-fullscreen'); 
+    var coverEl = document.getElementById('ap-cover'); 
+    if (playerEl) playerEl.classList.remove('show'); 
+    if (coverEl) coverEl.classList.remove('playing');
+    // 显示迷你播放器
+    if (audioCtx.currentTrack) {
+        var miniEl = document.getElementById('mini-player');
+        if (miniEl) miniEl.classList.add('show');
+    }
+    updatePlayButtons();
+}
 function updatePlayButtons() { var icon = audioCtx.isPlaying ? '⏸' : '▶'; var apPlayBtn = document.getElementById('ap-play-btn'); var miniBtn = document.getElementById('mini-player-btn'); if (apPlayBtn) apPlayBtn.innerHTML = icon; if (miniBtn) miniBtn.innerHTML = icon; }
 
 function showMiniPlayer(course) { var thumbEl = document.getElementById('mini-player-thumb'); var titleEl = document.getElementById('mini-player-title'); var teacherEl = document.getElementById('mini-player-teacher'); var playerEl = document.getElementById('mini-player'); if (thumbEl) { thumbEl.innerHTML = course.icon; thumbEl.style.background = course.gradient; } if (titleEl) titleEl.textContent = course.title; if (teacherEl) teacherEl.textContent = course.teacher; if (playerEl) playerEl.classList.add('show'); }
 function toggleMiniPlayer() { if (!currentAudio) return; if (audioCtx.isPlaying) currentAudio.pause(); else currentAudio.play(); }
-function closeMiniPlayer() { if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; } var miniEl = document.getElementById('mini-player'); var playerEl = document.getElementById('audio-player-fullscreen'); if (miniEl) miniEl.classList.remove('show'); if (playerEl) playerEl.classList.remove('show'); document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { item.classList.remove('playing'); }); }
+function closeMiniPlayer() { 
+    // 完全停止音频和TTS
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.src = ''; } 
+    stopPodcastTTS();
+    audioCtx.isPlaying = false; 
+    audioCtx.currentTrack = null;
+    window._currentPodcastCaptions = null;
+    window._currentAudioUri = null;
+    // 隐藏迷你播放器和全屏播放器
+    var miniEl = document.getElementById('mini-player'); 
+    var playerEl = document.getElementById('audio-player-fullscreen'); 
+    if (miniEl) miniEl.classList.remove('show'); 
+    if (playerEl) playerEl.classList.remove('show');
+    // 清除播放状态
+    document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { item.classList.remove('playing'); });
+    updatePlayButtons();
+}
 
 function updatePodcastListState(courseId) { document.querySelectorAll('.podcast-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); if (id === courseId) { item.classList.add('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'flex'; } else { item.classList.remove('playing'); var indicator = item.querySelector('.podcast-playing-indicator'); if (indicator) indicator.style.display = 'none'; } }); }
 
-// ==================== 19. 播放器系统 ====================
 // ====== 统一媒体播放器代码 ======
-// ==================== 19. 播放器系统 ====================
 // ====== 统一媒体播放器核心代码 ======
 var mediaPlayer = {
     savedPositions: {},
@@ -8509,7 +8399,6 @@ function updateMediaListState(courseId) {
 }
 
 
-// ==================== 12. 视频课堂模块 ====================
 // ====== 增强视频播放器 ======
 
 function initEnhancedVideoPlayer() {
@@ -8534,7 +8423,7 @@ function playVideoCourse(courseId) {
     evpVideo.volume = videoCtx.volume;
     var playerEl = document.getElementById('enhanced-video-player');
     var bigPlayEl = document.getElementById('evp-big-play');
-    if (playerEl) playerEl.classList.add('show');
+    if (playerEl) playerEl.style.display = 'flex';
     if (bigPlayEl) bigPlayEl.style.display = 'none';
     updateVideoListState(courseId);
     evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
@@ -8568,7 +8457,15 @@ function toggleEnhancedSpeedDropdown() { var speeds = [0.5, 1, 1.25, 1.5, 2]; va
 function setEnhancedPlaybackSpeed(speed) { videoCtx.playbackSpeed = speed; if (evpVideo) evpVideo.playbackRate = speed; var speedBtnEl = document.getElementById('evp-speed-btn'); if (speedBtnEl) speedBtnEl.textContent = speed + 'x'; }
 function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { showToast('画中画模式不支持'); }); } }
 function toggleEnhancedFullscreen() { var playerEl = document.getElementById('enhanced-video-player'); if (!playerEl) return; if (document.fullscreenElement) { document.exitFullscreen().catch(function(e) {}); } else { playerEl.requestFullscreen().catch(function(e) {}); } }
-function closeEnhancedVideoPlayer() { if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; } var playerEl = document.getElementById('enhanced-video-player'); if (playerEl) playerEl.classList.remove('show'); }
+function closeEnhancedVideoPlayer() { 
+    if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; } 
+    videoCtx.isPlaying = false; 
+    videoCtx.currentVideo = null;
+    var playerEl = document.getElementById('enhanced-video-player'); 
+    if (playerEl) playerEl.style.display = 'none';
+    // 退出全屏模式
+    if (document.fullscreenElement) { document.exitFullscreen().catch(function() {}); }
+}
 function updateEnhancedPlayButtons() { var icon = videoCtx.isPlaying ? '⏸' : '▶'; var playBtnEl = document.getElementById('evp-play-btn'); var bigPlayEl = document.getElementById('evp-big-play'); if (playBtnEl) playBtnEl.innerHTML = icon; if (bigPlayEl) bigPlayEl.innerHTML = icon; }
 function updateVideoListState(courseId) { document.querySelectorAll('.video-item-enhanced').forEach(function(item) { var id = item.getAttribute('data-id'); item.classList.toggle('playing', id === courseId); }); }
 function formatTimeFull(seconds) { if (!seconds || isNaN(seconds)) return '0:00'; var mins = Math.floor(seconds / 60); var secs = Math.floor(seconds % 60); return mins + ':' + (secs < 10 ? '0' : '') + secs; }
@@ -8785,7 +8682,6 @@ function deleteWrongPhoto(photoId) {
 }
 
 
-// ==================== 14. DeepSeek AI模块 ====================
 // ====== AI导师对话功能 ======
 let currentMentor = null;
 let mentorChatHistory = [];
@@ -8867,7 +8763,6 @@ function getMentorResponse(question, mentor) {
 }
 
 
-// ==================== 17. 认知地图模块 ====================
 // ====== 认知地图六维雷达图 ======
 function renderCognitiveRadar(container) {
     // 获取用户认知数据（基于真实训练数据计算）
@@ -9212,7 +9107,6 @@ function renderStatItems(data) {
 
 
 
-// ==================== 13. 训练游戏模块 ====================
 // ====== 补充训练游戏 ======
 
 // 视觉追踪游戏
@@ -9498,8 +9392,7 @@ function startFocusChallenge() {
     }, 1000);
 }
 
-// ==================== 20. 设置与系统 ====================
-// ====== V81修复 ======
+// ====== V81修复：添加缺失的函数 ======
 
 // 设置面板功能
 function openSettingsPanel() {
@@ -9654,7 +9547,6 @@ function viewWrongNotes() {
     openFullscreenPage('wrongNotes');
 }
 
-// ==================== 5. 用户管理 ====================
 // ====== API配置功能 ======
 
 // API配置数据存储
@@ -9747,7 +9639,6 @@ function updateApiStatusDisplay() {
     }
 }
 
-// ==================== 5. 用户管理 ====================
 // ====== 头像选择功能 ======
 
 // 头像列表
@@ -9851,7 +9742,6 @@ function clearWrongNotes() {
     }
 }
 
-// ==================== 20. 设置与系统 ====================
 // ====== 数据同步与管理 ======
 
 // 数据同步
@@ -10567,17 +10457,18 @@ function showGoodbyeModal(user) {
         speakText(voiceMsg);
     }, 300);
     
-    // 5秒后自动关闭
-    setTimeout(() => {
-        closeGoodbyeModal();
-    }, 6000);
+    // 3秒后自动关闭并退出
+    setTimeout(function() {
+        var modal = document.getElementById('goodbye-modal');
+        if (modal) { modal.style.animation = 'fadeOut 0.3s ease'; setTimeout(function() { modal.remove(); doExitSystem(); }, 300); }
+    }, 3000);
 }
 
 function closeGoodbyeModal() {
-    const modal = document.getElementById('goodbye-modal');
+    var modal = document.getElementById('goodbye-modal');
     if (modal) {
         modal.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => modal.remove(), 300);
+        setTimeout(function() { modal.remove(); doExitSystem(); }, 300);
     }
 }
 
@@ -10661,7 +10552,6 @@ function submitTopicAnswer(topicId) {
     }
 }
 
-// ==================== 15. 错题本模块 ====================
 // ====== 错题本模块 ======
 function renderWrongbook(container) {
     const user = getCurrentUserData();
@@ -10718,7 +10608,6 @@ function removeWrongNote(index) {
     }
 }
 
-// ==================== 16. 番茄钟模块 ====================
 // ====== 番茄闹钟模块 ======
 let pomodoroTimer = null;
 let pomodoroTime = 25 * 60; // 25分钟
@@ -10821,12 +10710,112 @@ function resetPomodoro() {
 
 
 function exitSystem() {
-    if (confirm('确定要退出吗？')) {
-        localStorage.clear();
-        location.reload();
+    // 停止所有媒体
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.src = ''; }
+    if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; }
+    stopTTSSpeech();
+    
+    // 隐藏所有播放器
+    var miniEl = document.getElementById('mini-player');
+    var audioEl = document.getElementById('audio-player-fullscreen');
+    var videoEl = document.getElementById('enhanced-video-player');
+    if (miniEl) miniEl.classList.remove('show');
+    if (audioEl) audioEl.classList.remove('show');
+    if (videoEl) videoEl.style.display = 'none';
+    
+    // 关闭设置面板
+    closeSettingsPanel();
+    
+    // 显示告别弹窗
+    var user = getCurrentUserData();
+    if (user) {
+        showGoodbyeModal(user);
+        // 延迟后执行退出
+        setTimeout(function() { doExitSystem(); }, 3000);
+    } else {
+        doExitSystem();
     }
 }
 
+function doExitSystem() {
+    // 清除当前用户
+    var data = loadData();
+    data.currentUser = null;
+    saveData(data);
+    
+    // 重置播放状态
+    audioCtx.isPlaying = false;
+    audioCtx.currentTrack = null;
+    videoCtx.isPlaying = false;
+    videoCtx.currentVideo = null;
+    
+    // 关闭告别弹窗
+    var goodbyeModal = document.getElementById('goodbye-modal');
+    if (goodbyeModal) goodbyeModal.remove();
+    
+    // 关闭所有全屏页面
+    var fullscreenEl = document.getElementById('fullscreen-container');
+    if (fullscreenEl) fullscreenEl.classList.remove('active');
+    
+    // 跳转到登录页
+    showPage('login');
+    
+    // 如果是PWA模式，尝试关闭窗口
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        setTimeout(function() {
+            window.close();
+            // 如果close()被浏览器阻止，尝试后退
+            setTimeout(function() { window.history.go(-999); }, 500);
+        }, 1000);
+    }
+}
+
+
+// ====== 扣子平台登录功能 ======
+function loginCozePlatform() {
+    // 打开扣子登录页面
+    window.open('https://www.coze.cn/', '_blank');
+    showToast('请在扣子平台完成登录后，返回点击"刷新状态"');
+}
+
+function checkCozeLogin() {
+    showToast('正在检查登录状态...');
+    // 尝试用credentials访问coze.cn API来验证登录
+    fetch('https://www.coze.cn/api/coze_space/get_url', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({uri: 'test'})
+    }).then(function(resp) {
+        return resp.json();
+    }).then(function(data) {
+        // 如果返回的不是1000414（异常流量），说明cookie有效
+        if (data.code !== 1000414) {
+            // 登录有效（即使是其他错误码，也说明cookie被接受了）
+            updateCozeLoginUI(true);
+            showToast('✅ 扣子平台已登录，可以播放音频了');
+        } else {
+            updateCozeLoginUI(false);
+            showToast('❌ 未登录或cookie已过期，请重新登录');
+        }
+    }).catch(function(e) {
+        // CORS错误也可能说明未登录
+        updateCozeLoginUI(false);
+        showToast('无法验证登录状态，请先登录扣子平台');
+    });
+}
+
+function updateCozeLoginUI(loggedIn) {
+    var banner = document.getElementById('coze-login-banner');
+    var status = document.getElementById('coze-login-status');
+    if (loggedIn) {
+        if (banner) banner.style.display = 'none';
+        if (status) status.style.display = 'block';
+    } else {
+        if (banner) banner.style.display = 'flex';
+        if (status) status.style.display = 'none';
+    }
+}
 
 // 上传播客音频文件到IndexedDB
 function uploadPodcastFile(courseId, input) {
@@ -10968,838 +10957,523 @@ async function askPracticeAI() {
     }
 }
 
-// =====================================================
-// Week1-7 新增认知训练游戏实现
-// =====================================================
+// ===== V139: 7个新认知训练游戏 =====
 
-// ===== 1. 记忆宫殿 =====
+// 1. 记忆宫殿游戏
 function startPalace() {
-    const config = gameConfig['palace'];
-    document.getElementById('game-title').textContent = config?.name || '🏛️ 记忆宫殿';
+    const config = CTM.games.palace || {};
+    const diff = (getCurrentUserData().difficulty || 1);
+    const itemCount = diff <= 2 ? 5 : diff <= 3 ? 7 : 9;
+    const memorizeTime = diff <= 2 ? 30 : diff <= 3 ? 20 : 15;
     
-    // 根据难度设置参数
-    const config_d = CTM.getTrainingConfig();
-    const level = Math.min(gameLevel, 5);
-    const roomSize = 2 + Math.floor(level / 2); // 2-4
-    const itemCount = 4 + level; // 5-9个物品
-    
-    const rooms = ['卧室', '客厅', '厨房', '书房', '浴室'];
-    const items = ['📚', '🍎', '🔑', '🖊️', '🧸', '💡', '🪴', '📷', '🎧', '🧴'];
-    const selectedItems = items.slice(0, itemCount).sort(() => Math.random() - 0.5);
-    const selectedRooms = rooms.slice(0, roomSize);
-    
-    let phase = 'memorize'; // memorize -> recall
-    let memorizeTime = 30;
-    let score = 0;
-    let userAnswers = [];
-    
-    // Canvas绘制宫殿
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div id="palace-container" style="width:100%;text-align:center;"></div>' +
-        '<div id="palace-timer" style="font-size:48px;font-weight:bold;color:#8B4513;margin:16px 0;"></div>' +
-        '<div id="palace-instruction" style="font-size:14px;color:#666;margin-bottom:12px;"></div>' +
-        '<div id="palace-items" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px;"></div>';
-    
-    const container = document.getElementById('palace-container');
-    const canvas = document.createElement('canvas');
-    canvas.width = 280;
-    canvas.height = 180;
-    canvas.style.borderRadius = '12px';
-    canvas.style.background = '#FFF8DC';
-    canvas.style.border = '2px solid #8B4513';
-    container.appendChild(canvas);
-    
-    const ctx = canvas.getContext('2d');
-    gameStartTime = Date.now();
-    
-    // 绘制房间和物品
-    function drawPalace() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#FFF8DC';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        const cols = roomSize;
-        const cellW = canvas.width / cols;
-        const cellH = canvas.height;
-        
-        selectedRooms.forEach((room, i) => {
-            const x = i * cellW;
-            // 房间背景
-            ctx.fillStyle = '#DEB887';
-            ctx.fillRect(x + 2, 2, cellW - 4, cellH - 4);
-            // 房间边框
-            ctx.strokeStyle = '#8B4513';
-            ctx.strokeRect(x + 2, 2, cellW - 4, cellH - 4);
-            // 房间名称
-            ctx.fillStyle = '#8B4513';
-            ctx.font = '12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(room, x + cellW / 2, 18);
-            
-            if (phase === 'memorize' && selectedItems[i]) {
-                // 显示物品
-                ctx.font = '36px sans-serif';
-                ctx.fillText(selectedItems[i], x + cellW / 2, cellH / 2 + 10);
-            }
-        });
+    const items = ['📚','🍎','🔑','⭐','🎯','🎈','🎵','🌈','🏆','💡','🎁','🌙','🔔','❤️','🦋','🌸','⚽','🎸'];
+    const shuffled = items.sort(() => Math.random() - 0.5).slice(0, itemCount);
+    const positions = [];
+    const cols = 4, rows = 3;
+    for (let i = 0; i < itemCount; i++) {
+        let pos;
+        do { pos = {x: Math.floor(Math.random()*cols), y: Math.floor(Math.random()*rows)};
+        } while (positions.some(p => p.x === pos.x && p.y === pos.y));
+        positions.push(pos);
     }
     
-    function showItems() {
-        const itemsDiv = document.getElementById('palace-items');
-        itemsDiv.innerHTML = '<div style="font-size:12px;color:#666;margin-bottom:8px;">需要记忆的物品:</div>' +
-            selectedItems.map((item, i) => '<div style="font-size:28px;padding:4px;background:#FFF8DC;border-radius:8px;">' + item + '</div>').join('');
-    }
+    let gameData = {items: shuffled, positions, phase: 'memorize', selected: [], score: 0};
+    window._palaceData = gameData;
     
-    // 记忆阶段
-    function memorizePhase() {
-        phase = 'memorize';
-        document.getElementById('palace-instruction').textContent = '记忆每个房间中的物品位置！';
-        drawPalace();
-        showItems();
-        
-        let timeLeft = memorizeTime;
-        const timerEl = document.getElementById('palace-timer');
-        
-        if (gameTimer) clearInterval(gameTimer);
-        gameTimer = setInterval(() => {
-            timeLeft--;
-            timerEl.textContent = timeLeft + '秒';
-            if (timeLeft <= 0) {
-                clearInterval(gameTimer);
-                recallPhase();
-            }
-        }, 1000);
-    }
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+    container.style.color = 'white';
     
-    // 回忆阶段
-    function recallPhase() {
-        phase = 'recall';
-        userAnswers = new Array(roomSize).fill(null);
-        document.getElementById('palace-instruction').textContent = '点击每个房间，选择正确的物品！';
-        drawPalace();
-        document.getElementById('palace-items').innerHTML = 
-            '<div style="font-size:12px;color:#666;margin-bottom:8px;">选择物品放入房间:</div>' +
-            '<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">' +
-            selectedItems.map((item, i) => 
-                '<div class="palace-item" onclick="selectPalaceItem(' + i + ')" style="font-size:28px;padding:8px;background:#FFF8DC;border-radius:8px;cursor:pointer;">' + item + '</div>'
-            ).join('') + '</div>';
-        
-        // 点击房间选择物品
-        canvas.onclick = function(e) {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const roomIndex = Math.floor(x / (canvas.width / roomSize));
-            selectPalaceRoom(roomIndex);
-        };
-    }
+    container.innerHTML = '<div style="text-align:center;"><div style="font-size:24px;font-weight:bold;margin-bottom:12px;">🏛️ 记忆宫殿</div><div style="font-size:16px;margin-bottom:20px;">记住每个物品的位置！</div><div style="font-size:48px;">⏳</div><div id="palace-timer" style="font-size:20px;margin-top:12px;">' + memorizeTime + '秒</div></div>';
     
-    window._palaceSelectedItem = null;
-    
-    window.selectPalaceItem = function(idx) {
-        window._palaceSelectedItem = selectedItems[idx];
-        document.querySelectorAll('.palace-item').forEach((el, i) => {
-            el.style.border = i === idx ? '3px solid #8B4513' : 'none';
-        });
-    };
-    
-    window.selectPalaceRoom = function(roomIdx) {
-        if (window._palaceSelectedItem === null) {
-            showToast('请先选择一个物品');
-            return;
+    // 记忆阶段倒计时
+    let timeLeft = memorizeTime;
+    window._palaceTimer = setInterval(() => {
+        timeLeft--;
+        const el = document.getElementById('palace-timer');
+        if (el) el.textContent = timeLeft + '秒';
+        if (timeLeft <= 0) {
+            clearInterval(window._palaceTimer);
+            renderPalaceRecall();
         }
-        
-        userAnswers[roomIdx] = window._palaceSelectedItem;
-        
-        // 在房间中显示选择的物品
-        const cellW = canvas.width / roomSize;
-        const ctx = canvas.getContext('2d');
-        ctx.font = '32px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(window._palaceSelectedItem, cellW * roomIdx + cellW / 2, canvas.height / 2 + 8);
-        
-        // 检查是否全部完成
-        if (userAnswers.filter(a => a !== null).length === roomSize) {
-            endPalaceGame();
-        }
-    };
+    }, 1000);
     
-    function endPalaceGame() {
-        if (gameTimer) clearInterval(gameTimer);
-        
-        // 计算得分
-        let correct = 0;
-        for (let i = 0; i < roomSize; i++) {
-            if (userAnswers[i] === selectedItems[i]) {
-                correct++;
-                gameScore += 10;
-            }
-        }
-        
-        // 全部正确加成
-        if (correct === roomSize) {
-            gameScore += 20;
-            SoundEffects.playComplete && SoundEffects.playComplete();
-        }
-        
-        document.getElementById('game-score').textContent = gameScore;
-        
-        const container = document.getElementById('palace-container');
-        container.innerHTML = '<div style="padding:16px;">' +
-            '<div style="font-size:24px;font-weight:bold;color:#8B4513;margin-bottom:12px;">🏛️ 记忆宫殿完成！</div>' +
-            '<div style="font-size:14px;color:#666;">正确: ' + correct + '/' + roomSize + '</div>' +
-            '<div style="font-size:14px;color:#666;">得分: ' + gameScore + '</div>' +
-            '<button onclick="startPalace()" style="margin-top:16px;padding:12px 24px;background:#8B4513;color:white;border:none;border-radius:8px;cursor:pointer;">再来一局</button>' +
-            '<button onclick="endGame()" style="margin-top:16px;margin-left:8px;padding:12px 24px;background:#666;color:white;border:none;border-radius:8px;cursor:pointer;">结束游戏</button>' +
-        '</div>';
-    }
-    
-    memorizePhase();
+    // 先显示物品
+    setTimeout(() => renderPalaceMemorize(shuffled, positions, memorizeTime), 100);
 }
 
-// ===== 2. Stroop冲突 =====
-function startStroop() {
-    const config = gameConfig['stroop'];
-    document.getElementById('game-title').textContent = config?.name || '🎯 Stroop冲突';
-    
-    const colors = [
-        {name: '红', css: '#FF0000'},
-        {name: '蓝', css: '#0000FF'},
-        {name: '绿', css: '#00FF00'},
-        {name: '黄', css: '#FFFF00'}
-    ];
-    
-    let timeLeft = 30;
-    let streak = 0;
-    gameScore = 0;
-    
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div id="stroop-word" style="font-size:48px;font-weight:bold;padding:40px;text-align:center;"></div>' +
-        '<div style="display:flex;justify-content:center;gap:12px;margin-top:24px;" id="stroop-buttons"></div>' +
-        '<div id="stroop-timer" style="text-align:center;font-size:24px;color:#DC143C;margin-top:16px;"></div>';
-    
-    document.getElementById('game-score').textContent = '0';
-    
-    function generateWord() {
-        const wordIdx = Math.floor(Math.random() * colors.length);
-        let colorIdx;
-        do {
-            colorIdx = Math.floor(Math.random() * colors.length);
-        } while (colorIdx === wordIdx && Math.random() > 0.3); // 30%概率冲突
-        
-        const wordEl = document.getElementById('stroop-word');
-        wordEl.textContent = colors[wordIdx].name;
-        wordEl.style.color = colors[colorIdx].css;
-        wordEl.dataset.correct = colorIdx;
-    }
-    
-    function createButtons() {
-        const btnContainer = document.getElementById('stroop-buttons');
-        btnContainer.innerHTML = colors.map((c, i) =>
-            '<button onclick="checkStroop(' + i + ')" style="width:70px;height:70px;border-radius:12px;border:3px solid ' + c.css + ';background:' + c.css + ';color:white;font-size:14px;font-weight:bold;cursor:pointer;">' + c.name + '</button>'
-        ).join('');
-    }
-    
-    window.checkStroop = function(btnIdx) {
-        const wordEl = document.getElementById('stroop-word');
-        const correct = parseInt(wordEl.dataset.correct);
-        
-        if (btnIdx === correct) {
-            gameScore += 10;
-            streak++;
-            if (streak >= 3) {
-                gameScore += 5; // 连击加成
-                showToast('连击+' + streak);
+function renderPalaceMemorize(items, positions, timeLeft) {
+    const container = document.getElementById('game-fullscreen');
+    let html = '<div style="text-align:center;width:100%;max-width:360px;">';
+    html += '<div style="font-size:18px;font-weight:bold;margin-bottom:8px;">🏛️ 记忆宫殿 - 记忆阶段</div>';
+    html += '<div id="palace-timer" style="font-size:14px;margin-bottom:12px;color:#ffd700;">⏱️ ' + timeLeft + '秒</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px;background:rgba(255,255,255,0.15);border-radius:16px;">';
+    for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 4; x++) {
+            const idx = positions.findIndex(p => p.x === x && p.y === y);
+            if (idx >= 0) {
+                html += '<div style="width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:32px;background:rgba(255,255,255,0.2);border-radius:12px;">' + items[idx] + '</div>';
+            } else {
+                html += '<div style="width:70px;height:70px;background:rgba(255,255,255,0.05);border-radius:12px;"></div>';
             }
-            SoundEffects.playCorrect && SoundEffects.playCorrect();
-        } else {
-            streak = 0;
-            SoundEffects.playWrong && SoundEffects.playWrong();
         }
-        
-        document.getElementById('game-score').textContent = gameScore;
-        generateWord();
-    };
+    }
+    html += '</div></div>';
+    container.innerHTML = html;
+}
+
+function renderPalaceRecall() {
+    const data = window._palaceData;
+    if (!data) return;
+    data.phase = 'recall';
+    data.selected = [];
     
-    generateWord();
-    createButtons();
+    const container = document.getElementById('game-fullscreen');
+    let html = '<div style="text-align:center;width:100%;max-width:360px;">';
+    html += '<div style="font-size:18px;font-weight:bold;margin-bottom:8px;">🏛️ 记忆宫殿 - 回忆阶段</div>';
+    html += '<div style="font-size:13px;margin-bottom:12px;color:#ffd700;">点击正确的位置放置物品</div>';
+    html += '<div style="font-size:28px;margin-bottom:12px;" id="palace-current-item">' + data.items[0] + '</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px;background:rgba(255,255,255,0.15);border-radius:16px;" id="palace-grid">';
+    for (let y = 0; y < 3; y++) {
+        for (let x = 0; x < 4; x++) {
+            html += '<div onclick="palaceClick(' + x + ',' + y + ')" style="width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;" id="palace-' + x + '-' + y + '"></div>';
+        }
+    }
+    html += '</div>';
+    html += '<div style="margin-top:12px;font-size:14px;">得分: <span id="palace-score">0</span>/' + data.items.length + '</div>';
+    html += '</div>';
+    container.innerHTML = html;
+    data.currentIdx = 0;
+}
+
+function palaceClick(x, y) {
+    const data = window._palaceData;
+    if (!data || data.phase !== 'recall') return;
+    const idx = data.currentIdx;
+    if (idx >= data.items.length) return;
     
-    if (gameTimer) clearInterval(gameTimer);
-    gameTimer = setInterval(() => {
-        timeLeft--;
-        const timerEl = document.getElementById('stroop-timer');
-        if (timerEl) timerEl.textContent = '剩余: ' + timeLeft + '秒';
-        if (timeLeft <= 0) {
-            clearInterval(gameTimer);
-            endGame();
+    const cell = document.getElementById('palace-' + x + '-' + y);
+    if (!cell || cell.textContent) return; // 已占据
+    
+    const correct = data.positions[idx].x === x && data.positions[idx].y === y;
+    if (correct) {
+        cell.textContent = data.items[idx];
+        cell.style.background = 'rgba(67,233,123,0.3)';
+        data.score++;
+    } else {
+        cell.textContent = '❌';
+        cell.style.background = 'rgba(255,100,100,0.3)';
+    }
+    
+    const scoreEl = document.getElementById('palace-score');
+    if (scoreEl) scoreEl.textContent = data.score;
+    
+    data.currentIdx++;
+    if (data.currentIdx >= data.items.length) {
+        setTimeout(() => showGameOver(data.score * 10 + (data.score === data.items.length ? 20 : 0), data.items.length * 10 + 20), 500);
+    } else {
+        const itemEl = document.getElementById('palace-current-item');
+        if (itemEl) itemEl.textContent = data.items[data.currentIdx];
+    }
+}
+
+// 2. Stroop冲突游戏
+function startStroop() {
+    const diff = (getCurrentUserData().difficulty || 1);
+    const totalTime = diff <= 2 ? 45 : diff <= 3 ? 30 : 20;
+    const colors = ['#E53935','#1E88E5','#43A047','#FB8C00','#8E24AA'];
+    const colorNames = ['红色','蓝色','绿色','橙色','紫色'];
+    
+    window._stroopData = {score: 0, total: 0, timeLeft: totalTime, colors, colorNames};
+    
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#fa709a,#fee140)';
+    container.style.color = 'white';
+    
+    showStroopQuestion();
+    
+    window._stroopTimer = setInterval(() => {
+        window._stroopData.timeLeft--;
+        const el = document.getElementById('stroop-timer');
+        if (el) el.textContent = window._stroopData.timeLeft + '秒';
+        if (window._stroopData.timeLeft <= 0) {
+            clearInterval(window._stroopTimer);
+            const d = window._stroopData;
+            showGameOver(d.score * 10, d.total * 10);
         }
     }, 1000);
 }
 
-// ===== 3. 数形结合 =====
-function startNumShape() {
-    const config = gameConfig['numshape'];
-    document.getElementById('game-title').textContent = config?.name || '📐 数形结合';
+function showStroopQuestion() {
+    const data = window._stroopData;
+    if (!data || data.timeLeft <= 0) return;
     
-    let currentQ = 0;
-    const totalQ = 10;
-    let correct = 0;
+    const wordIdx = Math.floor(Math.random() * data.colors.length);
+    const colorIdx = Math.floor(Math.random() * data.colors.length);
+    data.correctIdx = colorIdx;
     
-    const problems = [
-        {expr: 'y = 2x', correct: 0, graphs: ['一次函数(斜线)', '抛物线', '反比例', '折线']},
-        {expr: 'y = x²', correct: 1, graphs: ['一次函数(斜线)', '抛物线', '反比例', '折线']},
-        {expr: 'y = 1/x', correct: 2, graphs: ['一次函数(斜线)', '抛物线', '反比例(双曲线)', '折线']},
-        {expr: '周长=2πr', correct: 0, graphs: ['圆形', '三角形', '正方形', '梯形']},
-        {expr: '面积=πr²', correct: 0, graphs: ['圆形', '环形', '扇形', '弓形']},
-        {expr: '勾股定理: a²+b²', correct: 1, graphs: ['直角三角形', '等边三角形', '平行四边形', '菱形']},
-        {expr: 'y = |x|', correct: 3, graphs: ['一次函数(斜线)', '抛物线', '反比例', 'V形折线']},
-        {expr: '三角形内角和', correct: 1, graphs: ['90°', '180°', '270°', '360°']},
-        {expr: '正方形对角线', correct: 2, graphs: ['等于边长', '小于边长', '大于边长√2倍', '不确定']},
-        {expr: '圆周角定理', correct: 1, graphs: ['等于圆心角', '等于圆心角一半', '等于圆心角2倍', '无关']}
-    ];
-    
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div id="ns-question" style="font-size:18px;font-weight:bold;text-align:center;padding:16px;background:#f5f7ff;border-radius:12px;margin-bottom:16px;"></div>' +
-        '<div id="ns-progress" style="text-align:center;font-size:12px;color:#666;margin-bottom:12px;"></div>' +
-        '<div id="ns-options" style="display:grid;gap:10px;"></div>';
-    
-    function showQuestion() {
-        if (currentQ >= totalQ) {
-            endNumShape();
-            return;
-        }
-        
-        const q = problems[currentQ % problems.length];
-        document.getElementById('ns-question').textContent = q.expr;
-        document.getElementById('ns-progress').textContent = '第 ' + (currentQ + 1) + ' / ' + totalQ + ' 题';
-        
-        const optsContainer = document.getElementById('ns-options');
-        optsContainer.innerHTML = q.graphs.map((g, i) =>
-            '<div onclick="checkNumShape(' + i + ', ' + q.correct + ')" style="padding:16px;background:white;border:2px solid #ddd;border-radius:12px;cursor:pointer;font-size:14px;text-align:center;">' + g + '</div>'
-        ).join('');
-    }
-    
-    window.checkNumShape = function(selected, correct) {
-        if (selected === correct) {
-            gameScore += 10;
-            correct++;
-            SoundEffects.playCorrect && SoundEffects.playCorrect();
-        } else {
-            SoundEffects.playWrong && SoundEffects.playWrong();
-        }
-        
-        document.getElementById('game-score').textContent = gameScore;
-        currentQ++;
-        
-        setTimeout(() => showQuestion(), 300);
-    };
-    
-    function endNumShape() {
-        if (gameTimer) clearInterval(gameTimer);
-        
-        const container = document.getElementById('game-board');
-        container.innerHTML = '<div style="padding:24px;text-align:center;">' +
-            '<div style="font-size:48px;margin-bottom:16px;">📐</div>' +
-            '<div style="font-size:24px;font-weight:bold;color:#4169E1;margin-bottom:12px;">数形结合完成！</div>' +
-            '<div style="font-size:16px;color:#666;">正确率: ' + correct + '/' + totalQ + '</div>' +
-            '<div style="font-size:20px;color:#4169E1;margin:12px 0;">得分: ' + gameScore + '</div>' +
-            '<button onclick="startNumShape()" style="padding:12px 24px;background:#4169E1;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:16px;">再来一局</button>' +
-            '<button onclick="endGame()" style="padding:12px 24px;background:#666;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:8px;">结束游戏</button>' +
-        '</div>';
-    }
-    
-    gameScore = 0;
-    document.getElementById('game-score').textContent = '0';
-    gameStartTime = Date.now();
-    
-    if (gameTimer) clearInterval(gameTimer);
-    gameTimer = setTimeout(() => endNumShape(), 60000); // 60秒限时
-    
-    showQuestion();
+    const container = document.getElementById('game-fullscreen');
+    let html = '<div style="text-align:center;">';
+    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:8px;">🎯 Stroop冲突</div>';
+    html += '<div style="font-size:12px;margin-bottom:12px;">点击文字的<strong>书写颜色</strong>，不是文字内容！</div>';
+    html += '<div style="font-size:56px;font-weight:bold;margin:20px 0;color:' + data.colors[colorIdx] + ';">' + data.colorNames[wordIdx] + '</div>';
+    html += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">';
+    data.colors.forEach((c, i) => {
+        html += '<div onclick="stroopAnswer(' + i + ')" style="width:50px;height:50px;border-radius:50%;background:' + c + ';cursor:pointer;border:3px solid rgba(255,255,255,0.3);"></div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:16px;font-size:14px;">⏱️ <span id="stroop-timer">' + data.timeLeft + '</span>秒 | 得分: ' + data.score + '/' + data.total + '</div>';
+    html += '</div>';
+    container.innerHTML = html;
 }
 
-// ===== 4. 守恒推理 =====
+function stroopAnswer(idx) {
+    const data = window._stroopData;
+    if (!data) return;
+    data.total++;
+    if (idx === data.correctIdx) data.score++;
+    showStroopQuestion();
+}
+
+// 3. 数形结合游戏
+function startNumshape() {
+    const diff = (getCurrentUserData().difficulty || 1);
+    const questions = [
+        {expr:'y = x', correct:0, opts:['直线(45°)','抛物线(向上)','双曲线','正弦曲线']},
+        {expr:'y = x²', correct:1, opts:['直线','抛物线(向上)','抛物线(向下)','V字形']},
+        {expr:'y = -x²', correct:2, opts:['直线','抛物线(向上)','抛物线(向下)','双曲线']},
+        {expr:'y = |x|', correct:3, opts:['直线','抛物线','双曲线','V字形']},
+        {expr:'y = 2x + 1', correct:0, opts:['直线(斜向上)','抛物线','水平线','垂直线']},
+        {expr:'y = 1/x', correct:2, opts:['直线','抛物线','双曲线','正弦曲线']},
+        {expr:'y = x³', correct:1, opts:['直线','S形曲线','抛物线','双曲线']},
+        {expr:'y = √x', correct:0, opts:['半抛物线(右延伸)','抛物线','双曲线','直线']},
+        {expr:'y = sin(x)', correct:2, opts:['直线','抛物线','正弦波','方波']},
+        {expr:'y = 3', correct:1, opts:['垂直线','水平线','抛物线','斜线']}
+    ];
+    const count = diff <= 2 ? 5 : diff <= 3 ? 7 : 10;
+    const selected = questions.sort(() => Math.random() - 0.5).slice(0, count);
+    window._numshapeData = {questions: selected, current: 0, score: 0, total: count};
+    
+    showNumshapeQuestion();
+}
+
+function showNumshapeQuestion() {
+    const data = window._numshapeData;
+    if (!data || data.current >= data.total) {
+        if (data) showGameOver(data.score * 10, data.total * 10);
+        return;
+    }
+    const q = data.questions[data.current];
+    
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#43e97b,#38f9d7)';
+    container.style.color = '#333';
+    
+    let html = '<div style="text-align:center;max-width:340px;">';
+    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:12px;">📐 数形结合</div>';
+    html += '<div style="font-size:14px;margin-bottom:8px;">第 ' + (data.current+1) + '/' + data.total + ' 题</div>';
+    html += '<div style="font-size:32px;font-weight:bold;margin:20px 0;padding:16px;background:rgba(255,255,255,0.5);border-radius:16px;">' + q.expr + '</div>';
+    html += '<div style="font-size:13px;margin-bottom:12px;">这个函数的图像是什么形状？</div>';
+    q.opts.forEach((opt, i) => {
+        html += '<div onclick="numshapeAnswer(' + i + ')" style="padding:12px;margin:6px 0;background:rgba(255,255,255,0.7);border-radius:12px;cursor:pointer;font-size:14px;">' + opt + '</div>';
+    });
+    html += '<div style="margin-top:12px;font-size:13px;">得分: ' + data.score * 10 + '</div>';
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function numshapeAnswer(idx) {
+    const data = window._numshapeData;
+    if (!data) return;
+    if (idx === data.questions[data.current].correct) data.score++;
+    data.current++;
+    showNumshapeQuestion();
+}
+
+// 4. 守恒推理游戏
 function startConserve() {
-    const config = gameConfig['conserve'];
-    document.getElementById('game-title').textContent = config?.name || '⚖️ 守恒推理';
-    
-    let currentQ = 0;
-    const totalQ = 10;
-    let correct = 0;
-    
     const questions = [
-        {q: '一杯水倒入更细的杯子，水量？', opts: ['变多', '变少', '不变', '不确定'], correct: 2, hint: '水量守恒'},
-        {q: '质量100g的水结成冰，质量？', opts: ['大于100g', '小于100g', '等于100g', '不确定'], correct: 2, hint: '质量守恒'},
-        {q: '能量会凭空消失吗？', opts: ['会', '不会', '有时会', '不确定'], correct: 1, hint: '能量守恒定律'},
-        {q: '封闭系统中，动量总和？', opts: ['增加', '减少', '不变', '不确定'], correct: 2, hint: '动量守恒'},
-        {q: '物体从高处落下，重力势能减少，动能？', opts: ['减少', '不变', '增加', '不确定'], correct: 2, hint: '能量守恒'},
-        {q: '化学反应前后，原子数量？', opts: ['增加', '减少', '不变', '不确定'], correct: 2, hint: '质量守恒'},
-        {q: '电荷可以凭空产生吗？', opts: ['可以', '不可以', '有时可以', '不确定'], correct: 1, hint: '电荷守恒'},
-        {q: '弹性碰撞中，机械能？', opts: ['一定守恒', '一定不守恒', '可能守恒', '无法判断'], correct: 0, hint: '机械能守恒'},
-        {q: '热量会从低温物体自动流向高温物体吗？', opts: ['会', '不会', '有时会', '不确定'], correct: 1, hint: '热力学第二定律'},
-        {q: '系统不受外力，机械能？', opts: ['一定守恒', '一定不守恒', '可能守恒', '不确定'], correct: 0, hint: '机械能守恒'}
+        {q:'将水从矮胖杯倒入高瘦杯，水量如何变化？', opts:['增加','减少','不变','无法确定'], correct:2, explain:'体积守恒'},
+        {q:'一块橡皮泥从球形捏成长条形，质量如何？', opts:['增加','减少','不变','无法确定'], correct:2, explain:'质量守恒'},
+        {q:'弹簧被压缩后，弹性势能和动能之和如何？', opts:['增加','减少','不变','取决于速度'], correct:2, explain:'机械能守恒(无摩擦)'},
+        {q:'两车碰撞前后，总动量如何？', opts:['增加','减少','不变','取决于碰撞类型'], correct:2, explain:'动量守恒'},
+        {q:'封闭容器内气体被压缩，分子总数如何？', opts:['增加','减少','不变','取决于温度'], correct:2, explain:'粒子数守恒'},
+        {q:'化学反应前后，原子总数如何？', opts:['增加','减少','不变','取决于反应类型'], correct:2, explain:'质量守恒'},
+        {q:'电路中流入节点的电流和流出的电流关系？', opts:['流入>流出','流入<流出','相等','不确定'], correct:2, explain:'电荷守恒'},
+        {q:'自由下落过程中，动能增加量与势能减少量关系？', opts:['增加>减少','增加<减少','相等','不确定'], correct:2, explain:'能量守恒'},
+        {q:'两个人分别绕操场跑一圈，位移相同吗？', opts:['相同','不同','取决于速度','取决于方向'], correct:0, explain:'位移只看起终点'},
+        {q:'冰融化成水，分子数如何变化？', opts:['增加','减少','不变','无法确定'], correct:2, explain:'粒子数守恒'}
     ];
-    
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div id="cons-question" style="font-size:16px;font-weight:bold;text-align:center;padding:16px;background:#f5f7ff;border-radius:12px;margin-bottom:8px;"></div>' +
-        '<div id="cons-hint" style="text-align:center;font-size:12px;color:#999;margin-bottom:12px;"></div>' +
-        '<div id="cons-progress" style="text-align:center;font-size:12px;color:#666;margin-bottom:12px;"></div>' +
-        '<div id="cons-options" style="display:grid;gap:8px;"></div>';
-    
-    function showQuestion() {
-        if (currentQ >= totalQ) {
-            endConserve();
-            return;
-        }
-        
-        const q = questions[currentQ % questions.length];
-        document.getElementById('cons-question').textContent = q.q;
-        document.getElementById('cons-hint').textContent = '💡 提示: ' + q.hint;
-        document.getElementById('cons-progress').textContent = '第 ' + (currentQ + 1) + ' / ' + totalQ + ' 题';
-        
-        const optsContainer = document.getElementById('cons-options');
-        optsContainer.innerHTML = q.opts.map((opt, i) =>
-            '<div onclick="checkConserve(' + i + ', ' + q.correct + ')" style="padding:12px;background:white;border:2px solid #ddd;border-radius:10px;cursor:pointer;font-size:14px;text-align:center;">' + opt + '</div>'
-        ).join('');
-    }
-    
-    window.checkConserve = function(selected, correctAns) {
-        if (selected === correctAns) {
-            gameScore += 10;
-            correct++;
-            SoundEffects.playCorrect && SoundEffects.playCorrect();
-        } else {
-            SoundEffects.playWrong && SoundEffects.playWrong();
-        }
-        
-        document.getElementById('game-score').textContent = gameScore;
-        currentQ++;
-        
-        setTimeout(() => showQuestion(), 300);
-    };
-    
-    function endConserve() {
-        if (gameTimer) clearInterval(gameTimer);
-        
-        const container = document.getElementById('game-board');
-        container.innerHTML = '<div style="padding:24px;text-align:center;">' +
-            '<div style="font-size:48px;margin-bottom:16px;">⚖️</div>' +
-            '<div style="font-size:24px;font-weight:bold;color:#2E8B57;margin-bottom:12px;">守恒推理完成！</div>' +
-            '<div style="font-size:16px;color:#666;">正确率: ' + correct + '/' + totalQ + '</div>' +
-            '<div style="font-size:20px;color:#2E8B57;margin:12px 0;">得分: ' + gameScore + '</div>' +
-            '<button onclick="startConserve()" style="padding:12px 24px;background:#2E8B57;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:16px;">再来一局</button>' +
-            '<button onclick="endGame()" style="padding:12px 24px;background:#666;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:8px;">结束游戏</button>' +
-        '</div>';
-    }
-    
-    gameScore = 0;
-    document.getElementById('game-score').textContent = '0';
-    
-    showQuestion();
+    const diff = (getCurrentUserData().difficulty || 1);
+    const count = diff <= 2 ? 5 : diff <= 3 ? 7 : 10;
+    const selected = questions.sort(() => Math.random() - 0.5).slice(0, count);
+    window._conserveData = {questions: selected, current: 0, score: 0, total: count};
+    showConserveQuestion();
 }
 
-// ===== 5. 知识网络 =====
+function showConserveQuestion() {
+    const data = window._conserveData;
+    if (!data || data.current >= data.total) {
+        if (data) showGameOver(data.score * 10, data.total * 10);
+        return;
+    }
+    const q = data.questions[data.current];
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#a18cd1,#fbc2eb)';
+    container.style.color = '#333';
+    
+    let html = '<div style="text-align:center;max-width:340px;">';
+    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:12px;">⚖️ 守恒推理</div>';
+    html += '<div style="font-size:14px;margin-bottom:8px;">第 ' + (data.current+1) + '/' + data.total + ' 题</div>';
+    html += '<div style="font-size:15px;margin:16px 0;padding:16px;background:rgba(255,255,255,0.5);border-radius:16px;line-height:1.5;">' + q.q + '</div>';
+    q.opts.forEach((opt, i) => {
+        html += '<div onclick="conserveAnswer(' + i + ')" style="padding:10px;margin:5px 0;background:rgba(255,255,255,0.7);border-radius:12px;cursor:pointer;font-size:13px;">' + opt + '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function conserveAnswer(idx) {
+    const data = window._conserveData;
+    if (!data) return;
+    if (idx === data.questions[data.current].correct) data.score++;
+    data.current++;
+    showConserveQuestion();
+}
+
+// 5. 知识网络游戏
 function startNetwork() {
-    const config = gameConfig['network'];
-    document.getElementById('game-title').textContent = config?.name || '🕸️ 知识网络';
-    
-    let phase = 'select';
-    let nodeA = null, nodeB = null;
-    let correctConnects = 0;
-    let totalConnects = 0;
-    
-    const nodes = [
-        {id: 0, label: '数学', color: '#4169E1'},
-        {id: 1, label: '物理', color: '#20B2AA'},
-        {id: 2, label: '力', color: '#FF6347'},
-        {id: 3, label: '运动', color: '#FFA500'},
-        {id: 4, label: '能量', color: '#32CD32'},
-        {id: 5, label: '功', color: '#9370DB'},
-        {id: 6, label: '速度', color: '#DC143C'},
-        {id: 7, label: '质量', color: '#008B8B'}
+    const topics = [
+        {nodes:['光合作用','二氧化碳','氧气','叶绿体','阳光','葡萄糖'], edges:[[0,1],[0,2],[0,3],[0,4],[0,5]]},
+        {nodes:['牛顿','万有引力','苹果','运动定律','力','加速度'], edges:[[0,1],[0,2],[0,3],[4,5],[3,4]]},
+        {nodes:['细胞','DNA','蛋白质','基因','染色体','遗传'], edges:[[0,1],[1,3],[1,4],[2,5],[3,4]]},
+        {nodes:['水','蒸发','凝结','雨','云','河流'], edges:[[0,1],[1,3],[1,4],[3,2],[4,2],[5,0]]}
     ];
+    const diff = (getCurrentUserData().difficulty || 1);
+    const topicIdx = Math.floor(Math.random() * topics.length);
+    const topic = topics[topicIdx];
+    window._networkData = {topic, selected: [], correct: 0, total: topic.edges.length};
     
-    const correctPairs = [[0,1],[1,2],[1,3],[1,4],[4,5],[3,6],[0,7],[2,7],[3,7],[0,3]];
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+    container.style.color = 'white';
     
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div id="network-canvas" style="width:100%;display:flex;justify-content:center;align-items:center;min-height:250px;"></div>' +
-        '<div id="network-info" style="text-align:center;margin-top:12px;font-size:14px;color:#666;"></div>' +
-        '<div id="network-instruction" style="text-align:center;font-size:12px;color:#999;margin-top:8px;">点击两个相关节点建立连接</div>';
-    
-    // Canvas绘制
-    const container = document.getElementById('network-canvas');
-    const canvas = document.createElement('canvas');
-    canvas.width = 300;
-    canvas.height = 250;
-    canvas.style.borderRadius = '12px';
-    canvas.style.background = '#F8F8FF';
-    canvas.style.border = '2px solid #9370DB';
-    container.appendChild(canvas);
-    
-    const ctx = canvas.getContext('2d');
-    
-    // 节点位置
-    const positions = [
-        {x: 75, y: 60}, {x: 225, y: 60},
-        {x: 50, y: 150}, {x: 150, y: 180},
-        {x: 250, y: 150}, {x: 100, y: 220},
-        {x: 200, y: 220}, {x: 275, y: 220}
-    ];
-    
-    let selectedNodes = [];
-    let connections = [];
-    
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // 画连接线
-        connections.forEach(conn => {
-            const p1 = positions[conn.a];
-            const p2 = positions[conn.b];
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = conn.correct ? '#32CD32' : '#FF6347';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        });
-        
-        // 画节点
-        nodes.forEach((node, i) => {
-            const pos = positions[i];
-            const isSelected = selectedNodes.includes(i);
-            
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, 28, 0, Math.PI * 2);
-            ctx.fillStyle = isSelected ? '#FFD700' : node.color;
-            ctx.fill();
-            ctx.strokeStyle = isSelected ? '#FF4500' : '#333';
-            ctx.lineWidth = isSelected ? 3 : 2;
-            ctx.stroke();
-            
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(node.label, pos.x, pos.y);
-        });
-    }
-    
-    canvas.onclick = function(e) {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // 检测点击的节点
-        let clickedNode = null;
-        positions.forEach((pos, i) => {
-            const dist = Math.sqrt((x - pos.x) ** 2 + (y - pos.y) ** 2);
-            if (dist < 30) clickedNode = i;
-        });
-        
-        if (clickedNode !== null) {
-            if (selectedNodes.includes(clickedNode)) {
-                selectedNodes = selectedNodes.filter(n => n !== clickedNode);
-            } else if (selectedNodes.length < 2) {
-                selectedNodes.push(clickedNode);
-            }
-            
-            if (selectedNodes.length === 2) {
-                checkConnection();
-            }
-            
-            draw();
-        }
-    };
-    
-    function checkConnection() {
-        const [a, b] = selectedNodes.sort();
-        const isCorrect = correctPairs.some(p => p[0] === a && p[1] === b);
-        
-        connections.push({a: selectedNodes[0], b: selectedNodes[1], correct: isCorrect});
-        
-        if (isCorrect) {
-            gameScore += 10;
-            correctConnects++;
-            SoundEffects.playCorrect && SoundEffects.playCorrect();
-        } else {
-            SoundEffects.playWrong && SoundEffects.playWrong();
-        }
-        
-        totalConnects++;
-        selectedNodes = [];
-        
-        document.getElementById('game-score').textContent = gameScore;
-        document.getElementById('network-info').textContent = '已连接: ' + correctConnects + ' / ' + totalConnects + '组';
-        
-        // 检查是否全部完成
-        if (correctConnects >= 6) {
-            endNetwork();
-        }
-        
-        draw();
-    }
-    
-    function endNetwork() {
-        if (gameTimer) clearInterval(gameTimer);
-        
-        const container = document.getElementById('game-board');
-        container.innerHTML = '<div style="padding:24px;text-align:center;">' +
-            '<div style="font-size:48px;margin-bottom:16px;">🕸️</div>' +
-            '<div style="font-size:24px;font-weight:bold;color:#9370DB;margin-bottom:12px;">知识网络完成！</div>' +
-            '<div style="font-size:16px;color:#666;">正确连接: ' + correctConnects + '组</div>' +
-            '<div style="font-size:20px;color:#9370DB;margin:12px 0;">得分: ' + gameScore + '</div>' +
-            '<button onclick="startNetwork()" style="padding:12px 24px;background:#9370DB;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:16px;">再来一局</button>' +
-            '<button onclick="endGame()" style="padding:12px 24px;background:#666;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:8px;">结束游戏</button>' +
-        '</div>';
-    }
-    
-    gameScore = 0;
-    document.getElementById('game-score').textContent = '0';
-    gameStartTime = Date.now();
-    
-    if (gameTimer) clearInterval(gameTimer);
-    gameTimer = setTimeout(() => endNetwork(), 60000);
-    
-    draw();
+    let html = '<div style="text-align:center;max-width:360px;">';
+    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:8px;">🕸️ 知识网络</div>';
+    html += '<div style="font-size:12px;margin-bottom:12px;">点击两个节点建立连接，找出正确关系</div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;">';
+    topic.nodes.forEach((n, i) => {
+        html += '<div onclick="networkSelect(' + i + ')" id="net-node-' + i + '" style="padding:8px 14px;background:rgba(255,255,255,0.2);border-radius:20px;cursor:pointer;font-size:13px;">' + n + '</div>';
+    });
+    html += '</div>';
+    html += '<div style="font-size:12px;" id="net-status">请选择第一个节点</div>';
+    html += '<div style="margin-top:8px;font-size:13px;">已建立: <span id="net-count">0</span>/' + topic.edges.length + '</div>';
+    html += '</div>';
+    container.innerHTML = html;
 }
 
-// ===== 6. 逆向推理 =====
+function networkSelect(idx) {
+    const data = window._networkData;
+    if (!data) return;
+    
+    const nodeEl = document.getElementById('net-node-' + idx);
+    if (!nodeEl) return;
+    
+    if (data.selected.length === 0) {
+        data.selected = [idx];
+        nodeEl.style.background = 'rgba(67,233,123,0.5)';
+        const el = document.getElementById('net-status');
+        if (el) el.textContent = '请选择第二个节点';
+    } else if (data.selected.length === 1) {
+        const a = data.selected[0], b = idx;
+        if (a === b) { data.selected = []; nodeEl.style.background = 'rgba(255,255,255,0.2)'; return; }
+        
+        const isCorrect = data.topic.edges.some(e => (e[0]===a && e[1]===b) || (e[0]===b && e[1]===a));
+        const nodeA = document.getElementById('net-node-' + a);
+        
+        if (isCorrect) {
+            data.correct++;
+            nodeA.style.background = 'rgba(67,233,123,0.3)';
+            nodeEl.style.background = 'rgba(67,233,123,0.3)';
+        } else {
+            nodeA.style.background = 'rgba(255,100,100,0.3)';
+            nodeEl.style.background = 'rgba(255,100,100,0.3)';
+            setTimeout(() => {
+                nodeA.style.background = 'rgba(255,255,255,0.2)';
+                nodeEl.style.background = 'rgba(255,255,255,0.2)';
+            }, 500);
+        }
+        
+        data.selected = [];
+        const el = document.getElementById('net-status');
+        if (el) el.textContent = '请选择第一个节点';
+        const cnt = document.getElementById('net-count');
+        if (cnt) cnt.textContent = data.correct;
+        
+        if (data.correct >= data.total) {
+            setTimeout(() => showGameOver(data.correct * 10 + 20, data.total * 10 + 20), 500);
+        }
+    }
+}
+
+// 6. 逆向推理游戏
 function startReverse() {
-    const config = gameConfig['reverse'];
-    document.getElementById('game-title').textContent = config?.name || '🔄 逆向推理';
-    
-    let currentQ = 0;
-    const totalQ = 10;
-    let correct = 0;
-    
     const questions = [
-        {q: '结论：今天是周一', opts: ['明天是周二', '昨天是周日', '后天是周三', '大后天是周四'], correct: 1},
-        {q: '结论：x > 5', opts: ['x = 3', 'x = 6', 'x < 5', 'x = 5'], correct: 1},
-        {q: '结论：物体在加速', opts: ['速度不变', '速度增加', '速度减少', '速度为零'], correct: 1},
-        {q: '结论：两数之和为10', opts: ['3+7=10', '4+4=8', '2+8=10', '1+9=10'], correct: 1},
-        {q: '结论：三角形内角和180°', opts: ['每个角90°', '最多一个直角', '不能有两个钝角', '所有角都是锐角'], correct: 2},
-        {q: '结论：溶液呈酸性', opts: ['pH=7', 'pH=3', 'pH=9', 'pH=14'], correct: 1},
-        {q: '结论：机械能守恒', opts: ['只有重力做功', '有摩擦力', '有外力', '能量减少'], correct: 0},
-        {q: '结论：三角形全等', opts: ['边长不等', '三边相等', '只有一个角相等', '面积不等'], correct: 1},
-        {q: '结论：化学反应放热', opts: ['温度下降', '温度不变', '温度上升', '无法判断'], correct: 2},
-        {q: '结论：光が直进', opts: ['光弯曲', '光反射', '光沿直线传播', '光扩散'], correct: 2}
+        {conclusion:'三角形内角和为180°', opts:['三条边等长','任意三角形','直角三角形','等腰三角形'], correct:1},
+        {conclusion:'物体加速运动', opts:['合外力为零','合外力不为零','速度为零','质量很大'], correct:1},
+        {conclusion:'x²=4', opts:['x必须大于0','x=2或x=-2','x只能是2','x必须是整数'], correct:1},
+        {conclusion:'化学反应发生了', opts:['颜色没变','产生新物质','温度不变','体积不变'], correct:1},
+        {conclusion:'该数为偶数', opts:['该数能被3整除','该数末位是0,2,4,6,8','该数大于10','该数是质数'], correct:1},
+        {conclusion:'植物能进行光合作用', opts:['没有根','有叶绿体','在黑暗中','没有水'], correct:1},
+        {conclusion:'分数有意义', opts:['分子为0','分母不为0','分母为0','分子大于分母'], correct:1},
+        {conclusion:'水会沸腾', opts:['温度100°C以下','达到沸点且继续加热','在密闭容器中','气压很高'], correct:1},
+        {conclusion:'两个力平衡', opts:['大小不等','方向相同','大小相等方向相反','作用在不同物体上'], correct:2},
+        {conclusion:'该数为质数', opts:['能被2整除','只能被1和自身整除','是偶数','大于10'], correct:1}
     ];
-    
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div style="font-size:14px;color:#FF8C00;margin-bottom:8px;">🔄 逆向推理：从结论反推条件</div>' +
-        '<div id="rev-question" style="font-size:16px;font-weight:bold;text-align:center;padding:16px;background:#FFF8DC;border-radius:12px;margin-bottom:8px;"></div>' +
-        '<div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">以下哪个条件可以推出上述结论？</div>' +
-        '<div id="rev-progress" style="text-align:center;font-size:12px;color:#666;margin-bottom:12px;"></div>' +
-        '<div id="rev-options" style="display:grid;gap:8px;"></div>';
-    
-    function showQuestion() {
-        if (currentQ >= totalQ) {
-            endReverse();
-            return;
-        }
-        
-        const q = questions[currentQ % questions.length];
-        document.getElementById('rev-question').textContent = '📌 结论: ' + q.q;
-        document.getElementById('rev-progress').textContent = '第 ' + (currentQ + 1) + ' / ' + totalQ + ' 题';
-        
-        const optsContainer = document.getElementById('rev-options');
-        optsContainer.innerHTML = q.opts.map((opt, i) =>
-            '<div onclick="checkReverse(' + i + ', ' + q.correct + ')" style="padding:12px;background:white;border:2px solid #ddd;border-radius:10px;cursor:pointer;font-size:14px;text-align:center;">' + opt + '</div>'
-        ).join('');
-    }
-    
-    window.checkReverse = function(selected, correctAns) {
-        if (selected === correctAns) {
-            gameScore += 10;
-            correct++;
-            SoundEffects.playCorrect && SoundEffects.playCorrect();
-        } else {
-            SoundEffects.playWrong && SoundEffects.playWrong();
-        }
-        
-        document.getElementById('game-score').textContent = gameScore;
-        currentQ++;
-        
-        setTimeout(() => showQuestion(), 300);
-    };
-    
-    function endReverse() {
-        if (gameTimer) clearInterval(gameTimer);
-        
-        const container = document.getElementById('game-board');
-        container.innerHTML = '<div style="padding:24px;text-align:center;">' +
-            '<div style="font-size:48px;margin-bottom:16px;">🔄</div>' +
-            '<div style="font-size:24px;font-weight:bold;color:#FF8C00;margin-bottom:12px;">逆向推理完成！</div>' +
-            '<div style="font-size:16px;color:#666;">正确率: ' + correct + '/' + totalQ + '</div>' +
-            '<div style="font-size:20px;color:#FF8C00;margin:12px 0;">得分: ' + gameScore + '</div>' +
-            '<button onclick="startReverse()" style="padding:12px 24px;background:#FF8C00;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:16px;">再来一局</button>' +
-            '<button onclick="endGame()" style="padding:12px 24px;background:#666;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:8px;">结束游戏</button>' +
-        '</div>';
-    }
-    
-    gameScore = 0;
-    document.getElementById('game-score').textContent = '0';
-    
-    showQuestion();
+    const diff = (getCurrentUserData().difficulty || 1);
+    const count = diff <= 2 ? 5 : diff <= 3 ? 7 : 10;
+    const selected = questions.sort(() => Math.random() - 0.5).slice(0, count);
+    window._reverseData = {questions: selected, current: 0, score: 0, total: count};
+    showReverseQuestion();
 }
 
-// ===== 7. 实验设计 =====
+function showReverseQuestion() {
+    const data = window._reverseData;
+    if (!data || data.current >= data.total) {
+        if (data) showGameOver(data.score * 10, data.total * 10);
+        return;
+    }
+    const q = data.questions[data.current];
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#fa709a,#fee140)';
+    container.style.color = '#333';
+    
+    let html = '<div style="text-align:center;max-width:340px;">';
+    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:8px;">🔄 逆向推理</div>';
+    html += '<div style="font-size:14px;margin-bottom:8px;">第 ' + (data.current+1) + '/' + data.total + ' 题</div>';
+    html += '<div style="font-size:13px;margin-bottom:4px;">已知结论：</div>';
+    html += '<div style="font-size:16px;font-weight:bold;margin:12px 0;padding:12px;background:rgba(255,255,255,0.5);border-radius:12px;">' + q.conclusion + '</div>';
+    html += '<div style="font-size:13px;margin-bottom:8px;">哪个条件能推出此结论？</div>';
+    q.opts.forEach((opt, i) => {
+        html += '<div onclick="reverseAnswer(' + i + ')" style="padding:10px;margin:5px 0;background:rgba(255,255,255,0.7);border-radius:12px;cursor:pointer;font-size:13px;">' + opt + '</div>';
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function reverseAnswer(idx) {
+    const data = window._reverseData;
+    if (!data) return;
+    if (idx === data.questions[data.current].correct) data.score++;
+    data.current++;
+    showReverseQuestion();
+}
+
+// 7. 实验设计游戏
 function startExperiment() {
-    const config = gameConfig['experiment'];
-    document.getElementById('game-title').textContent = config?.name || '🧪 实验设计';
-    
-    let currentQ = 0;
-    const totalQ = 5;
-    let correct = 0;
-    
     const experiments = [
-        {
-            goal: '验证光的反射定律',
-            steps: ['准备平面镜和激光笔', '记录入射角和反射角', '改变入射角度', '多次测量验证', '得出结论'],
-            correctOrder: [0, 2, 1, 3, 4]
-        },
-        {
-            goal: '测量重力加速度',
-            steps: ['准备重物和计时器', '释放重物并计时', '改变高度多次测量', '计算平均值', '记录实验数据'],
-            correctOrder: [0, 1, 3, 4, 2]
-        },
-        {
-            goal: '验证能量守恒定律',
-            steps: ['测量物体的初始高度', '释放物体使其自由下落', '测量落地时的速度', '计算动能和势能', '比较两者是否相等'],
-            correctOrder: [0, 1, 2, 3, 4]
-        },
-        {
-            goal: '探究电阻与温度的关系',
-            steps: ['连接电路', '加热电阻丝', '记录不同温度下的电阻值', '绘制图像', '分析结论'],
-            correctOrder: [0, 1, 2, 3, 4]
-        },
-        {
-            goal: '验证阿基米德原理',
-            steps: ['测量物体在空气中的重力', '测量物体在水中的重力', '计算浮力大小', '测量排开水的体积', '比较浮力和排水重'],
-            correctOrder: [0, 1, 3, 2, 4]
-        }
+        {title:'验证植物光合作用需要光', steps:['选取两盆相同植物','一盆放暗处一盆放光照下','相同时间后取叶片','碘液检测淀粉','对比结果得出结论'], distractors:['给植物浇水','测量植物高度']},
+        {title:'验证空气中有水蒸气', steps:['准备干燥玻璃片','对着玻璃片哈气','观察玻璃片表面','看到水珠形成','得出空气含水蒸气的结论'], distractors:['称量玻璃片质量','加热玻璃片']},
+        {title:'验证声音需要介质传播', steps:['准备密封玻璃罩和闹钟','闹钟放入罩内通电响铃','用抽气机逐渐抽出空气','观察声音逐渐减弱','推论真空不能传声'], distractors:['调节闹钟音量','打开窗户']},
+        {title:'验证浮力与排开液体体积的关系', steps:['准备弹簧测力计和物体','测空气中物体重力','将物体部分浸入水中读数','将物体全部浸入水中读数','比较两次浮力大小'], distractors:['测量水温','换用不同颜色水']},
+        {title:'验证欧姆定律', steps:['搭建含电阻的电路','调节电压到不同值','记录各电压下的电流值','计算电压与电流的比值','比值恒定即验证欧姆定律'], distractors:['测量电阻颜色','断开所有开关']}
     ];
+    const expIdx = Math.floor(Math.random() * experiments.length);
+    const exp = experiments[expIdx];
+    const diff = (getCurrentUserData().difficulty || 1);
     
-    let userOrder = [];
-    let currentExp = null;
-    
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.innerHTML = '<div id="exp-goal" style="font-size:14px;font-weight:bold;color:#20B2AA;margin-bottom:8px;padding:12px;background:#E0FFFF;border-radius:8px;"></div>' +
-        '<div id="exp-progress" style="text-align:center;font-size:12px;color:#666;margin-bottom:8px;"></div>' +
-        '<div style="font-size:12px;color:#666;margin-bottom:8px;">请将实验步骤按正确顺序排列（点击选择）:</div>' +
-        '<div id="exp-steps-available" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;"></div>' +
-        '<div style="font-size:12px;color:#666;margin-bottom:8px;">你的顺序:</div>' +
-        '<div id="exp-user-order" style="min-height:80px;padding:8px;background:#f5f5f5;border-radius:8px;margin-bottom:12px;"></div>' +
-        '<button onclick="checkExperimentOrder()" style="width:100%;padding:12px;background:#20B2AA;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">确认顺序</button>';
-    
-    function showExperiment() {
-        if (currentQ >= totalQ) {
-            endExperiment();
-            return;
-        }
-        
-        currentExp = experiments[currentQ % experiments.length];
-        userOrder = [];
-        
-        document.getElementById('exp-goal').textContent = '🎯 实验目标: ' + currentExp.goal;
-        document.getElementById('exp-progress').textContent = '第 ' + (currentQ + 1) + ' / ' + totalQ + ' 题';
-        
-        updateExpDisplay();
+    // 混入干扰项
+    let allSteps = [...exp.steps.map((s,i) => ({text:s, isCorrect:true, order:i}))];
+    if (diff >= 2) {
+        exp.distractors.forEach(d => allSteps.push({text:d, isCorrect:false, order:-1}));
     }
+    allSteps.sort(() => Math.random() - 0.5);
     
-    function updateExpDisplay() {
-        const availableDiv = document.getElementById('exp-steps-available');
-        const usedSteps = currentExp.steps.map((s, i) => ({idx: i, step: s}));
-        const available = usedSteps.filter(s => !userOrder.includes(s.idx));
-        
-        availableDiv.innerHTML = available.map(s =>
-            '<div onclick="selectExpStep(' + s.idx + ')" style="padding:10px 14px;background:white;border:2px solid #ddd;border-radius:8px;cursor:pointer;font-size:12px;">' + s.step + '</div>'
-        ).join('') || '<div style="color:#999;">已选择全部步骤</div>';
-        
-        const orderDiv = document.getElementById('exp-user-order');
-        orderDiv.innerHTML = userOrder.map((id, i) =>
-            '<div style="display:inline-block;padding:8px 12px;background:#20B2AA;color:white;border-radius:6px;margin:4px;font-size:12px;">' + (i+1) + '.' + currentExp.steps[id] + '</div>'
-        ).join('') || '<div style="color:#999;">点击上方步骤添加</div>';
-    }
+    window._experimentData = {experiment: exp, allSteps, selected: [], score: 0};
     
-    window.selectExpStep = function(stepIdx) {
-        userOrder.push(stepIdx);
-        updateExpDisplay();
-    };
+    const container = document.getElementById('game-fullscreen');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.background = 'linear-gradient(135deg,#89f7fe,#66a6ff)';
+    container.style.color = '#333';
     
-    window.checkExperimentOrder = function() {
-        if (userOrder.length !== currentExp.steps.length) {
-            showToast('请选择所有步骤');
-            return;
-        }
-        
-        let isCorrect = true;
-        for (let i = 0; i < userOrder.length; i++) {
-            if (userOrder[i] !== currentExp.correctOrder[i]) {
-                isCorrect = false;
-                break;
-            }
-        }
-        
-        if (isCorrect) {
-            gameScore += 30;
-            correct++;
-            SoundEffects.playComplete && SoundEffects.playComplete();
-            showToast('✓ 完全正确！+30分');
-        } else {
-            // 部分正确给分
-            let partialScore = 0;
-            for (let i = 0; i < userOrder.length; i++) {
-                if (userOrder[i] === currentExp.correctOrder[i]) partialScore += 5;
-            }
-            gameScore += partialScore;
-            SoundEffects.playWrong && SoundEffects.playWrong();
-            showToast('顺序不完全正确 +' + partialScore + '分');
-        }
-        
-        document.getElementById('game-score').textContent = gameScore;
-        currentQ++;
-        
-        setTimeout(() => showExperiment(), 1000);
-    };
-    
-    function endExperiment() {
-        if (gameTimer) clearInterval(gameTimer);
-        
-        const container = document.getElementById('game-board');
-        container.innerHTML = '<div style="padding:24px;text-align:center;">' +
-            '<div style="font-size:48px;margin-bottom:16px;">🧪</div>' +
-            '<div style="font-size:24px;font-weight:bold;color:#20B2AA;margin-bottom:12px;">实验设计完成！</div>' +
-            '<div style="font-size:16px;color:#666;">完全正确: ' + correct + '/' + totalQ + '个实验</div>' +
-            '<div style="font-size:20px;color:#20B2AA;margin:12px 0;">得分: ' + gameScore + '</div>' +
-            '<button onclick="startExperiment()" style="padding:12px 24px;background:#20B2AA;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:16px;">再来一局</button>' +
-            '<button onclick="endGame()" style="padding:12px 24px;background:#666;color:white;border:none;border-radius:8px;cursor:pointer;margin-top:8px;">结束游戏</button>' +
-        '</div>';
-    }
-    
-    gameScore = 0;
-    document.getElementById('game-score').textContent = '0';
-    
-    showExperiment();
+    let html = '<div style="text-align:center;max-width:340px;">';
+    html += '<div style="font-size:16px;font-weight:bold;margin-bottom:8px;">🧪 实验设计</div>';
+    html += '<div style="font-size:15px;font-weight:bold;margin-bottom:8px;padding:10px;background:rgba(255,255,255,0.5);border-radius:12px;">' + exp.title + '</div>';
+    html += '<div style="font-size:12px;margin-bottom:12px;">按正确顺序点击步骤（排除干扰项）</div>';
+    html += '<div id="exp-steps">';
+    allSteps.forEach((s, i) => {
+        html += '<div onclick="experimentSelect(' + i + ')" id="exp-step-' + i + '" style="padding:10px;margin:5px 0;background:rgba(255,255,255,0.7);border-radius:12px;cursor:pointer;font-size:13px;text-align:left;">' + s.text + '</div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:12px;font-size:13px;">已选: <span id="exp-count">0</span>/' + exp.steps.length + ' 步</div>';
+    html += '</div>';
+    container.innerHTML = html;
 }
 
-
-</script>
+function experimentSelect(idx) {
+    const data = window._experimentData;
+    if (!data) return;
+    const step = data.allSteps[idx];
+    const el = document.getElementById('exp-step-' + idx);
+    if (!el || step._selected) return;
+    
+    step._selected = true;
+    
+    if (step.isCorrect && step.order === data.selected.length) {
+        data.selected.push(step);
+        data.score++;
+        el.style.background = 'rgba(67,233,123,0.5)';
+        el.style.cursor = 'default';
+    } else if (step.isCorrect && step.order !== data.selected.length) {
+        el.style.background = 'rgba(255,200,100,0.5)';
+        setTimeout(() => { el.style.background = 'rgba(255,255,255,0.7)'; step._selected = false; }, 500);
+    } else {
+        el.style.background = 'rgba(255,100,100,0.5)';
+        setTimeout(() => { el.style.background = 'rgba(255,255,255,0.7)'; step._selected = false; }, 500);
+    }
+    
+    const cnt = document.getElementById('exp-count');
+    if (cnt) cnt.textContent = data.selected.length;
+    
+    if (data.selected.length >= data.experiment.steps.length) {
+        setTimeout(() => showGameOver(data.score * 10 + 20, data.experiment.steps.length * 10 + 20), 500);
+    }
+}
 
 <!-- 播客全屏播放器 -->
 <div id="audio-player-fullscreen" class="audio-player-modal">
     <!-- 顶部导航栏 -->
     <div style="display:flex;align-items:center;padding:12px 16px;background:rgba(0,0,0,0.3);">
-        <div onclick="closeAudioPlayer()" style="color:white;font-size:24px;cursor:pointer;padding:8px;">←</div>
+        <div onclick="closeAudioPlayer()" style="color:white;font-size:20px;cursor:pointer;padding:8px;display:flex;align-items:center;gap:4px;">← 返回</div>
         <div id="ap-title" style="flex:1;font-size:14px;font-weight:600;color:white;text-align:center;">音频课程</div>
-        <div style="width:40px;"></div>
+        <div onclick="closeMiniPlayer()" style="color:white;font-size:14px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.15);border-radius:8px;">停止</div>
     </div>
     
     <!-- 封面区域 -->
@@ -11850,7 +11524,7 @@ function startExperiment() {
 </div>
 
 <!-- 迷你播放器 -->
-<div id="mini-player" class="mini-player" style="display:none;">
+<div id="mini-player" class="mini-player">
     <div id="mini-player-thumb" style="width:44px;height:44px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🎧</div>
     <div style="flex:1;min-width:0;margin-left:10px;">
         <div id="mini-player-title" style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">课程名称</div>
@@ -11887,6 +11561,7 @@ function startExperiment() {
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
+</script>
 </body>
 </html>
 
