@@ -848,3 +848,5 @@ function updateMediaPlayButtons() {
 // ============================================================
 // Games - 游戏模块
 // ============================================================
+window.playAudioPos = playAudioPos;
+window.startAudioSeq = startAudioSeq;

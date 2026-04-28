@@ -1877,6 +1877,11 @@ function exitGame() {
         board.innerHTML = '';
         board.style.cssText = '';
     }
+    
+    // 返回游戏列表
+    if (typeof openFullscreenPage === 'function') {
+        openFullscreenPage('games');
+    }
 }
 
 function draw() {
@@ -2824,6 +2829,11 @@ function closeGame() {
         board.innerHTML = '';
         board.style.cssText = '';
     }
+    
+    // 返回游戏列表
+    if (typeof openFullscreenPage === 'function') {
+        openFullscreenPage('games');
+    }
 }
 
 function initGrid() {
@@ -3356,6 +3366,11 @@ function closeGame() {
         board.innerHTML = '';
         board.style.cssText = '';
     }
+    
+    // 返回游戏列表
+    if (typeof openFullscreenPage === 'function') {
+        openFullscreenPage('games');
+    }
 }
 
 function conserveAnswer(idx) {
@@ -3539,6 +3554,11 @@ function exitGame() {
     if (board) {
         board.innerHTML = '';
         board.style.cssText = '';
+    }
+    
+    // 返回游戏列表
+    if (typeof openFullscreenPage === 'function') {
+        openFullscreenPage('games');
     }
 }
 

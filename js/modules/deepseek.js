@@ -99,8 +99,18 @@ async function sendToDeepSeek() {
             // 视觉API成功，用分析结果作为用户消息
             userContent = '[用户上传了一张图片，AI视觉分析结果：' + visionResult.content + ']\n\n' + (msg || '请基于以上图片分析进一步回答');
         } else {
-            // 视觉API失败，降级为文字模式
-            userContent = '[用户上传了一张图片，但AI暂时无法分析图片内容]\n\n' + (msg || '请回答我的问题');
+            // 视觉API失败，提示用户配置API或提供文字描述
+            if (msg) {
+                userContent = '[用户上传了一张图片（图片分析API未配置），已附上文字问题]
+
+' + msg;
+                showToast('💡 提示：图片分析需要配置VISION_API_KEY');
+            } else {
+                userContent = '[用户上传了一张图片]
+
+请描述图片内容或配置图片理解API';
+                showToast('⚠️ 图片分析API未配置，请输入文字描述图片内容');
+            }
         }
     } else {
         userContent = msg;
@@ -705,69 +715,8 @@ async function callDeepSeekAPIWithVision(messages, model) {
     }
 }
 
-function toggleDeepSeekVoice() {
-    const btn = document.getElementById('deepseek-voice-btn');
-    const input = document.getElementById('deepseek-input');
-    if (!input) return;
-    
-    if (!deepseekRecognition) {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            showToast('您的浏览器不支持语音输入');
-            return;
-        }
-        
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        deepseekRecognition = new SpeechRecognition();
-        deepseekRecognition.lang = 'zh-CN';
-        deepseekRecognition.continuous = false;
-        deepseekRecognition.interimResults = false;
-    }
-    
-    if (isRecording) {
-        deepseekRecognition.stop();
-        isRecording = false;
-        if (btn) {
-            btn.classList.remove('recording');
-            btn.textContent = '🎤';
-        }
-    } else {
-        isRecording = true;
-        if (btn) {
-            btn.classList.add('recording');
-            btn.textContent = '🔴';
-        }
-        deepseekRecognition.start();
-        
-        deepseekRecognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            input.value = transcript;
-            isRecording = false;
-            if (btn) {
-                btn.classList.remove('recording');
-                btn.textContent = '🎤';
-            }
-        };
-        
-        deepseekRecognition.onerror = function(event) {
-            isRecording = false;
-            if (btn) {
-                btn.classList.remove('recording');
-                btn.textContent = '🎤';
-            }
-            if (event.error !== 'no-speech') {
-                showToast('语音识别错误: ' + event.error);
-            }
-        };
-        
-        deepseekRecognition.onend = function() {
-            isRecording = false;
-            if (btn) {
-                btn.classList.remove('recording');
-                btn.textContent = '🎤';
-            }
-        };
-    }
-}
+// toggleDeepSeekVoice moved to audio.js
+function __unused__toggleDeepSeekVoice_placeholder() { }
 
 function showPhotoPreview(imageData, topicId, photoId) {
     var topic = findTopic(topicId);
@@ -827,10 +776,10 @@ window.analyzeMethodWithAI = analyzeMethodWithAI;
 window.analyzeThinkingWithAI = analyzeThinkingWithAI;
 window.analyzePhotoWithAI = analyzePhotoWithAI;
 window.showPhotoPreview = showPhotoPreview;
+window.handleDeepSeekImage = handleDeepSeekImage;
 window.sendToDeepSeek = sendToDeepSeek;
 window.clearDeepSeekImage = clearDeepSeekImage;
 window.askTemplate = askTemplate;
-window.toggleDeepSeekVoice = toggleDeepSeekVoice;
 window.queryDeepSeekBalance = queryDeepSeekBalance;
 window.showDeepSeekBalanceAlert = showDeepSeekBalanceAlert;
 window.analyzePhotoWithAI = analyzePhotoWithAI;

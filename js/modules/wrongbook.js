@@ -395,40 +395,61 @@ function rateThinkingAnswer(type, isCorrect, questionIdx) {
 function renderWrongbook(container) {
     const user = getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
+    const photoCount = user?.uploadedImages?.length || 0;
     
     container.innerHTML = `
         <div class="card">
             <h3 style="margin-bottom:12px;">📒 错题本</h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">收录练习中的错题，定期复习巩固</p>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">收录练习中的错题，拍照上传，AI帮你分析</p>
             <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;text-align:center;padding:16px;background:#fff5f5;border-radius:12px;">
                     <div style="font-size:24px;font-weight:bold;color:#FF6B6B;">${wrongNotes.length}</div>
                     <div style="font-size:12px;color:#666;">错题总数</div>
+                </div>
+                <div style="flex:1;text-align:center;padding:16px;background:#f0fff0;border-radius:12px;">
+                    <div style="font-size:24px;font-weight:bold;color:#43E97B;">${photoCount}</div>
+                    <div style="font-size:12px;color:#666;">错题照片</div>
                 </div>
                 <div style="flex:1;text-align:center;padding:16px;background:#f5f7ff;border-radius:12px;">
                     <div style="font-size:24px;font-weight:bold;color:#667eea;">${wrongNotes.filter(n => n.reviewed).length}</div>
                     <div style="font-size:12px;color:#666;">已复习</div>
                 </div>
             </div>
+            <div style="display:flex;gap:10px;margin-bottom:16px;">
+                <button onclick="openWrongPhotoCapture()" style="flex:1;padding:14px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">📷 拍照上传</button>
+                <button onclick="showWrongPhotoGallery()" style="flex:1;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">📁 照片库(${photoCount})</button>
+            </div>
         </div>
-        
         ${wrongNotes.length === 0 ? `
             <div class="card" style="text-align:center;padding:40px;">
                 <div style="font-size:48px;margin-bottom:16px;">📝</div>
                 <div style="color:#666;">暂无错题，继续加油！</div>
+                <div style="color:#999;font-size:12px;margin-top:8px;">做错题会自动收录，也可以拍照上传</div>
             </div>
         ` : `
             <div class="card">
-                <h4 style="margin-bottom:12px;">错题列表</h4>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h4 style="margin:0;">错题列表</h4>
+                    <button onclick="reviewAllWrongNotes()" style="padding:8px 16px;background:#43E97B;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">📝 重练全部</button>
+                </div>
                 ${wrongNotes.map((note, i) => `
                     <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-size:11px;color:#999;background:#e8e8e8;padding:2px 8px;border-radius:4px;">${note.source || '练习'}</span>
+                            ${note.reviewed ? '<span style="font-size:11px;color:#43E97B;">✅ 已复习</span>' : '<span style="font-size:11px;color:#FF6B6B;">未复习</span>'}
+                        </div>
                         <div style="font-size:14px;margin-bottom:8px;">${note.question}</div>
                         <div style="display:flex;gap:8px;margin-bottom:8px;">
                             <span style="font-size:12px;color:#FF6B6B;">你的答案：${note.userAnswer}</span>
                             <span style="font-size:12px;color:#43E97B;">正确答案：${note.answer}</span>
                         </div>
-                        <div style="font-size:12px;color:#666;">解析：${note.explanation}</div>
-                        <button onclick="removeWrongNote(${i})" style="margin-top:8px;padding:6px 12px;background:#FF6B6B;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">移除</button>
+                        ${note.explanation ? '<div style="font-size:12px;color:#666;margin-bottom:8px;">解析：' + note.explanation + '</div>' : ''}
+                        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                            <button onclick="retryWrongNote(${i})" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🔄 重练</button>
+                            <button onclick="analyzeWrongNoteWithAI(${i})" style="padding:6px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🤖 AI分析</button>
+                            <button onclick="markWrongNoteReviewed(${i})" style="padding:6px 12px;background:#43E97B;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✅ 已复习</button>
+                            <button onclick="removeWrongNote(${i})" style="padding:6px 12px;background:#FF6B6B;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🗑 删除</button>
+                        </div>
                     </div>
                 `).join('')}
             </div>
@@ -490,3 +511,10 @@ window.showWrongPhotoGallery = showWrongPhotoGallery;
 window.submitFeedback = submitFeedback;
 window.closeDetail = closeDetail;
 window.closeModal = closeModal;
+
+window.retryWrongNote = retryWrongNote;
+window.checkRetryAnswer = checkRetryAnswer;
+window.checkRetryTextAnswer = checkRetryTextAnswer;
+window.analyzeWrongNoteWithAI = analyzeWrongNoteWithAI;
+window.markWrongNoteReviewed = markWrongNoteReviewed;
+window.reviewAllWrongNotes = reviewAllWrongNotes;
