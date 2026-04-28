@@ -1221,3 +1221,9 @@ function updateDataStatsDisplay() {
 // ============================================================
 // Video - 视频模块
 // ============================================================
+
+// Window exports for onclick handlers
+window.exportData = exportData;
+window.importData = importData;
+window.showDataStatsModal = showDataStatsModal;
+window.syncData = syncData;

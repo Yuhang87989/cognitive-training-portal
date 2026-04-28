@@ -315,6 +315,10 @@ function openAbout() {
     modal.classList.add('show');
 }
 window.openAbout = openAbout;
+window.closeSettingsPanel = closeSettingsPanel;
+window.exitSystem = exitSystem;
+window.openSettingsPanel = openSettingsPanel;
+window.toggleSettingsGroup = toggleSettingsGroup;
 
 
 // ============================================================

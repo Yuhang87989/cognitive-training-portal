@@ -310,3 +310,9 @@ function calculateStreakDays(user) {
 // ============================================================
 // Audio - 音频管理
 // ============================================================
+
+// Window exports for onclick handlers
+window.clearAllData = clearAllData;
+window.clearCurrentUserData = clearCurrentUserData;
+window.resetApiConfig = resetApiConfig;
+window.syncData = syncData;

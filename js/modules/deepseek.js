@@ -765,3 +765,6 @@ function saveApiConfigModal(type) {
 // ============================================================
 // Wrongbook - 错题本
 // ============================================================
+
+// Window exports for onclick handlers
+window.openDeepSeekRecharge = openDeepSeekRecharge;

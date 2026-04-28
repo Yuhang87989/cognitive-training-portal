@@ -410,3 +410,23 @@ function openChangePasswordModal() {
 // ============================================================
 // WeekPlans - 周计划数据
 // ============================================================
+
+// Window exports for onclick handlers
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.closeCreateUserModal = closeCreateUserModal;
+window.closeDifficultyModal = closeDifficultyModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.closeUserSwitchModal = closeUserSwitchModal;
+window.createNewUser = createNewUser;
+window.openApiConfigModal = openApiConfigModal;
+window.openAvatarModal = openAvatarModal;
+window.openChangePasswordModal = openChangePasswordModal;
+window.openDifficultyModal = openDifficultyModal;
+window.openEditProfileModal = openEditProfileModal;
+window.savePasswordChanges = savePasswordChanges;
+window.saveProfileChanges = saveProfileChanges;
+window.showCreateUserModal = showCreateUserModal;
+window.showUserSwitchModal = showUserSwitchModal;
+window.toggleUserMenu = toggleUserMenu;
+window.selectAvatar = selectAvatar;
+window.selectGrade = selectGrade;

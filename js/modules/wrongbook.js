@@ -470,3 +470,8 @@ function viewWrongNotes() {
 // ============================================================
 // Pomodoro - 番茄钟
 // ============================================================
+
+// Window exports for onclick handlers
+window.clearWrongNotes = clearWrongNotes;
+window.viewWrongNotes = viewWrongNotes;
+window.openFeedback = openFeedback;

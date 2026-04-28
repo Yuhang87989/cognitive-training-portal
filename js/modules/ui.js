@@ -1442,6 +1442,46 @@ function getWeekNumber() {
 
 function switchPlanDay(day) {
     window._planDay = day;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.closeCreateUserModal = closeCreateUserModal;
+window.closeDifficultyModal = closeDifficultyModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.closeFullscreenPage = closeFullscreenPage;
+window.closeUserMenu = closeUserMenu;
+window.exitSystem = exitSystem;
+window.logoutAndReturn = logoutAndReturn;
+window.doExitSystem = doExitSystem;
+window.openAbout = openAbout;
+window.openChangePasswordModal = openChangePasswordModal;
+window.openDifficultyModal = openDifficultyModal;
+window.openEditProfileModal = openEditProfileModal;
+window.openFullscreenPage = openFullscreenPage;
+window.openHelp = openHelp;
+window.openSettingsPanel = openSettingsPanel;
+window.savePasswordChanges = savePasswordChanges;
+window.setDifficulty = setDifficulty;
+window.showCreateUserModal = showCreateUserModal;
+window.switchMainTab = switchMainTab;
+window.toggleSettingsGroup = toggleSettingsGroup;
+window.toggleSoundEffects = toggleSoundEffects;
+window.toggleUserMenu = toggleUserMenu;
+window.openRegisterModal = openRegisterModal;
+window.handleLogin = handleLogin;
+window.initPortal = initPortal;
+window.selectAvatar = selectAvatar;
+window.selectGrade = selectGrade;
+window.selectSubject = selectSubject;
+window.closeAboutModal = closeAboutModal;
+window.closeApiConfigModal = closeApiConfigModal;
+window.closeAvatarModal = closeAvatarModal;
+window.closeModal = closeModal;
+window.closeUpdateModal = closeUpdateModal;
+window.closeWelcomeModal = closeWelcomeModal;
+window.deleteUser = deleteUser;
+window.registerNewUser = registerNewUser;
+window.showToast = showToast;
+window.switchToUser = switchToUser;
+window.updateUI = updateUI;
     const el = document.getElementById('module-content');
     if (el) renderPlan(el);
 }
