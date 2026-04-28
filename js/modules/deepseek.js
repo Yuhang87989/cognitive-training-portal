@@ -2,8 +2,10 @@
 
 var currentDeepSeekImage = null;
 var deepseekConversationHistory = [];
-var isRecording = false;
-var deepseekRecognition = null;
+// isRecording已在audio.js中声明
+if (typeof isRecording === "undefined") var isRecording = false;
+// deepseekRecognition已在audio.js中声明
+if (typeof deepseekRecognition === "undefined") var deepseekRecognition = null;
 
 
 // 视觉API - 图片理解（支持硅基流动等视觉模型，未配置则优雅降级）
