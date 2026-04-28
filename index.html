@@ -2989,8 +2989,6 @@ function generateCalendar() {
     return html;
 }
 
-function changeWeek(dir) { showToast('周次切换'); }
-
 function toggleTask(el) {
     const checkbox = el.querySelector('.task-checkbox');
     checkbox.classList.toggle('checked');
@@ -5424,20 +5422,8 @@ function renderWeekPlan(weekId) {
     return html;
 }
 
-function toggleWeekTask(taskId) {
-    const user = getCurrentUserData();
-    if (!user) return;
-    user.weekTasks = user.weekTasks || {};
-    user.weekTasks[taskId] = !user.weekTasks[taskId];
-    syncUserData(user);
-    showToast('任务状态已更新');
-}
-
-
-
 
 // ====== Week5-6训练计划（V99新增）======
-
 
 
 let vpVideo = null, vpPlaying = false;
