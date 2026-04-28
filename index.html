@@ -637,6 +637,31 @@
 </div>
 
 
+<!-- 加载模块化JS文件 -->
+<script src="js/config.js"></script>
+<script src="js/ctm.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/user.js"></script>
+<script src="js/data/week-plans.js"></script>
+<script src="js/data/topics.js"></script>
+<script src="js/data/podcasts.js"></script>
+<script src="js/data/videos.js"></script>
+<script src="js/data/games-config.js"></script>
+<script src="js/modules/practice.js"></script>
+<script src="js/modules/map.js"></script>
+<script src="js/modules/plan.js"></script>
+<script src="js/modules/topics.js"></script>
+<script src="js/modules/method.js"></script>
+<script src="js/modules/thinking.js"></script>
+<script src="js/modules/podcast.js"></script>
+<script src="js/modules/video.js"></script>
+<script src="js/modules/games.js"></script>
+<script src="js/modules/deepseek.js"></script>
+<script src="js/modules/wrongbook.js"></script>
+<script src="js/modules/pomodoro.js"></script>
+
 <script>
 // ====== 初始化脚本 ======
 // 版本: V140
@@ -652,7 +677,7 @@ function initApp() {
     if (!data.users || data.users.length === 0) {
         // 创建默认用户邱宇菲
         const defaultUser = {
-            id: 'user_' + Date.now(),
+            id: 'user_default_qiuyufei',
             name: '邱宇菲',
             grade: 7,
             difficulty: 1,
@@ -682,31 +707,6 @@ document.addEventListener('visibilitychange', function() {
     }
 });
 </script>
-
-<!-- 加载模块化JS文件 -->
-<script src="js/config.js"></script>
-<script src="js/ctm.js"></script>
-<script src="js/storage.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/user.js"></script>
-<script src="js/data/week-plans.js"></script>
-<script src="js/data/topics.js"></script>
-<script src="js/data/podcasts.js"></script>
-<script src="js/data/videos.js"></script>
-<script src="js/data/games-config.js"></script>
-<script src="js/modules/practice.js"></script>
-<script src="js/modules/map.js"></script>
-<script src="js/modules/plan.js"></script>
-<script src="js/modules/topics.js"></script>
-<script src="js/modules/method.js"></script>
-<script src="js/modules/thinking.js"></script>
-<script src="js/modules/podcast.js"></script>
-<script src="js/modules/video.js"></script>
-<script src="js/modules/games.js"></script>
-<script src="js/modules/deepseek.js"></script>
-<script src="js/modules/wrongbook.js"></script>
-<script src="js/modules/pomodoro.js"></script>
 
 </body>
 </html>

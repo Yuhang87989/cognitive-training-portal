@@ -196,7 +196,7 @@ function createNewUser() {
     }
     
     var newUser = {
-        id: 'user_' + Date.now(),
+        id: 'user_default_qiuyufei',
         name: name,
         grade: grade,
         difficulty: difficulty,
