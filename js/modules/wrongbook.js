@@ -1,4 +1,3 @@
-// ====== 错题本模块 ======
 // 版本: V140
 
 function openWrongPhotoCapture() {
@@ -466,3 +465,8 @@ function viewWrongNotes() {
     closeSettingsPanel();
     openFullscreenPage('wrongNotes');
 }
+
+
+// ============================================================
+// Pomodoro - 番茄钟
+// ============================================================

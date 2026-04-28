@@ -1,3 +1,4 @@
+// ====== 用户系统模块 ======
 // 版本: V140
 
 // 用户下拉菜单点击外部关闭
@@ -405,8 +406,3 @@ function openChangePasswordModal() {
     document.getElementById('change-password-modal').classList.add('show');
 }
 
-
-
-// ============================================================
-// WeekPlans - 周计划数据
-// ============================================================

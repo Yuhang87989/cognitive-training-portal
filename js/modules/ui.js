@@ -1,4 +1,7 @@
-// ====== UI模块 ======
+// ============================================================
+// Config - 全局配置
+// ============================================================
+
 // 版本: V140
 
 function closeUserMenu() {
@@ -1075,18 +1078,20 @@ function calculateCognitiveData() {
     const methodStats = user.methodStats || {};
     const thinkingStats = user.thinkingStats || {};
     const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
-    
-    // ====== 1. 专注力计算 ======
-    // 来源：舒尔特方格、视觉搜索、快速点击
+
+
+// ====== 1. 专注力计算 ======
+// 来源：舒尔特方格、视觉搜索、快速点击
     let attentionScore = 50; // 基础分
     const attentionGames = ['schulte', 'visual', 'tap'];
     attentionGames.forEach(g => {
         if (gameScores[g]) attentionScore += Math.min(gameScores[g] / 10, 12);
         if (gameCounts[g]) attentionScore += Math.min(gameCounts[g] * 2, 6);
     });
-    
-    // ====== 2. 记忆力计算 ======
-    // 来源：数字记忆、图形记忆、学霸方法记忆训练
+
+
+// ====== 2. 记忆力计算 ======
+// 来源：数字记忆、图形记忆、学霸方法记忆训练
     let memoryScore = 50;
     const memoryGames = ['digit', 'pattern'];
     memoryGames.forEach(g => {
@@ -1099,9 +1104,10 @@ function calculateCognitiveData() {
         memoryScore += Math.min(stats.completed * 3, 15);
         if (stats.completed > 0) memoryScore += Math.round((stats.correct / stats.completed) * 10);
     }
-    
-    // ====== 3. 思维力计算 ======
-    // 来源：图形推理、找不同、思维训练（逻辑、批判、系统、逆向、抽象）
+
+
+// ====== 3. 思维力计算 ======
+// 来源：图形推理、找不同、思维训练（逻辑、批判、系统、逆向、抽象）
     let thinkingScore = 50;
     const thinkingGames = ['reason', 'diff'];
     thinkingGames.forEach(g => {
@@ -1115,9 +1121,10 @@ function calculateCognitiveData() {
             thinkingScore += Math.min(thinkingStats[t].completed * 2, 5);
         }
     });
-    
-    // ====== 4. 创造力计算 ======
-    // 来源：颜色识别游戏、思维训练（创意、发散）
+
+
+// ====== 4. 创造力计算 ======
+// 来源：颜色识别游戏、思维训练（创意、发散）
     let creativityScore = 50;
     const creativityGames = ['color'];
     creativityGames.forEach(g => {
@@ -1130,9 +1137,10 @@ function calculateCognitiveData() {
             creativityScore += Math.min(thinkingStats[t].completed * 4, 12);
         }
     });
-    
-    // ====== 5. 情绪力计算 ======
-    // 来源：学习连续性、游戏表现稳定性、训练完成度
+
+
+// ====== 5. 情绪力计算 ======
+// 来源：学习连续性、游戏表现稳定性、训练完成度
     let emotionScore = 50;
     // 连续学习天数
     const streakDays = calculateStreakDays(user);
@@ -1142,9 +1150,10 @@ function calculateCognitiveData() {
     // 游戏完成度（玩过的游戏种类数）
     const totalGamesPlayed = Object.keys(gameCounts).length;
     emotionScore += Math.min(totalGamesPlayed * 3, 15);
-    
-    // ====== 6. 元认知计算 ======
-    // 来源：学霸方法训练总数、思维训练总数、AI问答次数
+
+
+// ====== 6. 元认知计算 ======
+// 来源：学霸方法训练总数、思维训练总数、AI问答次数
     let metacognitionScore = 50;
     // 学霸方法总训练量
     const methodTotal = Object.values(methodStats).reduce((sum, s) => sum + (s.completed || 0), 0);
@@ -1356,7 +1365,7 @@ function openAbout() {
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">✨ 核心功能</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
                 • 12大训练模块（AI分身、母题、播客等）<br>
-                • 8种专注力训练游戏<br>
+                • 23个认知训练游戏<br>
                 • 378道经典母题库<br>
                 • DeepSeek AI 智能辅导<br>
                 • 个性化学习计划
@@ -1503,3 +1512,76 @@ function toggleTask(el) {
     checkbox.classList.toggle('checked');
     el.classList.toggle('completed');
 }
+
+
+
+
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
+
+
+
+// ============================================================
+// 模块化加载器
+// ============================================================
+(function() {
+    // 加载顺序：核心 -> 数据 -> 模块
+    const loadOrder = [
+        'js/config.js',
+        'js/ctm.js',
+        'js/audio.js', 
+        'js/storage.js',
+        'js/utils.js',
+        'js/user.js',
+        'js/data/week-plans.js',
+        'js/data/topics.js',
+        'js/data/podcasts.js',
+        'js/data/videos.js',
+        'js/data/games-config.js',
+        'js/modules/practice.js',
+        'js/modules/map.js',
+        'js/modules/plan.js',
+        'js/modules/topics.js',
+        'js/modules/method.js',
+        'js/modules/thinking.js',
+        'js/modules/podcast.js',
+        'js/modules/video.js',
+        'js/modules/player.js',
+        'js/modules/games.js',
+        'js/modules/ai.js',
+        'js/modules/deepseek.js',
+        'js/modules/wrongbook.js',
+        'js/modules/pomodoro.js',
+        'js/modules/ui.js'
+    ];
+    
+    let loaded = 0;
+    function loadNext() {
+        if (loaded >= loadOrder.length) {
+            // 全部加载完成后，注册Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed:', err));
+            }
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = loadOrder[loaded++];
+        script.onload = loadNext;
+        script.onerror = function() {
+            console.warn('Failed to load:', script.src);
+            loadNext();
+        };
+        document.head.appendChild(script);
+    }
+    
+    // 等待DOM就绪
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadNext);
+    } else {
+        loadNext();
+    }
+})();

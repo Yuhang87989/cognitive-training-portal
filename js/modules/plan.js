@@ -1,4 +1,3 @@
-// ====== plan模块 ======
 // 版本: V140
 
 CTM.registerModule('plan', {
@@ -172,3 +171,8 @@ window.renderWeekPlan = renderWeekPlan;
 window.renderSlide = renderSlide;
 window.changeWeek = changeWeek;
 window.toggleWeekTask = toggleWeekTask;
+
+
+// ============================================================
+// TopicsModule - 主题模块
+// ============================================================

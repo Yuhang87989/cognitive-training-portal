@@ -1,3 +1,4 @@
+// ====== 公共工具模块 ======
 // 版本: V140
 
 function showToast(message, duration = 2000) {
@@ -242,7 +243,7 @@ function openAbout() {
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">✨ 核心功能</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
                 • 12大训练模块（AI分身、母题、播客等）<br>
-                • 23个认知训练游戏<br>
+                • 8种专注力训练游戏<br>
                 • 378道经典母题库<br>
                 • DeepSeek AI 智能辅导<br>
                 • 个性化学习计划
@@ -315,8 +316,3 @@ function openAbout() {
     modal.classList.add('show');
 }
 window.openAbout = openAbout;
-
-
-// ============================================================
-// User - 用户管理
-// ============================================================

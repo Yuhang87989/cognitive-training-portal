@@ -1,4 +1,3 @@
-// ====== map模块 ======
 // 版本: V140
 
 CTM.registerModule('map', {
@@ -160,3 +159,8 @@ window.renderMap = renderMap;
 window.renderCognitiveRadar = renderCognitiveRadar;
 window.renderCognitiveDetails = renderCognitiveDetails;
 window.renderStatItems = renderStatItems;
+
+
+// ============================================================
+// Plan - 训练计划
+// ============================================================

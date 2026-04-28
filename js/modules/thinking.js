@@ -1,4 +1,3 @@
-// ====== 思维训练 ======
 // 版本: V140
 
 function renderThinking(container) {
@@ -337,3 +336,8 @@ function deleteThinkingNote(noteId) {
     renderThinkingNotes();
     showToast('笔记已删除');
 }
+
+
+// ============================================================
+// Podcast - 播客模块
+// ============================================================

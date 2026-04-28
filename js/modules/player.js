@@ -1,4 +1,3 @@
-// ====== 播放器模块 ======
 // 版本: V140
 
 function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } showToast('播放: ' + title); }
@@ -831,3 +830,8 @@ function updateMediaPlayButtons() {
     var apPlayBtn = document.getElementById('mp-play-btn');
     if (apPlayBtn) apPlayBtn.innerHTML = icon;
 }
+
+
+// ============================================================
+// Games - 游戏模块
+// ============================================================

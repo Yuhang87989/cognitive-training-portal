@@ -1,4 +1,3 @@
-// ====== 方法训练 ======
 // 版本: V140
 
 function showConserveQuestion() {
@@ -233,3 +232,8 @@ function submitThinkingAnswers(type, page) {
         <button class="modal-close" onclick="closeModal()">关闭</button>
     `;
 }
+
+
+// ============================================================
+// Thinking - 思维训练
+// ============================================================

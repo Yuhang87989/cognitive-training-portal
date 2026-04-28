@@ -1,4 +1,3 @@
-// ====== 游戏模块 ======
 // 版本: V140
 
 function startGame(type) {
@@ -3930,7 +3929,7 @@ function renderGames(container) {
     container.innerHTML = `
         <div class="card">
             <h3 style="margin-bottom:12px;">🎮 认知训练游戏</h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">16大游戏全面提升认知能力！</p>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">23大认知训练游戏全面提升认知能力！</p>
             
             <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
                 ${games.map(g => `
@@ -6132,3 +6131,7 @@ function whackMole(idx) {
         SoundEffects.playCorrect();
     }
 }
+
+// ============================================================
+// DeepSeek - AI对话
+// ============================================================

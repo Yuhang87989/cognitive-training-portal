@@ -1,4 +1,3 @@
-// ====== topics模块 ======
 // 版本: V140
 
 CTM.registerModule('topics', {
@@ -113,3 +112,8 @@ function submitTopicAnswer(topicId) {
 window.renderTopics = renderTopics;
 window.openTopicQuestion = openTopicQuestion;
 window.submitTopicAnswer = submitTopicAnswer;
+
+
+// ============================================================
+// Method - 学法指导
+// ============================================================

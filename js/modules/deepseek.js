@@ -1,4 +1,3 @@
-// ====== DeepSeek AI ======
 // 版本: V140
 
 async function callDeepSeekAPI(messages, temperature) {
@@ -761,3 +760,8 @@ function saveApiConfigModal(type) {
     updateApiStatusDisplay();
     closeApiConfigModal();
 }
+
+
+// ============================================================
+// Wrongbook - 错题本
+// ============================================================

@@ -9,12 +9,12 @@
 <link rel="icon" type="image/x-icon" href="favicon.ico"/>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
 <link rel="apple-touch-icon" href="apple-touch-icon.png"/>
-<link rel="stylesheet" href="css/style.css"/>
 <!-- PeerJS 音视频库 -->
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
+</style>
+</head>
 <body>
-
 
 
 
@@ -14986,74 +14986,6 @@ if('serviceWorker' in navigator){
         'js/data/podcasts.js',
         'js/data/videos.js',
         'js/data/games-config.js',
-        'js/modules/practice.js',
-        'js/modules/map.js',
-        'js/modules/plan.js',
-        'js/modules/topics.js',
-        'js/modules/method.js',
-        'js/modules/thinking.js',
-        'js/modules/podcast.js',
-        'js/modules/video.js',
-        'js/modules/player.js',
-        'js/modules/games.js',
-        'js/modules/ai.js',
-        'js/modules/deepseek.js',
-        'js/modules/wrongbook.js',
-        'js/modules/pomodoro.js',
-        'js/modules/ui.js'
-    ];
-    
-    let loaded = 0;
-    function loadNext() {
-        if (loaded >= loadOrder.length) {
-            // 全部加载完成后，注册Service Worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(reg => console.log('SW registered'))
-                    .catch(err => console.log('SW registration failed:', err));
-            }
-            return;
-        }
-        const script = document.createElement('script');
-        script.src = loadOrder[loaded++];
-        script.onload = loadNext;
-        script.onerror = function() {
-            console.warn('Failed to load:', script.src);
-            loadNext();
-        };
-        document.head.appendChild(script);
-    }
-    
-    // 等待DOM就绪
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadNext);
-    } else {
-        loadNext();
-    }
-})();
-</script>
-
-<script>
-// ============================================================
-// 认知训练门户 V140 模块化加载器
-// ============================================================
-(function() {
-    // 加载顺序：核心 -> 数据 -> 模块
-    const loadOrder = [
-        // 核心模块
-        'js/config.js',
-        'js/ctm.js',
-        'js/audio.js', 
-        'js/storage.js',
-        'js/utils.js',
-        'js/user.js',
-        // 数据层
-        'js/data/week-plans.js',
-        'js/data/topics.js',
-        'js/data/podcasts.js',
-        'js/data/videos.js',
-        'js/data/games-config.js',
-        // 功能模块
         'js/modules/practice.js',
         'js/modules/map.js',
         'js/modules/plan.js',

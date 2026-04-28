@@ -1,4 +1,3 @@
-// ====== video模块 ======
 // 版本: V140
 
 CTM.registerModule('video', {
@@ -79,3 +78,8 @@ function renderLocalVideoList() {
 
 window.renderVideo = renderVideo;
 window.renderLocalVideoList = renderLocalVideoList;
+
+
+// ============================================================
+// Player - 播放器
+// ============================================================

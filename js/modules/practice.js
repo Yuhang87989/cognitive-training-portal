@@ -1,4 +1,3 @@
-// ====== practice模块 ======
 // 版本: V140
 
 CTM.registerModule('practice', {
@@ -61,3 +60,8 @@ function renderPractice(container) {
 }
 
 window.renderPractice = renderPractice;
+
+
+// ============================================================
+// Map - 地图模块
+// ============================================================

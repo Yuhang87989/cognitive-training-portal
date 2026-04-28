@@ -1,4 +1,3 @@
-// ====== 番茄钟模块 ======
 // 版本: V140
 
 function resetPomodoro() {
@@ -53,3 +52,8 @@ function togglePomodoro() {
     const btn = document.getElementById('pomodoro-start-btn');
     if (btn) btn.textContent = pomodoroRunning ? '暂停' : '开始';
 }
+
+
+// ============================================================
+// UI - 用户界面
+// ============================================================
