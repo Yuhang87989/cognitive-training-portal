@@ -1,22 +1,14 @@
 {
-  "name": "认知训练门户",
+  "name": "认知训练门户V140",
   "short_name": "认知训练",
-  "description": "青少年注意力和记忆力训练平台",
+  "description": "青少年认知训练平台 - 23个训练游戏+8个娱乐游戏",
   "start_url": "/cognitive-training-portal/",
   "display": "standalone",
   "background_color": "#F5F6FA",
   "theme_color": "#3377FF",
   "orientation": "portrait",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon.png", "sizes": "512x512", "type": "image/png"}
   ]
 }

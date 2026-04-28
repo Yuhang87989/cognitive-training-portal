@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
 <title>认知训练 V140</title>
-<link rel="icon" type="image/x-icon" href="https://yuhang87989.github.io/cognitive-training-portal/favicon.ico"/>
-<link rel="icon" type="image/png" sizes="192x192" href="https://yuhang87989.github.io/cognitive-training-portal/icon-192.png"/>
-<link rel="apple-touch-icon" href="https://yuhang87989.github.io/cognitive-training-portal/apple-touch-icon.png"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" type="image/x-icon" href="favicon.ico"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
 <!-- PeerJS 音视频库 -->
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -15257,6 +15258,11 @@ function toggleTask(el) {
 
 
 
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
 </script>
 </body>
 </html>
