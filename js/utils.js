@@ -32,41 +32,41 @@ function showToast(message, duration = 2000) {
 
 function cleanupModuleState() {
     // 停止所有游戏计时器
-    if (gameTimer) {
+    if (typeof gameTimer !== 'undefined' && gameTimer) {
         clearInterval(gameTimer);
         gameTimer = null;
     }
-    if (gameTimerDisplay) {
+    if (typeof gameTimerDisplay !== 'undefined' && gameTimerDisplay) {
         clearInterval(gameTimerDisplay);
         gameTimerDisplay = null;
     }
     
     // 停止贪吃蛇计时器
-    if (snakeGame) {
+    if (typeof snakeGame !== 'undefined' && snakeGame) {
         clearInterval(snakeGame);
         snakeGame = null;
     }
     
     // 停止俄罗斯方块计时器
-    if (tetrisGame) {
+    if (typeof tetrisGame !== 'undefined' && tetrisGame) {
         clearInterval(tetrisGame);
         tetrisGame = null;
     }
     
     // 停止打地鼠计时器
-    if (whackTimer) {
+    if (typeof whackTimer !== 'undefined' && whackTimer) {
         clearInterval(whackTimer);
         whackTimer = null;
     }
     
     // 停止消消乐计时器
-    if (elimTimer) {
+    if (typeof elimTimer !== 'undefined' && elimTimer) {
         clearInterval(elimTimer);
         elimTimer = null;
     }
     
     // 停止番茄钟计时器
-    if (pomodoroTimer) {
+    if (typeof pomodoroTimer !== 'undefined' && pomodoroTimer) {
         clearInterval(pomodoroTimer);
         pomodoroTimer = null;
     }
@@ -79,7 +79,7 @@ function cleanupModuleState() {
     }
     
     // 停止音频播放
-    if (currentAudio) {
+    if (typeof currentAudio !== 'undefined' && currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
@@ -196,7 +196,7 @@ function toggleSettingsGroup(groupId) {
 
 function exitSystem() {
     // 停止所有媒体
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.src = ''; }
+    if (typeof currentAudio !== 'undefined' && currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; currentAudio.src = ''; }
     if (evpVideo) { evpVideo.pause(); evpVideo.src = ''; }
     stopTTSSpeech();
     

@@ -1,5 +1,6 @@
 // 版本: V140
 
+let currentPodcastId = null;
 function playPodcastAudio(id) {
     const podcast = podcastList.find(p => p.id === id);
     if (podcast) {
