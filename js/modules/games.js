@@ -4,6 +4,10 @@
 var playSound = playSound || function() {};
 var gameTimerDisplay = gameTimerDisplay || null;
 var gameTimer = gameTimer || null;
+var snakeGame = typeof snakeGame !== 'undefined' ? snakeGame : null;
+var tetrisGame = typeof tetrisGame !== 'undefined' ? tetrisGame : null;
+var whackTimer = typeof whackTimer !== 'undefined' ? whackTimer : null;
+var elimTimer = typeof elimTimer !== 'undefined' ? elimTimer : null;
 
 
 function startGame(type) {
