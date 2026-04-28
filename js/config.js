@@ -25,3 +25,10 @@ const AVATAR_LIST = [
     { emoji: '🐶', gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
     { emoji: '🐰', gradient: 'linear-gradient(135deg,#f6d365,#fda085)' }
 ];
+
+// 视觉API配置（可选 - 用于图片理解功能）
+// 支持硅基流动(https://siliconflow.cn)的免费视觉模型
+// 注册后填入API Key即可启用图片理解功能
+const VISION_API_KEY = '';  // 硅基流动API Key
+const VISION_API_URL = '';  // 如: https://api.siliconflow.cn/v1/chat/completions
+const VISION_MODEL = '';    // 如: Qwen/Qwen2.5-VL-72B-Instruct

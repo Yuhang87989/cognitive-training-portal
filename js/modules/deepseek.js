@@ -1,5 +1,34 @@
 // 版本: V140
 
+// 视觉API - 图片理解（支持硅基流动等视觉模型，未配置则优雅降级）
+async function callVisionAPI(imageDataUrl, question) {
+    var visionApiKey = typeof VISION_API_KEY !== 'undefined' ? VISION_API_KEY : '';
+    var visionApiUrl = typeof VISION_API_URL !== 'undefined' ? VISION_API_URL : '';
+    var visionModel = typeof VISION_MODEL !== 'undefined' ? VISION_MODEL : '';
+    
+    if (visionApiKey && visionApiUrl) {
+        try {
+            var messages = [{
+                role: 'user',
+                content: [
+                    {type: 'image_url', image_url: {url: imageDataUrl}},
+                    {type: 'text', text: question}
+                ]
+            }];
+            var response = await fetch(visionApiUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + visionApiKey},
+                body: JSON.stringify({model: visionModel, messages: messages, max_tokens: 1000})
+            });
+            if (response.ok) {
+                var data = await response.json();
+                if (data.choices && data.choices[0]) return {success: true, content: data.choices[0].message.content};
+            }
+        } catch(e) { console.warn('Vision API failed:', e.message); }
+    }
+    return {success: false, content: ''};
+}
+
 async function callDeepSeekAPI(messages, temperature) {
     try {
         var response = await fetch(DEEPSEEK_API_URL, {
@@ -54,26 +83,31 @@ async function sendToDeepSeek() {
     
     // 构建API消息
     let userContent;
-    if (currentDeepSeekImage) {
-        // 多模态消息：包含图片和文字
-        userContent = [
-            {type: 'image_url', image_url: {url: currentDeepSeekImage}},
-            {type: 'text', text: msg || '请分析这张图片'}
-        ];
+    let hasImage = !!currentDeepSeekImage;
+    let imageDataUrl = currentDeepSeekImage; // 保存图片数据用于视觉API
+    
+    if (hasImage) {
+        // 尝试使用视觉API分析图片
+        const visionResult = await callVisionAPI(imageDataUrl, msg || '请分析这张图片');
+        if (visionResult.success) {
+            // 视觉API成功，用分析结果作为用户消息
+            userContent = '[用户上传了一张图片，AI视觉分析结果：' + visionResult.content + ']\n\n' + (msg || '请基于以上图片分析进一步回答');
+        } else {
+            // 视觉API失败，降级为文字模式
+            userContent = '[用户上传了一张图片，但AI暂时无法分析图片内容]\n\n' + (msg || '请回答我的问题');
+        }
     } else {
         userContent = msg;
     }
     
-    // 添加用户消息到历史
+    // 添加用户消息到历史（使用纯文字格式，兼容DeepSeek API）
     deepseekConversationHistory.push({role: 'user', content: userContent});
     
     // 清除图片预览
     clearDeepSeekImage();
     
     try {
-        // 使用视觉模型处理图片
-        const model = currentDeepSeekImage ? 'deepseek-chat' : DEEPSEEK_MODEL;
-        const result = await callDeepSeekAPIWithVision(deepseekConversationHistory, model);
+        const result = await callDeepSeekAPI(deepseekConversationHistory);
         const bubbles = messagesEl.querySelectorAll('.chat-bubble');
         
         if (result.error) {
