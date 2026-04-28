@@ -937,6 +937,57 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 <script>
 // ==================== 1. 全局变量与配置 ====================
+// ===== 认知训练门户模块管理器 V139 =====
+const CTM = {
+    version: 'V139',
+    modules: {},        // 模块注册表
+    plans: {},          // 训练计划注册表
+    games: {},          // 游戏注册表
+    hooks: {},          // 钩子系统（预留升级接口）
+    
+    // 注册模块
+    registerModule(id, config) {
+        this.modules[id] = config;
+    },
+    
+    // 注册训练计划
+    registerPlan(weekId, planData) {
+        this.plans[weekId] = planData;
+    },
+    
+    // 注册游戏
+    registerGame(gameId, gameConfig) {
+        this.games[gameId] = gameConfig;
+    },
+    
+    // 钩子系统 - 预留升级接口
+    addHook(hookName, callback) {
+        if (!this.hooks[hookName]) this.hooks[hookName] = [];
+        this.hooks[hookName].push(callback);
+    },
+    
+    triggerHook(hookName, data) {
+        (this.hooks[hookName] || []).forEach(cb => cb(data));
+    },
+    
+    // 获取当前用户周次
+    getCurrentWeek() {
+        const user = getCurrentUserData();
+        return user.currentWeek || 1;
+    },
+    
+    // 获取当前用户训练配置
+    getTrainingConfig() {
+        const user = getCurrentUserData();
+        return {
+            week: user.currentWeek || 1,
+            difficulty: user.difficulty || 1,
+            grade: user.grade || 7,
+            dailySessions: user.dailySessions || 8
+        };
+    }
+};
+
 // ====== 全局配置 ======
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
