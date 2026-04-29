@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cognitive-training-v140';
+const CACHE_NAME = 'cognitive-training-v141';
 const OFFLINE_URL = '/index.html';
 const PRECACHE_RESOURCES = [
   '/cognitive-training-portal/',
