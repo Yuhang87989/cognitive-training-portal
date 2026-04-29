@@ -65,6 +65,11 @@ function startGame(type) {
             if (timerEl) timerEl.textContent = elapsed + 's';
         }, 1000);
         
+        // 重置游戏容器
+        const gf = document.getElementById('game-fullscreen');
+        const gb = document.getElementById('game-board');
+        if (gf) { gf.style.display = 'none'; gf.innerHTML = ''; }
+        if (gb) { gb.style.display = 'flex'; gb.innerHTML = ''; }
         // 启动对应游戏
         switch(type) {
             case 'schulte': startSchulte(); break;
@@ -4958,6 +4963,11 @@ function startGame(type) {
             const timerEl = document.getElementById('game-timer');
             if (timerEl) timerEl.textContent = elapsed + 's';
         }, 1000);
+        // 重置游戏容器
+        const gf = document.getElementById('game-fullscreen');
+        const gb = document.getElementById('game-board');
+        if (gf) { gf.style.display = 'none'; gf.innerHTML = ''; }
+        if (gb) { gb.style.display = 'flex'; gb.innerHTML = ''; }
         
         // 启动对应游戏
         switch(type) {
