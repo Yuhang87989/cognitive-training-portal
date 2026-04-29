@@ -196,7 +196,7 @@ function playPodcast(podcast) {
     if (select) select.value = podcast.id;
     
     // 播放音频
-    const audio = document.getElementById('podcast-audio');
+    const audio = document.getElementById('hidden-audio');
     if (audio) {
         audio.src = podcast.url;
         audio.playbackRate = podcastPlayerState.playbackRate;
@@ -218,7 +218,7 @@ function playPodcast(podcast) {
 
 // 切换播放/暂停
 function podcastTogglePlay() {
-    const audio = document.getElementById('podcast-audio');
+    const audio = document.getElementById('hidden-audio');
     if (!audio || !podcastPlayerState.currentPodcast) {
         showToast('请先选择播客');
         return;
@@ -270,7 +270,7 @@ function podcastCycleSpeed() {
     const nextIndex = (currentIndex + 1) % speeds.length;
     podcastPlayerState.playbackRate = speeds[nextIndex];
     
-    const audio = document.getElementById('podcast-audio');
+    const audio = document.getElementById('hidden-audio');
     if (audio) audio.playbackRate = podcastPlayerState.playbackRate;
     
     document.getElementById('podcast-speed-btn').textContent = speeds[nextIndex] + 'x';
@@ -280,10 +280,10 @@ function podcastCycleSpeed() {
 // 初始化音频元素
 function initPodcastAudio() {
     // 确保页面中有隐藏的音频元素
-    let audio = document.getElementById('podcast-audio');
+    let audio = document.getElementById('hidden-audio');
     if (!audio) {
         audio = document.createElement('audio');
-        audio.id = 'podcast-audio';
+        audio.id = 'hidden-audio';
         audio.style.display = 'none';
         document.body.appendChild(audio);
     }
