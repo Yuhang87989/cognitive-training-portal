@@ -42,7 +42,7 @@ window.week5Plan = {
     ]
 };
 
-const week6Plan = {
+window.week6Plan = {
     weekId:'week6',weekTitle:'Week6：学科深度整合与自主学习能力培养',
     weekDesc:'本周围绕学科整合和自主学习能力进行系统训练',
     days:[
@@ -84,7 +84,7 @@ const week6Plan = {
     ]
 };
 
-const week1Plan = {
+window.week1Plan = {
     weekId:'week1',weekTitle:'Week1：注意力与记忆力基础训练周',
     weekDesc:'建立每日训练习惯，掌握基础注意力与记忆力训练方法，学习记忆宫殿、费曼技巧等科学方法',
     days:[
@@ -128,7 +128,7 @@ const week1Plan = {
 CTM.registerPlan('week1', week1Plan);
 
 // ===== Week2训练计划 =====
-const week2Plan = {
+window.week2Plan = {
     weekId:'week2',weekTitle:'Week2：学霸方法与听课习惯培养周',
     weekDesc:'深化注意力与记忆力训练，引入学霸学习方法专题和听课习惯培养',
     days:[
@@ -172,7 +172,7 @@ const week2Plan = {
 CTM.registerPlan('week2', week2Plan);
 
 // ===== Week3训练计划 =====
-const week3Plan = {
+window.week3Plan = {
     weekId:'week3',weekTitle:'Week3：数学物理思维系统化整合入门周',
     weekDesc:'完成从基础认知训练向学科思维训练的过渡，系统化引入数学物理思维双轨训练',
     days:[
@@ -216,7 +216,7 @@ const week3Plan = {
 CTM.registerPlan('week3', week3Plan);
 
 // ===== Week4训练计划 =====
-const week4Plan = {
+window.week4Plan = {
     weekId:'week4',weekTitle:'Week4：解题策略与实验思维深化周',
     weekDesc:'系统深化解题策略与实验思维能力，培养科学探究习惯与逆向思维进阶应用',
     days:[
@@ -260,7 +260,7 @@ const week4Plan = {
 CTM.registerPlan('week4', week4Plan);
 
 // ===== Week7训练计划 =====
-const week7Plan = {
+window.week7Plan = {
     weekId:'week7',weekTitle:'Week7：元认知深化与综合能力迁移周',
     weekDesc:'元认知深化+习惯固化+能力迁移三轨并行，实现从"知道方法"到"自动化运用"的跨越',
     days:[
@@ -304,7 +304,7 @@ const week7Plan = {
 
 
 // ===== Week Plans 映射 =====
-const weekPlans = {
+window.weekPlans = {
     week1: week1Plan,
     week2: week2Plan,
     week3: week3Plan,
