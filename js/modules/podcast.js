@@ -1,7 +1,4 @@
-/
-    {id:'podcast18',title:'Week1复盘&Week2记忆训练计划',teacher:'心理学专家',duration:'6:45',durationSec:405,category:'学霸方法',gradient:'linear-gradient(135deg,#fa709a,#fee140)',icon:'🚀',shareUrl:null,url:'PLACEHOLDER_PODCAST18',views:24500},
-    {id:'podcast19',title:'如何培养数学直觉',teacher:'数学特级教师',duration:'8:00',durationSec:480,category:'数学',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🔢',shareUrl:null,url:'PLACEHOLDER_PODCAST19',views:18600},
-    {id:'podcast20',title:'英语听力提升三步法',teacher:'英语教学专家',duration:'6:50',durationSec:410,category:'英语',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🔊',shareUrl:null,url:'PLACEHOLDER_PODCAST20',views:22300}/ 简化版播客模块 - V143
+// 简化版播客模块 - V143
 // 设计原则：简单、不乱、好用、兼容旧版浏览器
 
 var currentPodcastId = null;
@@ -24,7 +21,7 @@ var podcastCourses = [
     {id:'podcast14',title:'生活中的数学建模：从选套餐到做决策',teacher:'心理学专家',duration:'6:15',durationSec:375,category:'学霸方法',gradient:'linear-gradient(135deg,#43E97B,#38F9D7)',icon:'🧮',shareUrl:'https://www.coze.cn/s/9cS58bZwn1g/',url:'https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_9a49ac3b-fc52-4b46-b49a-f167b9f69666.mp3?sign=1808822480-b008c57b10-0-a7decfcb0caafc899c866bddac69113034895e0a21ef1c703b501e2025a63435',views:19800},
     {id:'podcast15',title:'数学解题新思路：逆向思维超实用',teacher:'学习方法专家',duration:'5:25',durationSec:325,category:'学霸方法',gradient:'linear-gradient(135deg,#667eea,#764ba2)',icon:'🎨',shareUrl:'https://www.coze.cn/s/0QgmPaZ9sUI/',url:'https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_e4133953-42e9-40ab-8d38-353a0af47b67.mp3?sign=1808822502-b4486d965a-0-1963b371579adcde889413e4f09cc769baeaf20133ffa8362a8eb69bcb0f2258',views:17600},
     {id:'podcast16',title:'物理学的两把解题钥匙',teacher:'学习方法专家',duration:'4:35',durationSec:275,category:'学霸方法',gradient:'linear-gradient(135deg,#FF9A63,#E87A4E)',icon:'📋',shareUrl:'https://www.coze.cn/s/qAgLfdh6aPE/',url:'https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_cf2e54de-0e8d-4e99-961d-177c36d77c85.mp3?sign=1808822523-a5faca0e98-0-7b07032ede86cf98f91fceceea78d5ae43de8e2fa60e8f31016865c6b780a0b9',views:15900},
-    {id:'podcast17',title:'揭秘物理学家的模型思维',teacher:'语文教学专家',duration:'5:05',durationSec:305,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📖',shareUrl:'https://www.coze.cn/s/9zZnticB374/',url:'https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_acbd098a-be94-4246-bcb2-31648cb28f74.mp3?sign=1808822546-5f85da809d-0-4d2e65d676727ae5fb4818d7b0e886cf21d6cce96a5e72771bb5dd041988f56e',views:13400}
+    {id:'podcast17',title:'揭秘物理学家的模型思维',teacher:'语文教学专家',duration:'5:05',durationSec:305,category:'学霸方法',gradient:'linear-gradient(135deg,#4facfe,#00f2fe)',icon:'📖',shareUrl:'https://www.coze.cn/s/9zZnticB374/',url:'https://coze-coding-project.tos.coze.site/coze_storage_7630375842421407780/audio/tts_acbd098a-be94-4246-bcb2-31648cb28f74.mp3?sign=1808822546-5f85da809d-0-4d2e65d676727ae5fb4818d7b0e886cf21d6cce96a5e72771bb5dd041988f56e',views:13400},
 ];
 
 // 播放状态
@@ -499,3 +496,4 @@ window.podcastCycleSpeed = podcastCycleSpeed;
 window.onPodcastSelectChange = onPodcastSelectChange;
 window.togglePodcastList = togglePodcastList;
 window.podcastCourses = podcastCourses;
+window.podcastPlay = podcastPlay;
