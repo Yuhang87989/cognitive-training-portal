@@ -32,3 +32,8 @@ const AVATAR_LIST = [
 const VISION_API_KEY = '';  // 硅基流动API Key
 const VISION_API_URL = '';  // 如: https://api.siliconflow.cn/v1/chat/completions
 const VISION_MODEL = '';    // 如: Qwen/Qwen2.5-VL-72B-Instruct
+
+// ========== 全局共享变量 ==========
+window.QUESTIONS_PER_PAGE = 5;
+window.currentMethodPage = {};
+window.currentThinkingPage = {};

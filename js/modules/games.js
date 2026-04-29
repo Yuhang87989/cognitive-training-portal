@@ -6204,3 +6204,16 @@ window.numshapeAnswer = numshapeAnswer;
 window.reverseAnswer = reverseAnswer;
 window.stroopAnswer = stroopAnswer;
 window.palaceClick = palaceClick;
+
+// ========== 缺失的window导出补全 ==========
+window.startMethodQuiz = startMethodQuiz;
+window.submitMethodAnswers = submitMethodAnswers;
+window.startThinkingQuiz = startThinkingQuiz;
+window.submitThinkingAnswers = submitThinkingAnswers;
+window.selectThinkingOpt = selectThinkingOpt;
+window.filterMethod = filterMethod;
+window.viewMethodNote = viewMethodNote;
+window.deleteMethodNote = deleteMethodNote;
+window.closeDetail = closeDetail;
+window.closeModal = closeModal;
+window.submitTopicAnswer = submitTopicAnswer;

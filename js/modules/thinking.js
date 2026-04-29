@@ -139,7 +139,6 @@ window.thinkingQuestions = {
 };
 
 let currentThinkingType = 'logic';
-let currentThinkingPage = {};
 
 // 显示思维类型详情
 function showThinkingType(type) {
