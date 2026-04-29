@@ -1,4 +1,4 @@
-// 版本: V140
+// 版本: V144
 
 function openWrongPhotoCapture() {
     var modal = document.getElementById('detail-modal');

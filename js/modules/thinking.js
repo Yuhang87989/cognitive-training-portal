@@ -1,4 +1,4 @@
-// 版本: V140 - 思维训练模块（从V139完整重建）
+// 版本: V144 - 思维训练模块（从V144完整重建）
 
 function renderThinking(container) {
     const user = getCurrentUserData();
@@ -678,7 +678,7 @@ window.updateThinkingStats = updateThinkingStats;
 
 
 // ============================================================
-// 从V139提取的缺失函数
+// 从V144提取的缺失函数
 // ============================================================function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
 
 function closeModal(modalId) {

@@ -1,4 +1,4 @@
-// 版本: V140
+// 版本: V144
 
 const DEFAULT_USER = {
     id: 'user_default_qiuyufei',

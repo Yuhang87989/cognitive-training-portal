@@ -1,4 +1,4 @@
-// 版本: V140 - 母题训练模块
+// 版本: V144 - 母题训练模块
 
 let currentTopicsGrade = 7;
 let currentTopicsSubject = 'math';

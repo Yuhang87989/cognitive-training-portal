@@ -1,4 +1,4 @@
-// 版本: V140
+// 版本: V144
 
 window.videoCourses = [
     {id:"video1",title:"专注力训练",teacher:"认知训练",duration:"5:23",durationSec:323,category:"学习方法",gradient:"linear-gradient(135deg,#667eea,#764ba2)",icon:"🎯",url:"videos/专注力训练.mp4",views:5680},
@@ -94,7 +94,7 @@ window.renderLocalVideoList = renderLocalVideoList;
 
 
 // ============================================================
-// 从V139提取的缺失函数
+// 从V144提取的缺失函数
 // ============================================================
 
 function filterVideoCourse(category, btn) {

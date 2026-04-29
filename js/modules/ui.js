@@ -2,7 +2,7 @@
 // Config - 全局配置
 // ============================================================
 
-// 版本: V140
+// 版本: V144
 
 function closeUserMenu() {
     var el = document.getElementById('user-dropdown');
@@ -431,7 +431,7 @@ function logoutAndReturn() {
 
 // ============================================================
 // 完整退出系统函数 - 清除所有状态并返回未登录状态
-// 版本: V141
+// 版本: V144
 // ============================================================
 function doExitSystem() {
     console.log("执行完整退出系统...");
@@ -1467,7 +1467,7 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V139</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V144</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>

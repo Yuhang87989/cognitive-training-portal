@@ -1,4 +1,4 @@
-// 版本: V144 - 视频播放器优化版本
+// 版本: V141 - 视频播放器优化版本
 
 // ========== 视频播放器全局状态 ==========
 window.videoCtx = {
@@ -566,39 +566,8 @@ function openEnhancedVideoPlayer(title, url, videoId) {
             videoEl.addEventListener('loadedmetadata', onVideoLoadedForResume);
         }
         
-        // 检查URL是否有效
-        if (!url || url === '' || url.indexOf('undefined') !== -1 || url.indexOf('null') !== -1) {
-            showToast('视频地址无效');
-            if (loadingEl) loadingEl.style.display = 'none';
-            if (bigPlayEl) bigPlayEl.style.display = 'flex';
-            return;
-        }
-        
-        // 设置视频兼容性属性
-        videoEl.preload = 'metadata';
-        videoEl.setAttribute('playsinline', '');
-        videoEl.setAttribute('webkit-playsinline', '');
-        videoEl.setAttribute('x5-video-player-type', 'h5');
-        videoEl.setAttribute('x5-video-player-fullscreen', 'true');
-        
-        // 使用source标签方式设置视频源，浏览器可以按顺序尝试
-        // 先清除旧的source标签
-        while (videoEl.firstChild) {
-            videoEl.removeChild(videoEl.firstChild);
-        }
-        
-        // 创建source元素
-        var sourceEl = document.createElement('source');
-        sourceEl.src = url;
-        sourceEl.type = 'video/mp4';
-        videoEl.appendChild(sourceEl);
-        
-        // 同时设置src属性作为后备
+        // 设置视频源并播放
         videoEl.src = url;
-        
-        // 重置错误状态和重试计数
-        videoEl.dataset.videoRetryCount = '0';
-        
         videoEl.playbackRate = videoCtx.playbackSpeed;
         videoEl.volume = videoCtx.volume;
         
@@ -682,72 +651,17 @@ function onEnhancedVideoError(e) {
     if (loadingEl) loadingEl.style.display = 'none';
     if (bigPlayEl) bigPlayEl.style.display = 'flex';
     
-    // 获取重试次数
-    var retryCount = 0;
-    var videoEl = document.getElementById('evp-video');
-    if (videoEl && videoEl.dataset) {
-        retryCount = parseInt(videoEl.dataset.videoRetryCount) || 0;
-    }
-    
-    // 检查是否是src为空的情况
-    var isEmptySrc = false;
-    if (videoEl && (!videoEl.src || videoEl.src === '' || videoEl.src.indexOf('undefined') !== -1 || videoEl.src.indexOf('null') !== -1)) {
-        isEmptySrc = true;
-    }
-    
     var errorMsg = '视频加载失败';
-    var errorCode = 0;
-    if (videoEl && videoEl.error) {
-        errorCode = videoEl.error.code;
-    }
-    
-    // 判断是否应该重试
-    if (retryCount === 0 && !isEmptySrc && errorCode === 4) {
-        // error code 4 在移动端经常是网络/自动播放问题，不一定是格式不支持
-        // 第一次失败时自动重试一次
-        if (videoEl && videoEl.src) {
-            videoEl.dataset.videoRetryCount = '1';
-            showToast('视频加载失败，正在重试...');
-            setTimeout(function() {
-                var currentSrc = videoEl.src;
-                videoEl.load(); // 重置错误状态
-                // 重新设置src触发加载
-                var tempSrc = currentSrc;
-                videoEl.src = '';
-                setTimeout(function() {
-                    videoEl.src = tempSrc;
-                    videoEl.load();
-                }, 50);
-            }, 1000);
-            return; // 不显示错误提示，等待重试
-        }
-    }
-    
-    // 重试后仍然失败，显示更友好的错误提示
-    if (isEmptySrc || (videoEl && (!videoEl.src || videoEl.src === ''))) {
-        errorMsg = '视频加载失败，请检查网络';
-    } else {
-        switch(errorCode) {
+    if (evpVideo && evpVideo.error) {
+        switch(evpVideo.error.code) {
             case 1: errorMsg = '视频加载被中断'; break;
             case 2: errorMsg = '网络错误，请检查网络连接'; break;
             case 3: errorMsg = '视频解码失败'; break;
-            case 4: 
-                // error code 4 在移动端经常是网络/自动播放问题，不一定是格式不支持
-                errorMsg = '视频加载失败，请检查网络或稍后重试'; 
-                break;
-            default: errorMsg = '视频加载失败，请检查网络'; break;
+            case 4: errorMsg = '视频格式不支持'; break;
         }
     }
-    
-    // 重置重试计数
-    if (videoEl && videoEl.dataset) {
-        videoEl.dataset.videoRetryCount = '0';
-    }
-    
     showToast(errorMsg);
-    if (videoEl && videoEl.error) {
-        console.error('视频加载错误:', videoEl.error);
-    }
+    console.error('视频加载错误:', evpVideo?.error);
 }
 
 // 视频缓冲等待状态

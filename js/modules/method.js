@@ -1,4 +1,4 @@
-// 版本: V140
+// 版本: V144
 
 window.methodTrainingQuestions = {
     // 费曼学习法 - 用简单语言解释复杂概念
@@ -796,7 +796,7 @@ window.showMethodNote = showMethodNote;
 
 
 // ============================================================
-// 从V139提取的缺失函数
+// 从V144提取的缺失函数
 // ============================================================
 
 function startMethodQuiz(methodId, page = 0) {

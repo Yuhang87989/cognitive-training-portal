@@ -1,4 +1,4 @@
-// 版本: V140
+// 版本: V144
 
 // 安全声明 - 防止游戏加载时序问题
 var playSound = playSound || function() {};

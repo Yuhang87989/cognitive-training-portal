@@ -1,4 +1,4 @@
-// 版本: V140
+// 版本: V144
 
 var currentDeepSeekImage = null;
 var deepseekConversationHistory = [];
@@ -488,6 +488,45 @@ async function queryDeepSeekBalance(showToast) {
     }
 }
 
+// 刷新DeepSeek余额显示
+async function refreshDeepSeekBalance() {
+    const balanceEl = document.getElementById('deepseek-balance-value');
+    if (!balanceEl) return;
+    
+    balanceEl.textContent = '查询中...';
+    balanceEl.style.color = '#999';
+    
+    try {
+        const balanceInfo = await queryDeepSeekBalance(false);
+        
+        if (balanceInfo.error) {
+            balanceEl.textContent = '查询失败';
+            balanceEl.style.color = '#ff6b6b';
+            return;
+        }
+        
+        const balanceText = balanceInfo.balance;
+        const balanceNum = parseFloat(balanceText.replace('¥', ''));
+        
+        balanceEl.textContent = balanceText;
+        
+        // 根据余额显示不同颜色
+        if (balanceNum === 0) {
+            balanceEl.style.color = '#ff6b6b';
+            // 余额为0时显示警告
+            showToast('⚠️ DeepSeek余额为0，请先充值');
+        } else if (balanceNum < 1) {
+            balanceEl.style.color = '#ff9500'; // 黄色警告
+            showToast('⚠️ 余额不足1元，请尽快充值');
+        } else {
+            balanceEl.style.color = '#43E97B'; // 绿色正常
+        }
+    } catch(e) {
+        balanceEl.textContent = '查询失败';
+        balanceEl.style.color = '#ff6b6b';
+    }
+}
+
 function showDeepSeekBalanceAlert() {
     var modal = document.getElementById('detail-modal');
     var contentDiv = document.getElementById('detail-content');
@@ -650,9 +689,16 @@ function renderDeepseek(container) {
     const uploadedImages = user.deepseekImages || [];
     
     container.innerHTML = `
-        <div class="card">
-            <h3 style="margin-bottom:16px;">🤖 DeepSeek AI 助手 <button class="tts-stop-btn" id="tts-stop-btn" onclick="stopTTSSpeech()" style="display:none;" title="停止朗读">🔇</button></h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">智能学习助手，支持文字、语音和图片提问</p>
+        <div class="card" style="position:relative;">
+            <h3 style="margin-bottom:8px;">🤖 DeepSeek AI 助手 <button class="tts-stop-btn" id="tts-stop-btn" onclick="stopTTSSpeech()" style="display:none;" title="停止朗读">🔇</button></h3>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <p style="color:#666;font-size:13px;margin:0;">智能学习助手，支持文字、语音和图片提问</p>
+                <button onclick="openDeepSeekRecharge()" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:20px;font-size:12px;cursor:pointer;">💰 充值</button>
+            </div>
+            <div id="deepseek-balance-display" onclick="refreshDeepSeekBalance()" style="background:#f5f7ff;border-radius:8px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" title="点击刷新余额">
+                <span style="font-size:13px;color:#666;">账户余额</span>
+                <span id="deepseek-balance-value" style="font-size:14px;font-weight:600;color:#1A6BFF;">加载中...</span>
+            </div>
         </div>
         <div class="chat-container" style="height:350px;">
             <div class="chat-messages" id="deepseek-messages">
@@ -666,7 +712,7 @@ function renderDeepseek(container) {
                 ${voiceBtn}
                 <button class="chat-voice-btn" id="deepseek-image-btn" onclick="document.getElementById('deepseek-image-input').click()" title="上传图片">📷</button>
                 <input type="file" id="deepseek-image-input" accept="image/*" style="display:none" onchange="handleDeepSeekImage(this)"/>
-                <input type="text" class="chat-input" id="deepseek-input" placeholder="输入问题..." onkeypress="if(event.key==='Enter')sendToDeepSeek()">
+                <input type="text" class="chat-input" id="deepseek-input" placeholder="输入问题..." onkeypress="if(event.key==='Enter')sendToDeepSeek()"/>
                 <button class="chat-send" onclick="sendToDeepSeek()">发送</button>
             </div>
         </div>
@@ -683,6 +729,9 @@ function renderDeepseek(container) {
             <button class="template-btn" onclick="askTemplate('提高记忆力的方法')">记忆方法</button>
         </div>
     `;
+    
+    // 进入模块时自动检查余额
+    setTimeout(function() { refreshDeepSeekBalance(); }, 300);
 }
 
 async function callDeepSeekAPIWithVision(messages, model) {
@@ -772,6 +821,7 @@ window.sendToDeepSeek = sendToDeepSeek;
 window.clearDeepSeekImage = clearDeepSeekImage;
 window.askTemplate = askTemplate;
 window.queryDeepSeekBalance = queryDeepSeekBalance;
+window.refreshDeepSeekBalance = refreshDeepSeekBalance;
 window.showDeepSeekBalanceAlert = showDeepSeekBalanceAlert;
 window.analyzePhotoWithAI = analyzePhotoWithAI;
 window.sendMentorMessage = sendMentorMessage;
