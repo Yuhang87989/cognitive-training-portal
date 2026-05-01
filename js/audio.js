@@ -258,7 +258,13 @@ function toggleDeepSeekVoice() {
         
         deepseekRecognition.onresult = function(event) {
             const transcript = event.results[0][0].transcript;
-            input.value = transcript;
+            // 每次重新获取input元素，避免闭包引用已失效的DOM
+            const currentInput = document.getElementById('deepseek-input');
+            if (currentInput) {
+                currentInput.value += (currentInput.value ? ' ' : '') + transcript;
+                // 触发input事件，确保框架感知到值变化
+                currentInput.dispatchEvent(new Event('input', {bubbles: true}));
+            }
             if (btn) btn.textContent = '🎤';
             showToast('已识别: ' + transcript);
         };
@@ -277,6 +283,19 @@ function toggleDeepSeekVoice() {
             if (btn) btn.textContent = '🎤';
         };
     }
+    
+    // 每次点击时重置recognition，确保获取最新DOM元素
+    deepseekRecognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const currentInput = document.getElementById('deepseek-input');
+        if (currentInput) {
+            currentInput.value += (currentInput.value ? ' ' : '') + transcript;
+            currentInput.dispatchEvent(new Event('input', {bubbles: true}));
+        }
+        const currentBtn = document.getElementById('deepseek-voice-btn');
+        if (currentBtn) currentBtn.textContent = '🎤';
+        showToast('已识别: ' + transcript);
+    };
     
     if (isRecording) {
         deepseekRecognition.stop();
@@ -327,14 +346,16 @@ function toggleVoiceInput(btn, inputId) {
         
         voiceInputRecognition.onresult = function(event) {
             const transcript = event.results[0][0].transcript;
-            // 追加内容到输入框
-            if (input.value && !input.value.endsWith(' ')) {
-                input.value += ' ';
+            // 每次重新获取input，避免闭包引用已失效的DOM
+            const currentInput = document.getElementById(inputId);
+            if (currentInput) {
+                if (currentInput.value && !currentInput.value.endsWith(' ')) {
+                    currentInput.value += ' ';
+                }
+                currentInput.value += transcript;
+                currentInput.dispatchEvent(new Event('input', { bubbles: true }));
             }
-            input.value += transcript;
-            // 触发input事件以更新UI
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            if (btn) btn.textContent = '🎤';
+            if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
             showToast('已识别: ' + transcript);
         };
         
