@@ -80,6 +80,28 @@ function saveData(data) {
     } catch(e) {}
 }
 
+// 保存单个用户数据（更新到localStorage）
+function saveUserData(user) {
+    try {
+        var data = loadData();
+        var idx = -1;
+        for (var i = 0; i < data.users.length; i++) {
+            if (data.users[i].id === user.id) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx >= 0) {
+            data.users[idx] = user;
+        } else {
+            data.users.push(user);
+        }
+        saveData(data);
+    } catch(e) {
+        console.warn('saveUserData失败:', e);
+    }
+}
+
 function clearCurrentUserData() {
     if (!confirm('确定要清除当前用户的所有数据吗？')) return;
     
@@ -316,6 +338,7 @@ window.clearAllData = clearAllData;
 window.clearCurrentUserData = clearCurrentUserData;
 window.resetApiConfig = resetApiConfig;
 window.syncData = syncData;
+window.saveUserData = saveUserData;
 
 
 // ============================================================

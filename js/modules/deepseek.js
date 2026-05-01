@@ -556,8 +556,8 @@ async function queryDeepSeekBalance(showToast) {
             balanceInfo = data.balance_infos[0];
         }
         
-        const balance = balanceInfo.is_available ? balanceInfo.total_balance : 0;
-        const balanceStr = '¥' + (balance / 100).toFixed(2);
+        const balance = balanceInfo.is_available ? parseFloat(balanceInfo.total_balance || 0) : 0;
+        const balanceStr = '¥' + balance.toFixed(2);
         
         // 获取本地存储的调用统计
         const stats = initDeepSeekUsage();
