@@ -1609,6 +1609,7 @@ window.closeWelcomeModal = closeWelcomeModal;
 window.deleteUser = deleteUser;
 window.registerNewUser = registerNewUser;
 window.showToast = showToast;
+window.escapeHtml = escapeHtml; // V147-fix: 添加escapeHtml导出供全局使用
 window.switchToUser = switchToUser;
 window.updateUI = updateUI;
     const el = document.getElementById('module-content');

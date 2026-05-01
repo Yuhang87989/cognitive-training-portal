@@ -1,4 +1,5 @@
-// 版本: V146 - DeepSeek模块全功能修复
+// 版本: V147 - DeepSeek核心API+全模块调用链彻底修复
+// V147修复: 添加escapeHtml到window导出，确保全局可用
 
 // V146修复: 添加escapeHtml函数（确保在ui.js加载前可用）
 function escapeHtml(text) {
@@ -974,6 +975,7 @@ window.initDeepSeekUsage = initDeepSeekUsage;
 window.callDeepSeekAPI = callDeepSeekAPI;
 window.callVisionAPI = callVisionAPI;
 window.formatAIResponse = formatAIResponse;
+window.escapeHtml = escapeHtml; // V147-fix: 添加escapeHtml导出供其他模块使用
 
 // ============================================================
 // OCR拍照出题模块 - Tesseract.js + DeepSeek
