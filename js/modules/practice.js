@@ -131,12 +131,10 @@ async function analyzePracticePhoto(imageData) {
             {role: 'user', content: analysisPrompt}
         ];
         
-        // 如果有图片，尝试使用视觉API
-        if (VISION_API_KEY && VISION_API_URL) {
-            const visionResult = await callVisionAPI(imageData, analysisPrompt);
-            if (visionResult.success) {
-                messages[1] = {role: 'user', content: '[图片内容分析结果：' + visionResult.content + ']\n\n' + analysisPrompt};
-            }
+        // 如果有图片，尝试使用视觉API（callVisionAPI已支持DeepSeek回退）
+        const visionResult = await callVisionAPI(imageData, analysisPrompt);
+        if (visionResult.success) {
+            messages[1] = {role: 'user', content: '[图片内容分析结果：' + visionResult.content + ']\n\n' + analysisPrompt};
         }
         
         const result = await callDeepSeekAPI(messages);
@@ -199,6 +197,114 @@ window.handlePracticePhoto = handlePracticePhoto;
 window.showPracticePhotoModal = showPracticePhotoModal;
 window.analyzePracticePhoto = analyzePracticePhoto;
 window.handleQuestionPhoto = handleQuestionPhoto;
+
+// ============================================================
+// AI问题解答 - submitPracticeQuestion
+// ============================================================
+async function submitPracticeQuestion() {
+    const input = document.getElementById('practice-input');
+    if (!input) return;
+    
+    const question = input.value.trim();
+    if (!question) {
+        showToast('请输入你的问题');
+        return;
+    }
+    
+    // 创建结果显示区域
+    let resultDiv = document.getElementById('practice-result');
+    if (!resultDiv) {
+        resultDiv = document.createElement('div');
+        resultDiv.id = 'practice-result';
+        input.parentElement.appendChild(resultDiv);
+    }
+    
+    resultDiv.innerHTML = '<div style="text-align:center;padding:20px;"><div style="display:inline-block;width:24px;height:24px;border:3px solid #3377FF;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="margin-top:8px;color:#666;font-size:13px;">🤖 AI正在分析...</div></div>';
+    
+    try {
+        const messages = [
+            {role: 'system', content: '你是一位专业的学习辅导老师，擅长解答学生的各种学科问题。请用清晰、结构化的方式回答，特别是数学题目要给出详细步骤。'},
+            {role: 'user', content: question}
+        ];
+        
+        const result = await callDeepSeekAPI(messages);
+        
+        if (result.error) {
+            if (result.type === 'balance') {
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="showDeepSeekBalanceAlert()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+            } else {
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 解答失败：' + escapeHtml(result.message) + '</div>';
+            }
+        } else {
+            recordDeepSeekCall(Math.ceil(result.content.length / 4));
+            resultDiv.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;margin-top:12px;max-height:300px;overflow-y:auto;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+                '<span style="font-size:12px;color:#3377FF;font-weight:600;">🤖 AI解答</span>' +
+                '<button onclick="speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#3377FF;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
+                '<div style="font-size:14px;line-height:1.8;color:#333;">' + result.content.replace(/\n/g, '<br>') + '</div>' +
+                '</div>';
+        }
+    } catch (err) {
+        console.error('解答失败:', err);
+        resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 网络错误，请检查网络后重试</div>';
+    }
+}
+
+// ============================================================
+// AI学习解说 - askPracticeAI
+// ============================================================
+async function askPracticeAI() {
+    const input = document.getElementById('practice-ai-question');
+    if (!input) return;
+    
+    const question = input.value.trim();
+    if (!question) {
+        showToast('请输入你的问题');
+        return;
+    }
+    
+    // 创建结果显示区域
+    let resultDiv = document.getElementById('practice-ai-result');
+    if (!resultDiv) {
+        resultDiv = document.createElement('div');
+        resultDiv.id = 'practice-ai-result';
+        input.parentElement.appendChild(resultDiv);
+    }
+    
+    resultDiv.innerHTML = '<div style="text-align:center;padding:20px;"><div style="display:inline-block;width:24px;height:24px;border:3px solid #667eea;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;"></div><div style="margin-top:8px;color:#666;font-size:13px;">🤖 AI正在解说...</div></div>';
+    
+    try {
+        const messages = [
+            {role: 'system', content: '你是一位热情的学习导师，擅长用通俗易懂的语言解释复杂的概念和知识点。你会用生活例子、类比等方式帮助学生理解。请用友好的语气详细解说。'},
+            {role: 'user', content: question}
+        ];
+        
+        const result = await callDeepSeekAPI(messages);
+        
+        if (result.error) {
+            if (result.type === 'balance') {
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="showDeepSeekBalanceAlert()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+            } else {
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 解说失败：' + escapeHtml(result.message) + '</div>';
+            }
+        } else {
+            recordDeepSeekCall(Math.ceil(result.content.length / 4));
+            resultDiv.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;margin-top:12px;max-height:300px;overflow-y:auto;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+                '<span style="font-size:12px;color:#667eea;font-weight:600;">🤖 AI解说</span>' +
+                '<button onclick="speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#667eea;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
+                '<div style="font-size:14px;line-height:1.8;color:#333;">' + result.content.replace(/\n/g, '<br>') + '</div>' +
+                '</div>';
+        }
+    } catch (err) {
+        console.error('解说失败:', err);
+        resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 网络错误，请检查网络后重试</div>';
+    }
+}
+
+// 导出新函数到window
+window.submitPracticeQuestion = submitPracticeQuestion;
+window.askPracticeAI = askPracticeAI;
 
 
 // ============================================================
