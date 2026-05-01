@@ -281,11 +281,35 @@ function syncTodayStats() {
 
 function migrateData() {
     const currentData = localStorage.getItem(STORAGE_KEY);
-    // 如果已有有效数据，跳过迁移
     if (currentData) {
         try {
             const parsed = JSON.parse(currentData);
-            if (parsed && Array.isArray(parsed.users)) return;
+            if (parsed && Array.isArray(parsed.users)) {
+                // 修复重复ID：如果多个用户共享同一个ID，给后续用户分配唯一ID
+                var idMap = {};
+                var needSave = false;
+                for (var i = 0; i < parsed.users.length; i++) {
+                    var uid = parsed.users[i].id;
+                    if (idMap[uid]) {
+                        // 重复ID，生成新ID
+                        var newId = 'user_' + Date.now() + '_' + i;
+                        // 如果重复ID是当前用户，更新currentUser到第一个匹配的用户
+                        if (parsed.currentUser === uid && parsed.users[0].id === uid) {
+                            parsed.currentUser = uid; // 保留第一个
+                        }
+                        parsed.users[i].id = newId;
+                        needSave = true;
+                        console.log('修复重复ID:', uid, '->', newId, '(用户:', parsed.users[i].name + ')');
+                    } else {
+                        idMap[uid] = true;
+                    }
+                }
+                if (needSave) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+                    console.log('重复ID已修复并保存');
+                }
+                return;
+            }
         } catch(e) {}
     }
     // 尝试从旧key迁移

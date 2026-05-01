@@ -418,15 +418,9 @@ function logoutAndReturn() {
         showGoodbyeModal(user);
     }
     
-    // 清除当前用户
-    const data = loadData();
-    data.currentUser = null;
-    saveData(data);
+    // 保留当前用户，不清除currentUser（用户名保留）
     closeUserMenu();
     closeSettingsPanel();
-    
-    // 不再跳转到登录页面，而是弹出注册模态框
-    openRegisterModal();
 }
 
 // ============================================================
@@ -436,9 +430,9 @@ function logoutAndReturn() {
 function doExitSystem() {
     console.log("执行完整退出系统...");
     
-    // 1. 清除localStorage中的用户数据（保留配置）
+    // 1. 保留currentUser（用户名保留），只重置运行时状态
     var data = loadData();
-    data.currentUser = null;
+    // 不清除currentUser，保留用户名
     saveData(data);
     
     // 2. 停止TTS语音
