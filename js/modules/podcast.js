@@ -93,6 +93,23 @@ function renderPodcast(container) {
     html += '</div>';
     html += '</div>';
     
+    html += '<!-- AI互动问答 -->';
+    html += '<div class="card" style="margin-top:12px;">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
+    html += '<span style="font-size:18px;">🤖</span>';
+    html += '<span style="font-weight:600;font-size:14px;">AI互动问答</span>';
+    html += '<span style="font-size:11px;color:#999;">听课有问题？随时问AI</span>';
+    html += '</div>';
+    html += '<div id="podcast-chat-messages" style="max-height:200px;overflow-y:auto;margin-bottom:8px;padding:8px;background:#f8f9fa;border-radius:8px;min-height:60px;">';
+    html += '<div style="text-align:center;color:#999;font-size:12px;padding:16px;">👋 听课时有任何疑问，随时提问</div>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:6px;">';
+    html += '<button id="podcast-voice-btn" class="podcast-btn" style="padding:8px 10px;font-size:16px;background:#f0f0f0;" onclick="togglePodcastVoice()" title="语音输入">🎤</button>';
+    html += '<input type="text" id="podcast-chat-input" placeholder="输入问题..." style="flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;" onkeypress="if(event.key===\'Enter\')askPodcastAI()"/>';
+    html += '<button class="podcast-btn" style="padding:8px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-size:13px;border-radius:8px;" onclick="askPodcastAI()">发送</button>';
+    html += '</div>';
+    html += '</div>';
+    
     container.innerHTML = html;
     
     // 初始化音频元素
@@ -548,6 +565,108 @@ function refreshPodcastUI() {
 // 自动加载播客数据
 loadPodcastData();
 
+// ============================================================
+// AI互动问答 - DeepSeek
+// ============================================================
+var podcastChatHistory = [];
+
+async function askPodcastAI() {
+    var input = document.getElementById('podcast-chat-input');
+    var messagesEl = document.getElementById('podcast-chat-messages');
+    if (!input || !messagesEl) return;
+    
+    var msg = input.value.trim();
+    if (!msg) {
+        showToast('请输入问题');
+        return;
+    }
+    
+    // 清空输入框
+    input.value = '';
+    
+    // 添加用户消息到界面
+    var userMsgHtml = '<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">';
+    userMsgHtml += '<div style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:8px 12px;border-radius:12px 12px 2px 12px;max-width:80%;font-size:13px;line-height:1.5;">' + escapeHtml(msg) + '</div>';
+    userMsgHtml += '</div>';
+    messagesEl.innerHTML += userMsgHtml;
+    
+    // 添加loading
+    var loadingId = 'podcast-loading-' + Date.now();
+    messagesEl.innerHTML += '<div id="' + loadingId + '" style="display:flex;justify-content:flex-start;margin-bottom:8px;"><div style="background:#f0f0f0;color:#666;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:80%;font-size:13px;">思考中...</div></div>';
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    // 构建上下文 - 包含当前播客信息
+    var context = '你是一位耐心的学习辅导老师。';
+    if (podcastPlayerState.currentPodcast) {
+        context += '学生正在收听播客课程《' + podcastPlayerState.currentPodcast.title + '》，由' + podcastPlayerState.currentPodcast.teacher + '老师讲授。';
+        if (podcastPlayerState.currentPodcast.category) {
+            context += '学科：' + podcastPlayerState.currentPodcast.category + '。';
+        }
+    }
+    
+    // 维护对话历史
+    podcastChatHistory.push({role: 'user', content: msg});
+    if (podcastChatHistory.length > 10) {
+        podcastChatHistory = podcastChatHistory.slice(-10);
+    }
+    
+    var apiMessages = [{role: 'system', content: context}];
+    for (var i = 0; i < podcastChatHistory.length; i++) {
+        apiMessages.push(podcastChatHistory[i]);
+    }
+    
+    try {
+        var result = await callDeepSeekAPI(apiMessages);
+        var loadingEl = document.getElementById(loadingId);
+        
+        if (result.error) {
+            if (loadingEl) loadingEl.innerHTML = '<div style="background:#fff3f3;color:#ff6b6b;padding:8px 12px;border-radius:12px;font-size:13px;">❌ ' + (result.type === 'balance' ? '余额不足' : '请求失败') + '</div>';
+            return;
+        }
+        
+        // 记录AI回复到历史
+        podcastChatHistory.push({role: 'assistant', content: result.content});
+        
+        // 显示AI回复
+        var aiMsgHtml = '<div style="display:flex;justify-content:flex-start;margin-bottom:8px;">';
+        aiMsgHtml += '<div style="background:#f0f0f0;color:#333;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:85%;font-size:13px;line-height:1.6;">';
+        aiMsgHtml += result.content.replace(/\n/g, '<br>');
+        aiMsgHtml += '<div style="margin-top:4px;text-align:right;"><button onclick="speakText(this.parentElement.previousElementSibling ? this.parentElement.parentElement.innerText : \'\')" style="padding:2px 6px;background:#667eea;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">🔊</button></div>';
+        aiMsgHtml += '</div></div>';
+        
+        if (loadingEl) {
+            loadingEl.outerHTML = aiMsgHtml;
+        } else {
+            messagesEl.innerHTML += aiMsgHtml;
+        }
+        
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        
+        // 记录AI调用
+        if (typeof recordDeepSeekCall === 'function') {
+            recordDeepSeekCall(Math.ceil(result.content.length / 4));
+        }
+    } catch (err) {
+        var loadingEl2 = document.getElementById(loadingId);
+        if (loadingEl2) loadingEl2.innerHTML = '<div style="background:#fff3f3;color:#ff6b6b;padding:8px 12px;border-radius:12px;font-size:13px;">❌ 网络错误</div>';
+    }
+}
+
+function togglePodcastVoice() {
+    if (typeof toggleVoiceInput === 'function') {
+        var btn = document.getElementById('podcast-voice-btn');
+        toggleVoiceInput(btn, 'podcast-chat-input');
+    } else {
+        showToast('语音输入未就绪');
+    }
+}
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
 
 // ============================================================
 // Window Exports - 确保全局可用
@@ -562,3 +681,5 @@ window.onPodcastSelectChange = onPodcastSelectChange;
 window.togglePodcastList = togglePodcastList;
 window.podcastCourses = podcastCourses;
 window.podcastPlay = podcastPlay;
+window.askPodcastAI = askPodcastAI;
+window.togglePodcastVoice = togglePodcastVoice;
