@@ -1844,3 +1844,112 @@ function closeDeleteUserModal() {
 window.showDeleteUserModal = showDeleteUserModal;
 window.closeDeleteUserModal = closeDeleteUserModal;
 window.updateRecommendCard = updateRecommendCard;
+
+// ============================================================
+// 数据导入导出功能
+// ============================================================
+
+// 显示数据统计弹窗
+function showDataStatsModal() {
+    const user = getCurrentUserData();
+    if (!user) {
+        showToast('请先登录');
+        return;
+    }
+    
+    const wrongNotes = user.wrongNotes || [];
+    const stats = user.stats || {};
+    const studyDays = user.studyDays || {};
+    
+    // 计算统计数据
+    const totalDays = Object.keys(studyDays).length;
+    const today = new Date().toDateString();
+    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    const accuracy = todayStats.questions > 0 ? Math.round(todayStats.correct / todayStats.questions * 100) : 0;
+    
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    if (!modal || !content) return;
+    
+    modal.classList.add('show');
+    content.innerHTML = '<div class="modal-header" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"><div class="modal-title">📊 学习数据统计</div></div><div style="max-height:400px;overflow-y:auto;"><div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:16px;color:white;margin-bottom:16px;"><div style="font-size:14px;opacity:0.9;margin-bottom:8px;">今日学习</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;"><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.questions || 0) + '</div><div style="font-size:11px;opacity:0.8;">完成题目</div></div><div><div style="font-size:24px;font-weight:bold;">' + accuracy + '%</div><div style="font-size:11px;opacity:0.8;">正确率</div></div><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.minutes || 0) + '</div><div style="font-size:11px;opacity:0.8;">学习分钟</div></div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;"><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF6B6B;">' + wrongNotes.length + '</div><div style="font-size:11px;color:#666;">错题数量</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#43E97B;">' + totalDays + '</div><div style="font-size:11px;color:#666;">学习天数</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#667eea;">' + (stats.totalQuestions || 0) + '</div><div style="font-size:11px;color:#666;">累计题目</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF9A63;">' + (stats.totalMinutes || 0) + '</div><div style="font-size:11px;color:#666;">累计分钟</div></div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#333;">📈 历史正确率</div><div style="font-size:28px;font-weight:bold;color:#43E97B;">' + (stats.totalQuestions > 0 ? Math.round((stats.correctAnswers || 0) / stats.totalQuestions * 100) : 0) + '%</div><div style="font-size:11px;color:#999;margin-top:4px;">' + (stats.correctAnswers || 0) + ' / ' + (stats.totalQuestions || 0) + ' 题</div></div></div><button class="modal-close" onclick="closeModal()" style="margin-top:16px;width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>';
+}
+
+// 导出数据
+function exportData() {
+    const data = loadData();
+    if (!data) {
+        showToast('导出失败，无数据');
+        return;
+    }
+    const exportData = {
+        version: 'V144',
+        exportTime: new Date().toISOString(),
+        users: data.users.map(function(u) {
+            return {
+                id: u.id, name: u.name, grade: u.grade, difficulty: u.difficulty, points: u.points,
+                createdAt: u.createdAt, stats: u.stats, weeklyProgress: u.weeklyProgress,
+                wrongNotes: u.wrongNotes, completedTopics: u.completedTopics, studyDays: u.studyDays,
+                todayStats: u.todayStats, methodStats: u.methodStats, thinkingStats: u.thinkingStats,
+                gameScores: u.gameScores, gameCounts: u.gameCounts, aiChatCount: u.aiChatCount
+            };
+        }),
+        currentUser: data.currentUser
+    };
+    const jsonStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cognitive_training_backup_' + new Date().toISOString().split('T')[0] + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('数据导出成功！');
+}
+
+// 导入数据
+function importData() {
+    const fileInput = document.getElementById('import-file-input');
+    if (fileInput) fileInput.click();
+}
+
+// 处理导入文件
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            if (!importedData || !importedData.users || !Array.isArray(importedData.users)) {
+                showToast('文件格式错误');
+                return;
+            }
+            if (!confirm('确定要导入数据吗？这将覆盖当前所有用户数据！')) return;
+            const currentData = loadData();
+            importedData.users.forEach(function(u) {
+                const existingIdx = currentData.users.findIndex(function(cu) { return cu.id === u.id; });
+                if (existingIdx >= 0) currentData.users[existingIdx] = u;
+                else currentData.users.push(u);
+            });
+            if (importedData.currentUser && currentData.users.find(u => u.id === importedData.currentUser)) {
+                currentData.currentUser = importedData.currentUser;
+            }
+            saveData(currentData);
+            updateUI();
+            showToast('数据导入成功！');
+        } catch(err) {
+            console.error('导入失败:', err);
+            showToast('导入失败：' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+window.showDataStatsModal = showDataStatsModal;
+window.exportData = exportData;
+window.importData = importData;
+window.handleImportFile = handleImportFile;

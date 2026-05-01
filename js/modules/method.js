@@ -931,7 +931,50 @@ function rateMethodAnswer(methodId, isCorrect, questionIndex) {
     syncUserData(user);
     updateMethodStats();
     showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
-}function conserveAnswer(idx) {
+}
+
+// AI分析学霸方法题目
+async function analyzeMethodWithAI(methodId, questionIndex) {
+    const resultDiv = document.getElementById('method-ai-result-' + methodId + '-' + questionIndex);
+    if (!resultDiv) return;
+    
+    resultDiv.innerHTML = '<div style="padding:12px;text-align:center;color:#666;">🤖 AI分析中...</div>';
+    
+    const questions = window.methodTrainingQuestions[methodId];
+    if (!questions || !questions[questionIndex]) {
+        resultDiv.innerHTML = '<div style="padding:12px;color:#ff6b6b;">题目不存在</div>';
+        return;
+    }
+    
+    const question = questions[questionIndex];
+    const methodNames = {
+        'time': '时间管理法', 'note': '笔记整理法', 'memory': '记忆技巧',
+        'reading': '阅读理解法', 'review': '复习策略', 'focus': '专注力训练',
+        'planning': '计划制定法', 'energy': '精力管理', 'habit': '习惯养成'
+    };
+    
+    const messages = [{
+        role: 'user',
+        content: '请分析这道学习方法的题目：\n题目：' + question.q + '\n选项：' + (question.opts ? question.opts.map((o, i) => String.fromCharCode(65 + i) + '. ' + o).join('\n') : '') + '\n\n请给出详细解析和改进建议。'
+    }];
+    
+    try {
+        const result = await callDeepSeekAPI(messages, 0.7);
+        if (result.error) {
+            resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ ' + result.message + '</div>';
+        } else {
+            resultDiv.innerHTML = '<div style="padding:12px;background:#f5f7ff;border-radius:8px;font-size:13px;line-height:1.6;">🤖 ' + formatAIResponse(result.content) + '</div>';
+            // 记录AI调用
+            if (typeof recordDeepSeekCall === 'function') {
+                recordDeepSeekCall(Math.ceil(result.content.length / 4));
+            }
+        }
+    } catch(e) {
+        resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 网络错误，请稍后重试</div>';
+    }
+}
+
+function conserveAnswer(idx) {
     const data = window._conserveData;
     if (!data) return;
     if (idx === data.questions[data.current].correct) data.score++;

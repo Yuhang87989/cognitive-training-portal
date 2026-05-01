@@ -708,7 +708,50 @@ window.updateThinkingStats = updateThinkingStats;
 
 // ============================================================
 // 从V144提取的缺失函数
-// ============================================================function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+// ============================================================
+
+// AI分析思维训练题目
+async function analyzeThinkingWithAI(type, questionIndex) {
+    const resultDiv = document.getElementById('thinking-ai-result-' + type + '-' + questionIndex);
+    if (!resultDiv) return;
+    
+    resultDiv.innerHTML = '<div style="padding:12px;text-align:center;color:#666;">🤖 AI分析中...</div>';
+    
+    const questions = window.thinkingQuestions[type];
+    if (!questions || !questions[questionIndex]) {
+        resultDiv.innerHTML = '<div style="padding:12px;color:#ff6b6b;">题目不存在</div>';
+        return;
+    }
+    
+    const question = questions[questionIndex];
+    const typeNames = {
+        logic: '逻辑思维', creative: '创意思维', critical: '批判思维', system: '系统思维',
+        reverse: '逆向思维', divergent: '发散思维', converge: '收敛思维', spatial: '空间思维',
+        abstract: '抽象思维'
+    };
+    
+    const messages = [{
+        role: 'user',
+        content: '请分析这道' + (typeNames[type] || '思维训练') + '的题目：\n题目：' + question.q + '\n选项：' + (question.opts ? question.opts.map((o, i) => String.fromCharCode(65 + i) + '. ' + o).join('\n') : '') + '\n\n请给出详细解析和改进建议，帮助提升思维能力。'
+    }];
+    
+    try {
+        const result = await callDeepSeekAPI(messages, 0.7);
+        if (result.error) {
+            resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ ' + result.message + '</div>';
+        } else {
+            resultDiv.innerHTML = '<div style="padding:12px;background:#f5f7ff;border-radius:8px;font-size:13px;line-height:1.6;">🤖 ' + formatAIResponse(result.content) + '</div>';
+            // 记录AI调用
+            if (typeof recordDeepSeekCall === 'function') {
+                recordDeepSeekCall(Math.ceil(result.content.length / 4));
+            }
+        }
+    } catch(e) {
+        resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 网络错误，请稍后重试</div>';
+    }
+}
+
+function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
 
 function closeModal(modalId) {
     if (!modalId) {
@@ -727,6 +770,7 @@ function closeModal(modalId) {
 // ============================================================
 window.rateThinkingAnswer = rateThinkingAnswer;
 window.viewThinkingNote = viewThinkingNote;
+window.analyzeThinkingWithAI = analyzeThinkingWithAI;
 
 window.closeDetail = closeDetail;
 window.closeModal = closeModal;
