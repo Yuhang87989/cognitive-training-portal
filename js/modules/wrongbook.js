@@ -1459,6 +1459,15 @@ window.viewWrongNotes = viewWrongNotes;
 window.openFeedback = openFeedback;
 window.submitFeedback = submitFeedback;
 
+// V148-fix: 添加缺失的window导出，确保内联onclick能正常工作
+window.updateStepStatus = updateStepStatus;
+window.getSourceColor = getSourceColor;
+window.getCorrectIndex = getCorrectIndex;
+window.showOcrSuccessUI = showOcrSuccessUI;
+window.showOcrFailedUI = showOcrFailedUI;
+window.updateAnalyzeStep = updateAnalyzeStep;
+window.retryWrongNote = retryWrongNote;
+
 // 从设置面板打开错题本
 function viewWrongNotes() {
     closeSettingsPanel();

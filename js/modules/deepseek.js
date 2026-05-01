@@ -1,4 +1,6 @@
-// 版本: V147 - DeepSeek核心API+全模块调用链彻底修复
+// 版本: V148 - DeepSeek核心API+图片上传+语音输入彻底修复
+// V148-fix: callVisionAPI添加详细日志、图片格式处理、错误处理
+// V148-fix: toggleDeepSeekVoice添加微信浏览器检测
 // V147修复: 添加escapeHtml到window导出，确保全局可用
 
 // V146修复: 添加escapeHtml函数（确保在ui.js加载前可用）
@@ -14,58 +16,96 @@ var deepseekConversationHistory = [];
 // isRecording在audio.js中声明，此处直接使用
 // deepseekRecognition在audio.js中声明，此处直接使用
 
+// 检测是否在微信浏览器中
+function isWeChatBrowser() {
+    return /MicroMessenger/i.test(navigator.userAgent);
+}
 
-// 视觉API - 图片理解（优先用独立视觉API，否则回退到DeepSeek多模态）
+// 检测浏览器是否支持语音识别
+function supportsSpeechRecognition() {
+    return ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+}
+
+// V148-fix: callVisionAPI彻底重写
+// 原因：DeepSeek deepseek-chat模型不支持image_url格式
+// 解决方案：Tesseract.js OCR提取文字 + DeepSeek文本分析
 async function callVisionAPI(imageDataUrl, question) {
-    var visionApiKey = typeof VISION_API_KEY !== 'undefined' ? VISION_API_KEY : '';
-    var visionApiUrl = typeof VISION_API_URL !== 'undefined' ? VISION_API_URL : '';
-    var visionModel = typeof VISION_MODEL !== 'undefined' ? VISION_MODEL : '';
+    console.log('[VisionAPI] 开始处理图片请求');
+    console.log('[VisionAPI] 图片数据长度:', imageDataUrl ? imageDataUrl.length : 0);
+    console.log('[VisionAPI] 问题:', question);
     
-    // 优先使用独立视觉API
-    if (visionApiKey && visionApiUrl) {
-        try {
-            var messages = [{
-                role: 'user',
-                content: [
-                    {type: 'image_url', image_url: {url: imageDataUrl}},
-                    {type: 'text', text: question}
-                ]
-            }];
-            var response = await fetch(visionApiUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + visionApiKey},
-                body: JSON.stringify({model: visionModel, messages: messages, max_tokens: 1000})
-            });
-            if (response.ok) {
-                var data = await response.json();
-                if (data.choices && data.choices[0]) return {success: true, content: data.choices[0].message.content};
-            }
-        } catch(e) { console.warn('Vision API failed:', e.message); }
+    // 验证图片数据
+    if (!imageDataUrl) {
+        console.error('[VisionAPI] 错误：图片数据为空');
+        return {success: false, content: '', message: '图片数据为空'};
     }
     
-    // 回退：使用DeepSeek多模态能力直接发图片
-    if (typeof DEEPSEEK_API_KEY !== 'undefined' && DEEPSEEK_API_KEY) {
-        try {
-            var dsMessages = [{
-                role: 'user',
-                content: [
-                    {type: 'image_url', image_url: {url: imageDataUrl}},
-                    {type: 'text', text: question || '请分析这张图片'}
-                ]
-            }];
-            var dsResponse = await fetch(DEEPSEEK_API_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY},
-                body: JSON.stringify({model: 'deepseek-chat', messages: dsMessages, max_tokens: 1000})
-            });
-            if (dsResponse.ok) {
-                var dsData = await dsResponse.json();
-                if (dsData.choices && dsData.choices[0]) return {success: true, content: dsData.choices[0].message.content};
-            }
-        } catch(e) { console.warn('DeepSeek Vision fallback failed:', e.message); }
+    // 确保图片是有效的base64格式
+    if (!imageDataUrl.startsWith('data:')) {
+        console.error('[VisionAPI] 错误：图片格式不正确');
+        return {success: false, content: '', message: '图片格式不正确'};
     }
     
-    return {success: false, content: ''};
+    var ocrText = null;
+    
+    // V148-fix: 步骤1：尝试Tesseract.js OCR提取文字
+    if (typeof Tesseract !== 'undefined') {
+        try {
+            showToast('正在识别图片中的文字...');
+            ocrText = await ocrExtractText(imageDataUrl);
+            if (ocrText && ocrText.length > 3) {
+                console.log('[VisionAPI] OCR识别成功，文字长度:', ocrText.length);
+                console.log('[VisionAPI] OCR文字预览:', ocrText.substring(0, 100));
+            } else {
+                console.warn('[VisionAPI] OCR识别结果太短:', ocrText);
+                ocrText = null;
+            }
+        } catch(e) {
+            console.warn('[VisionAPI] OCR识别失败:', e.message);
+            ocrText = null;
+        }
+    } else {
+        console.warn('[VisionAPI] Tesseract.js未加载，尝试直接使用DeepSeek');
+    }
+    
+    // V148-fix: 步骤2：用DeepSeek分析OCR文字
+    if (ocrText) {
+        try {
+            var messages = [
+                {role: 'system', content: '你是一个专业的图片内容分析助手。用户会发送图片的OCR识别文字，请你分析图片内容并回答问题。如果OCR文字有误请根据上下文修正。请用简洁易懂的语言回答。'},
+                {role: 'user', content: '图片中的文字内容如下：\n' + ocrText + '\n\n问题：' + (question || '请分析这张图片的内容')}
+            ];
+            var result = await callDeepSeekAPI(messages, 0.3);
+            if (!result.error && result.content) {
+                console.log('[VisionAPI] DeepSeek分析成功');
+                return {success: true, content: result.content};
+            } else if (result.error) {
+                console.warn('[VisionAPI] DeepSeek分析失败:', result.message);
+            }
+        } catch(e) {
+            console.warn('[VisionAPI] DeepSeek分析OCR文字失败:', e.message);
+        }
+    }
+    
+    // V148-fix: 步骤3：如果OCR失败，让DeepSeek根据用户描述回答
+    if (question) {
+        try {
+            var fallbackMessages = [
+                {role: 'system', content: '用户尝试上传了一张图片，但图片文字识别失败。请根据用户的文字描述尽量帮助解答。如果用户描述了图片内容（如题目、公式等），请尽力分析和解答。'},
+                {role: 'user', content: question + '\n\n（注意：图片识别失败，请仅根据文字描述回答')}
+            ];
+            var fallbackResult = await callDeepSeekAPI(fallbackMessages, 0.5);
+            if (!fallbackResult.error && fallbackResult.content) {
+                console.log('[VisionAPI] 降级处理成功');
+                return {success: true, content: fallbackResult.content + '\n\n⚠️ 图片识别失败，以上回答仅基于文字描述'};
+            }
+        } catch(e) {
+            console.warn('[VisionAPI] 降级处理也失败:', e.message);
+        }
+    }
+    
+    console.error('[VisionAPI] 所有方法都失败');
+    return {success: false, content: '', message: '图片识别失败，请手动输入文字描述'};
 }
 
 async function callDeepSeekAPI(messages, temperature) {
@@ -976,6 +1016,8 @@ window.callDeepSeekAPI = callDeepSeekAPI;
 window.callVisionAPI = callVisionAPI;
 window.formatAIResponse = formatAIResponse;
 window.escapeHtml = escapeHtml; // V147-fix: 添加escapeHtml导出供其他模块使用
+window.isWeChatBrowser = isWeChatBrowser; // V148-fix: 导出微信浏览器检测函数
+window.supportsSpeechRecognition = supportsSpeechRecognition; // V148-fix: 导出语音识别支持检测
 
 // ============================================================
 // OCR拍照出题模块 - Tesseract.js + DeepSeek

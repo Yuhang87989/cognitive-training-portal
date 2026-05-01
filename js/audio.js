@@ -233,17 +233,30 @@ window.stopTTSSpeech = stopTTSSpeech;
 let deepseekRecognition = null;
 let isRecording = false;
 
+// 检测是否在微信浏览器中
+function isWeChatBrowser() {
+    return /MicroMessenger/i.test(navigator.userAgent);
+}
+
+// V148-fix: 添加微信浏览器检测，提供替代方案
 function toggleDeepSeekVoice() {
     const btn = document.getElementById('deepseek-voice-btn');
     const input = document.getElementById('deepseek-input');
     if (!input) return;
     
+    // V148-fix: 微信浏览器不支持webkitSpeechRecognition
+    if (isWeChatBrowser()) {
+        showToast('📱 微信中请使用系统键盘的语音输入功能', 4000);
+        return;
+    }
+    
+    // V148-fix: 检测浏览器是否支持语音识别
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showToast('⚠️ 当前浏览器不支持语音输入，请使用打字输入或系统键盘语音');
+        return;
+    }
+    
     if (!deepseekRecognition) {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            showToast('您的浏览器不支持语音输入');
-            return;
-        }
-        
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         deepseekRecognition = new SpeechRecognition();
         deepseekRecognition.lang = 'zh-CN';
@@ -317,6 +330,7 @@ let currentVoiceInputCallback = null;
 let currentVoiceInputBtn = null;
 let currentVoiceInputId = null; // 当前语音输入的目标inputId
 
+// V148-fix: toggleVoiceInput通用语音输入函数，添加微信检测
 function toggleVoiceInput(btn, inputId) {
     const input = document.getElementById(inputId);
     if (!input) {
@@ -324,13 +338,21 @@ function toggleVoiceInput(btn, inputId) {
         return;
     }
     
-    // 更新当前目标inputId
+    // V148-fix: 更新当前目标inputId
     currentVoiceInputId = inputId;
     currentVoiceInputBtn = btn;
     
-    // 检查浏览器支持
+    // V148-fix: 微信浏览器检测
+    if (isWeChatBrowser()) {
+        showToast('📱 微信中请使用系统键盘的语音输入', 4000);
+        // 自动聚焦到输入框，提示用户使用系统语音
+        input.focus();
+        return;
+    }
+    
+    // V148-fix: 检查浏览器支持
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        showToast('您的浏览器不支持语音输入');
+        showToast('⚠️ 当前浏览器不支持语音输入');
         return;
     }
     

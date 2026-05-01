@@ -550,6 +550,7 @@ window.setInterval = function(func, delay) {
     window.allTimers.push(timer);
     return timer;
 };
+// V148-fix: 切换用户后关闭全屏页面，回到首页刷新
 function switchToUser(userId) {
     var data = loadData();
     var user = data.users.find(function(u) { return u.id === userId; });
@@ -562,6 +563,10 @@ function switchToUser(userId) {
     data.currentUser = userId;
     saveData(data);
     closeUserSwitchModal();
+    
+    // 切换用户后关闭全屏页面，回到首页刷新
+    closeFullscreenPage();
+    showPage('home');
     updateUI();
     syncTodayStats();
     showToast('已切换到: ' + user.name);
