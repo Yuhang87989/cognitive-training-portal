@@ -461,8 +461,9 @@ function initPodcastAudio() {
         }
     };
     
-    // 播放结束
+    // 播放结束 - V150: 加保护，如果正在清理则不自动播放下一首
     audio.onended = function() {
+        if (!podcastPlayerState.currentPodcast) return;
         podcastNext();
     };
     
@@ -676,6 +677,48 @@ function escapeHtml(text) {
 
 
 // ============================================================
+// 停止播客音频 - V150修复：返回时音频不停
+// 必须先解绑事件再暂停，否则onended/podcastNext会重新触发播放
+// ============================================================
+function stopPodcastAudio() {
+    var audio = document.getElementById('hidden-audio');
+    if (audio) {
+        // 1. 先解绑所有事件回调，防止pause/src变更触发回调导致重新播放
+        audio.onplay = null;
+        audio.onpause = null;
+        audio.ontimeupdate = null;
+        audio.onended = null;
+        audio.onerror = null;
+        // 2. 暂停并清除
+        audio.pause();
+        audio.currentTime = 0;
+        audio.src = '';
+    }
+    // 3. 重置播放状态
+    if (typeof podcastPlayerState !== 'undefined' && podcastPlayerState) {
+        podcastPlayerState.isPlaying = false;
+        podcastPlayerState.currentPodcast = null;
+        podcastPlayerState.currentTime = 0;
+        podcastPlayerState.duration = 0;
+    }
+    // 4. 更新UI按钮状态
+    var playBtn = document.getElementById('podcast-play-btn');
+    if (playBtn) playBtn.textContent = '▶';
+    var titleEl = document.getElementById('podcast-player-title');
+    if (titleEl) titleEl.textContent = '选择播客开始收听';
+    var subtitleEl = document.getElementById('podcast-player-subtitle');
+    if (subtitleEl) subtitleEl.textContent = '-';
+    var progressFill = document.getElementById('podcast-progress-fill');
+    if (progressFill) progressFill.style.width = '0%';
+    var progressContainer = document.getElementById('podcast-progress-container');
+    if (progressContainer) progressContainer.style.display = 'none';
+    var currentTimeEl = document.getElementById('podcast-current-time');
+    if (currentTimeEl) currentTimeEl.textContent = '0:00';
+    var totalTimeEl = document.getElementById('podcast-total-time');
+    if (totalTimeEl) totalTimeEl.textContent = '0:00';
+}
+
+// ============================================================
 // Window Exports - 确保全局可用
 // ============================================================
 window.renderPodcast = renderPodcast;
@@ -690,3 +733,4 @@ window.podcastCourses = podcastCourses;
 window.podcastPlay = podcastPlay;
 window.askPodcastAI = askPodcastAI;
 window.togglePodcastVoice = togglePodcastVoice;
+window.stopPodcastAudio = stopPodcastAudio;

@@ -84,18 +84,22 @@ function cleanupModuleState() {
         currentAudio.currentTime = 0;
     }
     
-    // 停止播客音频（hidden-audio元素）
-    var hiddenAudio = document.getElementById('hidden-audio');
-    if (hiddenAudio) {
-        hiddenAudio.pause();
-        hiddenAudio.currentTime = 0;
-        hiddenAudio.src = '';
-    }
-    // 重置播客播放状态
-    if (typeof podcastPlayerState !== 'undefined' && podcastPlayerState) {
-        podcastPlayerState.isPlaying = false;
-        podcastPlayerState.currentPodcast = null;
-        podcastPlayerState.currentTime = 0;
+    // 停止播客音频 - V150: 优先调用专用函数（先解绑事件再暂停，防止onended/podcastNext重新播放）
+    if (typeof stopPodcastAudio === 'function') {
+        stopPodcastAudio();
+    } else {
+        // 降级方案
+        var hiddenAudio = document.getElementById('hidden-audio');
+        if (hiddenAudio) {
+            hiddenAudio.pause();
+            hiddenAudio.currentTime = 0;
+            hiddenAudio.src = '';
+        }
+        if (typeof podcastPlayerState !== 'undefined' && podcastPlayerState) {
+            podcastPlayerState.isPlaying = false;
+            podcastPlayerState.currentPodcast = null;
+            podcastPlayerState.currentTime = 0;
+        }
     }
     
     // 停止视频播放
