@@ -274,6 +274,8 @@ function toggleDeepSeekVoice() {
         
         deepseekRecognition.onresult = function(event) {
             var transcript = event.results[0][0].transcript;
+            // V150-fix: 必须重置isRecording，否则下次点不了
+            isRecording = false;
             var currentInput = document.getElementById('deepseek-input');
             if (currentInput) {
                 // 追加到已有文字后面，不覆盖
@@ -318,11 +320,23 @@ function toggleDeepSeekVoice() {
             isRecording = false;
             if (btn) btn.textContent = '🎤';
         } else {
+            // V150-fix: 先强制停止再启动，防止"already started"异常
+            try { deepseekRecognition.stop(); } catch(e) {}
+            isRecording = false;
             try {
                 deepseekRecognition.start();
             } catch(e) {
                 console.warn('SpeechRecognition start failed:', e);
-                showToast('🎤 语音识别启动失败，请用键盘语音输入');
+                // 如果还是报already started，等一下再试
+                if (e.message && e.message.indexOf('already') >= 0) {
+                    setTimeout(function() {
+                        try { deepseekRecognition.start(); } catch(e2) {
+                            showToast('🎤 语音识别启动失败，请用键盘输入');
+                        }
+                    }, 300);
+                } else {
+                    showToast('🎤 语音识别启动失败，请用键盘输入');
+                }
             }
         }
     } else {
