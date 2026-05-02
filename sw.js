@@ -1,7 +1,7 @@
-// Service Worker for 认知训练门户 V143
+// Service Worker for 认知训练门户 V151
 // 缓存策略: Network First + Stale-while-revalidate (podcast-data.json)
 
-var CACHE_NAME = 'cognitive-training-v143';
+var CACHE_NAME = 'cognitive-training-v151';
 var OFFLINE_URL = './index.html';
 
 // 关键文件列表
