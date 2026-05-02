@@ -155,7 +155,7 @@ function openWrongPhotoCapture() {
     
     content.innerHTML = `
         <div class="modal-header">
-            <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+            <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
             <div class="modal-title">📝 添加错题</div>
             <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
@@ -271,7 +271,7 @@ async function submitManualWrongNote() {
         user.wrongNotes.push(wrongNote);
         syncUserData(user);
         showToast('✅ 已保存到错题本');
-        showWrongbookDetail();
+        backToWrongbook();
         return;
     }
     
@@ -300,7 +300,7 @@ async function submitManualWrongNote() {
         syncUserData(user);
     }
     showToast('✅ AI分析完成，已保存到错题本');
-    showWrongbookDetail();
+    backToWrongbook();
 }
 
 window.manualInputWrongNote = manualInputWrongNote;
@@ -522,7 +522,7 @@ function showOcrSuccessUI(questionData, photoId) {
                 <button class="action-btn action-primary" onclick="doWrongQuestionFromPhoto('${photoId}')">
                     📝 开始做题
                 </button>
-                <button class="action-btn action-secondary" onclick="showWrongbookDetail()">
+                <button class="action-btn action-secondary" onclick="backToWrongbook()">
                     📒 查看错题本
                 </button>
             </div>
@@ -620,7 +620,7 @@ function showWrongPhotoGallery() {
     if (photos.length === 0) {
         content.innerHTML = `
             <div class="gallery-header">
-                <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+                <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
                 <div class="modal-title">📁 错题照片库</div>
             </div>
             <div class="gallery-empty">
@@ -662,14 +662,14 @@ function showWrongPhotoGallery() {
     
     content.innerHTML = `
         <div class="gallery-header">
-            <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+            <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
             <div class="modal-title">📁 错题照片库 (${photos.length}张)</div>
         </div>
         <button class="add-photo-btn" onclick="openWrongPhotoCapture()">+ 添加照片</button>
         <div class="photo-grid" id="photo-grid">
             ${photosHtml}
         </div>
-        <button class="back-bottom-btn" onclick="showWrongbookDetail()">← 返回错题本</button>
+        <button class="back-bottom-btn" onclick="backToWrongbook()">← 返回错题本</button>
         
         <style>
             .gallery-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
@@ -912,7 +912,7 @@ async function analyzePhotoWithAI(photoId) {
                 
                 <div class="result-actions">
                     <button class="action-btn-primary" onclick="doWrongQuestionFromPhoto('${photoId}')">📝 开始做题</button>
-                    <button class="action-btn-secondary" onclick="showWrongbookDetail()">📒 查看错题本</button>
+                    <button class="action-btn-secondary" onclick="backToWrongbook()">📒 查看错题本</button>
                 </div>
             </div>
             
@@ -967,16 +967,18 @@ function updateAnalyzeStep(stepNum, status, text) {
 }
 
 // ============================================================
-// 错题本详情主页（被其他模块调用）
+// 错题本主页返回函数
 // ============================================================
 
-function showWrongbookDetail() {
-    const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
+function backToWrongbook() {
+    // 1. 关闭 detail-modal
+    document.getElementById('detail-modal').classList.remove('show');
     
-    // 直接渲染到modal
-    renderWrongbook(content);
+    // 2. 重新渲染错题本主页到 fullscreen-content
+    var contentEl = document.getElementById('fullscreen-content');
+    if (contentEl) {
+        renderWrongbook(contentEl);
+    }
 }
 
 // ============================================================
@@ -998,7 +1000,7 @@ function retryWrongNote(index) {
     
     let questionHTML = `
         <div class="retry-header">
-            <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+            <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
             <div class="modal-title">🔄 错题重练</div>
         </div>
         
@@ -1034,7 +1036,7 @@ function retryWrongNote(index) {
                 ` : `
                     <button class="submit-btn" id="retry-submit-btn" onclick="submitRetryTextAnswer(${index})">提交答案</button>
                 `}
-                <button class="back-btn-full" onclick="showWrongbookDetail()">← 返回错题本</button>
+                <button class="back-btn-full" onclick="backToWrongbook()">← 返回错题本</button>
             </div>
         </div>
         
@@ -1340,7 +1342,7 @@ async function analyzeWrongNoteWithAI(index) {
     // 显示加载中
     content.innerHTML = `
         <div class="ai-header">
-            <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+            <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
             <div class="modal-title">🤖 AI分析</div>
         </div>
         <div class="ai-loading">
@@ -1389,7 +1391,7 @@ ${note.explanation || '无'}
         if (result.error) {
             content.innerHTML = `
                 <div class="ai-header">
-                    <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+                    <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
                     <div class="modal-title">⚠️ AI分析失败</div>
                 </div>
                 <div class="ai-error">
@@ -1397,7 +1399,7 @@ ${note.explanation || '无'}
                     <div class="error-message">${result.message}</div>
                     <button class="retry-btn" onclick="analyzeWrongNoteWithAI(${index})">🔄 重试</button>
                 </div>
-                <button class="back-btn-full" onclick="showWrongbookDetail()">← 返回错题本</button>
+                <button class="back-btn-full" onclick="backToWrongbook()">← 返回错题本</button>
             `;
             return;
         }
@@ -1407,7 +1409,7 @@ ${note.explanation || '无'}
         
         content.innerHTML = `
             <div class="ai-header">
-                <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+                <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
                 <div class="modal-title">🤖 AI分析结果</div>
             </div>
             
@@ -1424,7 +1426,7 @@ ${note.explanation || '无'}
                 <button class="speak-btn" onclick="speakText(this.previousElementSibling.textContent)">🔊 朗读</button>
             </div>
             
-            <button class="back-btn-full" onclick="showWrongbookDetail()">← 返回错题本</button>
+            <button class="back-btn-full" onclick="backToWrongbook()">← 返回错题本</button>
             
             <style>
                 .ai-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
@@ -1452,14 +1454,14 @@ ${note.explanation || '无'}
         console.error('AI分析失败:', error);
         content.innerHTML = `
             <div class="ai-header">
-                <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
+                <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
                 <div class="modal-title">❌ 分析失败</div>
             </div>
             <div class="ai-error">
                 <div class="error-icon">😢</div>
                 <div class="error-message">${error.message}</div>
             </div>
-            <button class="back-btn-full" onclick="showWrongbookDetail()">← 返回错题本</button>
+            <button class="back-btn-full" onclick="backToWrongbook()">← 返回错题本</button>
         `;
     }
 }
@@ -1540,7 +1542,7 @@ function clearWrongNotes() {
 // Window Exports
 // ============================================================
 window.renderWrongbook = renderWrongbook;
-window.showWrongbookDetail = showWrongbookDetail;
+window.backToWrongbook = backToWrongbook;
 window.openWrongPhotoCapture = openWrongPhotoCapture;
 window.uploadWrongPhotoWithAI = uploadWrongPhotoWithAI;
 window.showWrongPhotoGallery = showWrongPhotoGallery;
