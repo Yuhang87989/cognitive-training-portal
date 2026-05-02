@@ -178,10 +178,7 @@ function getMethodTraining(methodId) {
     return methodTraining[methodId] || [];
 }
 
-function getTopicsList() {
-    const key = currentTopicsSubject + currentTopicsGrade;
-    return topics[key] || [];
-}
+// getTopicsList moved to topics.js module
 
 function getWeekPlan(weekId) { return weekPlans[weekId] || null; }
 

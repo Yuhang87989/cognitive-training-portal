@@ -92,7 +92,7 @@ async function callVisionAPI(imageDataUrl, question) {
         try {
             var fallbackMessages = [
                 {role: 'system', content: '用户尝试上传了一张图片，但图片文字识别失败。请根据用户的文字描述尽量帮助解答。如果用户描述了图片内容（如题目、公式等），请尽力分析和解答。'},
-                {role: 'user', content: question + '\n\n（注意：图片识别失败，请仅根据文字描述回答')}
+                {role: 'user', content: question + '\n\n（注意：图片识别失败，请仅根据文字描述回答）'}
             ];
             var fallbackResult = await callDeepSeekAPI(fallbackMessages, 0.5);
             if (!fallbackResult.error && fallbackResult.content) {
@@ -482,69 +482,72 @@ async function analyzePhotoWithAI(photoId) {
 async function handleDeepSeekUpload(input, source) {
     if (!input.files[0]) return;
     const file = input.files[0];
+    input.value = ''; // 先清空，允许重复选择
     
-    // 显示预览
-    const preview = document.getElementById('deepseek-image-preview');
-    const previewImg = document.getElementById('deepseek-preview-img');
-    const previewStatus = document.getElementById('deepseek-preview-status');
-    
+    // 步骤1：读取图片为base64（等待完成）
+    var imageDataUrl = null;
     if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            currentDeepSeekImage = e.target.result;
-            if (preview && previewImg) {
-                previewImg.src = currentDeepSeekImage;
-                preview.style.display = 'block';
-            }
-            if (previewStatus) previewStatus.textContent = '正在识别文字...';
-        };
-        reader.readAsDataURL(file);
+        try {
+            imageDataUrl = await new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onload = function(e) { resolve(e.target.result); };
+                reader.onerror = function() { reject(new Error('读取图片失败')); };
+                reader.readAsDataURL(file);
+            });
+        } catch(e) {
+            showToast('读取图片失败');
+            return;
+        }
+    } else {
+        showToast('请上传图片文件');
+        return;
     }
     
-    // 自动OCR识别并发送
+    // 步骤2：显示预览
+    currentDeepSeekImage = imageDataUrl;
+    var preview = document.getElementById('deepseek-image-preview');
+    var previewImg = document.getElementById('deepseek-preview-img');
+    var previewStatus = document.getElementById('deepseek-preview-status');
+    if (preview && previewImg) {
+        previewImg.src = imageDataUrl;
+        preview.style.display = 'block';
+    }
+    if (previewStatus) previewStatus.textContent = '正在识别文字...';
     showToast('正在识别图片中的文字...');
     
+    // 步骤3：OCR识别文字
     var ocrText = null;
-    
-    // 尝试Tesseract.js OCR
     if (typeof Tesseract !== 'undefined') {
         try {
-            var imageDataUrl = currentDeepSeekImage;
-            if (!imageDataUrl && file.type.startsWith('image/')) {
-                // 如果currentDeepSeekImage还没设置（FileReader异步），等待一下
-                await new Promise(function(resolve) { setTimeout(resolve, 500); });
-                imageDataUrl = currentDeepSeekImage;
-            }
-            if (imageDataUrl) {
-                ocrText = await ocrExtractText(imageDataUrl);
-                if (ocrText && ocrText.length < 3) ocrText = null;
-            }
+            ocrText = await ocrExtractText(imageDataUrl);
+            if (ocrText && ocrText.trim().length < 2) ocrText = null;
+            if (ocrText) ocrText = ocrText.trim();
         } catch(e) {
             console.warn('OCR识别失败:', e.message);
             ocrText = null;
         }
     }
     
+    // 步骤4：把OCR文字填入输入框，然后清除图片（避免sendToDeepSeek再次OCR）
+    var dsInput = document.getElementById('deepseek-input');
     if (ocrText) {
-        // OCR成功，自动把识别文字填入输入框
-        var dsInput = document.getElementById('deepseek-input');
-        if (dsInput) {
-            dsInput.value = '请帮我分析以下图片中的内容：\n' + ocrText;
-        }
-        if (previewStatus) previewStatus.textContent = '✅ 识别成功，已自动填入';
-        showToast('✅ 文字识别成功，已自动填入输入框');
+        if (dsInput) dsInput.value = '请分析以下图片中的文字内容并给出详细解答：\n' + ocrText;
+        if (previewStatus) previewStatus.textContent = '识别成功';
+        showToast('文字识别成功，正在发送给AI...');
+        // 清除图片，这样sendToDeepSeek不会再走callVisionAPI
+        currentDeepSeekImage = null;
+        if (preview) preview.style.display = 'none';
         // 自动发送
-        setTimeout(function() { sendToDeepSeek(); }, 300);
+        if (typeof sendToDeepSeek === 'function') sendToDeepSeek();
     } else {
-        // OCR失败
-        if (previewStatus) previewStatus.textContent = '⚠️ 识别失败，请手动输入';
-        showToast('⚠️ 图片文字识别失败，请手动输入问题后发送');
+        if (dsInput) dsInput.value = '';
+        if (previewStatus) previewStatus.textContent = '识别失败，请手动输入';
+        showToast('图片文字识别失败，请手动输入问题后发送');
+        // 保留图片预览，用户可以手动输入问题后发送
     }
-    
-    input.value = '';
 }
 
-// V149兼容：保留旧函数名
+// 兼容旧函数名
 function handleDeepSeekImage(input) {
     handleDeepSeekUpload(input, 'image');
 }
