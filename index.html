@@ -1,12 +1,33 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<script>
+// V151: 强制清除旧Service Worker缓存
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(reg){
+      if(reg.active && reg.active.scriptURL.indexOf('v143')>-1){
+        reg.unregister();
+        console.log('[V151] 已注销旧SW');
+      }
+    });
+  });
+  caches.keys().then(function(names){
+    names.forEach(function(name){
+      if(name.indexOf('v143')>-1 || name.indexOf('v144')>-1 || name.indexOf('v145')>-1){
+        caches.delete(name);
+        console.log('[V151] 已删除旧缓存:',name);
+      }
+    });
+  });
+}
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>认知训练 V146</title>
+<title>认知训练 V151</title>
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/x-icon" href="favicon.ico"/>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
