@@ -12,7 +12,7 @@ function renderWrongbook(container) {
     container.innerHTML = `
         <div class="wrongbook-header">
             <div class="wrongbook-title">📒 错题本</div>
-            <div class="wrongbook-subtitle">收录练习中的错题，拍照上传，AI帮你分析</div>
+            <div class="wrongbook-subtitle">收录错题，拍照识别或手动输入，AI帮你分析</div>
         </div>
         
         <div class="wrongbook-stats">
@@ -32,8 +32,8 @@ function renderWrongbook(container) {
         
         <div class="wrongbook-actions">
             <button class="action-btn action-btn-red" onclick="openWrongPhotoCapture()">
-                <span class="action-icon">📷</span>
-                <span class="action-text">拍照上传</span>
+                <span class="action-icon">📝</span>
+                <span class="action-text">添加错题</span>
             </button>
             <button class="action-btn action-btn-purple" onclick="showWrongPhotoGallery()">
                 <span class="action-icon">📁</span>
@@ -45,7 +45,7 @@ function renderWrongbook(container) {
             <div class="wrongbook-empty">
                 <div class="empty-icon">📝</div>
                 <div class="empty-title">暂无错题，继续加油！</div>
-                <div class="empty-desc">做错题会自动收录，也可以拍照上传</div>
+                <div class="empty-desc">做错题会自动收录，也可以拍照识别或手动输入</div>
             </div>
         ` : `
             <div class="wrongbook-list-header">
