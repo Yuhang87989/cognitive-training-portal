@@ -156,14 +156,15 @@ function openWrongPhotoCapture() {
     content.innerHTML = `
         <div class="modal-header">
             <button class="back-btn" onclick="showWrongbookDetail()">← 返回</button>
-            <div class="modal-title">📷 拍照上传错题</div>
+            <div class="modal-title">📝 添加错题</div>
+            <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div class="capture-container">
-            <div class="capture-icon">📸</div>
-            <div class="capture-hint">拍照或上传错题图片</div>
+            <div class="capture-icon">📝</div>
+            <div class="capture-hint">拍照自动识别文字，或手动输入题目</div>
             <div class="capture-tips">
-                <div class="tip">💡 拍摄时保持光线充足</div>
-                <div class="tip">💡 确保题目文字清晰可见</div>
+                <div class="tip">💡 拍照后自动OCR识别为文字</div>
+                <div class="tip">💡 也可以直接打字输入题目</div>
             </div>
             <div class="capture-buttons">
                 <button class="capture-btn capture-btn-camera" onclick="document.getElementById('wrong-photo-camera').click()">
@@ -172,9 +173,13 @@ function openWrongPhotoCapture() {
                 <input type="file" id="wrong-photo-camera" accept="image/*" capture="environment" style="display:none" onchange="uploadWrongPhotoWithAI(this)"/>
                 
                 <button class="capture-btn capture-btn-gallery" onclick="document.getElementById('wrong-photo-gallery').click()">
-                    📁 从相册选择
+                    🖼️ 从相册选择
                 </button>
                 <input type="file" id="wrong-photo-gallery" accept="image/*" style="display:none" onchange="uploadWrongPhotoWithAI(this)"/>
+                
+                <button class="capture-btn" onclick="manualInputWrongNote()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                    ✏️ 手动输入题目
+                </button>
             </div>
         </div>
         <div class="capture-footer">
@@ -204,6 +209,102 @@ function openWrongPhotoCapture() {
         </style>
     `;
 }
+
+// V150: 手动输入错题
+// ============================================================
+function manualInputWrongNote() {
+    const modal = document.getElementById('detail-modal');
+    const content = document.getElementById('detail-content');
+    
+    content.innerHTML = `
+        <div class="modal-header">
+            <button class="back-btn" onclick="openWrongPhotoCapture()">← 返回</button>
+            <div class="modal-title">✏️ 手动输入题目</div>
+            <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="padding:4px 0;">
+            <div style="margin-bottom:12px;">
+                <label style="font-size:13px;color:#666;margin-bottom:6px;display:block;">题目内容</label>
+                <textarea id="manual-question-input" style="width:100%;height:120px;padding:12px;border:2px solid #e0e0e0;border-radius:12px;font-size:14px;resize:none;box-sizing:border-box;" placeholder="请输入题目内容，例如：&#10;一个三角形的三边长分别为3、4、5，求这个三角形的面积。"></textarea>
+            </div>
+            <div style="margin-bottom:12px;">
+                <label style="font-size:13px;color:#666;margin-bottom:6px;display:block;">正确答案（可选）</label>
+                <input id="manual-answer-input" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="输入正确答案"/>
+            </div>
+            <button onclick="submitManualWrongNote()" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;">📝 AI分析并保存</button>
+        </div>
+    `;
+}
+
+// V150: 提交手动输入的错题
+async function submitManualWrongNote() {
+    var questionInput = document.getElementById('manual-question-input');
+    var answerInput = document.getElementById('manual-answer-input');
+    if (!questionInput || !questionInput.value.trim()) {
+        showToast('请输入题目内容');
+        return;
+    }
+    var questionText = questionInput.value.trim();
+    var answerText = answerInput ? answerInput.value.trim() : '';
+    
+    // 调用AI解析
+    var questionData = await aiParseQuestion(questionText + (answerText ? '\n正确答案：' + answerText : ''));
+    
+    if (questionData.error) {
+        // AI解析失败，直接保存原始文字
+        var user = getCurrentUserData() || {};
+        user.wrongNotes = user.wrongNotes || [];
+        var wrongNote = {
+            wrongKey: 'manual-' + Date.now(),
+            source: 'manual',
+            sourceName: '手动输入',
+            topicId: null,
+            question: questionText,
+            type: 'fill',
+            options: [],
+            answer: answerText || '待分析',
+            explanation: 'AI解析失败，请手动查看',
+            userAnswer: '',
+            ocrText: questionText,
+            time: Date.now()
+        };
+        user.wrongNotes.push(wrongNote);
+        syncUserData(user);
+        showToast('✅ 已保存到错题本');
+        showWrongbookDetail();
+        return;
+    }
+    
+    // AI解析成功，保存结构化题目
+    var user = getCurrentUserData() || {};
+    user.wrongNotes = user.wrongNotes || [];
+    var wrongKey = 'manual-' + Date.now();
+    if (!user.wrongNotes.find(function(n) { return n.wrongKey === wrongKey; })) {
+        var wrongNote = {
+            wrongKey: wrongKey,
+            source: 'manual',
+            sourceName: '手动输入',
+            topicId: null,
+            question: questionData.question,
+            type: questionData.type,
+            options: questionData.options ? Object.values(questionData.options) : [],
+            optionsMap: questionData.options || {},
+            answer: questionData.answer,
+            correctIndex: getCorrectIndex(questionData.options, questionData.answer),
+            explanation: questionData.explanation,
+            userAnswer: '',
+            ocrText: questionText,
+            time: Date.now()
+        };
+        user.wrongNotes.push(wrongNote);
+        syncUserData(user);
+    }
+    showToast('✅ AI分析完成，已保存到错题本');
+    showWrongbookDetail();
+}
+
+window.manualInputWrongNote = manualInputWrongNote;
+window.submitManualWrongNote = submitManualWrongNote;
 
 // 拍照上传错题（整合OCR+AI分析）- 完整流程
 async function uploadWrongPhotoWithAI(input) {
