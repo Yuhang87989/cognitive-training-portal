@@ -232,117 +232,184 @@ window.stopTTSSpeech = stopTTSSpeech;
 
 let deepseekRecognition = null;
 let isRecording = false;
+let dsVoiceGotResult = false; // V151: 标记本次识别是否收到了结果
+let dsVoiceFinalTranscript = ''; // V151: 累积的最终识别文本
 
 // 检测是否在微信浏览器中
 function isWeChatBrowser() {
     return /MicroMessenger/i.test(navigator.userAgent);
 }
 
-// V150: 语音输入彻底重写 - 优先SpeechRecognition，不支持时降级MediaRecorder+提示
+// V151: 语音输入彻底重写 - 实时转录+可靠填入
 function toggleDeepSeekVoice() {
     var btn = document.getElementById('deepseek-voice-btn');
     var input = document.getElementById('deepseek-input');
-    if (!input) return;
+    if (!input) {
+        console.error('[Voice] deepseek-input元素不存在');
+        return;
+    }
     
-    // V150: 先尝试浏览器原生SpeechRecognition（包括微信新版）
     var hasSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
+    console.log('[Voice] hasSpeechRecognition:', hasSpeechRecognition, 'isRecording:', isRecording);
     
-    if (hasSpeechRecognition) {
-        // 方案1：使用浏览器原生语音识别
-        try {
-            if (!deepseekRecognition) {
-                var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                deepseekRecognition = new SpeechRecognition();
-                deepseekRecognition.lang = 'zh-CN';
-                deepseekRecognition.continuous = false;
-                deepseekRecognition.interimResults = false;
+    if (!hasSpeechRecognition) {
+        showToast('🎤 请点击输入框，使用键盘的语音输入功能', 4000);
+        input.focus();
+        return;
+    }
+    
+    // 如果正在录音，点击则停止
+    if (isRecording && deepseekRecognition) {
+        console.log('[Voice] 手动停止录音');
+        try { deepseekRecognition.stop(); } catch(e) {}
+        isRecording = false;
+        if (btn) btn.textContent = '🎤';
+        return;
+    }
+    
+    // 每次启动都创建新的Recognition对象，避免状态残留
+    try {
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        deepseekRecognition = new SpeechRecognition();
+        deepseekRecognition.lang = 'zh-CN';
+        deepseekRecognition.continuous = false;
+        deepseekRecognition.interimResults = true; // V151: 开启实时转录，让用户看到识别过程
+        deepseekRecognition.maxAlternatives = 1;
+    } catch(initErr) {
+        console.error('[Voice] SpeechRecognition初始化失败:', initErr);
+        showToast('🎤 语音识别初始化失败，请用键盘输入');
+        input.focus();
+        return;
+    }
+    
+    dsVoiceGotResult = false;
+    dsVoiceFinalTranscript = '';
+    
+    deepseekRecognition.onstart = function() {
+        console.log('[Voice] 识别已启动');
+        isRecording = true;
+        var b = document.getElementById('deepseek-voice-btn');
+        if (b) b.textContent = '⏺';
+        showToast('🎤 正在聆听，请说话...', 5000);
+    };
+    
+    deepseekRecognition.onresult = function(event) {
+        console.log('[Voice] onresult触发, results数量:', event.results.length);
+        var interimTranscript = '';
+        var finalTranscript = '';
+        
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            var transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+            } else {
+                interimTranscript += transcript;
             }
-        } catch(initErr) {
-            console.warn('SpeechRecognition初始化失败:', initErr);
-            showToast('🎤 语音识别初始化失败，请用键盘输入');
-            input.focus();
+        }
+        
+        if (finalTranscript) {
+            dsVoiceFinalTranscript += finalTranscript;
+            dsVoiceGotResult = true;
+        }
+        
+        // V151: 实时更新输入框，让用户看到识别过程
+        var currentInput = document.getElementById('deepseek-input');
+        if (currentInput && !currentInput.disabled) {
+            // 已有文字 + 最终结果 + 正在识别的中间结果
+            var baseValue = currentInput.value;
+            // 如果之前已经设置了实时文字，先去掉
+            if (baseValue.endsWith('...') || baseValue.endsWith('…')) {
+                // 去掉上一次的实时预览
+                var lastSpace = baseValue.lastIndexOf(' ');
+                baseValue = lastSpace > 0 ? baseValue.substring(0, lastSpace) : '';
+            }
+            var displayText = baseValue;
+            if (displayText && !displayText.endsWith(' ')) displayText += ' ';
+            if (dsVoiceFinalTranscript) displayText += dsVoiceFinalTranscript + ' ';
+            if (interimTranscript) displayText += interimTranscript + '...';
+            else displayText = displayText.trimEnd();
+            
+            currentInput.value = displayText;
+            currentInput.dispatchEvent(new Event('input', {bubbles: true}));
+        }
+    };
+    
+    deepseekRecognition.onerror = function(event) {
+        console.warn('[Voice] onerror:', event.error);
+        isRecording = false;
+        var b = document.getElementById('deepseek-voice-btn');
+        if (b) b.textContent = '🎤';
+        
+        // 如果已经拿到了结果，不报错
+        if (dsVoiceGotResult && dsVoiceFinalTranscript) {
+            console.log('[Voice] 虽然有错误，但已拿到结果，忽略');
+            fillVoiceResultToInput();
             return;
         }
         
-        // 每次点击都更新回调，确保获取最新DOM
-        deepseekRecognition.onstart = function() {
-            isRecording = true;
-            var b = document.getElementById('deepseek-voice-btn');
-            if (b) b.textContent = '🔴';
-            showToast('🎤 正在聆听，请说话...');
-        };
-        
-        deepseekRecognition.onresult = function(event) {
-            var transcript = event.results[0][0].transcript;
-            // V150-fix: 必须重置isRecording，否则下次点不了
-            isRecording = false;
-            var currentInput = document.getElementById('deepseek-input');
-            if (currentInput) {
-                // 追加到已有文字后面，不覆盖
-                if (currentInput.value && !currentInput.value.endsWith(' ')) {
-                    currentInput.value += ' ';
-                }
-                currentInput.value += transcript;
-                currentInput.dispatchEvent(new Event('input', {bubbles: true}));
-                currentInput.focus();
-            }
-            var b = document.getElementById('deepseek-voice-btn');
-            if (b) b.textContent = '🎤';
-            showToast('✅ 已识别: ' + transcript);
-        };
-        
-        deepseekRecognition.onerror = function(event) {
-            console.warn('Speech recognition error:', event.error);
-            isRecording = false;
-            var b = document.getElementById('deepseek-voice-btn');
-            if (b) b.textContent = '🎤';
-            
-            if (event.error === 'not-allowed') {
-                showToast('⚠️ 请允许麦克风权限后重试');
-            } else if (event.error === 'no-speech') {
-                showToast('未检测到语音，请再试一次');
-            } else if (event.error === 'network') {
-                showToast('⚠️ 语音识别需要网络连接');
-            } else {
-                // 其他错误（可能微信不支持），降级到录音提示
-                showToast('🎤 语音识别不可用，请用键盘语音输入');
-            }
-        };
-        
-        deepseekRecognition.onend = function() {
-            isRecording = false;
-            var b = document.getElementById('deepseek-voice-btn');
-            if (b) b.textContent = '🎤';
-        };
-        
-        if (isRecording) {
-            deepseekRecognition.stop();
-            isRecording = false;
-            if (btn) btn.textContent = '🎤';
+        if (event.error === 'not-allowed') {
+            showToast('⚠️ 请允许麦克风权限后重试');
+        } else if (event.error === 'no-speech') {
+            showToast('未检测到语音，请再试一次');
+        } else if (event.error === 'network') {
+            showToast('⚠️ 语音识别需要网络连接');
+        } else if (event.error === 'aborted') {
+            // 用户手动停止，不报错
         } else {
-            // V150-fix: 先强制停止再启动，防止"already started"异常
-            try { deepseekRecognition.stop(); } catch(e) {}
-            isRecording = false;
-            try {
-                deepseekRecognition.start();
-            } catch(e) {
-                console.warn('SpeechRecognition start failed:', e);
-                // 如果还是报already started，等一下再试
-                if (e.message && e.message.indexOf('already') >= 0) {
-                    setTimeout(function() {
-                        try { deepseekRecognition.start(); } catch(e2) {
-                            showToast('🎤 语音识别启动失败，请用键盘输入');
-                        }
-                    }, 300);
-                } else {
-                    showToast('🎤 语音识别启动失败，请用键盘输入');
-                }
-            }
+            showToast('🎤 语音识别出错(' + event.error + ')，请重试或用键盘输入');
         }
-    } else {
-        // 方案2：浏览器不支持SpeechRecognition，提示用键盘语音
-        showToast('🎤 请点击输入框，使用键盘的语音输入功能', 4000);
-        input.focus();
+    };
+    
+    deepseekRecognition.onend = function() {
+        console.log('[Voice] onend, gotResult:', dsVoiceGotResult, 'finalText:', dsVoiceFinalTranscript);
+        isRecording = false;
+        var b = document.getElementById('deepseek-voice-btn');
+        if (b) b.textContent = '🎤';
+        
+        // V151: onend时把最终确认的文本写入输入框
+        if (dsVoiceGotResult && dsVoiceFinalTranscript) {
+            fillVoiceResultToInput();
+        } else if (!dsVoiceGotResult) {
+            showToast('🎤 未识别到内容，请再试一次');
+        }
+    };
+    
+    // V151: 最终填入输入框的函数
+    function fillVoiceResultToInput() {
+        var currentInput = document.getElementById('deepseek-input');
+        if (currentInput && !currentInput.disabled) {
+            var existing = currentInput.value.replace(/\.\.\.+$/, '').replace(/…+$/, '').trim();
+            // 避免重复填入（如果实时转录已经填入了最终结果）
+            if (existing.indexOf(dsVoiceFinalTranscript) >= 0) {
+                // 已经有了，只做清理
+                currentInput.value = existing;
+            } else {
+                if (existing) existing += ' ';
+                currentInput.value = existing + dsVoiceFinalTranscript;
+            }
+            currentInput.dispatchEvent(new Event('input', {bubbles: true}));
+            currentInput.focus();
+            console.log('[Voice] 最终填入:', currentInput.value);
+            showToast('✅ 已识别: ' + dsVoiceFinalTranscript);
+        }
+    }
+    
+    // 启动识别
+    try {
+        deepseekRecognition.start();
+    } catch(e) {
+        console.error('[Voice] start失败:', e);
+        if (e.message && e.message.indexOf('already') >= 0) {
+            // already started，强制停止后重试
+            try { deepseekRecognition.stop(); } catch(e2) {}
+            setTimeout(function() {
+                try { deepseekRecognition.start(); } catch(e3) {
+                    showToast('🎤 语音识别启动失败，请刷新页面后重试');
+                }
+            }, 500);
+        } else {
+            showToast('🎤 语音识别启动失败: ' + e.message);
+        }
     }
 }
 
@@ -357,7 +424,7 @@ let currentVoiceInputCallback = null;
 let currentVoiceInputBtn = null;
 let currentVoiceInputId = null; // 当前语音输入的目标inputId
 
-// V148-fix: toggleVoiceInput通用语音输入函数，添加微信检测
+// V151: toggleVoiceInput通用语音输入函数 - 同步改进
 function toggleVoiceInput(btn, inputId) {
     const input = document.getElementById(inputId);
     if (!input) {
@@ -365,11 +432,9 @@ function toggleVoiceInput(btn, inputId) {
         return;
     }
     
-    // V150: 更新当前目标inputId
     currentVoiceInputId = inputId;
     currentVoiceInputBtn = btn;
     
-    // V150: 不再硬拦截微信浏览器，先尝试SpeechRecognition
     var hasSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
     
     if (!hasSpeechRecognition) {
@@ -378,77 +443,106 @@ function toggleVoiceInput(btn, inputId) {
         return;
     }
     
-    // 初始化语音识别
-    if (!voiceInputRecognition) {
+    // V151: 每次创建新的识别对象
+    try {
         var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         voiceInputRecognition = new SpeechRecognition();
         voiceInputRecognition.lang = 'zh-CN';
         voiceInputRecognition.continuous = false;
-        voiceInputRecognition.interimResults = false;
+        voiceInputRecognition.interimResults = true; // V151: 开启实时转录
+        voiceInputRecognition.maxAlternatives = 1;
+    } catch(initErr) {
+        showToast('🎤 语音识别初始化失败');
+        return;
     }
     
-    // 每次调用都更新回调
+    var viGotResult = false;
+    var viFinalText = '';
+    
     voiceInputRecognition.onstart = function() {
         isRecording = true;
-        if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🔴';
-        showToast('🎤 正在聆听，请说话...');
+        if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '⏺';
+        showToast('🎤 正在聆听，请说话...', 5000);
     };
     
     voiceInputRecognition.onresult = function(event) {
-        var transcript = event.results[0][0].transcript;
-        var targetInput = document.getElementById(currentVoiceInputId);
-        if (targetInput) {
-            if (targetInput.value && !targetInput.value.endsWith(' ')) {
-                targetInput.value += ' ';
+        var interimText = '';
+        var finalText = '';
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+                finalText += event.results[i][0].transcript;
+            } else {
+                interimText += event.results[i][0].transcript;
             }
-            targetInput.value += transcript;
-            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-            targetInput.focus();
         }
-        if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
-        showToast('✅ 已识别: ' + transcript);
+        if (finalText) {
+            viFinalText += finalText;
+            viGotResult = true;
+        }
+        // 实时更新输入框
+        var targetInput = document.getElementById(currentVoiceInputId);
+        if (targetInput && !targetInput.disabled) {
+            var val = targetInput.value.replace(/\.\.\.+$/, '').trim();
+            if (val && !val.endsWith(' ')) val += ' ';
+            if (viFinalText) val += viFinalText + ' ';
+            if (interimText) val += interimText + '...';
+            else val = val.trimEnd();
+            targetInput.value = val;
+            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
     };
     
     voiceInputRecognition.onerror = function(event) {
-        console.warn('Speech recognition error:', event.error);
         isRecording = false;
         if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
+        if (viGotResult && viFinalText) return; // 有结果就忽略错误
         if (event.error === 'not-allowed') {
             showToast('⚠️ 请允许麦克风权限后重试');
         } else if (event.error === 'no-speech') {
             showToast('未检测到语音，请再试一次');
         } else if (event.error !== 'aborted') {
-            showToast('🎤 语音识别不可用，请用键盘语音输入');
+            showToast('🎤 语音识别出错，请重试');
         }
     };
     
     voiceInputRecognition.onend = function() {
         isRecording = false;
         if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
+        if (viGotResult && viFinalText) {
+            var targetInput = document.getElementById(currentVoiceInputId);
+            if (targetInput && !targetInput.disabled) {
+                var val = targetInput.value.replace(/\.\.\.+$/, '').trim();
+                if (val.indexOf(viFinalText) < 0) {
+                    if (val) val += ' ';
+                    val += viFinalText;
+                }
+                targetInput.value = val;
+                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                targetInput.focus();
+                showToast('✅ 已识别: ' + viFinalText);
+            }
+        } else if (!viGotResult) {
+            showToast('🎤 未识别到内容，请再试一次');
+        }
     };
     
-    // 停止之前的 TTS
     stopTTSSpeech();
     
-    if (isRecording) {
-        // 停止当前录音
-        voiceInputRecognition.stop();
-        isRecording = false;
-        if (btn) btn.textContent = '🎤';
-    } else {
-        // 开始新录音
-        try {
-            voiceInputRecognition.start();
-        } catch(e) {
-            // 如果已经在运行，先停止再开始
-            voiceInputRecognition.stop();
+    try {
+        voiceInputRecognition.start();
+    } catch(e) {
+        if (e.message && e.message.indexOf('already') >= 0) {
+            try { voiceInputRecognition.stop(); } catch(e2) {}
             setTimeout(function() {
-                voiceInputRecognition.start();
-            }, 100);
+                try { voiceInputRecognition.start(); } catch(e3) {
+                    showToast('🎤 语音识别启动失败，请刷新后重试');
+                }
+            }, 500);
+        } else {
+            showToast('🎤 语音识别启动失败');
         }
     }
 }
 
 // 导出到window
 window.toggleVoiceInput = toggleVoiceInput;
-window.isRecording = isRecording;
