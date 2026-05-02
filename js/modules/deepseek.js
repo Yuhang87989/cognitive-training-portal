@@ -253,6 +253,12 @@ async function sendToDeepSeek() {
         if (bubbles.length > 0) {
             bubbles[bubbles.length - 1].innerHTML = '❌ 发生错误，请稍后重试。错误信息：' + escapeHtml(error.message);
         }
+    } finally {
+        // V150: 确保无论如何都恢复输入框
+        var finalInput = document.getElementById('deepseek-input');
+        var finalSendBtn = document.querySelector('.chat-send') || document.querySelector('#deepseek-send-btn');
+        if (finalInput) { finalInput.disabled = false; finalInput.focus(); }
+        if (finalSendBtn) { finalSendBtn.disabled = false; finalSendBtn.style.opacity = '1'; finalSendBtn.style.cursor = 'pointer'; }
     }
     
     messagesEl.scrollTop = messagesEl.scrollHeight;

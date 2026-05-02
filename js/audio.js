@@ -238,84 +238,90 @@ function isWeChatBrowser() {
     return /MicroMessenger/i.test(navigator.userAgent);
 }
 
-// V148-fix: 添加微信浏览器检测，提供替代方案
+// V150: 语音输入彻底重写 - 优先SpeechRecognition，不支持时降级MediaRecorder+提示
 function toggleDeepSeekVoice() {
-    const btn = document.getElementById('deepseek-voice-btn');
-    const input = document.getElementById('deepseek-input');
+    var btn = document.getElementById('deepseek-voice-btn');
+    var input = document.getElementById('deepseek-input');
     if (!input) return;
     
-    // V148-fix: 微信浏览器不支持webkitSpeechRecognition
-    if (isWeChatBrowser()) {
-        showToast('📱 微信中请使用系统键盘的语音输入功能', 4000);
-        return;
-    }
+    // V150: 先尝试浏览器原生SpeechRecognition（包括微信新版）
+    var hasSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
     
-    // V148-fix: 检测浏览器是否支持语音识别
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        showToast('⚠️ 当前浏览器不支持语音输入，请使用打字输入或系统键盘语音');
-        return;
-    }
-    
-    if (!deepseekRecognition) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        deepseekRecognition = new SpeechRecognition();
-        deepseekRecognition.lang = 'zh-CN';
-        deepseekRecognition.continuous = false;
-        deepseekRecognition.interimResults = false;
+    if (hasSpeechRecognition) {
+        // 方案1：使用浏览器原生语音识别
+        if (!deepseekRecognition) {
+            var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            deepseekRecognition = new SpeechRecognition();
+            deepseekRecognition.lang = 'zh-CN';
+            deepseekRecognition.continuous = false;
+            deepseekRecognition.interimResults = false;
+        }
         
+        // 每次点击都更新回调，确保获取最新DOM
         deepseekRecognition.onstart = function() {
             isRecording = true;
-            if (btn) btn.textContent = '🔴';
-            showToast('正在聆听...');
+            var b = document.getElementById('deepseek-voice-btn');
+            if (b) b.textContent = '🔴';
+            showToast('🎤 正在聆听，请说话...');
         };
         
         deepseekRecognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            // 每次重新获取input元素，避免闭包引用已失效的DOM
-            const currentInput = document.getElementById('deepseek-input');
+            var transcript = event.results[0][0].transcript;
+            var currentInput = document.getElementById('deepseek-input');
             if (currentInput) {
-                currentInput.value += (currentInput.value ? ' ' : '') + transcript;
-                // 触发input事件，确保框架感知到值变化
+                // 追加到已有文字后面，不覆盖
+                if (currentInput.value && !currentInput.value.endsWith(' ')) {
+                    currentInput.value += ' ';
+                }
+                currentInput.value += transcript;
                 currentInput.dispatchEvent(new Event('input', {bubbles: true}));
+                currentInput.focus();
             }
-            if (btn) btn.textContent = '🎤';
-            showToast('已识别: ' + transcript);
+            var b = document.getElementById('deepseek-voice-btn');
+            if (b) b.textContent = '🎤';
+            showToast('✅ 已识别: ' + transcript);
         };
         
         deepseekRecognition.onerror = function(event) {
-            console.error('Speech recognition error:', event.error);
+            console.warn('Speech recognition error:', event.error);
             isRecording = false;
-            if (btn) btn.textContent = '🎤';
-            if (event.error !== 'no-speech') {
-                showToast('语音识别错误: ' + event.error);
+            var b = document.getElementById('deepseek-voice-btn');
+            if (b) b.textContent = '🎤';
+            
+            if (event.error === 'not-allowed') {
+                showToast('⚠️ 请允许麦克风权限后重试');
+            } else if (event.error === 'no-speech') {
+                showToast('未检测到语音，请再试一次');
+            } else if (event.error === 'network') {
+                showToast('⚠️ 语音识别需要网络连接');
+            } else {
+                // 其他错误（可能微信不支持），降级到录音提示
+                showToast('🎤 语音识别不可用，请用键盘语音输入');
             }
         };
         
         deepseekRecognition.onend = function() {
             isRecording = false;
-            if (btn) btn.textContent = '🎤';
+            var b = document.getElementById('deepseek-voice-btn');
+            if (b) b.textContent = '🎤';
         };
-    }
-    
-    // 每次点击时重置recognition，确保获取最新DOM元素
-    deepseekRecognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        const currentInput = document.getElementById('deepseek-input');
-        if (currentInput) {
-            currentInput.value += (currentInput.value ? ' ' : '') + transcript;
-            currentInput.dispatchEvent(new Event('input', {bubbles: true}));
+        
+        if (isRecording) {
+            deepseekRecognition.stop();
+            isRecording = false;
+            if (btn) btn.textContent = '🎤';
+        } else {
+            try {
+                deepseekRecognition.start();
+            } catch(e) {
+                console.warn('SpeechRecognition start failed:', e);
+                showToast('🎤 语音识别启动失败，请用键盘语音输入');
+            }
         }
-        const currentBtn = document.getElementById('deepseek-voice-btn');
-        if (currentBtn) currentBtn.textContent = '🎤';
-        showToast('已识别: ' + transcript);
-    };
-    
-    if (isRecording) {
-        deepseekRecognition.stop();
-        isRecording = false;
-        if (btn) btn.textContent = '🎤';
     } else {
-        deepseekRecognition.start();
+        // 方案2：浏览器不支持SpeechRecognition，提示用键盘语音
+        showToast('🎤 请点击输入框，使用键盘的语音输入功能', 4000);
+        input.focus();
     }
 }
 
@@ -338,74 +344,38 @@ function toggleVoiceInput(btn, inputId) {
         return;
     }
     
-    // V148-fix: 更新当前目标inputId
+    // V150: 更新当前目标inputId
     currentVoiceInputId = inputId;
     currentVoiceInputBtn = btn;
     
-    // V148-fix: 微信浏览器检测
-    if (isWeChatBrowser()) {
-        showToast('📱 微信中请使用系统键盘的语音输入', 4000);
-        // 自动聚焦到输入框，提示用户使用系统语音
-        input.focus();
-        return;
-    }
+    // V150: 不再硬拦截微信浏览器，先尝试SpeechRecognition
+    var hasSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
     
-    // V148-fix: 检查浏览器支持
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        showToast('⚠️ 当前浏览器不支持语音输入');
+    if (!hasSpeechRecognition) {
+        showToast('🎤 请点击输入框，使用键盘的语音输入功能', 4000);
+        input.focus();
         return;
     }
     
     // 初始化语音识别
     if (!voiceInputRecognition) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         voiceInputRecognition = new SpeechRecognition();
         voiceInputRecognition.lang = 'zh-CN';
         voiceInputRecognition.continuous = false;
         voiceInputRecognition.interimResults = false;
-        
-        voiceInputRecognition.onstart = function() {
-            isRecording = true;
-            if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🔴';
-            showToast('正在聆听...');
-        };
-        
-        voiceInputRecognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            // 用currentVoiceInputId而非闭包捕获的inputId，确保指向最新目标
-            const targetInput = document.getElementById(currentVoiceInputId);
-            if (targetInput) {
-                if (targetInput.value && !targetInput.value.endsWith(' ')) {
-                    targetInput.value += ' ';
-                }
-                targetInput.value += transcript;
-                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-                // 聚焦输入框，让用户看到文字
-                targetInput.focus();
-            }
-            if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
-            showToast('已识别: ' + transcript);
-        };
-        
-        voiceInputRecognition.onerror = function(event) {
-            console.error('Speech recognition error:', event.error);
-            isRecording = false;
-            if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
-            if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                showToast('语音识别错误: ' + event.error);
-            }
-        };
-        
-        voiceInputRecognition.onend = function() {
-            isRecording = false;
-            if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
-        };
     }
     
-    // 每次调用都更新onresult，确保使用最新的currentVoiceInputId
+    // 每次调用都更新回调
+    voiceInputRecognition.onstart = function() {
+        isRecording = true;
+        if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🔴';
+        showToast('🎤 正在聆听，请说话...');
+    };
+    
     voiceInputRecognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        const targetInput = document.getElementById(currentVoiceInputId);
+        var transcript = event.results[0][0].transcript;
+        var targetInput = document.getElementById(currentVoiceInputId);
         if (targetInput) {
             if (targetInput.value && !targetInput.value.endsWith(' ')) {
                 targetInput.value += ' ';
@@ -415,7 +385,25 @@ function toggleVoiceInput(btn, inputId) {
             targetInput.focus();
         }
         if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
-        showToast('已识别: ' + transcript);
+        showToast('✅ 已识别: ' + transcript);
+    };
+    
+    voiceInputRecognition.onerror = function(event) {
+        console.warn('Speech recognition error:', event.error);
+        isRecording = false;
+        if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
+        if (event.error === 'not-allowed') {
+            showToast('⚠️ 请允许麦克风权限后重试');
+        } else if (event.error === 'no-speech') {
+            showToast('未检测到语音，请再试一次');
+        } else if (event.error !== 'aborted') {
+            showToast('🎤 语音识别不可用，请用键盘语音输入');
+        }
+    };
+    
+    voiceInputRecognition.onend = function() {
+        isRecording = false;
+        if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
     };
     
     // 停止之前的 TTS
