@@ -1,4 +1,4 @@
-// 版本: V144
+// 版本: V151-2
 
 window.week5Plan = {
     weekId:'week5',weekTitle:'Week5：系统性思维与守恒思维综合周',
@@ -303,6 +303,51 @@ window.week7Plan = {
 };
 
 
+// ===== Week8训练计划 =====
+window.week8Plan = {
+    weekId:'week8',weekTitle:'Week8：元认知高阶应用与学业实战整合周',
+    weekDesc:'元认知高阶应用+学业实战整合+效率优化三轨并行，实现从"监控调控"到"预测预防"的升级',
+    days:[
+        {day:1,title:'元认知高阶应用 - 预测性监控与预防性调节',tasks:[
+            {id:'w8d1t1',title:'预测性监控训练 - 规律识别与预警指标',type:'practice',duration:10,completed:false},
+            {id:'w8d1t2',title:'预防性调节策略库应用',type:'strategy',duration:10,completed:false},
+            {id:'w8d1t3',title:'学习状态预测表制定',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:2,title:'期末复习策略系统准备 - 为学业评估做规划',tasks:[
+            {id:'w8d2t1',title:'复习目标拆解训练',type:'strategy',duration:10,completed:false},
+            {id:'w8d2t2',title:'复习时间规划与分配',type:'planning',duration:10,completed:false},
+            {id:'w8d2t3',title:'复习优先级矩阵应用',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:3,title:'学业实战整合深化 - 真题思维与综合应用',tasks:[
+            {id:'w8d3t1',title:'真题思维四步法训练',type:'practice',duration:15,completed:false},
+            {id:'w8d3t2',title:'综合问题拆解练习',type:'practice',duration:10,completed:false},
+            {id:'w8d3t3',title:'数学物理综合思维应用',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:4,title:'自主学习效率优化 - 流程简化与工具升级',tasks:[
+            {id:'w8d4t1',title:'学习流程效率审计',type:'practice',duration:10,completed:false},
+            {id:'w8d4t2',title:'学习工具升级与优化',type:'strategy',duration:10,completed:false},
+            {id:'w8d4t3',title:'时间块管理实战',type:'practice',duration:10,completed:false}
+        ]},
+        {day:5,title:'个性化学习体系建立 - 形成自己的学习系统',tasks:[
+            {id:'w8d5t1',title:'Week1-8能力盘点',type:'review',duration:10,completed:false},
+            {id:'w8d5t2',title:'个性化学习体系设计',type:'creative',duration:15,completed:false},
+            {id:'w8d5t3',title:'个人学习工具包构建',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:6,title:'周度复盘与自我评估 - 学业实战的阶段总结',tasks:[
+            {id:'w8d6t1',title:'Week8成长记录与评估',type:'review',duration:10,completed:false},
+            {id:'w8d6t2',title:'学业实战阶段评估',type:'writing',duration:10,completed:false},
+            {id:'w8d6t3',title:'效率优化总结与改进',type:'writing',duration:10,completed:false}
+        ]},
+        {day:7,title:'Week8复盘报告与Week9展望',tasks:[
+            {id:'w8d7t1',title:'Week8复盘报告生成',type:'writing',duration:15,completed:false},
+            {id:'w8d7t2',title:'个人学习体系评估',type:'review',duration:10,completed:false},
+            {id:'w8d7t3',title:'制定Week9进阶目标',type:'strategy',duration:5,completed:false}
+        ]}
+    ]
+};
+CTM.registerPlan('week8', week8Plan);
+
+
 // ===== Week Plans 映射 =====
 window.weekPlans = {
     week1: week1Plan,
@@ -311,7 +356,8 @@ window.weekPlans = {
     week4: week4Plan,
     week5: week5Plan,
     week6: week6Plan,
-    week7: week7Plan
+    week7: week7Plan,
+    week8: week8Plan
 };
 
 
