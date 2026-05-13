@@ -473,6 +473,30 @@ window.ocrImageAndSend = ocrImageAndSend;
 
 
 
+// V195: 对话模式切换
+window.deepseekMode = localStorage.getItem('deepseek_mode') || 'fast'; // 'fast' | 'expert'
+
+window.toggleDeepseekMode = function(mode) {
+    window.deepseekMode = mode;
+    localStorage.setItem('deepseek_mode', mode);
+    document.querySelectorAll('.ds-mode-btn').forEach(btn => {
+        btn.style.background = btn.dataset.mode === mode ? '#667eea' : '#f5f5f5';
+        btn.style.color = btn.dataset.mode === mode ? 'white' : '#666';
+    });
+    showToast(mode === 'fast' ? '🚀 快速模式：省token、响应快' : '💎 专家模式：完整上下文、回答详细');
+};
+
+function getContextForMode() {
+    const history = deepseekConversationHistory || [];
+    if (window.deepseekMode === 'fast') {
+        // 快速模式：只带最近5条 + 简短提示
+        return history.slice(-5);
+    } else {
+        // 专家模式：带最近20条
+        return history.slice(-20);
+    }
+}
+
 async function sendToDeepSeek() {
     const input = document.getElementById('deepseek-input');
     if (!input) { return; }
@@ -509,7 +533,8 @@ async function sendToDeepSeek() {
     clearDeepSeekImage();
     
     try {
-        const result = await callVisionDeepSeekAPI(deepseekConversationHistory);
+        const contextToSend = getContextForMode();
+        const result = await callVisionDeepSeekAPI(contextToSend);
         const bubbles = messagesEl.querySelectorAll('.chat-bubble');
         if (input) { input.disabled = false; input.focus(); }
         if (sendBtn) { sendBtn.disabled = false; sendBtn.style.opacity = '1'; sendBtn.style.cursor = 'pointer'; }
