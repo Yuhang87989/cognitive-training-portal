@@ -161,56 +161,7 @@ function closeModal(modalId) {
     }
 }
 
-function openSettingsPanel() {
-    const user = getCurrentUserData();
-    if (user) {
-        // 更新用户信息卡片
-        const avatarEl = document.getElementById('settings-avatar');
-        const nameEl = document.getElementById('settings-name');
-        const gradeEl = document.getElementById('settings-grade');
-        const diffEl = document.getElementById('settings-difficulty-display');
-        const wrongCountEl = document.getElementById('settings-wrong-count');
-        const trainCountEl = document.getElementById('settings-train-count');
-        
-        if (avatarEl) avatarEl.textContent = user.name.charAt(0);
-        if (nameEl) nameEl.textContent = user.name;
-        if (gradeEl) gradeEl.textContent = gradeNames[user.grade] + ' · Lv.' + user.difficulty;
-        if (diffEl) diffEl.textContent = 'Lv.' + user.difficulty;
-        
-        // 更新错题数量
-        const wrongNotes = user.wrongNotes || [];
-        if (wrongCountEl) wrongCountEl.textContent = '共 ' + wrongNotes.length + ' 道错题';
-        
-        // 更新训练次数
-        const trainCount = user.trainCount || 8;
-        if (trainCountEl) trainCountEl.value = trainCount;
-        
-        // 更新数据统计显示
-        if (typeof updateDataStatsDisplay === 'function') {
-            updateDataStatsDisplay();
-        }
-    }
-    
-    // 更新API配置状态显示
-    if (typeof updateApiStatusDisplay === 'function') {
-        updateApiStatusDisplay();
-    }
-    
-    document.getElementById('settings-panel').style.display = 'block';
-}
-
-function closeSettingsPanel(e) {
-    if (!e || e.target === document.getElementById('settings-panel')) {
-        document.getElementById('settings-panel').style.display = 'none';
-    }
-}
-
-function toggleSettingsGroup(groupId) {
-    const group = document.getElementById('group-' + groupId);
-    if (group) {
-        group.classList.toggle('open');
-    }
-}
+// 注意：openSettingsPanel、closeSettingsPanel、toggleSettingsGroup 函数已移至 js/modules/ui.js 中统一管理，避免命名冲突
 
 function exitSystem() {
     // 停止所有媒体

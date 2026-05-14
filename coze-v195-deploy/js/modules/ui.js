@@ -1449,6 +1449,7 @@ window.openEditProfileModal = openEditProfileModal;
 window.openFullscreenPage = openFullscreenPage;
 window.openHelp = openHelp;
 window.openSettingsPanel = openSettingsPanel;
+window.closeSettingsPanel = closeSettingsPanel;
 window.savePasswordChanges = savePasswordChanges;
 window.setDifficulty = setDifficulty;
 window.showCreateUserModal = showCreateUserModal;
