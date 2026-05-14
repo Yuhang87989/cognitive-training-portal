@@ -93,19 +93,19 @@ function renderCognitiveDetails(data) {
             tip: '图形推理、找不同游戏和思维训练可提升'
         },
         { 
-            key: 'creativity', 
-            label: '创造力', 
-            icon: '🎨', 
-            color: '#4facfe',
-            desc: '发散思维与创新思考能力',
-            tip: '颜色识别游戏和创意思维训练可提升'
+            key: 'reaction', 
+            label: '反应力', 
+            icon: '⚡', 
+            color: '#f5576c',
+            desc: '快速反应与应变能力',
+            tip: '快速点击、颜色识别、舒尔特方格可提升'
         },
         { 
-            key: 'emotion', 
-            label: '情绪力', 
-            icon: '❤️', 
-            color: '#43e97b',
-            desc: '情绪管理与学习动力',
+            key: 'persistence', 
+            label: '坚持力', 
+            icon: '🏃', 
+            color: '#f093fb',
+            desc: '持续学习与坚韧不拔',
             tip: '保持连续学习、完成多种训练可提升'
         },
         { 
@@ -141,8 +141,8 @@ function renderStatItems(data) {
         {label: '专注力', value: data.attention, color: '#667eea', icon: '🎯'},
         {label: '记忆力', value: data.memory, color: '#764ba2', icon: '🧠'},
         {label: '思维力', value: data.thinking, color: '#f093fb', icon: '💡'},
-        {label: '创造力', value: data.creativity, color: '#4facfe', icon: '🎨'},
-        {label: '情绪力', value: data.emotion, color: '#43e97b', icon: '❤️'},
+        {label: '反应力', value: data.reaction, color: '#f5576c', icon: '⚡'},
+        {label: '坚持力', value: data.persistence, color: '#f093fb', icon: '🏃'},
         {label: '元认知', value: data.metacognition, color: '#fa709a', icon: '🔮'}
     ];
     

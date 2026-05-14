@@ -361,6 +361,7 @@ function openFullscreenPage(module) {
         case 'deepseek': renderDeepseek(contentEl); break;
         case 'wrongbook': renderWrongbook(contentEl); break;
         case 'pomodoro': renderPomodoro(contentEl); break;
+        case 'settings': openSettingsPanel(); closeFullscreenPage(); return; break;
         case 'my': renderMyPage(contentEl); break;
         case 'selfdrive': renderSelfDrive(contentEl); break;
         case 'backup': renderBackupManager(contentEl); break;
@@ -985,10 +986,10 @@ function drawRadarChart(data) {
     
     const centerX = 200, centerY = 200;
     const maxRadius = 120;
-    const labels = ['专注力', '记忆力', '思维力', '创造力', '情绪力', '元认知'];
-    const values = [data.attention, data.memory, data.thinking, data.creativity, data.emotion, data.metacognition];
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a'];
-    const icons = ['🎯', '🧠', '💡', '🎨', '❤️', '🔮'];
+    const labels = ['专注力', '记忆力', '思维力', '反应力', '坚持力', '元认知'];
+    const values = [data.attention, data.memory, data.thinking, data.reaction, data.persistence, data.metacognition];
+    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#f093fb', '#fa709a'];
+    const icons = ['🎯', '🧠', '💡', '⚡', '🏃', '🔮'];
     const numAxes = 6;
     const angleStep = (2 * Math.PI) / numAxes;
     
@@ -1115,33 +1116,31 @@ function calculateCognitiveData() {
     });
 
 
-// ====== 4. 创造力计算 ======
-// 来源：颜色识别游戏、思维训练（创意、发散）
-    let creativityScore = 50;
-    const creativityGames = ['color'];
-    creativityGames.forEach(g => {
-        if (gameScores[g]) creativityScore += Math.min(gameScores[g] / 10, 15);
-        if (gameCounts[g]) creativityScore += Math.min(gameCounts[g] * 3, 10);
+// ====== 4. 反应力计算 ======
+// 来源：快速点击、颜色识别、反应速度游戏
+    let reactionScore = 50;
+    const reactionGames = ['tap', 'color', 'schulte'];
+    reactionGames.forEach(g => {
+        if (gameScores[g]) reactionScore += Math.min(gameScores[g] / 10, 15);
+        if (gameCounts[g]) reactionScore += Math.min(gameCounts[g] * 3, 10);
     });
-    // 创意和发散思维 (type: creative, divergent)
-    ['creative', 'divergent'].forEach(t => {
-        if (thinkingStats[t]) {
-            creativityScore += Math.min(thinkingStats[t].completed * 4, 12);
-        }
-    });
+    // 快速反应训练 (type: quick)
+    if (thinkingStats['quick']) {
+        reactionScore += Math.min(thinkingStats['quick'].completed * 4, 12);
+    }
 
 
-// ====== 5. 情绪力计算 ======
-// 来源：学习连续性、游戏表现稳定性、训练完成度
-    let emotionScore = 50;
+// ====== 5. 坚持力计算 ======
+// 来源：学习连续性、总训练量、连续打卡天数
+    let persistenceScore = 50;
     // 连续学习天数
     const streakDays = calculateStreakDays(user);
-    emotionScore += Math.min(streakDays * 3, 15);
+    persistenceScore += Math.min(streakDays * 3, 15);
     // 今日学习时长
-    if (todayStats.minutes > 0) emotionScore += Math.min(todayStats.minutes / 5, 10);
-    // 游戏完成度（玩过的游戏种类数）
-    const totalGamesPlayed = Object.keys(gameCounts).length;
-    emotionScore += Math.min(totalGamesPlayed * 3, 15);
+    if (todayStats.minutes > 0) persistenceScore += Math.min(todayStats.minutes / 5, 10);
+    // 总训练量（游戏完成总数）
+    const totalGamesPlayed = Object.values(gameCounts).reduce((sum, count) => sum + count, 0);
+    persistenceScore += Math.min(totalGamesPlayed * 2, 15);
 
 
 // ====== 6. 元认知计算 ======
@@ -1161,16 +1160,16 @@ function calculateCognitiveData() {
         attention: Math.max(20, Math.min(100, Math.round(attentionScore))),
         memory: Math.max(20, Math.min(100, Math.round(memoryScore))),
         thinking: Math.max(20, Math.min(100, Math.round(thinkingScore))),
-        creativity: Math.max(20, Math.min(100, Math.round(creativityScore))),
-        emotion: Math.max(20, Math.min(100, Math.round(emotionScore))),
+        reaction: Math.max(20, Math.min(100, Math.round(reactionScore))),
+        persistence: Math.max(20, Math.min(100, Math.round(persistenceScore))),
         metacognition: Math.max(20, Math.min(100, Math.round(metacognitionScore))),
         // 额外数据用于详情展示
         sources: {
             attention: { games: attentionGames.filter(g => gameCounts[g]), method: false },
             memory: { games: memoryGames.filter(g => gameCounts[g]), method: !!methodStats['memory'] },
             thinking: { games: thinkingGames.filter(g => gameCounts[g]), training: thinkingTypes.filter(t => thinkingStats[t]) },
-            creativity: { games: creativityGames.filter(g => gameCounts[g]), training: ['creative', 'divergent'].filter(t => thinkingStats[t]) },
-            emotion: { streakDays, minutes: todayStats.minutes },
+            reaction: { games: reactionGames.filter(g => gameCounts[g]), training: thinkingStats['quick'] ? ['quick'] : [] },
+            persistence: { streakDays, minutes: todayStats.minutes },
             metacognition: { methodTotal, thinkingTotal, aiChats: user.aiChatCount || 0 }
         }
     };
@@ -1181,10 +1180,10 @@ function getDefaultCognitiveData() {
         attention: 50,
         memory: 50,
         thinking: 50,
-        creativity: 50,
-        emotion: 50,
+        reaction: 50,
+        persistence: 50,
         metacognition: 50,
-        sources: { attention: {}, memory: {}, thinking: {}, creativity: {}, emotion: {}, metacognition: {} }
+        sources: { attention: {}, memory: {}, thinking: {}, reaction: {}, persistence: {}, metacognition: {} }
     };
 }
 
@@ -1215,19 +1214,19 @@ function renderCognitiveDetails(data) {
             tip: '图形推理、找不同游戏和思维训练可提升'
         },
         { 
-            key: 'creativity', 
-            label: '创造力', 
-            icon: '🎨', 
-            color: '#4facfe',
-            desc: '发散思维与创新思考能力',
-            tip: '颜色识别游戏和创意思维训练可提升'
+            key: 'reaction', 
+            label: '反应力', 
+            icon: '⚡', 
+            color: '#f5576c',
+            desc: '快速反应与应变能力',
+            tip: '快速点击、颜色识别、舒尔特方格可提升'
         },
         { 
-            key: 'emotion', 
-            label: '情绪力', 
-            icon: '❤️', 
-            color: '#43e97b',
-            desc: '情绪管理与学习动力',
+            key: 'persistence', 
+            label: '坚持力', 
+            icon: '🏃', 
+            color: '#f093fb',
+            desc: '持续学习与坚韧不拔',
             tip: '保持连续学习、完成多种训练可提升'
         },
         { 
@@ -1309,8 +1308,8 @@ function renderStatItems(data) {
         {label: '专注力', value: data.attention, color: '#667eea', icon: '🎯'},
         {label: '记忆力', value: data.memory, color: '#764ba2', icon: '🧠'},
         {label: '思维力', value: data.thinking, color: '#f093fb', icon: '💡'},
-        {label: '创造力', value: data.creativity, color: '#4facfe', icon: '🎨'},
-        {label: '情绪力', value: data.emotion, color: '#43e97b', icon: '❤️'},
+        {label: '反应力', value: data.reaction, color: '#f5576c', icon: '⚡'},
+        {label: '坚持力', value: data.persistence, color: '#f093fb', icon: '🏃'},
         {label: '元认知', value: data.metacognition, color: '#fa709a', icon: '🔮'}
     ];
     
