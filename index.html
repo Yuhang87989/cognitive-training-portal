@@ -399,6 +399,13 @@ if('serviceWorker' in navigator){
                         </div>
                         <button onclick="openApiConfigModal('peerjs')" style="background:#4facfe;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">配置</button>
                     </div>
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <div style="font-size:14px;color:#333;">DeepSeek帮助文档</div>
+                            <div style="font-size:12px;color:#999;">查看API使用说明和模式对比</div>
+                        </div>
+                        <button onclick="openDeepseekHelpModal()" style="background:#764ba2;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">查看</button>
+                    </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
                         <div>
                             <div style="font-size:14px;color:#333;">恢复默认配置</div>
@@ -786,7 +793,7 @@ if('serviceWorker' in navigator){
     // 自动版本号：基于时间戳，每次部署自动更新
     window.__APP_VERSION = Date.now();
     
-    const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/db.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/ai.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/local-db.js', 'js/modules/my-page.js', 'js/modules/self-drive.js', 'js/modules/ui.js'];
+    const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/db.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/ai.js', 'js/modules/usage-stats.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/local-db.js', 'js/modules/my-page.js', 'js/modules/self-drive.js', 'js/modules/ui.js'];
     // 并行加载所有JS文件，大幅提升页面加载速度
     const v = window.__APP_VERSION || Date.now();
     let pending = loadOrder.length;
