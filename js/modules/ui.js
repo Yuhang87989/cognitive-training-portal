@@ -340,6 +340,9 @@ function openFullscreenPage(module) {
         'deepseek': '🤖 DeepSeek',
         'wrongbook': '📒 错题本',
         'pomodoro': '🍅 番茄闹钟',
+        'calculator': '🧮 计算器',
+        'notepad': '📝 记事本',
+        'usage-stats': '📊 AI使用统计',
         'settings': '⚙️ 设置',
         'my': '👤 我的',
         'selfdrive': '💪 自驱力训练',
@@ -361,6 +364,9 @@ function openFullscreenPage(module) {
         case 'deepseek': renderDeepseek(contentEl); break;
         case 'wrongbook': renderWrongbook(contentEl); break;
         case 'pomodoro': renderPomodoro(contentEl); break;
+        case 'calculator': renderCalculator(contentEl); break;
+        case 'notepad': renderNotepad(contentEl); break;
+        case 'usage-stats': renderUsageStats(contentEl); break;
         case 'settings': openSettingsPanel(); closeFullscreenPage(); return; break;
         case 'my': renderMyPage(contentEl); break;
         case 'selfdrive': renderSelfDrive(contentEl); break;

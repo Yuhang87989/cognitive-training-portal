@@ -99,6 +99,17 @@ window.openUsageStats = function() {
     }
 };
 
+// 渲染AI使用统计（用于全屏页面）
+function renderUsageStats(container) {
+    if (window.UsageStatsModule) {
+        window.UsageStatsModule.openUsageStatsModal();
+        closeFullscreenPage();
+    } else {
+        container.innerHTML = '<div class="card"><p style="text-align:center;">使用统计模块加载中...</p></div>';
+    }
+}
+window.renderUsageStats = renderUsageStats;
+
 // DeepSeek帮助文档模态框
 window.openDeepseekHelpModal = function() {
     const modal = document.createElement('div');
@@ -297,29 +308,17 @@ window.openSelfDrivePage = function() {
 
 // 打开番茄钟
 window.openPomodoro = function() {
-    const modal = document.getElementById('fullscreen-page');
-    const content = document.getElementById('fullscreen-content');
-    const title = document.getElementById('fullscreen-title');
-    
-    if (modal && content) {
-        modal.classList.add('show');
-        title.textContent = '🍅 番茄钟';
-        if (typeof renderPomodoroContent === 'function') {
-            renderPomodoroContent(content);
-        } else {
-            content.innerHTML = '<div style="padding:20px;text-align:center;"><h3>🍅 番茄钟</h3><p>功能开发中...</p></div>';
-        }
-    }
+    openFullscreenPage('pomodoro');
 };
 
 // 打开计算器
 window.openCalculator = function() {
-    showToast('计算器功能开发中');
+    openFullscreenPage('calculator');
 };
 
 // 打开记事本
 window.openNotepad = function() {
-    showToast('记事本功能开发中');
+    openFullscreenPage('notepad');
 };
 
 // 打开修改资料
