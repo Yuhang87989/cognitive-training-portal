@@ -340,7 +340,8 @@ function openFullscreenPage(module) {
         'deepseek': '🤖 DeepSeek',
         'wrongbook': '📒 错题本',
         'pomodoro': '🍅 番茄闹钟',
-        'settings': '⚙️ 设置'
+        'settings': '⚙️ 设置',
+        'my': '👤 我的'
     };
     
     titleEl.textContent = moduleTitles[module] || '模块';
@@ -358,6 +359,7 @@ function openFullscreenPage(module) {
         case 'deepseek': renderDeepseek(contentEl); break;
         case 'wrongbook': renderWrongbook(contentEl); break;
         case 'pomodoro': renderPomodoro(contentEl); break;
+        case 'my': renderMyPage(contentEl); break;
         default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
     }
     
