@@ -1811,3 +1811,8 @@ window.showDataStatsModal = showDataStatsModal;
 window.exportData = exportData;
 window.importData = importData;
 window.handleImportFile = handleImportFile;
+
+// V195-fix: 暴露认知地图相关函数到全局
+window.calculateCognitiveData = calculateCognitiveData;
+window.getDefaultCognitiveData = getDefaultCognitiveData;
+window.drawRadarChart = drawRadarChart;
