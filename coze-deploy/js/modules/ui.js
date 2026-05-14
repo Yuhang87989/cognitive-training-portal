@@ -341,7 +341,9 @@ function openFullscreenPage(module) {
         'wrongbook': '📒 错题本',
         'pomodoro': '🍅 番茄闹钟',
         'settings': '⚙️ 设置',
-        'my': '👤 我的'
+        'my': '👤 我的',
+        'selfdrive': '💪 自驱力训练',
+        'backup': '💾 数据备份'
     };
     
     titleEl.textContent = moduleTitles[module] || '模块';
@@ -360,6 +362,8 @@ function openFullscreenPage(module) {
         case 'wrongbook': renderWrongbook(contentEl); break;
         case 'pomodoro': renderPomodoro(contentEl); break;
         case 'my': renderMyPage(contentEl); break;
+        case 'selfdrive': renderSelfDrive(contentEl); break;
+        case 'backup': renderBackupManager(contentEl); break;
         default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
     }
     
