@@ -222,7 +222,109 @@ function checkTopicAnswer(topicId) {
         }
         syncUserData(userData);
     }
-}function uploadTopicPhoto(topicId, input) {
+}
+
+// AI辅导母题训练题目 - 给出提示而非直接答案
+async function analyzeTopicWithAI(topicId) {
+    const topic = findTopic(topicId);
+    if (!topic) {
+        showToast('题目不存在');
+        return;
+    }
+    
+    // 获取用户输入的答案
+    const userAnswerInput = document.getElementById('topic-answer-input');
+    const userAnswer = userAnswerInput ? userAnswerInput.value.trim() : '';
+    
+    // 创建或获取AI辅导结果显示区域
+    let aiResultArea = document.getElementById('topic-ai-result');
+    if (!aiResultArea) {
+        // 在result area后添加AI结果区域
+        const resultArea = document.getElementById('topic-result-area');
+        if (resultArea && resultArea.parentElement) {
+            aiResultArea = document.createElement('div');
+            aiResultArea.id = 'topic-ai-result';
+            resultArea.parentElement.insertBefore(aiResultArea, resultArea.nextSibling);
+        } else {
+            // 如果找不到，直接在detail-content里显示
+            const content = document.getElementById('detail-content');
+            if (content) {
+                aiResultArea = document.createElement('div');
+                aiResultArea.id = 'topic-ai-result';
+                content.appendChild(aiResultArea);
+            } else {
+                showToast('无法显示AI辅导');
+                return;
+            }
+        }
+    }
+    
+    // 显示加载状态
+    aiResultArea.innerHTML = `
+        <div style="padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:12px;text-align:center;margin-top:12px;">
+            <div style="margin-bottom:6px;">🤖 AI辅导中...</div>
+            <div style="font-size:12px;opacity:0.9;">正在为您生成解题思路提示</div>
+        </div>
+    `;
+    
+    // 准备AI请求消息 - 设计提示词，引导AI给出思路提示而非直接答案
+    const messages = [
+        {
+            role: 'system',
+            content: '你是一位耐心的学习辅导老师。请遵循以下原则：\n1. 不要直接给出答案\n2. 给出循序渐进的解题思路提示\n3. 引导学生自己思考得出答案\n4. 语言亲切易懂，鼓励学生\n5. 分点说明，条理清晰\n6. 如果学生已经作答，先肯定学生的努力，再给出改进建议'
+        },
+        {
+            role: 'user',
+            content: `题目：${topic.title}\n\n题目内容：${topic.q}\n\n${topic.opts ? '选项：\n' + topic.opts.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`).join('\n') : ''}\n\n${userAnswer ? `学生的答案：${userAnswer}` : '学生还未作答，需要解题思路提示'}\n\n请按照辅导原则，给出解题思路提示，不要直接给出答案。`
+        }
+    ];
+    
+    try {
+        const result = await callDeepSeekAPI(messages, 0.7);
+        
+        if (result.error) {
+            aiResultArea.innerHTML = `
+                <div style="padding:14px;background:#fff3f3;border-radius:12px;margin-top:12px;">
+                    <div style="color:#ff6b6b;font-weight:600;margin-bottom:6px;">❌ AI辅导失败</div>
+                    <div style="font-size:13px;color:#666;">${result.message || '未知错误'}</div>
+                </div>
+            `;
+        } else {
+            // 成功显示AI辅导内容
+            aiResultArea.innerHTML = `
+                <div style="padding:14px;background:linear-gradient(135deg,#667eea15,#764ba215);border:1px solid #667eea33;border-radius:12px;margin-top:12px;">
+                    <div style="display:flex;align-items:center;margin-bottom:10px;">
+                        <span style="font-size:18px;margin-right:6px;">🤖</span>
+                        <span style="font-weight:600;color:#667eea;">AI解题思路辅导</span>
+                    </div>
+                    <div style="font-size:13px;line-height:1.8;color:#333;">
+                        ${formatAIResponse(result.content)}
+                    </div>
+                    <div style="margin-top:12px;padding-top:10px;border-top:1px dashed #ddd;">
+                        <div style="font-size:11px;color:#999;text-align:center;">
+                            💡 先理解思路，再尝试作答！独立思考效果更好
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 记录AI调用
+            if (typeof recordDeepSeekCall === 'function') {
+                recordDeepSeekCall(Math.ceil(result.content.length / 4));
+            }
+        }
+    } catch (e) {
+        console.error('AI辅导错误:', e);
+        aiResultArea.innerHTML = `
+            <div style="padding:14px;background:#fff3f3;border-radius:12px;margin-top:12px;">
+                <div style="color:#ff6b6b;font-weight:600;margin-bottom:6px;">❌ 网络错误</div>
+                <div style="font-size:13px;color:#666;">请检查网络连接后重试</div>
+            </div>
+        `;
+    }
+}
+
+function uploadTopicPhoto(topicId, input) {
     if (!input.files[0]) return;
     showToast('照片上传成功，AI分析中...');
     analyzeTopicWithAI(topicId);
