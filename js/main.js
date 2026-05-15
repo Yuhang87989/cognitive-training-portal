@@ -22,6 +22,7 @@ window.SCRIPT_DIR = SCRIPT_DIR;
 
 console.log('[V231] 脚本目录:', SCRIPT_DIR);
 
+// 导入核心模块 - 各模块会自行将关键函数挂载到window
 import './config.js';
 import './ctm.js';
 import './db.js';
@@ -209,3 +210,28 @@ if (window.dispatchEvent) {
 }
 
 console.log('[ES6 Module V229] 动态懒加载系统初始化完成！');
+
+// ============================================================
+// 首页初始化函数 - V232修复
+// ============================================================
+window.initPortal = function() {
+    console.log('[V232] 开始初始化门户...');
+    
+    try {
+        // 获取当前用户数据（从window获取）
+        const userData = window.getCurrentUserData ? window.getCurrentUserData() : null;
+        
+        // 更新首页用户信息
+        if (window.updateHomeUserInfo) {
+            window.updateHomeUserInfo(userData);
+        }
+        
+        console.log('[V232] 门户初始化完成！');
+    } catch (error) {
+        console.error('[V232] 初始化出错:', error);
+    }
+};
+
+// 标记main.js加载完成
+window.mainJsLoaded = true;
+console.log('[V232] ES6 Module入口加载完成！');

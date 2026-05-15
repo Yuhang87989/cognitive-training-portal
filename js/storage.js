@@ -442,6 +442,7 @@ window.clearCurrentUserData = clearCurrentUserData;
 window.resetApiConfig = resetApiConfig;
 window.syncData = syncData;
 window.saveUserData = saveUserData;
+window.getCurrentUserData = getCurrentUserData;
 
 
 // ============================================================

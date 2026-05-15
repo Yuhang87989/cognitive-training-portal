@@ -2059,6 +2059,8 @@ window.saveApiConfig = saveApiConfig;
 window.showUserSwitchModal = showUserSwitchModal;
 window.closeUserSwitchModal = closeUserSwitchModal;
 window.openAvatarModal = openAvatarModal;
+window.updateHomeUserInfo = updateHomeUserInfo;
+window.openFullscreenPage = openFullscreenPage;
 
 // ============================================================
 // ES6 Module Export - V225 ES6改造
