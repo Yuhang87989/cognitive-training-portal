@@ -771,11 +771,11 @@ window.renderMyPage = function(container) {
                 <div class="quick-card-icon">💾</div>
                 <div class="quick-card-title">数据备份</div>
             </div>
-        </div>
             <div class="quick-card" onclick="openSettingsPanel()">
                 <div class="quick-card-icon">⚙️</div>
                 <div class="quick-card-title">设置</div>
             </div>
+        </div>
         
         <!-- 折叠分区1: 📊 学习统计 -->
         <div class="accordion-section">
