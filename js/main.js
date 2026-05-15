@@ -1,7 +1,26 @@
 // ============================================================
-// ES6 Module 入口文件 - V229
-// 认知训练门户ES6改造第三阶段：真正的动态懒加载
+// ES6 Module 入口文件 - V231
+// 认知训练门户ES6改造第四阶段：GitHub Pages子目录部署路径修复
 // ============================================================
+
+// V231: 关键修复 - 使用 import.meta.url 获取脚本所在目录
+// 动态 import() 是相对于当前URL的，不是相对于脚本位置的
+// 部署在子目录时（如 GitHub Pages），需要正确构建模块路径
+const SCRIPT_URL = new URL(import.meta.url);
+const SCRIPT_DIR = SCRIPT_URL.pathname.substring(0, SCRIPT_URL.pathname.lastIndexOf('/'));
+
+// 构建相对于当前脚本的绝对路径
+function resolveModulePath(relativePath) {
+    // 去掉开头的 './' 并构建完整路径
+    const cleanPath = relativePath.replace(/^\.\//, '');
+    return SCRIPT_DIR + '/' + cleanPath;
+}
+
+// 导出路径解析函数供其他模块使用
+window.resolveModulePath = resolveModulePath;
+window.SCRIPT_DIR = SCRIPT_DIR;
+
+console.log('[V231] 脚本目录:', SCRIPT_DIR);
 
 import './config.js';
 import './ctm.js';
@@ -22,30 +41,30 @@ import './data/games-config.js';
 console.log('[ES6 Module] 核心模块 + 数据模块加载完成！');
 
 // ============================================================
-// 模块懒加载映射配置
+// 模块懒加载映射配置 - V231 使用绝对路径修复子目录部署问题
 // ============================================================
 window.MODULE_LAZY_LOAD_MAP = {
     // 业务模块 - 点击时动态加载
-    'practice':   { path: './modules/practice.js',   render: 'renderPractice' },
-    'plan':       { path: './modules/plan.js',       render: 'renderPlan' },
-    'games':      { path: './modules/games.js',      render: 'renderGames' },
-    'deepseek':   { path: './modules/deepseek.js',   render: 'renderDeepseek' },
-    'wrongbook':  { path: './modules/wrongbook.js',  render: 'renderWrongbook' },
-    'podcast':    { path: './modules/podcast.js',    render: 'renderPodcast' },
-    'video':      { path: './modules/video.js',      render: 'renderVideo' },
-    'thinking':   { path: './modules/thinking.js',   render: 'renderThinking' },
-    'topics':     { path: './modules/topics.js',     render: 'renderTopics' },
-    'method':     { path: './modules/method.js',     render: 'renderMethod' },
-    'pomodoro':   { path: './modules/pomodoro.js',   render: 'renderPomodoro' },
-    'calculator': { path: './modules/calculator.js', render: 'renderCalculator' },
-    'notepad':    { path: './modules/notepad.js',    render: 'renderNotepad' },
-    'map':        { path: './modules/map.js',        render: 'renderMap' },
-    'selfdrive':  { path: './modules/self-drive.js', render: 'renderSelfDrive' },
-    'weekly':     { path: './modules/stats.js',      render: 'renderWeeklyReview' },
-    'progress':   { path: './modules/stats.js',      render: 'renderProgressChart' },
-    'my':         { path: './modules/my-page.js',    render: 'renderMyPage' },
-    'usage-stats':{ path: './modules/my-page.js',    render: 'renderUsageStats' },
-    'backup':     { path: './modules/local-db.js',   render: 'renderBackupManager' },
+    'practice':   { path: resolveModulePath('./modules/practice.js'),   render: 'renderPractice' },
+    'plan':       { path: resolveModulePath('./modules/plan.js'),       render: 'renderPlan' },
+    'games':      { path: resolveModulePath('./modules/games.js'),      render: 'renderGames' },
+    'deepseek':   { path: resolveModulePath('./modules/deepseek.js'),   render: 'renderDeepseek' },
+    'wrongbook':  { path: resolveModulePath('./modules/wrongbook.js'),  render: 'renderWrongbook' },
+    'podcast':    { path: resolveModulePath('./modules/podcast.js'),    render: 'renderPodcast' },
+    'video':      { path: resolveModulePath('./modules/video.js'),      render: 'renderVideo' },
+    'thinking':   { path: resolveModulePath('./modules/thinking.js'),   render: 'renderThinking' },
+    'topics':     { path: resolveModulePath('./modules/topics.js'),     render: 'renderTopics' },
+    'method':     { path: resolveModulePath('./modules/method.js'),     render: 'renderMethod' },
+    'pomodoro':   { path: resolveModulePath('./modules/pomodoro.js'),   render: 'renderPomodoro' },
+    'calculator': { path: resolveModulePath('./modules/calculator.js'), render: 'renderCalculator' },
+    'notepad':    { path: resolveModulePath('./modules/notepad.js'),    render: 'renderNotepad' },
+    'map':        { path: resolveModulePath('./modules/map.js'),        render: 'renderMap' },
+    'selfdrive':  { path: resolveModulePath('./modules/self-drive.js'), render: 'renderSelfDrive' },
+    'weekly':     { path: resolveModulePath('./modules/stats.js'),      render: 'renderWeeklyReview' },
+    'progress':   { path: resolveModulePath('./modules/stats.js'),      render: 'renderProgressChart' },
+    'my':         { path: resolveModulePath('./modules/my-page.js'),    render: 'renderMyPage' },
+    'usage-stats':{ path: resolveModulePath('./modules/my-page.js'),    render: 'renderUsageStats' },
+    'backup':     { path: resolveModulePath('./modules/local-db.js'),   render: 'renderBackupManager' },
     
     // player.js 由其他模块依赖，不单独懒加载
 };
