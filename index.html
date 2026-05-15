@@ -801,18 +801,34 @@ if('serviceWorker' in navigator){
     // 并行加载所有JS文件，大幅提升页面加载速度
     const v = window.__APP_VERSION || Date.now();
     let pending = loadOrder.length;
-    function onScriptLoaded() {
-        pending--;
-        if (pending <= 0) {
-            if (typeof initPortal === 'function') initPortal();
+    
+    // 安全初始化：确保initPortal存在后才调用，最多重试5秒
+    function safeInitPortal(retries) {
+        retries = retries || 0;
+        if (typeof window.initPortal === 'function') {
+            window.initPortal();
+            // 初始化视频播放器
             setTimeout(function() {
-                if (typeof initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
-                    initEnhancedVideoPlayer();
+                if (typeof window.initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
+                    window.initEnhancedVideoPlayer();
                 }
             }, 50);
+            // Register Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js').catch(function(err) {});
             }
+        } else if (retries < 50) {
+            // 最多重试5秒（50次 x 100ms）
+            setTimeout(function() { safeInitPortal(retries + 1); }, 100);
+        } else {
+            console.error('初始化失败：initPortal函数未找到，请检查JS文件加载');
+        }
+    }
+    
+    function onScriptLoaded() {
+        pending--;
+        if (pending <= 0) {
+            safeInitPortal();
         }
     }
     loadOrder.forEach(function(src) {
