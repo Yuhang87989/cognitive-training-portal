@@ -113,7 +113,6 @@ window.renderUsageStats = renderUsageStats;
 // DeepSeek帮助文档模态框
 window.openDeepseekHelpModal = function() {
     const modal = document.createElement('div');
-    alert("DeepSeek帮助文档被调用了！");
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     
@@ -194,6 +193,38 @@ window.openDeepseekHelpModal = function() {
                 
                 <div id="api-config">
                     <h4 style="color: #667eea; margin-bottom: 10px;">🔑 API Key 配置方法</h4>
+                
+                <div id="how-to-use" style="margin-bottom: 25px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">💬 如何使用 DeepSeek 提问</h4>
+                    <ol style="margin: 0; padding-left: 20px;">
+                        <li style="margin-bottom: 10px;">
+                            <strong>打开 DeepSeek 聊天</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">从首页或「我的」页面进入 DeepSeek AI 聊天页面</p>
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <strong>选择模式</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">
+                                • 「快速模式」：适合日常问答、简单解释，响应快，消耗少<br>
+                                • 「专家模式」：适合复杂题目、深度分析，思考更深入，答案更详细
+                            </p>
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <strong>输入问题</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">在底部输入框输入你的问题，支持中英文提问</p>
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <strong>发送消息</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">点击发送按钮或按回车键发送，等待 AI 回复</p>
+                        </li>
+                        <li>
+                            <strong>继续对话</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">可以基于之前的回复继续追问，AI 会记住上下文</p>
+                        </li>
+                    </ol>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-top: 15px;">
+                        <p style="margin: 0;"><strong>💡 使用提示：</strong> 描述问题越详细，得到的答案越准确。例如："请帮我详细讲解一下勾股定理的推导过程" 比 "什么是勾股定理" 效果更好。</p>
+                    </div>
+                </div>
                     <ol style="margin: 0; padding-left: 20px;">
                         <li style="margin-bottom: 10px;">
                             <strong>获取 API Key</strong>
