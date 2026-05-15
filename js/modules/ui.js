@@ -346,7 +346,9 @@ function openFullscreenPage(module) {
         'settings': '⚙️ 设置',
         'my': '👤 我的',
         'selfdrive': '💪 自驱力训练',
-        'backup': '💾 数据备份'
+        'backup': '💾 数据备份',
+        'weekly': '📅 每周回顾',
+        'progress': '📉 进步曲线'
     };
     
     titleEl.textContent = moduleTitles[module] || '模块';
@@ -371,6 +373,8 @@ function openFullscreenPage(module) {
         case 'my': renderMyPage(contentEl); break;
         case 'selfdrive': renderSelfDrive(contentEl); break;
         case 'backup': renderBackupManager(contentEl); break;
+        case 'weekly': renderWeeklyReview(contentEl); break;
+        case 'progress': renderProgressChart(contentEl); break;
         default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
     }
     

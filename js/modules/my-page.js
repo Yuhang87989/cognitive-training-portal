@@ -348,12 +348,12 @@ window.openFeedback = function() {
 
 // 打开每周回顾
 window.openWeeklyReview = function() {
-    showToast('每周回顾功能开发中');
+    openFullscreenPage('weekly');
 };
 
 // 打开进步曲线
 window.openProgressChart = function() {
-    showToast('进步曲线功能开发中');
+    openFullscreenPage('progress');
 };
 
 // 数据同步
