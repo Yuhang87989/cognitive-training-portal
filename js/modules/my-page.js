@@ -290,7 +290,7 @@ window.openSystemSettings = function() {
 };
 
 // 打开自驱力训练
-window.openSelfDrivePage = function() {
+window.openSelfDrivePage = function() {\n    openFullscreenPage('selfdrive');\n};
     const modal = document.getElementById('fullscreen-page');
     const content = document.getElementById('fullscreen-content');
     const title = document.getElementById('fullscreen-title');
