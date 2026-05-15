@@ -539,7 +539,7 @@ window.renderMyPage = function(container) {
     const myPageStyle = `
         .quick-cards-section {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-bottom: 16px;
         }
@@ -774,6 +774,10 @@ window.renderMyPage = function(container) {
             <div class="quick-card" onclick="openSettingsPanel()">
                 <div class="quick-card-icon">⚙️</div>
                 <div class="quick-card-title">设置</div>
+            </div>
+            <div class="quick-card" onclick="openFullscreenPage('pomodoro')">
+                <div class="quick-card-icon">🍅</div>
+                <div class="quick-card-title">番茄闹钟</div>
             </div>
         </div>
         
