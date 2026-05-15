@@ -110,3 +110,22 @@ function calcInput(value) {
 // 导出到window，供onclick调用
 window.renderCalculator = renderCalculator;
 window.calcInput = calcInput;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderCalculator,
+        calcInput,
+        calculatorDisplay,
+        calculatorFirstNum,
+        calculatorOperator,
+        calculatorWaitingForSecondNum
+    };
+}
+
+export {
+    renderCalculator,
+    calcInput
+};

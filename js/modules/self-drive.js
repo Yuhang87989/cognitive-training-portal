@@ -498,3 +498,35 @@ if (typeof CTM !== 'undefined') {
         render: renderSelfDrive
     });
 }
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        SelfDrive: window.SelfDrive,
+        renderSelfDrive,
+        calculateStreakDays,
+        hasCheckedInToday,
+        checkInToday,
+        renderGoalPage,
+        addGoal,
+        toggleGoal,
+        deleteGoal,
+        renderHabitPage,
+        addHabit,
+        checkHabit,
+        deleteHabit,
+        renderAchievementPage,
+        renderDiaryPage,
+        renderMethodPage
+    };
+}
+
+export {
+    SelfDrive,
+    renderSelfDrive,
+    calculateStreakDays,
+    hasCheckedInToday,
+    checkInToday
+};

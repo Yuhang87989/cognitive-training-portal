@@ -109,3 +109,26 @@ function formatDate(timestamp) {
 window.renderNotepad = renderNotepad;
 window.saveNote = saveNote;
 window.deleteNote = deleteNote;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderNotepad,
+        saveNote,
+        deleteNote,
+        loadNotes,
+        escapeHtml,
+        formatDate,
+        NOTEPAD_STORAGE_KEY,
+        NOTEPAD_NOTES_KEY
+    };
+}
+
+export {
+    renderNotepad,
+    saveNote,
+    deleteNote,
+    loadNotes
+};

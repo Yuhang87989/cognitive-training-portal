@@ -131,3 +131,25 @@ window.playVideoFromList = playVideoFromList;
 window.playLocalVideo = playLocalVideo;
 window.deleteLocalVideo = deleteLocalVideo;
 
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderVideo,
+        renderLocalVideoList,
+        filterVideoCourse,
+        playVideoFromList,
+        playLocalVideo,
+        deleteLocalVideo,
+        videoCourses: window.videoCourses
+    };
+}
+
+export {
+    renderVideo,
+    renderLocalVideoList,
+    filterVideoCourse,
+    playVideoFromList
+};

@@ -359,3 +359,35 @@ window.uploadTopicPhoto = uploadTopicPhoto;
 window.prevTopicsPage = prevTopicsPage;
 window.nextTopicsPage = nextTopicsPage;
 window.closeDetail = closeDetail;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderTopics,
+        selectTopicsGrade,
+        selectTopicsSubject,
+        loadTopicsList,
+        getTopicsList,
+        findTopic,
+        openTopicQuestion,
+        checkTopicAnswer,
+        analyzeTopicWithAI,
+        uploadTopicPhoto,
+        prevTopicsPage,
+        nextTopicsPage,
+        currentTopicsGrade,
+        currentTopicsSubject,
+        currentTopicsPage
+    };
+}
+
+export {
+    renderTopics,
+    selectTopicsGrade,
+    selectTopicsSubject,
+    loadTopicsList,
+    openTopicQuestion,
+    checkTopicAnswer
+};

@@ -166,3 +166,22 @@ window.renderStatItems = renderStatItems;
 // ============================================================
 // calculateCognitiveData 在 ui.js 中定义，无需在此处重新赋值
 // 加载顺序：ui.js 在 map.js 之后，函数会由 ui.js 暴露到全局
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderMap,
+        renderCognitiveRadar,
+        renderCognitiveDetails,
+        renderStatItems,
+        renderCognitiveMap
+    };
+}
+
+export {
+    renderMap,
+    renderCognitiveRadar,
+    renderCognitiveDetails,
+    renderStatItems
+};

@@ -1,5 +1,5 @@
 // ============================================================
-// ES6 Module 入口文件 - V226
+// ES6 Module 入口文件 - V227
 // 认知训练门户ES6改造第二阶段：业务模块迁移
 // ============================================================
 
@@ -18,6 +18,18 @@ import './modules/games.js';
 import './modules/deepseek.js';
 import './modules/wrongbook.js';
 import './modules/player.js';
+
+// 业务模块 - 第二阶段第二批迁移
+import './modules/pomodoro.js';
+import './modules/calculator.js';
+import './modules/notepad.js';
+import './modules/map.js';
+import './modules/self-drive.js';
+import './modules/podcast.js';
+import './modules/video.js';
+import './modules/thinking.js';
+import './modules/topics.js';
+import './modules/method.js';
 
 console.log('[ES6 Module] 核心模块 + 业务模块加载完成！');
 

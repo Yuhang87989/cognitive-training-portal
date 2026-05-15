@@ -734,3 +734,36 @@ window.podcastPlay = podcastPlay;
 window.askPodcastAI = askPodcastAI;
 window.togglePodcastVoice = togglePodcastVoice;
 window.stopPodcastAudio = stopPodcastAudio;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderPodcast,
+        renderPodcastListItems,
+        togglePodcastList,
+        onPodcastSelectChange,
+        playPodcastById,
+        podcastPlay,
+        podcastTogglePlay,
+        podcastPrev,
+        podcastNext,
+        podcastCycleSpeed,
+        askPodcastAI,
+        togglePodcastVoice,
+        stopPodcastAudio,
+        podcastCourses,
+        podcastPlayerState
+    };
+}
+
+export {
+    renderPodcast,
+    playPodcastById,
+    podcastTogglePlay,
+    podcastPrev,
+    podcastNext,
+    podcastCycleSpeed,
+    stopPodcastAudio
+};
