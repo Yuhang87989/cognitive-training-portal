@@ -798,16 +798,16 @@ window.renderMyPage = function(container) {
             </div>
             <div id="accordion-tools" class="accordion-content" style="max-height:${window.accordionState.tools ? '500px' : '0'};opacity:${window.accordionState.tools ? 1 : 0};">
                 <div class="accordion-content-inner">
-                    <button class="foldable-btn" onclick="openPomodoro()">
+                    <button class="foldable-btn" onclick="openFullscreenPage('pomodoro')">
                         <span>🍅</span> 番茄钟
                     </button>
-                    <button class="foldable-btn" onclick="openCalculator()">
+                    <button class="foldable-btn" onclick="openFullscreenPage('calculator')">
                         <span>🔢</span> 计算器
                     </button>
-                    <button class="foldable-btn" onclick="openNotepad()">
+                    <button class="foldable-btn" onclick="openFullscreenPage('notepad')">
                         <span>📝</span> 记事本
                     </button>
-                    <button class="foldable-btn" onclick="openUsageStats()">
+                    <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')">
                         <span>📊</span> AI使用统计
                     </button>
                 </div>
