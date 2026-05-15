@@ -220,7 +220,7 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
                 data.usage.prompt_tokens || data.usage.input_tokens || 0,
                 data.usage.completion_tokens || data.usage.output_tokens || 0,
                 questionSummary,
-                model || DEEPSEEK_MODEL
+                DEEPSEEK_MODEL
             );
         }
         return {success: true, content: content};
@@ -308,7 +308,7 @@ async function callDeepSeekAPI(messages, temperature) {
                 data.usage.prompt_tokens || data.usage.input_tokens || 0,
                 data.usage.completion_tokens || data.usage.output_tokens || 0,
                 questionSummary,
-                model || DEEPSEEK_MODEL
+                DEEPSEEK_MODEL
             );
         }
         return {success: true, content: content};
