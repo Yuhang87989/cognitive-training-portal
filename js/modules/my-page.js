@@ -113,6 +113,7 @@ window.renderUsageStats = renderUsageStats;
 // DeepSeek帮助文档模态框
 window.openDeepseekHelpModal = function() {
     const modal = document.createElement('div');
+    alert("DeepSeek帮助文档被调用了！");
     modal.className = 'modal-overlay';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     
