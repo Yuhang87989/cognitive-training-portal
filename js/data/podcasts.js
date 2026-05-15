@@ -24,3 +24,8 @@ window.podcastList = [
     {id: 21, title: "四周训练完结！青小年蜕变复盘", url: "https://yuhang87989.github.io/cognitive-training-portal/audio/podcast21.mp3", duration: "2:24", category: "周度复盘"}
 ];
 
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+export { podcastList };

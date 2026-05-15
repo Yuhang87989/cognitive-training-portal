@@ -407,4 +407,19 @@ window.weekPlans = {
 
 // ============================================================
 // Topics - 训练主题数据
+
 // ============================================================
+// ES6 Module 导出
+// ============================================================
+export {
+    week1Plan,
+    week2Plan,
+    week3Plan,
+    week4Plan,
+    week5Plan,
+    week6Plan,
+    week7Plan,
+    week8Plan,
+    week9Plan,
+    weekPlans
+};

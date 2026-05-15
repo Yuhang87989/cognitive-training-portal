@@ -79,3 +79,8 @@ window.gameConfig = {
     linkup: {name:'🔗 连连看',color:'#00897B',gradient:'linear-gradient(135deg,#00897B,#26A69A)'},
     eliminate: {name:'💎 消消乐',color:'#F4511E',gradient:'linear-gradient(135deg,#F4511E,#FF7043)'}
 };
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+export { gamesConfig };

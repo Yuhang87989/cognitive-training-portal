@@ -553,3 +553,30 @@ function getGradeSubjectTopics(grade, subject) {
 // Window exports for cross-module access
 window.topics = topics;
 window.getGradeSubjectTopics = getGradeSubjectTopics;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+export {
+    topicsMath5,
+    topicsChinese5,
+    topicsEnglish5,
+    topicsPhysics5,
+    topicsMath1,
+    topicsChinese1,
+    topicsMath2,
+    topicsChinese2,
+    topicsMath3,
+    topicsChinese3,
+    topicsMath4,
+    topicsChinese4,
+    topicsMath6,
+    topicsChinese6,
+    topicsThinking1,
+    topicsThinking2,
+    topicsThinking3,
+    topicsThinking4,
+    topicsThinking5,
+    topicsThinking6,
+    allTopics
+};

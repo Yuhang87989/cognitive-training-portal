@@ -229,3 +229,14 @@
     console.log('🎉 综合修复完成：DeepSeek 帮助文档按钮和AI使用统计已正确配置');
 
 })();
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+export const DeepSeekButtonFix = {
+    ensureDeepSeekHelpModal: window.ensureDeepSeekHelpModal,
+    openDeepseekHelpModal: window.openDeepseekHelpModal,
+    openDeepSeekHelpModal: window.openDeepSeekHelpModal,
+    renderUsageStats: window.renderUsageStats,
+    openUsageStats: window.openUsageStats
+};

@@ -1009,3 +1009,34 @@ function openBackupPage() {
 }
 
 console.log('✅ V199 my-page.js 已加载 - 2x2快捷功能卡片 + 5个折叠分区');
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+export {
+    accordionState,
+    toggleAccordion,
+    changeDifficulty,
+    updateDailyGoal,
+    toggleSound,
+    clearWrongBook,
+    toggleDeepSeekMode,
+    clearAIContext,
+    openUsageStats,
+    renderUsageStats,
+    openDeepseekHelpModal,
+    doBackup,
+    doRestore,
+    saveApiKey,
+    clearAppCache,
+    showAbout,
+    openSelfDrivePage,
+    openPomodoro,
+    openCalculator,
+    openNotepad,
+    openWeeklyReview,
+    openProgressChart,
+    renderMyPage,
+    openBackupPage,
+    renderBackupManager
+};

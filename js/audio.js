@@ -449,3 +449,15 @@ function toggleVoiceInput(btn, inputId) {
 
 // 导出到window
 window.toggleVoiceInput = toggleVoiceInput;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+export {
+    SoundEffects,
+    speakText,
+    stopTTSSpeech,
+    toggleDeepSeekVoice,
+    isWeChatBrowser,
+    toggleVoiceInput
+};
