@@ -285,9 +285,6 @@ window.showAbout = function() {
 };
 
 // 打开设置页面
-window.openSystemSettings = function() {
-    showToast('设置功能开发中，敬请期待');
-};
 
 // 打开自驱力训练
 window.openSelfDrivePage = function() {
@@ -310,29 +307,14 @@ window.openNotepad = function() {
 };
 
 // 打开修改资料
-window.openEditProfileModal = function() {
-    showToast('修改资料功能开发中');
-};
 
 // 打开更换头像
-window.openAvatarModal = function() {
-    showToast('更换头像功能开发中');
-};
 
 // 打开难度设置
-window.openDifficultyModal = function() {
-    showToast('难度设置功能开发中');
-};
 
 // 打开使用帮助
-window.openHelp = function() {
-    showToast('帮助文档开发中');
-};
 
 // 打开意见反馈
-window.openFeedback = function() {
-    showToast('意见反馈功能开发中');
-};
 
 // 打开每周回顾
 window.openWeeklyReview = function() {
@@ -345,14 +327,8 @@ window.openProgressChart = function() {
 };
 
 // 数据同步
-window.syncData = function() {
-    showToast('数据同步功能开发中');
-};
 
 // 显示数据报告
-window.showDataStatsModal = function() {
-    showToast('数据报告功能开发中');
-};
 
 window.renderMyPage = function(container) {
     // ✅ 确保 DeepSeek 帮助文档函数已正确导出
