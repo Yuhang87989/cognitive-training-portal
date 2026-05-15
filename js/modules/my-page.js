@@ -117,7 +117,7 @@ window.openDeepseekHelpModal = function() {
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     
     modal.innerHTML = `
-        <div class="modal-container" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
             <div class="modal-header">
                 <h3>🔮 DeepSeek 使用帮助</h3>
                 <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
@@ -340,7 +340,7 @@ window.renderMyPage = function(container) {
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             
             modal.innerHTML = `
-                <div class="modal-container" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
                     <div class="modal-header">
                         <h3>🔮 DeepSeek 使用帮助</h3>
                         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
@@ -689,10 +689,6 @@ window.renderMyPage = function(container) {
             <div class="quick-card" onclick="openFullscreenPage('backup')">
                 <div class="quick-card-icon">💾</div>
                 <div class="quick-card-title">数据备份</div>
-            </div>
-            <div class="quick-card" onclick="openSettingsPanel()">
-                <div class="quick-card-icon">⚙️</div>
-                <div class="quick-card-title">设置</div>
             </div>
         </div>
         

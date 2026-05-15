@@ -511,7 +511,7 @@ var UsageStatsModule = {
     };
     
     modal.innerHTML = `
-      <div class="modal-container" style="max-width:650px;max-height:90vh;overflow-y:auto;">
+      <div class="modal-content" style="max-width:650px;max-height:90vh;overflow-y:auto;">
         <div class="modal-header">
           <h3>📊 AI 使用统计</h3>
           <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
