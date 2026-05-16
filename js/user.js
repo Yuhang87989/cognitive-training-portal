@@ -573,6 +573,33 @@ function openManageUserModal() {
     content.innerHTML = htmlContent;
 }
 
+// ============================================================
+// 挂载所有函数到window - 供HTML onclick事件调用
+// ============================================================
+window.toggleUserMenu = toggleUserMenu;
+window.closeUserMenuOutside = closeUserMenuOutside;
+window.showUserSwitchModal = showUserSwitchModal;
+window.showCreateUserModal = showCreateUserModal;
+window.quickLogin = quickLogin;
+window.openEditProfileModal = openEditProfileModal;
+window.openDifficultyModal = openDifficultyModal;
+window.openAvatarModal = openAvatarModal;
+window.renderUserList = renderUserList;
+window.createNewUser = createNewUser;
+window.closeCreateUserModal = closeCreateUserModal;
+window.closeUserSwitchModal = closeUserSwitchModal;
+window.showDeleteUserModal = showDeleteUserModal;
+window.closeDeleteUserModal = closeDeleteUserModal;
+window.confirmDeleteUser = confirmDeleteUser;
+window.setDifficulty = setDifficulty;
+window.closeDifficultyModal = closeDifficultyModal;
+window.saveProfileChanges = saveProfileChanges;
+window.closeEditProfileModal = closeEditProfileModal;
+window.savePasswordChanges = savePasswordChanges;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.openApiConfigModal = openApiConfigModal;
+window.selectAvatar = selectAvatar;
+window.openChangePasswordModal = openChangePasswordModal;
 window.openManageUserModal = openManageUserModal;
 
 // ============================================================

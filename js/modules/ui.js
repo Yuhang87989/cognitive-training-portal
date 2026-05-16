@@ -2061,6 +2061,28 @@ window.closeUserSwitchModal = closeUserSwitchModal;
 window.openAvatarModal = openAvatarModal;
 window.updateHomeUserInfo = updateHomeUserInfo;
 window.openFullscreenPage = openFullscreenPage;
+window.switchToUser = switchToUser;
+window.deleteUser = deleteUser;
+window.closeDetail = closeDetail;
+window.closeModal = closeModal;
+window.showToast = showToast;
+window.closeWelcomeModal = closeWelcomeModal;
+window.closeGoodbyeModal = closeGoodbyeModal;
+window.closeAboutModal = closeAboutModal;
+window.closeAvatarModal = closeAvatarModal;
+window.closeApiConfigModal = closeApiConfigModal;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.openChangePasswordModal = openChangePasswordModal;
+window.openDifficultyModal = openDifficultyModal;
+window.closeDifficultyModal = closeDifficultyModal;
+window.closeCreateUserModal = closeCreateUserModal;
+window.closeDeleteUserModal = closeDeleteUserModal;
+window.closeFullscreenPage = closeFullscreenPage;
+window.exitSystem = exitSystem;
+window.logoutAndReturn = logoutAndReturn;
+window.doExitSystem = doExitSystem;
+window.openAbout = openAbout;
 
 // ============================================================
 // ES6 Module Export - V225 ES6改造
