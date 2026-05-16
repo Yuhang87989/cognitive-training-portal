@@ -38,6 +38,7 @@ import './data/week-plans.js';
 import './data/podcasts.js';
 import './data/videos.js';
 import './data/games-config.js';
+import './data/learning-methods.js';
 
 console.log('[ES6 Module] 核心模块 + 数据模块加载完成！');
 

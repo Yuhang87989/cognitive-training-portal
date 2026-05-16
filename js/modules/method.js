@@ -617,7 +617,31 @@ function renderMethod(container) {
 }
 
 // 渲染练习题目
+// 当前选中的方法
+let currentMethodId = null;
+
 function renderMethodQuestions() {
+    // 如果选中了某个方法，显示详细教程
+    if (currentMethodId && LEARNING_METHODS[currentMethodId]) {
+        const method = LEARNING_METHODS[currentMethodId];
+        return `
+            <div style="margin-bottom:20px;">
+                <button onclick="currentMethodId=null;document.getElementById('method-questions-container').innerHTML=renderMethodQuestions();" 
+                    style="background:#f5f5f5;color:#666;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;">
+                    ← 返回全部方法
+                </button>
+            </div>
+            ${method.content}
+            <div style="margin-top:24px;">
+                <h3 style="margin-bottom:16px;font-size:16px;color:#333;">📝 练习题</h3>
+                <div style="background:#f8f9fa;padding:20px;border-radius:10px;text-align:center;color:#666;">
+                    练习题开发中，敬请期待...
+                </div>
+            </div>
+        `;
+    }
+
+    // 否则显示所有方法卡片
     const questions = [
         {id:'feyman', title:'费曼学习法', icon:'📚', color:'#667eea', count:5},
         {id:'pomodoro', title:'番茄工作法', icon:'🍅', color:'#FF6B6B', count:5},
@@ -646,6 +670,13 @@ function renderMethodQuestions() {
 }
 
 function openMethodQuestions(methodId) {
+    // 如果有详细教程，先显示教程
+    if (LEARNING_METHODS[methodId]) {
+        currentMethodId = methodId;
+        document.getElementById('method-questions-container').innerHTML = renderMethodQuestions();
+        return;
+    }
+    
     const methodNames = {
         feyman: '费曼学习法',
         pomodoro: '番茄工作法',
