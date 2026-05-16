@@ -21,7 +21,7 @@ const DEFAULT_USER = {
     todayStats: { date: new Date().toISOString().split('T')[0], questions: 0, correct: 0, minutes: 0 }
 };
 
-function window.loadData() {
+function loadData() {
     try {
         // 尝试从IndexedDB迁移（异步，首次可能还没完成）
         if (window.DB) {
@@ -78,7 +78,7 @@ function window.loadData() {
     }
 }
 
-function window.saveData(data) {
+function saveData(data) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch(e) {}
@@ -175,7 +175,7 @@ function updateApiStatusDisplay() {
     }
 }
 
-function window.getCurrentUserData() {
+function getCurrentUserData() {
     const data = window.loadData();
     if (!data.currentUser) return null;
     return data.users.find(u => u.id === data.currentUser) || null;
