@@ -70,24 +70,24 @@ function lazyLoadModule(module, contentEl) {
     
     setTimeout(function() {
         switch(module) {
-            case 'practice': if(typeof renderPractice === 'function') renderPractice(contentEl); break;
-            case 'map': if(typeof renderMap === 'function') renderMap(contentEl); break;
-            case 'plan': if(typeof renderPlan === 'function') renderPlan(contentEl); break;
-            case 'topics': if(typeof renderTopics === 'function') renderTopics(contentEl); break;
-            case 'method': if(typeof renderMethod === 'function') renderMethod(contentEl); break;
-            case 'thinking': if(typeof renderThinking === 'function') renderThinking(contentEl); break;
-            case 'podcast': if(typeof renderPodcast === 'function') renderPodcast(contentEl); break;
-            case 'video': if(typeof renderVideo === 'function') renderVideo(contentEl); break;
-            case 'games': if(typeof renderGames === 'function') renderGames(contentEl); break;
-            case 'deepseek': if(typeof renderDeepseek === 'function') renderDeepseek(contentEl); break;
-            case 'wrongbook': if(typeof renderWrongbook === 'function') renderWrongbook(contentEl); break;
-            case 'pomodoro': if(typeof renderPomodoro === 'function') renderPomodoro(contentEl); break;
-            case 'my': if(typeof renderMyPage === 'function') renderMyPage(contentEl); break;
-            case 'journal': if(typeof renderJournalModule === 'function') renderJournalModule(contentEl); else renderJournalPage(contentEl); break;
-            case 'library': if(typeof renderLibraryModule === 'function') renderLibraryModule(contentEl); else renderLibraryPage(contentEl); break;
-            case 'growth': if(typeof renderGrowthModule === 'function') renderGrowthModule(contentEl); break;
-            case 'mindmap': if(typeof renderMindmapModule === 'function') renderMindmapModule(contentEl); break;
-            case 'selfdrive': if(typeof renderSelfDrive === 'function') renderSelfDrive(contentEl); break;
+            case 'practice': if(typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
+            case 'map': if(typeof window.renderMap === 'function') window.renderMap(contentEl); break;
+            case 'plan': if(typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
+            case 'topics': if(typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
+            case 'method': if(typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
+            case 'thinking': if(typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
+            case 'podcast': if(typeof window.renderPodcast === 'function') window.renderPodcast(contentEl); break;
+            case 'video': if(typeof window.renderVideo === 'function') window.renderVideo(contentEl); break;
+            case 'games': if(typeof window.renderGames === 'function') window.renderGames(contentEl); break;
+            case 'deepseek': if(typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
+            case 'wrongbook': if(typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
+            case 'pomodoro': if(typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
+            case 'my': if(typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
+            case 'journal': if(typeof window.renderJournalModule === 'function') window.renderJournalModule(contentEl); else renderJournalPage(contentEl); break;
+            case 'library': if(typeof window.renderLibraryModule === 'function') window.renderLibraryModule(contentEl); else renderLibraryPage(contentEl); break;
+            case 'growth': if(typeof window.renderGrowthModule === 'function') window.renderGrowthModule(contentEl); break;
+            case 'mindmap': if(typeof window.renderMindmapModule === 'function') window.renderMindmapModule(contentEl); break;
+            case 'selfdrive': if(typeof window.renderSelfDrive === 'function') window.renderSelfDrive(contentEl); break;
             default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
         }
     }, 100);
@@ -889,7 +889,7 @@ if('serviceWorker' in navigator){
     function onScriptLoaded() {
         pending--;
         if (pending <= 0) {
-            if (typeof initPortal === 'function') initPortal();
+            if (typeof window.initPortal === 'function') window.initPortal();
             setTimeout(function() {
                 if (typeof initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
                     initEnhancedVideoPlayer();
