@@ -87,6 +87,7 @@ function lazyLoadModule(module, contentEl) {
             case 'library': if(typeof renderLibraryModule === 'function') renderLibraryModule(contentEl); else renderLibraryPage(contentEl); break;
             case 'growth': if(typeof renderGrowthModule === 'function') renderGrowthModule(contentEl); break;
             case 'mindmap': if(typeof renderMindmapModule === 'function') renderMindmapModule(contentEl); break;
+            case 'selfdrive': if(typeof renderSelfDrive === 'function') renderSelfDrive(contentEl); break;
             default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
         }
     }, 100);
