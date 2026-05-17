@@ -30,7 +30,7 @@ function renderPlan(container) {
         });
     }
     
-    const weekNames = ['','Week1：注意力与记忆力','Week2：学霸方法与听课习惯','Week3：数学物理思维入门','Week4：解题策略与实验思维','Week5：系统性思维与守恒思维','Week6：学科深度整合与自主学习','Week7：元认知深化与能力迁移'];
+    const weekNames = ['','Week1：注意力与记忆力','Week2：学霸方法与听课习惯','Week3：数学物理思维入门','Week4：解题策略与实验思维','Week5：系统性思维与守恒思维','Week6：学科深度整合与自主学习','Week7：元认知深化与能力迁移','Week8：高阶思维训练','Week9：综合能力提升与实战'];
     
     const typeIcons = {attention:'👁️',memory:'🧠',strategy:'📚',practice:'✏️',creative:'🎨',video:'🎬',podcast:'🎧',game:'🎮',review:'📝',test:'📊',writing:'✍️',rest:'😴',social:'🤝',planning:'📋',quiz:'❓'};
     
@@ -149,7 +149,7 @@ function renderSlide() {
 
 function changeWeek(dir) {
     CTM.triggerHook('beforeWeekChange', {from: window._planWeek, dir: dir});
-    window._planWeek = Math.max(1, Math.min(7, (window._planWeek || 1) + dir));
+    window._planWeek = Math.max(1, Math.min(9, (window._planWeek || 1) + dir));
     window._planDay = 1;
     CTM.triggerHook('afterWeekChange', {to: window._planWeek});
     const el = document.getElementById('module-content');
