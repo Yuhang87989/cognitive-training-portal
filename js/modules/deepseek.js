@@ -473,6 +473,30 @@ window.ocrImageAndSend = ocrImageAndSend;
 
 
 
+// V195: 对话模式切换
+window.deepseekMode = localStorage.getItem('deepseek_mode') || 'fast'; // 'fast' | 'expert'
+
+window.toggleDeepseekMode = function(mode) {
+    window.deepseekMode = mode;
+    localStorage.setItem('deepseek_mode', mode);
+    document.querySelectorAll('.ds-mode-btn').forEach(btn => {
+        btn.style.background = btn.dataset.mode === mode ? '#667eea' : '#f5f5f5';
+        btn.style.color = btn.dataset.mode === mode ? 'white' : '#666';
+    });
+    showToast(mode === 'fast' ? '🚀 快速模式：省token、响应快' : '💎 专家模式：完整上下文、回答详细');
+};
+
+function getContextForMode() {
+    const history = deepseekConversationHistory || [];
+    if (window.deepseekMode === 'fast') {
+        // 快速模式：只带最近5条 + 简短提示
+        return history.slice(-5);
+    } else {
+        // 专家模式：带最近20条
+        return history.slice(-20);
+    }
+}
+
 async function sendToDeepSeek() {
     const input = document.getElementById('deepseek-input');
     if (!input) { return; }
@@ -509,7 +533,8 @@ async function sendToDeepSeek() {
     clearDeepSeekImage();
     
     try {
-        const result = await callVisionDeepSeekAPI(deepseekConversationHistory);
+        const contextToSend = getContextForMode();
+        const result = await callVisionDeepSeekAPI(contextToSend);
         const bubbles = messagesEl.querySelectorAll('.chat-bubble');
         if (input) { input.disabled = false; input.focus(); }
         if (sendBtn) { sendBtn.disabled = false; sendBtn.style.opacity = '1'; sendBtn.style.cursor = 'pointer'; }
@@ -648,13 +673,12 @@ function renderDeepseek(contentEl) {
         // 顶部信息卡
         '<div style="padding:10px 12px;background:white;border-bottom:1px solid #f0f0f0;flex-shrink:0;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div style="display:flex;align-items:center;gap:8px;">' +
-                    '<div style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🤖</div>' +
-                    '<div><div style="font-size:13px;font-weight:600;color:#333;">DeepSeek AI 助手</div><div style="font-size:10px;color:#999;">智能学习助手</div></div>' +
+                '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleDeepSeekHistory()" title="点击查看聊天历史">' +
+                    '<div style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(102,126,234,0.3);">🤖</div>' +
+                    '<div><div style="font-size:13px;font-weight:600;color:#333;">DeepSeek AI 助手</div><div style="font-size:10px;color:#999;">智能学习助手 · 点击看历史</div></div>' +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:8px;">' +
                     '<div style="font-size:10px;color:#999;">余额 <span id="ds-balance" style="color:#43a047;font-weight:600;">¥' + balance + '</span></div>' +
-                    '<button onclick="toggleDeepSeekHistory()" style="padding:4px 8px;background:#f0f0f0;color:#666;border:none;border-radius:6px;font-size:11px;cursor:pointer;">📋 历史</button>' +
         '<button onclick="openApiConfigModal(\'deepseek\')" style="padding:4px 8px;background:#f0f0f0;color:#666;border:none;border-radius:6px;font-size:11px;cursor:pointer;">配置</button>' +
         '<button onclick="showAPIRechargeModal()" style="padding:4px 8px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">充值</button>' +
                 '</div>' +

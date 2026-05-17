@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习图书馆 - 分类导航</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; text-align: center; color: white; }
+        .stat-value { font-size: 32px; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+        .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .category-card { background: white; border-radius: 15px; padding: 20px; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+        .category-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-icon { font-size: 36px; margin-bottom: 10px; }
+        .category-name { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .category-count { font-size: 13px; color: #999; }
+        .section { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; }
+        .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .book-list { display: flex; flex-direction: column; gap: 10px; }
+        .book-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9f9f9; border-radius: 10px; }
+        .book-icon { width: 36px; height: 36px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; flex-shrink: 0; }
+        .book-info { flex: 1; }
+        .book-title { font-size: 14px; font-weight: 600; color: #333; }
+        .book-author { font-size: 12px; color: #999; }
+        .footer { text-align: center; color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 30px; }
+        @media (max-width: 600px) {
+            .category-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 学习图书馆</h1>
+            <p>认知训练门户 V255 · 60本精选书籍</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">60</div>
+                <div class="stat-label">总书籍数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">领域分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">V255</div>
+                <div class="stat-label">版本号</div>
+            </div>
+        </div>
+        
+        <div class="category-grid">
+            <div class="category-card" onclick="showCategory('学习方法')">
+                <div class="category-icon">🎯</div>
+                <div class="category-name">学习方法</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('作文语文')">
+                <div class="category-icon">✍️</div>
+                <div class="category-name">作文语文</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('数学科学')">
+                <div class="category-icon">🔬</div>
+                <div class="category-name">数学科学</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('百科知识')">
+                <div class="category-icon">🌍</div>
+                <div class="category-name">百科知识</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('漫画科普')">
+                <div class="category-icon">🎨</div>
+                <div class="category-name">漫画科普</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('成长励志')">
+                <div class="category-icon">💪</div>
+                <div class="category-name">成长励志</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('技术前沿')">
+                <div class="category-icon">🚀</div>
+                <div class="category-name">技术前沿</div>
+                <div class="category-count">8本书</div>
+            </div>
+            <div class="category-card" onclick="showCategory('大国重器')">
+                <div class="category-icon">🇨🇳</div>
+                <div class="category-name">大国重器</div>
+                <div class="category-count">8本书</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">
+                <span>📋</span>
+                <span>相关文档</span>
+            </div>
+            <div class="book-list">
+                <div class="book-item">
+                    <div class="book-icon">📕</div>
+                    <div class="book-info">
+                        <div class="book-title">60本精选书籍清单.md</div>
+                        <div class="book-author">完整书籍清单与详细介绍</div>
+                    </div>
+                </div>
+                <div class="book-item">
+                    <div class="book-icon">📊</div>
+                    <div class="book-info">
+                        <div class="book-title">下载进度.md</div>
+                        <div class="book-author">下载记录与进度跟踪</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>📖 开卷有益 · 学而时习之</p>
+            <p style="margin-top: 5px;">认知训练门户 V255 © 2026</p>
+        </div>
+    </div>
+    
+    <script>
+        function showCategory(category) {
+            alert('正在查看: ' + category + '\n\n请返回主界面"学习图书馆"模块查看完整书单');
+        }
+    </script>
+</body>
+</html>

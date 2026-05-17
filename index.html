@@ -2,23 +2,126 @@
 <html lang="zh-CN">
 <head>
 <script>
-// V151: 强制清除旧Service Worker缓存
+// V255: 核心函数内联 - 解决ES6模块加载问题
+// 所有核心路由函数在head最开头定义，确保加载顺序
+
+function showToast(message, duration) {
+    duration = duration || 2000;
+    var existing = document.getElementById('custom-toast');
+    if (existing) existing.remove();
+    
+    var toast = document.createElement('div');
+    toast.id = 'custom-toast';
+    toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);color:white;padding:12px 24px;border-radius:24px;font-size:14px;z-index:10000;max-width:80%;text-align:center;';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        setTimeout(function() { toast.remove(); }, 300);
+    }, duration);
+}
+
+function closeFullscreenPage() {
+    var el = document.getElementById('fullscreen-container');
+    if (el) el.classList.remove('active');
+}
+
+function openFullscreenPage(module) {
+    closeUserMenu();
+    var container = document.getElementById('fullscreen-container');
+    var titleEl = document.getElementById('fullscreen-title');
+    var contentEl = document.getElementById('fullscreen-content');
+    if (!container || !titleEl || !contentEl) return;
+    
+    var moduleTitles = {
+        'training': '🧠 认知训练',
+        'attention': '👁️ 注意力训练',
+        'memory': '📝 记忆力训练',
+        'thinking': '🧩 思维训练',
+        'focus': '🎯 专注力训练',
+        'reaction': '⚡ 反应力训练',
+        'mindmap': '🌳 思维导图',
+        'library': '📚 学习图书馆',
+        'journal': '📓 学习日记',
+        'video': '📺 视频课程',
+        'growth': '📈 成长记录',
+        'my': '👤 个人中心',
+        'games': '🎮 训练游戏',
+        'map': '🧠 认知地图',
+        'deepseek': '🤖 DeepSeek',
+        'practice': '🎯 AI精准练',
+        'plan': '📅 学习计划',
+        'topics': '📚 母题训练',
+        'method': '💡 学霸方法',
+        'podcast': '🎧 播客课堂',
+        'wrongbook': '📒 错题本',
+        'pomodoro': '🍅 番茄闹钟',
+        'settings': '⚙️ 设置'
+    };
+    
+    titleEl.textContent = moduleTitles[module] || '模块';
+    lazyLoadModule(module, contentEl);
+    container.classList.add('active');
+}
+
+function lazyLoadModule(module, contentEl) {
+    contentEl.innerHTML = '<div style="text-align:center;padding:40px;"><div style="font-size:40px;">⏳</div><div style="margin-top:10px;color:#666;">加载中...</div></div>';
+    
+    setTimeout(function() {
+        switch(module) {
+            case 'practice': if(typeof renderPractice === 'function') renderPractice(contentEl); break;
+            case 'map': if(typeof renderMap === 'function') renderMap(contentEl); break;
+            case 'plan': if(typeof renderPlan === 'function') renderPlan(contentEl); break;
+            case 'topics': if(typeof renderTopics === 'function') renderTopics(contentEl); break;
+            case 'method': if(typeof renderMethod === 'function') renderMethod(contentEl); break;
+            case 'thinking': if(typeof renderThinking === 'function') renderThinking(contentEl); break;
+            case 'podcast': if(typeof renderPodcast === 'function') renderPodcast(contentEl); break;
+            case 'video': if(typeof renderVideo === 'function') renderVideo(contentEl); break;
+            case 'games': if(typeof renderGames === 'function') renderGames(contentEl); break;
+            case 'deepseek': if(typeof renderDeepseek === 'function') renderDeepseek(contentEl); break;
+            case 'wrongbook': if(typeof renderWrongbook === 'function') renderWrongbook(contentEl); break;
+            case 'pomodoro': if(typeof renderPomodoro === 'function') renderPomodoro(contentEl); break;
+            case 'my': if(typeof renderMyPage === 'function') renderMyPage(contentEl); break;
+            case 'journal': if(typeof renderJournalModule === 'function') renderJournalModule(contentEl); else renderJournalPage(contentEl); break;
+            case 'library': if(typeof renderLibraryModule === 'function') renderLibraryModule(contentEl); else renderLibraryPage(contentEl); break;
+            case 'growth': if(typeof renderGrowthModule === 'function') renderGrowthModule(contentEl); break;
+            case 'mindmap': if(typeof renderMindmapModule === 'function') renderMindmapModule(contentEl); break;
+            default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
+        }
+    }, 100);
+}
+
+function navigateTo(page) {
+    var pages = document.querySelectorAll('.page');
+    for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+    var target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+}
+
+function showPage(page) { navigateTo(page); }
+
+function closeUserMenu() {
+    var dropdown = document.getElementById('user-dropdown');
+    if (dropdown) dropdown.classList.remove('show');
+}
+
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(reg){
-      if(reg.active && reg.active.scriptURL.indexOf('v143')>-1){
-        reg.unregister();
-        console.log('[V151] 已注销旧SW');
+    for(var i=0;i<regs.length;i++){
+      if(regs[i].active && regs[i].active.scriptURL.indexOf('v143')>-1){
+        regs[i].unregister();
+        console.log('[V255] 已注销旧SW');
       }
-    });
+    }
   });
   caches.keys().then(function(names){
-    names.forEach(function(name){
-      if(name.indexOf('v143')>-1 || name.indexOf('v144')>-1 || name.indexOf('v145')>-1){
-        caches.delete(name);
-        console.log('[V151] 已删除旧缓存:',name);
+    for(var i=0;i<names.length;i++){
+      if(names[i].indexOf('v143')>-1 || names[i].indexOf('v144')>-1 || names[i].indexOf('v145')>-1){
+        caches.delete(names[i]);
+        console.log('[V255] 已删除旧缓存:',names[i]);
       }
-    });
+    }
   });
 }
 </script>
@@ -27,7 +130,7 @@ if('serviceWorker' in navigator){
 <meta name="theme-color" content="#3377FF"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>认知训练 V151</title>
+<title>认知训练 V255</title>
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/x-icon" href="favicon.ico"/>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
@@ -103,7 +206,7 @@ if('serviceWorker' in navigator){
             </div>
         </div>
         <div style="margin-top:12px;">
-            <span id="greeting-name">同学</span>，今天也要加油哦 💪
+            <span id="greeting-name">同学</span>，今天也要加油哦 💪 🔹V255
         </div>
         <div class="today-stats">
             <div class="stat-item">
@@ -126,73 +229,69 @@ if('serviceWorker' in navigator){
     </div>
 
     <div class="module-section">
-        <div class="module-grid">
-            <button class="module-btn gradient-orange" onclick="openFullscreenPage('practice')">
-                <span class="module-tag" style="background:#667eea;">AI</span>
-                <div class="module-icon">🎯</div>
-                <div class="module-name">AI精准练</div>
-                <div class="module-desc">薄弱点诊断</div>
-            </button>
-            <button class="module-btn gradient-green" onclick="openFullscreenPage('map')">
+        <div class="module-grid" style="grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <button class="module-btn gradient-orange" onclick="openFullscreenPage('games')">
+                <span class="module-tag" style="background:#FF6B6B;">热门</span>
                 <div class="module-icon">🧠</div>
-                <div class="module-name">认知地图</div>
-                <div class="module-desc">能力可视化</div>
-            </button>
-            <button class="module-btn gradient-purple" onclick="openFullscreenPage('plan')">
-                <span class="module-tag" style="background:#43E97B;">NEW</span>
-                <div class="module-icon">📅</div>
-                <div class="module-name">学习计划</div>
-                <div class="module-desc">Week1-7训练</div>
-            </button>
-            <button class="module-btn gradient-pink" onclick="openFullscreenPage('topics')">
-                <div class="module-icon">📚</div>
-                <div class="module-name">母题训练</div>
-                <div class="module-desc">126道经典题</div>
-            </button>
-            <button class="module-btn gradient-cyan" onclick="openFullscreenPage('method')">
-                <div class="module-icon">💡</div>
-                <div class="module-name">学霸方法</div>
-                <div class="module-desc">高效学习技巧</div>
-            </button>
-            <button class="module-btn gradient-yellow" onclick="openFullscreenPage('thinking')">
-                <div class="module-icon">🧩</div>
-                <div class="module-name">思维训练</div>
-                <div class="module-desc">四维能力提升</div>
-            </button>
-            <button class="module-btn gradient-blue" onclick="openFullscreenPage('podcast')">
-                <div class="module-icon">🎧</div>
-                <div class="module-name">播客课堂</div>
-                <div class="module-desc">21个音频课程</div>
-            </button>
-            <button class="module-btn gradient-orange" onclick="openFullscreenPage('video')">
-                <div class="module-icon">📺</div>
-                <div class="module-name">视频课堂</div>
-                <div class="module-desc">视频学习</div>
+                <div class="module-name">认知训练</div>
+                <div class="module-desc">综合能力提升</div>
             </button>
             <button class="module-btn gradient-green" onclick="openFullscreenPage('games')">
-                <div class="module-icon">🎮</div>
-                <div class="module-name">训练游戏</div>
-                <div class="module-desc">23大认知游戏</div>
+                <div class="module-icon">👁️</div>
+                <div class="module-name">注意力训练</div>
+                <div class="module-desc">专注能力培养</div>
             </button>
-            <button class="module-btn gradient-purple" onclick="openFullscreenPage('deepseek')">
-                <div class="module-icon">🤖</div>
-                <div class="module-name">DeepSeek</div>
-                <div class="module-desc">AI智能助手</div>
+            <button class="module-btn gradient-purple" onclick="openFullscreenPage('games')">
+                <span class="module-tag" style="background:#43E97B;">重点</span>
+                <div class="module-icon">📝</div>
+                <div class="module-name">记忆力训练</div>
+                <div class="module-desc">高效记忆方法</div>
             </button>
-            <button class="module-btn gradient-pink" onclick="openFullscreenPage('wrongbook')">
-                <div class="module-icon">📒</div>
-                <div class="module-name">错题本</div>
-                <div class="module-desc">错题复习巩固</div>
+            <button class="module-btn gradient-pink" onclick="openFullscreenPage('thinking')">
+                <div class="module-icon">🧩</div>
+                <div class="module-name">思维训练</div>
+                <div class="module-desc">逻辑推理能力</div>
             </button>
-            <button class="module-btn gradient-orange" onclick="openFullscreenPage('pomodoro')">
-                <div class="module-icon">🍅</div>
-                <div class="module-name">番茄闹钟</div>
-                <div class="module-desc">专注学习计时</div>
+            <button class="module-btn gradient-cyan" onclick="openFullscreenPage('games')">
+                <div class="module-icon">🎯</div>
+                <div class="module-name">专注力训练</div>
+                <div class="module-desc">持续专注练习</div>
             </button>
-            <button class="module-btn gradient-red" onclick="openSettingsPanel()" style="display:none;">
-                <div class="module-icon">⚙️</div>
-                <div class="module-name">设置</div>
-                <div class="module-desc">账户与充值</div>
+            <button class="module-btn gradient-yellow" onclick="openFullscreenPage('games')">
+                <div class="module-icon">⚡</div>
+                <div class="module-name">反应力训练</div>
+                <div class="module-desc">快速反应能力</div>
+            </button>
+            <button class="module-btn gradient-blue" onclick="openFullscreenPage('mindmap')">
+                <div class="module-icon">🌳</div>
+                <div class="module-name">思维导图</div>
+                <div class="module-desc">知识结构梳理</div>
+            </button>
+            <button class="module-btn gradient-orange" onclick="openFullscreenPage('library')">
+                <span class="module-tag" style="background:#667eea;">NEW</span>
+                <div class="module-icon">📚</div>
+                <div class="module-name">学习图书馆</div>
+                <div class="module-desc">60本精选书籍</div>
+            </button>
+            <button class="module-btn gradient-green" onclick="openFullscreenPage('journal')">
+                <div class="module-icon">📓</div>
+                <div class="module-name">学习日记</div>
+                <div class="module-desc">记录成长轨迹</div>
+            </button>
+            <button class="module-btn gradient-purple" onclick="openFullscreenPage('video')">
+                <div class="module-icon">📺</div>
+                <div class="module-name">视频课程</div>
+                <div class="module-desc">名师精品课程</div>
+            </button>
+            <button class="module-btn gradient-pink" onclick="openFullscreenPage('growth')">
+                <div class="module-icon">📈</div>
+                <div class="module-name">成长记录</div>
+                <div class="module-desc">进步可视化</div>
+            </button>
+            <button class="module-btn gradient-cyan" onclick="openFullscreenPage('my')">
+                <div class="module-icon">👤</div>
+                <div class="module-name">个人中心</div>
+                <div class="module-desc">账户与设置</div>
             </button>
         </div>
     </div>
@@ -217,8 +316,8 @@ if('serviceWorker' in navigator){
         <div class="nav-icon">🤖</div>
         <div class="nav-label">AI</div>
     </div>
-    <div class="nav-item" onclick="openFullscreenPage('wrongbook')">
-        <div class="nav-icon">📒</div>
+    <div class="nav-item" onclick="openFullscreenPage('my')">
+        <div class="nav-icon">👤</div>
         <div class="nav-label">我的</div>
     </div>
 </div>
@@ -674,7 +773,7 @@ if('serviceWorker' in navigator){
             <div class="fp-nav-icon">🤖</div><div>AI</div>
         </div>
         <div class="fp-nav-item" onclick="openFullscreenPage('wrongbook')">
-            <div class="fp-nav-icon">📒</div><div>我的</div>
+            <div class="fp-nav-icon">👤</div><div>我的</div>
         </div>
     </div>
 </div>
@@ -786,7 +885,7 @@ if('serviceWorker' in navigator){
     // 自动版本号：基于时间戳，每次部署自动更新
     window.__APP_VERSION = Date.now();
     
-    const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/db.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/ai.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/ui.js'];
+    const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/db.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/data/ability-model.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/ai.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/radar-chart.js', 'js/modules/growth-chart.js', 'js/modules/local-db.js', 'js/modules/self-drive.js', 'js/modules/my-page.js', 'js/modules/ui.js'];
     // 并行加载所有JS文件，大幅提升页面加载速度
     const v = window.__APP_VERSION || Date.now();
     let pending = loadOrder.length;

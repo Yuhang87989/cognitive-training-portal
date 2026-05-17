@@ -340,6 +340,7 @@ function openFullscreenPage(module) {
         'deepseek': '🤖 DeepSeek',
         'wrongbook': '📒 错题本',
         'pomodoro': '🍅 番茄闹钟',
+        'my': '👤 我的主页',
         'settings': '⚙️ 设置'
     };
     
@@ -358,6 +359,7 @@ function openFullscreenPage(module) {
         case 'deepseek': renderDeepseek(contentEl); break;
         case 'wrongbook': renderWrongbook(contentEl); break;
         case 'pomodoro': renderPomodoro(contentEl); break;
+        case 'my': renderMyPage(contentEl); break;
         default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
     }
     
@@ -1811,3 +1813,48 @@ window.showDataStatsModal = showDataStatsModal;
 window.exportData = exportData;
 window.importData = importData;
 window.handleImportFile = handleImportFile;
+
+
+// 元认知预测弹窗 - 补充函数
+function updatePredictionDisplay(value) {
+    const el = document.getElementById('meta-prediction-value');
+    if (el) el.textContent = value;
+}
+
+function cancelPrediction() {
+    const modal = document.getElementById('metacognitive-modal');
+    if (modal) modal.style.display = 'none';
+    if (typeof window._currentGameAfterCancel === 'function') {
+        window._currentGameAfterCancel();
+    }
+}
+
+function confirmPrediction() {
+    const input = document.getElementById('meta-prediction-input');
+    const prediction = input ? parseInt(input.value) : 50;
+    
+    // 保存预测
+    const data = loadData();
+    const user = data.users.find(u => u.id === data.currentUser);
+    if (user) {
+        if (!user.metacognitive) user.metacognitive = { predictions: [] };
+        user.metacognitive.predictions.push({
+            game: window._currentGameForPrediction || 'unknown',
+            prediction: prediction,
+            timestamp: Date.now()
+        });
+        saveData(data);
+    }
+    
+    const modal = document.getElementById('metacognitive-modal');
+    if (modal) modal.style.display = 'none';
+    
+    // 继续游戏
+    if (typeof window._startGameAfterPrediction === 'function') {
+        window._startGameAfterPrediction();
+    }
+}
+
+window.updatePredictionDisplay = updatePredictionDisplay;
+window.cancelPrediction = cancelPrediction;
+window.confirmPrediction = confirmPrediction;
