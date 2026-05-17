@@ -191,9 +191,9 @@ function openDownloadProgress() {
             <h3 style="margin: 0 0 20px 0; font-size: 18px; text-align: center;">📋 下载进度</h3>
             
             <div style="background: #f5f5f5; height: 12px; border-radius: 6px; margin-bottom: 12px; overflow: hidden;">
-                <div style="width: ` + progress + '%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 6px;"' + `></div>
+                <div style="width: ` + progress + `%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 6px;"></div>
             </div>
-            <div style="text-align: center; color: #667eea; font-weight: 600; margin-bottom: 20px;">` + progress + '% (' + downloaded.length + '/' + LIBRARY_BOOKS.length + ')</div>
+            <div style="text-align: center; color: #667eea; font-weight: 600; margin-bottom: 20px;">${progress}% (${downloaded.length}/${LIBRARY_BOOKS.length})</div>
             
             <div style="margin-bottom: 16px;">
                 <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">📚 推荐下载网站</div>

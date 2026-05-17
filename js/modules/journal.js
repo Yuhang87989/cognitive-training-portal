@@ -31,8 +31,8 @@ function renderJournalModule(container) {
                     <div style="font-size: 24px; font-weight: bold;">` + monthCount + `</div>
                     <div style="font-size: 12px; opacity: 0.9;">本月新增</div>
                 </div>
-                <div style="background: linear-gradient(135deg, ` + ('#4facfe, #00f2fe' if wroteToday else '#9e9e9e, #757575') + `); border-radius: 12px; padding: 12px; text-align: center; color: white;">
-                    <div style="font-size: 24px; font-weight: bold;">` + ('✅' if wroteToday else '📝') + `</div>
+                <div style="background: linear-gradient(135deg, ` + (wroteToday ? '#4facfe, #00f2fe' : '#9e9e9e, #757575') + `); border-radius: 12px; padding: 12px; text-align: center; color: white;">
+                    <div style="font-size: 24px; font-weight: bold;">` + (wroteToday ? '✅' : '📝') + `</div>
                     <div style="font-size: 12px; opacity: 0.9;">今日已写</div>
                 </div>
             </div>
