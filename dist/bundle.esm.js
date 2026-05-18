@@ -1976,7 +1976,7 @@ function showUserSwitchModal() {
         htmlContent += '<div><div style="font-weight:600;">' + u.name + (isCurrent ? ' (当前)' : '') + '</div>';
         htmlContent += '<div style="font-size:12px;color:#999;">' + gradeNames[u.grade] + ' · Lv.' + u.difficulty + '</div></div></div>';
         if (!isCurrent) {
-            htmlContent += '<button onclick="event.stopPropagation();deleteUser(\'' + u.id + '\')" style="padding:6px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>';
+            htmlContent += '<button onclick="event.stopPropagation();window.deleteUser(\'' + u.id + '\')" style="padding:6px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>';
         }
         htmlContent += '</div>';
     });
@@ -2079,7 +2079,7 @@ function renderUserList() {
     container.innerHTML = data.users.length === 0 
         ? '<div style="padding:12px;text-align:center;color:var(--text-light);">暂无用户，请创建新账号</div>'
         : data.users.map((u, i) => `
-            <div class="user-select-item" onclick="quickLogin('${u.id}')" style="${u.id === currentUserId ? 'background:#e8f4ff;border:1px solid #3377ff;' : ''}">
+            <div class="user-select-item" onclick="window.quickLogin('${u.id}')" style="${u.id === currentUserId ? 'background:#e8f4ff;border:1px solid #3377ff;' : ''}">
                 <div class="item-avatar" style="background:${colors[i%3]};color:white;">${u.name.charAt(0)}</div>
                 <div class="item-info">
                     <div class="item-name">${u.name} ${u.id === currentUserId ? '(当前)' : ''}</div>
@@ -18726,7 +18726,7 @@ window.renderSelfDrive = function(container) {
         
         <!-- 功能入口 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <button onclick="renderGoalPage()" style="padding:16px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
+            <button onclick="window.renderGoalPage()" style="padding:16px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
                 🎯 目标设定
             </button>
             <button onclick="window.renderHabitPage()" style="padding:16px 12px;background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
@@ -18807,7 +18807,10 @@ function renderGoalPage() {
     container.innerHTML = `
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px 0;">
             <h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>
+            <button onclick="window.closeSelfDriveModal()" style="padding:6px 12px;background:#f0f0f0;color:#666;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✕ 关闭</button>
+        </div>
             <button onclick="window.addGoal()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
         </div>
         ${SelfDrive.goals.length === 0 ? `
@@ -21813,4 +21816,21 @@ function closeSelfDriveModal() {
 }
 if (!window.closeSelfDriveModal) {
     window.closeSelfDriveModal = closeSelfDriveModal;
+}
+
+// ===== 修复: 挂载用户切换和数据存储函数到 window =====
+if (typeof quickLogin === 'function' && !window.quickLogin) {
+    window.quickLogin = quickLogin;
+}
+if (typeof loadData === 'function' && !window.loadData) {
+    window.loadData = loadData;
+}
+if (typeof saveData === 'function' && !window.saveData) {
+    window.saveData = saveData;
+}
+if (typeof switchToUser === 'function' && !window.switchToUser) {
+    window.switchToUser = switchToUser;
+}
+if (typeof deleteUser === 'function' && !window.deleteUser) {
+    window.deleteUser = deleteUser;
 }
