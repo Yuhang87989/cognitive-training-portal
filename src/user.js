@@ -260,6 +260,22 @@ export function updateUser(userId, updates) {
     return false;
 }
 
+// 重新导出 storage 中的函数
+export { getCurrentUser } from './storage.js';
+
+// 兼容其他模块的导入名称
+export function getCurrentUserData() {
+    return getCurrentUser();
+}
+
+export function updateCurrentUser(updates) {
+    const user = getCurrentUser();
+    if (user) {
+        return updateUser(user.id, updates);
+    }
+    return false;
+}
+
 // 导出所有函数到全局对象
 export const UserModule = {
     getAllUsers,
