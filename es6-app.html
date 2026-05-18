@@ -15,8 +15,50 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 10px 10px 80px 10px;
             margin: 0;
+        }
+        
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+        }
+        
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+            transition: transform 0.2s;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
         }
         
         /* 加载动画 */
@@ -301,6 +343,30 @@
         <div id="app-container"></div>
     </div>
     
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="window.App.navigateTo('home')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('practice')">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">训练</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('thinking')">
+            <span class="nav-icon">🧠</span>
+            <span class="nav-label">认知</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('deepseek')">
+            <span class="nav-icon">🤖</span>
+            <span class="nav-label">AI</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('profile')">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">我的</span>
+        </div>
+    </div>
+    
     <div id="detail-modal" class="modal">
         <div class="modal-content">
             <div id="detail-content"></div>
@@ -507,7 +573,34 @@
         import './src/modules/pomodoro.js';
         import './src/modules/method.js';
         import './src/modules/thinking.js';
-        import { initUI } from './src/modules/ui.js';
+        import { initUI, navigateTo } from './src/modules/ui.js';
+        
+        // 全局 App 对象
+        window.App = {
+            navigateTo: (page) => {
+                // 更新导航栏状态
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const targetItem = document.querySelector(`.nav-item[onclick*="${page}"]`);
+                if (targetItem) {
+                    targetItem.classList.add('active');
+                }
+                
+                // 特殊页面处理
+                if (page === 'profile') {
+                    window.UserModule.showUserSwitchModal();
+                    return;
+                }
+                if (page === 'practice') {
+                    window.showToast('训练模块开发中... 🚧');
+                    return;
+                }
+                
+                // 导航到对应页面
+                navigateTo(page);
+            }
+        };
         
         // 初始化应用
         window.addEventListener('DOMContentLoaded', () => {
