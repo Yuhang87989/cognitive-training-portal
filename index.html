@@ -551,6 +551,22 @@
             console.log('✅ window load 事件触发');
         });
     </script>
-    <script type="module" src="./src/main.js"></script>
+    <script type="module">
+        console.log('✅ 内联 ES6 Module 开始执行');
+        // 测试导入
+        import { initUI } from './src/modules/ui.js';
+        console.log('✅ 成功导入 initUI');
+        // 直接调用初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('🚀 DOMContentLoaded，调用 initUI');
+                initUI();
+            });
+        } else {
+            console.log('🚀 直接调用 initUI');
+            initUI();
+        }
+    </script>
+    <!-- <script type="module" src="./src/main.js"></script> -->
 </body>
 </html>
