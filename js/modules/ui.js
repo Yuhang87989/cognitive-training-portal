@@ -402,7 +402,16 @@ function openFullscreenPage(module) {
     }
     
     // 统一添加返回按钮
-    addBackButtonToModule(contentEl);
+    const existingBack = contentEl.querySelector('.module-back-btn');
+    if (!existingBack) {
+        const backBtn = document.createElement('button');
+        backBtn.className = 'module-back-btn';
+        backBtn.textContent = '← 返回首页';
+        backBtn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 32px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:24px;font-size:14px;cursor:pointer;z-index:100;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.3);';
+        backBtn.onclick = function() { closeFullscreenPage(); };
+        contentEl.style.position = 'relative';
+        contentEl.appendChild(backBtn);
+    }
     
     container.classList.add('active');
 }
