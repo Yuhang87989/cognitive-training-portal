@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认知训练门户 - ES6 Modules 完整版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: 80vh;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .app-header h1 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .app-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .user-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .es6-badge {
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #43E97B, #38F9D7);
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        #main-content {
+            min-height: 500px;
+        }
+        
+        /* 首页样式 */
+        .welcome-section {
+            padding: 24px 20px 16px;
+            text-align: center;
+        }
+        
+        .welcome-section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-section p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 20px 20px;
+        }
+        
+        .module-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #eee;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .module-card .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .module-card .name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* 页面通用样式 */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .page-header h2 {
+            font-size: 18px;
+            color: #333;
+            flex: 1;
+            text-align: center;
+            margin: 0 20px;
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* Toast 提示 */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 99999;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .login-btn {
+            width: calc(100% - 48px);
+            margin: 0 24px 24px;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .login-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>🧠 认知训练门户</h1>
+            <p>ES6 Modules 纯前端架构</p>
+        </div>
+        
+        <div class="user-bar">
+            <div class="user-info">
+                <div class="user-avatar">👤</div>
+                <span class="user-name">学习者</span>
+            </div>
+            <span class="es6-badge">ES6 Modules</span>
+        </div>
+        
+        <div id="main-content"></div>
+    </div>
+    
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 导入所有模块
+        import './src/config.js';
+        import './src/utils.js';
+        import './src/storage.js';
+        import './src/db.js';
+        import './src/user.js';
+        import './src/modules/selfdrive.js';
+        import './src/modules/deepseek.js';
+        import './src/modules/wrongbook.js';
+        import './src/modules/pomodoro.js';
+        import './src/modules/method.js';
+        import './src/modules/thinking.js';
+        import { initUI } from './src/modules/ui.js';
+        
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 ES6 Modules 认知训练门户启动...');
+            console.log('📦 已加载所有模块: config, utils, storage, db, user, ui, selfdrive, deepseek, wrongbook, pomodoro, method, thinking');
+            
+            // 将 main-content 传递给 UI 初始化
+            const originalContainer = document.getElementById('app-container');
+            const mainContent = document.getElementById('main-content');
+            
+            // 临时替换全局容器引用
+            Object.defineProperty(document, 'getElementById', {
+                value: function(id) {
+                    if (id === 'app-container') return mainContent;
+                    return HTMLDocument.prototype.getElementById.call(document, id);
+                },
+                writable: true,
+                configurable: true
+            });
+            
+            initUI();
+            
+            showToast('🎉 ES6 Modules 版本加载成功！');
+        });
+    </script>
+</body>
+</html>
