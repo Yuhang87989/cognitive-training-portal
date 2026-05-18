@@ -5,6 +5,24 @@
 
 console.log('🚀 ES6 Modules 模式启动...');
 
+// ========== 全局错误处理 - 尽早设置 ==========
+window.addEventListener('error', (event) => {
+    console.error('❌ 全局错误:', event.error);
+    const showToast = window.showToast;
+    if (showToast) {
+        showToast('发生错误: ' + (event.message || '未知错误'), 3000);
+    }
+    return false;
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('❌ 未处理的 Promise 拒绝:', event.reason);
+    const showToast = window.showToast;
+    if (showToast) {
+        showToast('异步操作失败，请重试', 3000);
+    }
+});
+
 // 导入核心模块
 import * as config from './config.js';
 import * as storage from './storage.js';
@@ -17,6 +35,31 @@ import { initUI, navigateTo } from './modules/ui.js';
 
 // 导入事件绑定模块
 import { initEventBindings } from './event-bindings.js';
+
+// 增强的导航函数 - 包含导航栏状态更新和特殊页面处理
+function enhancedNavigateTo(page) {
+    // 更新导航栏状态
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    const targetItem = document.querySelector(`.nav-item[onclick*="${page}"]`);
+    if (targetItem) {
+        targetItem.classList.add('active');
+    }
+    
+    // 特殊页面处理
+    if (page === 'profile') {
+        UserModule.showUserSwitchModal();
+        return;
+    }
+    if (page === 'practice') {
+        utils.showToast('训练模块开发中... 🚧');
+        return;
+    }
+    
+    // 导航到对应页面
+    navigateTo(page);
+}
 
 // 初始化应用
 async function initApp() {
@@ -36,11 +79,12 @@ async function initApp() {
     initEventBindings();
     
     console.log('✅ ES6 Modules 应用初始化完成！');
+    console.log('📦 已加载所有模块: config, utils, storage, db, user, ui, selfdrive, deepseek, wrongbook, pomodoro, method, thinking');
     
     // 显示就绪提示
-    if (typeof utils.showToast === 'function') {
-        utils.showToast('认知训练门户加载成功！', 3000);
-    }
+    setTimeout(() => {
+        utils.showToast('🎉 ES6 Modules 版本加载成功！', 3000);
+    }, 500);
 }
 
 // 页面加载完成后初始化
@@ -83,7 +127,7 @@ window.closeCreateUserModal = UserModule.closeCreateUserModal;
 window.createNewUser = UserModule.createNewUser;
 window.showDeleteUserModal = UserModule.showDeleteUserModal;
 window.closeDeleteUserModal = UserModule.closeDeleteUserModal;
-window.navigateTo = navigateTo;
+window.navigateTo = enhancedNavigateTo;
 
 // 初始化函数
 window.initApp = initApp;

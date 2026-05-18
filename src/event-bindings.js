@@ -10,22 +10,13 @@ import { UserModule } from './user.js';
 
 // 绑定用户相关事件
 function bindUserEvents() {
-    // 头像点击 - 打开用户菜单
+    // 头像点击 - 打开用户菜单模态框
     const avatar = document.getElementById('header-avatar');
     if (avatar) {
         avatar.addEventListener('click', () => {
-            const menu = document.getElementById('user-dropdown-menu');
-            if (menu) menu.classList.toggle('show');
+            UserModule.showUserSwitchModal();
         });
     }
-    
-    // 点击外部关闭用户菜单
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('#header-avatar') && !e.target.closest('#user-dropdown-menu')) {
-            const menu = document.getElementById('user-dropdown-menu');
-            if (menu) menu.classList.remove('show');
-        }
-    });
     
     // 切换用户按钮
     const switchUserBtn = document.querySelector('[onclick*="showUserSwitchModal"]');

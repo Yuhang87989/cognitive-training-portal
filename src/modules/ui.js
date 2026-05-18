@@ -223,10 +223,13 @@ export function initUI() {
 // 挂载常用函数到 window.App，供 HTML onclick 调用
 if (typeof window !== 'undefined') {
     if (!window.App) window.App = {};
+    // 同时挂载到两个路径，兼容不同的调用方式
     window.App.ui = {
         goHome: () => navigateTo('home'),
         navigateTo: navigateTo
     };
+    window.App.navigateTo = navigateTo;
+    window.App.goHome = () => navigateTo('home');
 }
 
 console.log('✅ ui 模块加载完成');
