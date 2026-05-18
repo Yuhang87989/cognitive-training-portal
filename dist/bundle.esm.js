@@ -1,6 +1,6 @@
 // ==========================================
 // 认知训练门户 V246 Bundle
-// 构建时间: 2026-05-18T07:41:48.101Z
+// 构建时间: 2026-05-18T07:45:12.815Z
 // ==========================================
 
 
@@ -14898,6 +14898,18 @@ window.startThinkingQuiz = startThinkingQuiz;
 window.submitThinkingAnswers = submitThinkingAnswers;
 window.selectThinkingOpt = selectThinkingOpt;
 window.filterMethod = filterMethod;
+// 查看笔记函数
+function viewMethodNote(noteId) {
+    console.log('查看笔记:', noteId);
+    alert('笔记详情功能开发中...');
+}
+// 删除笔记函数
+function deleteMethodNote(noteId) {
+    console.log('删除笔记:', noteId);
+    if (confirm('确定删除这条笔记吗？')) {
+        alert('笔记已删除');
+    }
+}
 window.viewMethodNote = viewMethodNote;
 window.deleteMethodNote = deleteMethodNote;
 window.closeDetail = closeDetail;
@@ -19667,7 +19679,7 @@ function renderLibraryModule(container) {
 }
 
 function filterBooks(category) {
-    var books = LIBRARY_BOOKS;
+    var books = window.LIBRARY_BOOKS;
     if (category !== '全部') {
         books = books.filter(function(b) { return b.category === category; });
     }
@@ -19724,7 +19736,7 @@ function openDownloadProgress() {
     
     var user = getCurrentUserData();
     var downloaded = user.downloadedBooks || [];
-    var progress = Math.round((downloaded.length / LIBRARY_BOOKS.length) * 100);
+    var progress = Math.round((downloaded.length / window.LIBRARY_BOOKS.length) * 100);
     
     content.innerHTML = `
         <div style="padding: 8px 0;">
@@ -19733,7 +19745,7 @@ function openDownloadProgress() {
             <div style="background: #f5f5f5; height: 12px; border-radius: 6px; margin-bottom: 12px; overflow: hidden;">
                 <div style="width: ` + progress + `%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 6px;"></div>
             </div>
-            <div style="text-align: center; color: #667eea; font-weight: 600; margin-bottom: 20px;">${progress}% (${downloaded.length}/${LIBRARY_BOOKS.length})</div>
+            <div style="text-align: center; color: #667eea; font-weight: 600; margin-bottom: 20px;">${progress}% (${downloaded.length}/${window.LIBRARY_BOOKS.length})</div>
             
             <div style="margin-bottom: 16px;">
                 <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">📚 推荐下载网站</div>

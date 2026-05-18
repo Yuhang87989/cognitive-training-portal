@@ -6129,6 +6129,18 @@ window.startThinkingQuiz = startThinkingQuiz;
 window.submitThinkingAnswers = submitThinkingAnswers;
 window.selectThinkingOpt = selectThinkingOpt;
 window.filterMethod = filterMethod;
+// 查看笔记函数
+function viewMethodNote(noteId) {
+    console.log('查看笔记:', noteId);
+    alert('笔记详情功能开发中...');
+}
+// 删除笔记函数
+function deleteMethodNote(noteId) {
+    console.log('删除笔记:', noteId);
+    if (confirm('确定删除这条笔记吗？')) {
+        alert('笔记已删除');
+    }
+}
 window.viewMethodNote = viewMethodNote;
 window.deleteMethodNote = deleteMethodNote;
 window.closeDetail = closeDetail;
