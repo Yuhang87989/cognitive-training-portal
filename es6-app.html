@@ -3,23 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>认知训练门户 - ES6 Modules 完整版</title>
+    <title>认知训练门户 - ES6 Modules</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 10px 10px 80px 10px;
-            margin: 0;
         }
-        
-        /* 底部导航栏 */
+        .welcome { color: white; padding: 20px; text-align: center; }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+        .module-card {
+            background: rgba(255,255,255,0.95);
+            padding: 20px 10px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .module-card:hover { transform: translateY(-4px); }
+        .module-icon { font-size: 32px; margin-bottom: 8px; }
+        .module-name { font-size: 14px; font-weight: 600; color: #333; }
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -27,603 +37,196 @@
             right: 0;
             background: white;
             display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
         }
-        
         .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .nav-icon { font-size: 20px; }
+        .nav-label { font-size: 12px; color: #666; }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 6px 12px;
-            cursor: pointer;
-            transition: all 0.2s;
+            justify-content: center;
+            z-index: 9999;
         }
-        
-        .nav-item.active {
-            color: #667eea;
-        }
-        
-        .nav-item.active .nav-icon {
-            transform: scale(1.1);
-        }
-        
-        .nav-icon {
-            font-size: 22px;
-            margin-bottom: 2px;
-            transition: transform 0.2s;
-        }
-        
-        .nav-label {
-            font-size: 11px;
-            font-weight: 500;
-        }
-        
-        /* 加载动画 */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
             border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
+            animation: spin 1s linear infinite;
         }
-        
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        
-        .app-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            min-height: 80vh;
-        }
-        
-        .app-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .app-header h1 {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-        
-        .app-header p {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        .user-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-        }
-        
-        .user-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .es6-badge {
-            padding: 4px 10px;
-            background: linear-gradient(135deg, #43E97B, #38F9D7);
-            color: white;
+        .hidden { display: none !important; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
             border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 12px;
+            margin-left: 8px;
+            background: #4caf50;
+            color: white;
         }
-        
-        #app-container {
-            min-height: 500px;
-        }
-        
-        /* 模态框样式 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.show {
-            display: flex;
-        }
-        
-        .modal-content {
+        .module-page {
             background: white;
-            padding: 24px;
-            border-radius: 20px;
-            max-width: 90%;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        
-        /* 首页样式 */
-        .welcome-section {
-            padding: 24px 20px 16px;
-            text-align: center;
-        }
-        
-        .welcome-section h2 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        
-        .welcome-section p {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 0 20px 20px;
-        }
-        
-        .module-card {
-            background: white;
-            padding: 20px;
             border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #eee;
+            padding: 20px;
+            margin: 10px;
+            min-height: 400px;
         }
-        
-        .module-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        }
-        
-        .module-card .icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        
-        .module-card .name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        /* 页面通用样式 */
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid #eee;
-            background: #f8f9fa;
-        }
-        
-        .page-header h2 {
-            font-size: 18px;
-            color: #333;
-            flex: 1;
-            text-align: center;
-            margin: 0 20px;
-        }
-        
         .back-btn {
-            padding: 8px 16px;
             background: #667eea;
             color: white;
             border: none;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-        }
-        
-        /* Toast 提示 */
-        .toast-notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.85);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 24px;
-            font-size: 14px;
-            z-index: 99999;
-            animation: slideIn 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translate(-50%, -20px); }
-            to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        
-        /* 模态框 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.show {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-        
-        .login-btn {
-            width: calc(100% - 48px);
-            margin: 0 24px 24px;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        
-        .login-btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-            margin-top: 12px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
-    <div class="app-wrapper">
-        <div class="app-header">
-            <h1>🧠 认知训练门户</h1>
-            <p>ES6 Modules 纯前端架构</p>
-        </div>
-        
-        <div class="user-bar">
-            <div class="user-info">
-                <div class="user-avatar" id="header-avatar">👤</div>
-                <span class="user-name" id="user-name-display">学习者</span>
-            </div>
-            <span class="es6-badge">ES6 Modules</span>
-        </div>
-        
-        <div id="app-container"></div>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: #666;">正在加载 ES6 模块...</p>
     </div>
-    
-    <!-- 底部导航栏 -->
+
+    <div class="welcome">
+        <h1>👋 欢迎使用</h1>
+        <p>ES6 Modules 版本 <span class="status-badge">纯ES6结构</span></p>
+    </div>
+    <div id="app-container" class="modules-grid"></div>
+
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="window.App.navigateTo('home')">
-            <span class="nav-icon">🏠</span>
-            <span class="nav-label">首页</span>
+        <div class="nav-item" onclick="window.App && window.App.goHome()">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">首页</div>
         </div>
-        <div class="nav-item" onclick="window.App.navigateTo('practice')">
-            <span class="nav-icon">🎯</span>
-            <span class="nav-label">训练</span>
+        <div class="nav-item" onclick="window.showToast && window.showToast('功能开发中')">
+            <div class="nav-icon">🎯</div>
+            <div class="nav-label">训练</div>
         </div>
-        <div class="nav-item" onclick="window.App.navigateTo('thinking')">
-            <span class="nav-icon">🧠</span>
-            <span class="nav-label">认知</span>
-        </div>
-        <div class="nav-item" onclick="window.App.navigateTo('deepseek')">
-            <span class="nav-icon">🤖</span>
-            <span class="nav-label">AI</span>
-        </div>
-        <div class="nav-item" onclick="window.App.navigateTo('profile')">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">我的</span>
-        </div>
-    </div>
-    
-    <div id="detail-modal" class="modal">
-        <div class="modal-content">
-            <div id="detail-content"></div>
-        </div>
-    </div>
-
-    <!-- 用户菜单模态框 -->
-    <div id="user-switch-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px; padding: 0; overflow: hidden;">
-            <!-- 用户信息头部 -->
-            <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; color: white;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div id="menu-user-avatar" style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
-                        👤
-                    </div>
-                    <div>
-                        <div id="menu-user-name" style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">同学</div>
-                        <div id="menu-user-info" style="font-size: 13px; opacity: 0.8;">初一 · Lv.1</div>
-                    </div>
-                </div>
-                <div onclick="window.UserModule.closeUserSwitchModal()" style="position: absolute; top: 16px; right: 16px; font-size: 24px; cursor: pointer; opacity: 0.8;">✕</div>
-            </div>
-            
-            <!-- 功能菜单列表 -->
-            <div id="user-menu-list">
-                <div onclick="window.UserModule.showDifficultyModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">⭐</span>
-                    <span style="flex: 1; font-size: 15px;">难度调整</span>
-                    <span id="menu-difficulty" style="color: #999; font-size: 14px;">Lv.1</span>
-                </div>
-                <div onclick="window.UserModule.showAvatarModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">🎨</span>
-                    <span style="flex: 1; font-size: 15px;">更换头像</span>
-                    <span style="color: #ccc;">›</span>
-                </div>
-                <div onclick="window.UserModule.clearCurrentUserData()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">🗑️</span>
-                    <span style="flex: 1; font-size: 15px;">清除数据</span>
-                    <span style="color: #ccc;">›</span>
-                </div>
-                <div onclick="window.UserModule.showUserListModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">👥</span>
-                    <span style="flex: 1; font-size: 15px;">切换用户</span>
-                    <span style="color: #ccc;">›</span>
-                </div>
-                <div onclick="window.UserModule.closeUserSwitchModal();window.UserModule.showCreateUserModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">➕</span>
-                    <span style="flex: 1; font-size: 15px;">创建用户</span>
-                    <span style="color: #ccc;">›</span>
-                </div>
-                <div onclick="window.UserModule.showDeleteUserModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">🗑️</span>
-                    <span style="flex: 1; font-size: 15px;">删除用户</span>
-                    <span style="color: #ccc;">›</span>
-                </div>
-                <div onclick="window.UserModule.showSettingsModal()" style="display: flex; align-items: center; padding: 16px 20px; cursor: pointer;">
-                    <span style="font-size: 20px; margin-right: 12px;">⚙️</span>
-                    <span style="flex: 1; font-size: 15px;">设置</span>
-                    <span style="color: #ccc;">›</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 用户列表/切换模态框 -->
-    <div id="user-list-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3 style="margin-bottom: 16px;">👥 切换用户</h3>
-            <div id="user-list-content"></div>
-            <div style="margin-top: 16px; text-align: right;">
-                <button onclick="window.UserModule.closeUserListModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
-                    关闭
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 难度调整模态框 -->
-    <div id="difficulty-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3 style="margin-bottom: 16px;">⭐ 调整难度</h3>
-            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-                <button onclick="window.UserModule.setDifficulty(1)" style="flex: 1; padding: 20px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">1️⃣</div>
-                    <div style="font-weight: 600;">Lv.1</div>
-                    <div style="font-size: 12px; opacity: 0.8;">基础</div>
-                </button>
-                <button onclick="window.UserModule.setDifficulty(2)" style="flex: 1; padding: 20px; background: #f59e0b; color: white; border: none; border-radius: 12px; cursor: pointer;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">2️⃣</div>
-                    <div style="font-weight: 600;">Lv.2</div>
-                    <div style="font-size: 12px; opacity: 0.8;">进阶</div>
-                </button>
-                <button onclick="window.UserModule.setDifficulty(3)" style="flex: 1; padding: 20px; background: #ef4444; color: white; border: none; border-radius: 12px; cursor: pointer;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">3️⃣</div>
-                    <div style="font-weight: 600;">Lv.3</div>
-                    <div style="font-size: 12px; opacity: 0.8;">挑战</div>
-                </button>
-            </div>
-            <div style="text-align: right;">
-                <button onclick="window.UserModule.closeDifficultyModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
-                    关闭
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 更换头像模态框 -->
-    <div id="avatar-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3 style="margin-bottom: 16px;">🎨 选择头像</h3>
-            <div id="avatar-options" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;">
-            </div>
-            <div style="text-align: right;">
-                <button onclick="window.UserModule.closeAvatarModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
-                    关闭
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 设置模态框 -->
-    <div id="settings-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3 style="margin-bottom: 16px;">⚙️ 设置</h3>
-            <div style="padding: 20px 0; text-align: center; color: #999;">
-                设置功能开发中... 🚧
-            </div>
-            <div style="text-align: right;">
-                <button onclick="window.UserModule.closeSettingsModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
-                    关闭
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 创建用户模态框 -->
-    <div id="create-user-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3 style="margin-bottom: 16px;">✨ 创建新用户</h3>
-            <div style="margin-bottom: 12px;">
-                <label style="display: block; margin-bottom: 4px; font-size: 14px;">用户名</label>
-                <input id="new-user-name" type="text" placeholder="请输入用户名" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 12px;">
-                <label style="display: block; margin-bottom: 4px; font-size: 14px;">年级</label>
-                <select id="new-user-grade" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                    <option value="未设置">未设置</option>
-                    <option value="小学">小学</option>
-                    <option value="初一">初一</option>
-                    <option value="初二">初二</option>
-                    <option value="初三">初三</option>
-                    <option value="高一">高一</option>
-                    <option value="高二">高二</option>
-                    <option value="高三">高三</option>
-                </select>
-            </div>
-            <div style="margin-bottom: 16px;">
-                <label style="display: block; margin-bottom: 4px; font-size: 14px;">难度等级</label>
-                <select id="new-user-difficulty" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
-                    <option value="1">Lv.1 基础</option>
-                    <option value="2">Lv.2 进阶</option>
-                    <option value="3">Lv.3 挑战</option>
-                </select>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="window.UserModule.closeCreateUserModal()" style="flex: 1; padding: 12px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
-                    取消
-                </button>
-                <button onclick="window.UserModule.createNewUser()" style="flex: 1; padding: 12px; background: #43E97B; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                    创建
-                </button>
-            </div>
+        <div class="nav-item" onclick="window.showToast && window.showToast('功能开发中')">
+            <div class="nav-icon">🤖</div>
+            <div class="nav-label">AI</div>
         </div>
     </div>
 
     <script type="module">
-        // 全局错误处理 - 尽早设置
-        window.addEventListener('error', (event) => {
-            console.error('❌ 全局错误:', event.error);
-            const showToast = window.showToast;
-            if (showToast) {
-                showToast('发生错误: ' + (event.message || '未知错误'), 3000);
-            }
-            return false;
-        });
-        
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error('❌ 未处理的 Promise 拒绝:', event.reason);
-            const showToast = window.showToast;
-            if (showToast) {
-                showToast('异步操作失败，请重试', 3000);
-            }
-        });
-        
-        // 导入所有模块
-        import './src/config.js';
-        import './src/utils.js';
-        import './src/storage.js';
-        import './src/db.js';
-        import './src/user.js';
-        import './src/modules/ui.js';  // UI模块先导入，提供导航函数
-        import './src/modules/selfdrive.js';
-        import './src/modules/deepseek.js';
-        import './src/modules/wrongbook.js';
-        import './src/modules/pomodoro.js';
-        import './src/modules/method.js';
-        import './src/modules/thinking.js';
-        import { initUI, navigateTo } from './src/modules/ui.js';
-        
-        // 全局 App 对象
-        window.App = {
-            navigateTo: (page) => {
-                // 更新导航栏状态
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                const targetItem = document.querySelector(`.nav-item[onclick*="${page}"]`);
-                if (targetItem) {
-                    targetItem.classList.add('active');
-                }
-                
-                // 特殊页面处理
-                if (page === 'profile') {
-                    window.UserModule.showUserSwitchModal();
-                    return;
-                }
-                if (page === 'practice') {
-                    window.showToast('训练模块开发中... 🚧');
-                    return;
-                }
-                
-                // 导航到对应页面
-                navigateTo(page);
-            }
+        console.log('🚀 ES6 Modules 开始加载');
+
+        // 全局工具函数
+        window.showToast = function(msg, duration = 2000) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), duration);
         };
-        
-        // 初始化应用
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 ES6 Modules 认知训练门户启动...');
-            console.log('📦 已加载所有模块: config, utils, storage, db, user, ui, selfdrive, deepseek, wrongbook, pomodoro, method, thinking');
-            
-            try {
-                initUI();
-                console.log('✅ 应用初始化成功');
-            } catch (error) {
-                console.error('❌ 应用初始化失败:', error);
-                alert('应用初始化失败: ' + error.message);
-            }
-            
-            // 显示欢迎提示
-            setTimeout(() => {
-                const showToast = window.showToast || function(msg) {
-                    alert(msg);
-                };
-                showToast('🎉 ES6 Modules 版本加载成功！');
-            }, 500);
-        });
+
+        try {
+            // ========== 导入 ES6 模块 ==========
+            import { renderHomePage, renderModulePage } from './src/modules/ui.js?t=' + Date.now();
+            console.log('✅ UI 模块加载成功');
+
+            import { renderSelfDrive } from './src/modules/selfdrive.js?t=' + Date.now();
+            console.log('✅ 自驱力模块加载成功');
+
+            import { renderDeepSeek } from './src/modules/deepseek.js?t=' + Date.now();
+            console.log('✅ DeepSeek模块加载成功');
+
+            import { renderWrongBook } from './src/modules/wrongbook.js?t=' + Date.now();
+            console.log('✅ 错题本模块加载成功');
+
+            import { renderPomodoro } from './src/modules/pomodoro.js?t=' + Date.now();
+            console.log('✅ 番茄钟模块加载成功');
+
+            import { renderMethod } from './src/modules/method.js?t=' + Date.now();
+            console.log('✅ 学霸方法模块加载成功');
+
+            import { renderThinking } from './src/modules/thinking.js?t=' + Date.now();
+            console.log('✅ 思维训练模块加载成功');
+
+            // ========== 模块渲染器映射 ==========
+            const moduleRenderers = {
+                'selfdrive': renderSelfDrive,
+                'deepseek': renderDeepSeek,
+                'wrongbook': renderWrongBook,
+                'pomodoro': renderPomodoro,
+                'method': renderMethod,
+                'thinking': renderThinking,
+            };
+
+            // ========== 全局应用对象 ==========
+            window.App = {
+                currentPage: 'home',
+                
+                goHome: function() {
+                    this.currentPage = 'home';
+                    const container = document.getElementById('app-container');
+                    container.className = 'modules-grid';
+                    renderHomePage(container);
+                },
+
+                openModule: function(moduleId) {
+                    const renderFn = moduleRenderers[moduleId];
+                    if (renderFn) {
+                        this.currentPage = moduleId;
+                        const container = document.getElementById('app-container');
+                        container.className = 'module-page';
+                        renderModulePage(container, moduleId, renderFn);
+                    } else {
+                        window.showToast('模块 ' + moduleId + ' 开发中');
+                    }
+                }
+            };
+
+            // ========== 初始化首页 ==========
+            window.App.goHome();
+
+            // 隐藏加载动画
+            document.getElementById('loading').classList.add('hidden');
+            window.showToast('🎉 ES6 Modules 全部加载成功！');
+            console.log('✅ ES6 Modules 初始化完成');
+
+        } catch (error) {
+            console.error('❌ ES6 模块加载失败:', error);
+            document.getElementById('loading').innerHTML = `
+                <p style="color: #e74c3c; font-size: 18px; margin-bottom: 10px;">❌ 模块加载失败</p>
+                <p style="color: #666; font-size: 14px; text-align: center; max-width: 300px;">${error.message || '未知错误'}</p>
+            `;
+        }
     </script>
 </body>
 </html>
