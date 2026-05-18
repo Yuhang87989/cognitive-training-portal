@@ -360,20 +360,49 @@ function openFullscreenPage(module) {
         case 'wrongbook': renderWrongbook(contentEl); break;
         case 'pomodoro': renderPomodoro(contentEl); break;
         case 'my': renderMyPage(contentEl); break;
-        default: contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
+        case 'journal': 
+            if (typeof renderJournalModule === 'function') {
+                renderJournalModule(contentEl);
+            } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习日记开发中...</p></div>';
+            }
+            break;
+        case 'library': 
+            if (typeof renderLibraryModule === 'function') {
+                renderLibraryModule(contentEl);
+            } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习图书馆开发中...</p></div>';
+            }
+            break;
+        case 'selfdrive': 
+            if (typeof renderGoalPage === 'function') {
+                const modal = document.getElementById('detail-modal');
+                if (modal) modal.classList.add('show');
+                renderGoalPage();
+            } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>自驱力训练开发中...</p></div>';
+            }
+            break;
+        case 'growth': 
+            contentEl.innerHTML = `
+                <div style="padding:20px;">
+                    <h3 style="margin-bottom:20px;font-size:18px;">📈 成长轨迹</h3>
+                    <div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                        <canvas id="growth-chart-canvas" width="320" height="240" style="width:100%;height:auto;"></canvas>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                if (typeof renderGrowthChart === 'function') {
+                    renderGrowthChart('growth-chart-canvas', 'week');
+                }
+            }, 100);
+            break;
+        default: contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块开发中...</p></div>';
     }
     
     // 统一添加返回按钮
-    const existingBack = contentEl.querySelector('.module-back-btn');
-    if (!existingBack) {
-        const backBtn = document.createElement('button');
-        backBtn.className = 'module-back-btn';
-        backBtn.textContent = '← 返回首页';
-        backBtn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 32px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:24px;font-size:14px;cursor:pointer;z-index:100;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.3);';
-        backBtn.onclick = function() { closeFullscreenPage(); };
-        contentEl.style.position = 'relative';
-        contentEl.appendChild(backBtn);
-    }
+    addBackButtonToModule(contentEl);
     
     container.classList.add('active');
 }
