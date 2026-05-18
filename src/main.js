@@ -36,7 +36,27 @@ import { initUI, navigateTo } from './modules/ui.js';
 // 导入事件绑定模块
 import { initEventBindings } from './event-bindings.js';
 
-// 增强的导航函数 - 包含导航栏状态更新和特殊页面处理
+// ========== 立即挂载全局对象（确保模块初始化时就能访问）==========
+// 核心模块
+window.Config = config;
+window.Storage = storage;
+window.Utils = utils;
+window.DB = db;
+window.UserModule = UserModule;
+
+// 功能模块
+window.UI = {
+    initUI,
+    navigateTo,
+};
+
+// 快捷函数（兼容旧代码 onclick 调用）
+window.showToast = utils.showToast;
+window.loadData = storage.loadData;
+window.saveData = storage.saveData;
+window.getCurrentUser = storage.getCurrentUser;
+
+// ========== 增强的导航函数 - 包含导航栏状态更新和特殊页面处理 ==========
 function enhancedNavigateTo(page) {
     // 更新导航栏状态
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -94,27 +114,12 @@ if (document.readyState === 'loading') {
     initApp();
 }
 
-// ========== 导出到全局 ==========
-// 注意：这是过渡方案，最终目标是完全通过 JS 绑定事件
+// ========== 继续挂载其他全局函数 ==========
+// 兼容底部导航栏的调用路径
+if (!window.App) window.App = {};
+window.App.navigateTo = enhancedNavigateTo;
 
-// 核心模块
-window.Config = config;
-window.Storage = storage;
-window.Utils = utils;
-window.DB = db;
-window.UserModule = UserModule;
-
-// 功能模块
-window.UI = {
-    initUI,
-    navigateTo,
-};
-
-// 快捷函数（兼容旧代码 onclick 调用）
-window.showToast = utils.showToast;
-window.loadData = storage.loadData;
-window.saveData = storage.saveData;
-window.getCurrentUser = storage.getCurrentUser;
+// 其他快捷函数
 window.switchUser = storage.switchUser;
 window.createUser = storage.createUser;
 window.deleteUser = UserModule.confirmDeleteUser;
