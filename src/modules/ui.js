@@ -8,6 +8,7 @@ import { getCurrentUser } from '../user.js';
 import { renderSelfDrive } from './selfdrive.js';
 import { renderDeepSeekPage } from './deepseek.js';
 import { renderWrongBookPage } from './wrongbook.js';
+import { renderPomodoroPage } from './pomodoro.js';
 
 // ========== 导航系统 ==========
 
@@ -17,7 +18,7 @@ const routes = {
     method: renderMethodPage,
     thinking: renderThinkingPage,
     wrongbook: renderWrongBookModule,
-    pomodoro: renderPomodoroPage,
+    pomodoro: renderPomodoroModule,
     deepseek: renderDeepSeekModule,
     selfdrive: renderSelfDrive,
     growth: renderGrowthPage,
@@ -94,7 +95,10 @@ function renderWrongBookModule(container) {
     container.innerHTML = '';
     renderWrongBookPage(container);
 }
-function renderPomodoroPage(container) { renderPlaceholderPage(container, '🍅', '番茄钟', '#FF9A63'); }
+function renderPomodoroModule(container) {
+    container.innerHTML = '';
+    renderPomodoroPage(container);
+}
 function renderDeepSeekModule(container) {
     container.innerHTML = renderDeepSeekPage();
 }
