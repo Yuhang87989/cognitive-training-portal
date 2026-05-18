@@ -6143,9 +6143,53 @@ function deleteMethodNote(noteId) {
 }
 window.viewMethodNote = viewMethodNote;
 window.deleteMethodNote = deleteMethodNote;
+
+// 关闭详情弹窗
+function closeDetail() {
+    const el = document.getElementById('detail-modal');
+    if (el) el.classList.remove('show');
+}
+// 关闭通用弹窗
+function closeModal() {
+    const modal = document.getElementById('game-over-modal');
+    if (modal) modal.style.display = 'none';
+    const overlay = document.getElementById('meta-predict-overlay');
+    if (overlay) overlay.remove();
+}
+// 提交母题答案
+function submitTopicAnswer(topicId, answerIndex) {
+    console.log('提交答案:', topicId, answerIndex);
+    alert('答案提交功能开发中...');
+}
+// 提交学霸方法答案
+function submitMethodAnswers(methodId) {
+    console.log('提交方法答案:', methodId);
+    alert('测试提交成功！');
+}
+// 提交思维训练答案
+function submitThinkingAnswers(type) {
+    console.log('提交思维答案:', type);
+    alert('测试提交成功！');
+}
+// 选择思维训练选项
+function selectThinkingOpt(optIndex) {
+    console.log('选择选项:', optIndex);
+}
+// 过滤学霸方法
+function filterMethod(category, btn) {
+    console.log('过滤方法:', category);
+    // 切换激活状态
+    document.querySelectorAll('.subject-tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+}
+
 window.closeDetail = closeDetail;
 window.closeModal = closeModal;
 window.submitTopicAnswer = submitTopicAnswer;
+window.submitMethodAnswers = submitMethodAnswers;
+window.submitThinkingAnswers = submitThinkingAnswers;
+window.selectThinkingOpt = selectThinkingOpt;
+window.filterMethod = filterMethod;
 
 
 // ====== 元认知预测功能 ======
