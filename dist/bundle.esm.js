@@ -5032,7 +5032,7 @@ function submitMethodAnswers(methodId, page) {
                         <button onclick="rateMethodAnswer('${methodId}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
                         <button onclick="rateMethodAnswer('${methodId}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
                     </div>
-                    <button onclick="analyzeMethodWithAI('${methodId}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
+                    <button onclick="window.analyzeMethodWithAI('${methodId}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
                     <div id="method-ai-result-${methodId}-${startIndex + idx}" style="margin-top:8px;"></div>
                 </div>
             `).join('')}
@@ -5099,7 +5099,7 @@ function submitThinkingAnswers(type, page) {
                             <button onclick="rateThinkingAnswer('${type}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
                             <button onclick="rateThinkingAnswer('${type}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
                         </div>
-                        <button onclick="analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
+                        <button onclick="window.analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
                         <div id="thinking-ai-result-${type}-${startIndex + idx}" style="margin-top:8px;"></div>
                     </div>
                 `;
@@ -5129,14 +5129,14 @@ function renderMethod(container) {
             
             <!-- 学习方法分类 -->
             <div class="subject-tab" style="flex-wrap:wrap;margin-bottom:16px;">
-                <button class="subject-tab-btn active" onclick="filterMethod('all', this)">全部</button>
-                <button class="subject-tab-btn" onclick="filterMethod('费曼学习法', this)">费曼学习</button>
-                <button class="subject-tab-btn" onclick="filterMethod('番茄工作法', this)">番茄工作</button>
-                <button class="subject-tab-btn" onclick="filterMethod('艾宾浩斯', this)">遗忘曲线</button>
-                <button class="subject-tab-btn" onclick="filterMethod('思维导图', this)">思维导图</button>
-                <button class="subject-tab-btn" onclick="filterMethod('康奈尔', this)">康奈尔</button>
-                <button class="subject-tab-btn" onclick="filterMethod('SQ3R', this)">SQ3R</button>
-                <button class="subject-tab-btn" onclick="filterMethod('时间管理', this)">时间管理</button>
+                <button class="subject-tab-btn active" onclick="window.filterMethod('all', this)">全部</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('费曼学习法', this)">费曼学习</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('番茄工作法', this)">番茄工作</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('艾宾浩斯', this)">遗忘曲线</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('思维导图', this)">思维导图</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('康奈尔', this)">康奈尔</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('SQ3R', this)">SQ3R</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('时间管理', this)">时间管理</button>
             </div>
         </div>
         
@@ -5250,7 +5250,7 @@ function openMethodQuestions(methodId) {
             <input type="file" id="method-photo-input" accept="image/*" capture="environment" style="display:none" onchange="handleQuestionPhoto(this, 'method-photo-preview')"/>
             <div style="display:flex;gap:8px;">
                 <button onclick="document.getElementById('method-photo-input').click()" style="flex:1;padding:10px;background:white;border:1px solid #ddd;border-radius:8px;font-size:13px;cursor:pointer;">📷 拍照/选择图片</button>
-                <button onclick="analyzeMethodPhotoWithAI()" style="flex:1;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">🤖 AI分析图片</button>
+                <button onclick="window.analyzeMethodPhotoWithAI()" style="flex:1;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">🤖 AI分析图片</button>
             </div>
             <div id="method-photo-preview" style="margin-top:8px;display:none;"></div>
         </div>
@@ -5264,7 +5264,7 @@ function openMethodQuestions(methodId) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitMethodAnswers('${methodId}', 0)" class="login-btn login-btn-primary" style="margin-top:12px;width:100%;">提交答案</button>
+        <button onclick="window.submitMethodAnswers('${methodId}', 0)" class="login-btn login-btn-primary" style="margin-top:12px;width:100%;">提交答案</button>
         <button class="modal-close" onclick="closeModal()" style="margin-top:8px;width:100%;">返回</button>
     `;
     document.getElementById('detail-modal').classList.add('show');
@@ -5488,7 +5488,7 @@ function startMethodQuiz(methodId, page = 0) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <button onclick="window.submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
         <div style="display:flex;gap:8px;">
             ${currentPage > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
@@ -6123,7 +6123,7 @@ function startThinkingQuiz(type, page = 0) {
                     ${q.opts ? `
                         <div style="display:grid;gap:8px;" id="opts-${idx}">
                             ${q.opts.map((opt, optIdx) => `
-                                <div class="thinking-opt" onclick="selectThinkingOpt(this, ${optIdx}, ${idx})" style="padding:10px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;">${opt}</div>
+                                <div class="thinking-opt" onclick="window.selectThinkingOpt(this, ${optIdx}, ${idx})" style="padding:10px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;">${opt}</div>
                             `).join('')}
                         </div>
                     ` : `
@@ -6132,7 +6132,7 @@ function startThinkingQuiz(type, page = 0) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitThinkingAnswers('${type}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <button onclick="window.submitThinkingAnswers('${type}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
         <div style="display:flex;gap:8px;">
             ${currentPage > 0 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
@@ -6225,7 +6225,7 @@ function submitThinkingAnswers(type, page) {
                             <button onclick="rateThinkingAnswer('${type}', true, ${startIndex + idx})" style="flex:1;padding:8px;background:#4CAF50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✓ 正确</button>
                             <button onclick="rateThinkingAnswer('${type}', false, ${startIndex + idx})" style="flex:1;padding:8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">✗ 改进</button>
                         </div>
-                        <button onclick="analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
+                        <button onclick="window.analyzeThinkingWithAI('${type}', ${startIndex + idx})" style="width:100%;margin-top:8px;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;">🤖 AI深度分析</button>
                         <div id="thinking-ai-result-${type}-${startIndex + idx}" style="margin-top:8px;"></div>
                     </div>
                 `;
@@ -10162,7 +10162,7 @@ function startMethodQuiz(methodId, page = 0) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <button onclick="window.submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
         <div style="display:flex;gap:8px;">
             ${currentPage > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
@@ -10230,7 +10230,7 @@ function startThinkingQuiz(type, page = 0) {
                     ${q.opts ? `
                         <div style="display:grid;gap:8px;" id="opts-${idx}">
                             ${q.opts.map((opt, optIdx) => `
-                                <div class="thinking-opt" onclick="selectThinkingOpt(this, ${optIdx}, ${idx})" style="padding:10px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;">${opt}</div>
+                                <div class="thinking-opt" onclick="window.selectThinkingOpt(this, ${optIdx}, ${idx})" style="padding:10px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;">${opt}</div>
                             `).join('')}
                         </div>
                     ` : `
@@ -10239,7 +10239,7 @@ function startThinkingQuiz(type, page = 0) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitThinkingAnswers('${type}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <button onclick="window.submitThinkingAnswers('${type}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
         <div style="display:flex;gap:8px;">
             ${currentPage > 0 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
@@ -10260,7 +10260,7 @@ function startPractice(topicId) {
                 <div class="practice-question">${topic.q}</div>
                 <div class="practice-input">
                     <input type="text" id="practice-answer" placeholder="请输入你的答案" />
-                    <button onclick="submitTopicAnswer(${topic.id})">提交</button>
+                    <button onclick="window.submitTopicAnswer(${topic.id})">提交</button>
                 </div>
                 <div id="practice-result"></div>
             </div>
@@ -12748,14 +12748,14 @@ function renderMethod(container) {
             
             <!-- 学习方法分类 -->
             <div class="subject-tab" style="flex-wrap:wrap;margin-bottom:16px;">
-                <button class="subject-tab-btn active" onclick="filterMethod('all', this)">全部</button>
-                <button class="subject-tab-btn" onclick="filterMethod('费曼学习法', this)">费曼学习</button>
-                <button class="subject-tab-btn" onclick="filterMethod('番茄工作法', this)">番茄工作</button>
-                <button class="subject-tab-btn" onclick="filterMethod('艾宾浩斯', this)">遗忘曲线</button>
-                <button class="subject-tab-btn" onclick="filterMethod('思维导图', this)">思维导图</button>
-                <button class="subject-tab-btn" onclick="filterMethod('康奈尔', this)">康奈尔</button>
-                <button class="subject-tab-btn" onclick="filterMethod('SQ3R', this)">SQ3R</button>
-                <button class="subject-tab-btn" onclick="filterMethod('时间管理', this)">时间管理</button>
+                <button class="subject-tab-btn active" onclick="window.filterMethod('all', this)">全部</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('费曼学习法', this)">费曼学习</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('番茄工作法', this)">番茄工作</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('艾宾浩斯', this)">遗忘曲线</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('思维导图', this)">思维导图</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('康奈尔', this)">康奈尔</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('SQ3R', this)">SQ3R</button>
+                <button class="subject-tab-btn" onclick="window.filterMethod('时间管理', this)">时间管理</button>
             </div>
         </div>
         
@@ -12816,8 +12816,8 @@ function renderMethodNotes() {
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
             ${notes.map(note => `
                 <div style="position:relative;">
-                    <img src="${note.image}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="viewMethodNote('${note.id}')">
-                    <button onclick="deleteMethodNote('${note.id}')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;width:20px;height:20px;border-radius:50%;font-size:10px;cursor:pointer;">✕</button>
+                    <img src="${note.image}" style="width:100%;height:80px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="window.viewMethodNote('${note.id}')">
+                    <button onclick="window.deleteMethodNote('${note.id}')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;width:20px;height:20px;border-radius:50%;font-size:10px;cursor:pointer;">✕</button>
                 </div>
             `).join('')}
         </div>
@@ -13788,7 +13788,7 @@ function startMethodQuiz(methodId, page = 0) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <button onclick="window.submitMethodAnswers('${methodId}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
         <div style="display:flex;gap:8px;">
             ${currentPage > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
@@ -13949,7 +13949,7 @@ function startPractice(topicId) {
                 <div class="practice-question">${topic.q}</div>
                 <div class="practice-input">
                     <input type="text" id="practice-answer" placeholder="请输入你的答案" />
-                    <button onclick="submitTopicAnswer(${topic.id})">提交</button>
+                    <button onclick="window.submitTopicAnswer(${topic.id})">提交</button>
                 </div>
                 <div id="practice-result"></div>
             </div>
@@ -14579,7 +14579,7 @@ function startThinkingQuiz(type, page = 0) {
                     ${q.opts ? `
                         <div style="display:grid;gap:8px;" id="opts-${idx}">
                             ${q.opts.map((opt, optIdx) => `
-                                <div class="thinking-opt" onclick="selectThinkingOpt(this, ${optIdx}, ${idx})" style="padding:10px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;">${opt}</div>
+                                <div class="thinking-opt" onclick="window.selectThinkingOpt(this, ${optIdx}, ${idx})" style="padding:10px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:13px;">${opt}</div>
                             `).join('')}
                         </div>
                     ` : `
@@ -14588,7 +14588,7 @@ function startThinkingQuiz(type, page = 0) {
                 </div>
             `).join('')}
         </div>
-        <button onclick="submitThinkingAnswers('${type}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
+        <button onclick="window.submitThinkingAnswers('${type}', ${currentPage})" class="login-btn login-btn-primary" style="margin-bottom:8px;">提交全部答案</button>
         <div style="display:flex;gap:8px;">
             ${currentPage > 0 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
@@ -15955,7 +15955,7 @@ function renderDeepseek(contentEl) {
         // 顶部信息卡
         '<div style="padding:10px 12px;background:white;border-bottom:1px solid #f0f0f0;flex-shrink:0;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleDeepSeekHistory()" title="点击查看聊天历史">' +
+                '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="window.toggleDeepSeekHistory()" title="点击查看聊天历史">' +
                     '<div style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(102,126,234,0.3);">🤖</div>' +
                     '<div><div style="font-size:13px;font-weight:600;color:#333;">DeepSeek AI 助手</div><div style="font-size:10px;color:#999;">智能学习助手 · 点击看历史</div></div>' +
                 '</div>' +
@@ -15970,10 +15970,10 @@ function renderDeepseek(contentEl) {
         '<div id="deepseek-messages" style="flex:1;overflow-y:auto;padding:10px;font-size:13px;"></div>' +
         // 输入区
         '<div style="padding:6px 8px;border-top:1px solid #eee;display:flex;gap:4px;align-items:center;background:white;flex-shrink:0;">' +
-            '<button onclick="triggerDeepSeekImage()" style="width:28px;height:28px;border:none;background:#667eea;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">📷</button>' +
+            '<button onclick="window.triggerDeepSeekImage()" style="width:28px;height:28px;border:none;background:#667eea;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">📷</button>' +
             '<input type="text" id="deepseek-input" placeholder="输入问题..." style="flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:12px;min-width:0;" onkeypress="if(event.key===\'Enter\')sendToDeepSeek()"/>' +
-            '<button id="deepseek-send-btn" class="chat-send" onclick="sendToDeepSeek()" style="width:28px;height:28px;border:none;background:#667eea;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">➤</button>' +
-            '<button onclick="toggleDeepSeekVoice()" style="width:28px;height:28px;border:none;background:#f093fb;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">🎤</button>' +
+            '<button id="deepseek-send-btn" class="chat-send" onclick="window.sendToDeepSeek()" style="width:28px;height:28px;border:none;background:#667eea;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">➤</button>' +
+            '<button onclick="window.toggleDeepSeekVoice()" style="width:28px;height:28px;border:none;background:#f093fb;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">🎤</button>' +
         '</div>' +
     '</div>';
     // 恢复聊天历史
@@ -16037,7 +16037,7 @@ function toggleDeepSeekHistory() {
     var html = '<div style="display:flex;flex-direction:column;height:100%;background:#f5f5f5;">' +
         // 顶部栏
         '<div style="padding:12px 16px;background:white;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
-            '<button onclick="renderDeepseek(document.getElementById(\'fullscreen-content\'))" style="background:none;border:none;font-size:14px;color:#667eea;cursor:pointer;">← 返回对话</button>' +
+            '<button onclick="window.renderDeepseek(document.getElementById(\'fullscreen-content\'))" style="background:none;border:none;font-size:14px;color:#667eea;cursor:pointer;">← 返回对话</button>' +
             '<span style="font-size:15px;font-weight:600;color:#333;">📋 历史记录</span>' +
             '<span style="font-size:12px;color:#999;">' + saved.length + ' 条</span>' +
         '</div>' +
@@ -16047,7 +16047,7 @@ function toggleDeepSeekHistory() {
         '</div>' +
         // 操作栏
         '<div style="padding:6px 12px;background:white;display:flex;gap:8px;flex-shrink:0;border-bottom:1px solid #eee;">' +
-            '<button onclick="startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'))" style="flex:1;padding:8px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📝 新对话</button>' +
+            '<button onclick="window.startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'))" style="flex:1;padding:8px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📝 新对话</button>' +
             '<button onclick="if(confirm(\'确定清空所有历史？\')){clearAllDeepSeekHistory();toggleDeepSeekHistory();}" style="padding:8px 12px;background:#fff0f0;color:#ff6b6b;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🗑 清空</button>' +
         '</div>' +
         // 列表
@@ -16068,7 +16068,7 @@ function toggleDeepSeekHistory() {
                     break;
                 }
             }
-            html += '<div class="ds-history-item" data-title="' + title.toLowerCase() + '" data-preview="' + preview.toLowerCase() + '" onclick="loadSavedDeepSeekChat(' + i + ')" style="margin:0 12px 8px;padding:12px;background:white;border-radius:10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:transform 0.15s;">' +
+            html += '<div class="ds-history-item" data-title="' + title.toLowerCase() + '" data-preview="' + preview.toLowerCase() + '" onclick="window.loadSavedDeepSeekChat(' + i + ')" style="margin:0 12px 8px;padding:12px;background:white;border-radius:10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:transform 0.15s;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;">' +
                     '<div style="font-size:14px;font-weight:500;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:8px;">' + title + '</div>' +
                     '<button onclick="event.stopPropagation();deleteSavedDeepSeekChat(' + i + ');toggleDeepSeekHistory();" style="background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:4px;">✕</button>' +
@@ -18719,7 +18719,7 @@ window.renderSelfDrive = function(container) {
                 <span style="font-size:14px;font-weight:600;">🔥 连续打卡</span>
                 <span style="font-size:28px;font-weight:bold;color:#ff6b6b;">${streakDays}天</span>
             </div>
-            <button onclick="checkInToday()" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff6b6b,#ff9a63);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+            <button onclick="window.checkInToday()" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff6b6b,#ff9a63);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
                 ${hasCheckedInToday() ? '✅ 今日已打卡' : '📝 今日打卡'}
             </button>
         </div>
@@ -18729,18 +18729,18 @@ window.renderSelfDrive = function(container) {
             <button onclick="renderGoalPage()" style="padding:16px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
                 🎯 目标设定
             </button>
-            <button onclick="renderHabitPage()" style="padding:16px 12px;background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
+            <button onclick="window.renderHabitPage()" style="padding:16px 12px;background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
                 📅 习惯追踪
             </button>
-            <button onclick="renderAchievementPage()" style="padding:16px 12px;background:linear-gradient(135deg,#fa709a,#fee140);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
+            <button onclick="window.renderAchievementPage()" style="padding:16px 12px;background:linear-gradient(135deg,#fa709a,#fee140);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
                 🏆 成就墙
             </button>
-            <button onclick="renderDiaryPage()" style="padding:16px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
+            <button onclick="window.renderDiaryPage()" style="padding:16px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
                 📝 每日反思
             </button>
         </div>
         
-        <button onclick="renderMethodPage()" style="width:100%;padding:16px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">
+        <button onclick="window.renderMethodPage()" style="width:100%;padding:16px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">
             📚 科学训练方法
         </button>
         
@@ -18808,7 +18808,7 @@ function renderGoalPage() {
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>
-            <button onclick="addGoal()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
+            <button onclick="window.addGoal()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
         </div>
         ${SelfDrive.goals.length === 0 ? `
             <div style="text-align:center;padding:40px;color:#999;">
@@ -18826,8 +18826,8 @@ function renderGoalPage() {
                                 <div style="font-size:11px;color:#999;margin-top:4px;">${goal.date || ''}</div>
                             </div>
                             <div style="display:flex;gap:8px;">
-                                <button onclick="toggleGoal(${i})" style="padding:4px 8px;background:${goal.completed ? '#43e97b' : '#f0f0f0'};color:${goal.completed ? 'white' : '#666'};border:none;border-radius:6px;font-size:11px;cursor:pointer;">${goal.completed ? '✅' : '完成'}</button>
-                                <button onclick="deleteGoal(${i})" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>
+                                <button onclick="window.toggleGoal(${i})" style="padding:4px 8px;background:${goal.completed ? '#43e97b' : '#f0f0f0'};color:${goal.completed ? 'white' : '#666'};border:none;border-radius:6px;font-size:11px;cursor:pointer;">${goal.completed ? '✅' : '完成'}</button>
+                                <button onclick="window.deleteGoal(${i})" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>
                             </div>
                         </div>
                     </div>
@@ -18874,7 +18874,7 @@ function renderHabitPage() {
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">📅 习惯追踪</h3>
-            <button onclick="addHabit()" style="padding:8px 16px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
+            <button onclick="window.addHabit()" style="padding:8px 16px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
         </div>
         ${SelfDrive.habits.length === 0 ? `
             <div style="text-align:center;padding:40px;color:#999;">
@@ -18900,7 +18900,7 @@ function renderHabitPage() {
                         </div>
                         <div style="display:flex;gap:8px;">
                             <button onclick="checkHabit(${i})" style="flex:1;padding:8px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">今日打卡</button>
-                            <button onclick="deleteHabit(${i})" style="padding:8px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>
+                            <button onclick="window.deleteHabit(${i})" style="padding:8px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>
                         </div>
                     </div>
                 `).join('')}
@@ -20282,7 +20282,7 @@ function openFullscreenPage(module) {
             }
             break;
         case 'selfdrive': 
-            if (typeof renderGoalPage === 'function') {
+            if (typeof window.renderGoalPage === 'function') {
                 const modal = document.getElementById('detail-modal');
                 if (modal) modal.classList.add('show');
                 window.renderGoalPage();
@@ -20300,8 +20300,8 @@ function openFullscreenPage(module) {
                 </div>
             `;
             setTimeout(() => {
-                if (typeof renderGrowthChart === 'function') {
-                    renderGrowthChart('growth-chart-canvas', 'week');
+                if (typeof window.renderGrowthChart === 'function') {
+                    window.renderGrowthChart('growth-chart-canvas', 'week');
                 }
             }, 100);
             break;
@@ -21804,3 +21804,13 @@ window.updatePredictionDisplay = updatePredictionDisplay;
 window.cancelPrediction = cancelPrediction;
 window.confirmPrediction = confirmPrediction;
 
+
+
+// ===== 修复: 添加自驱力关闭按钮函数 =====
+function closeSelfDriveModal() {
+    const modal = document.getElementById('detail-modal');
+    if (modal) modal.classList.remove('show');
+}
+if (!window.closeSelfDriveModal) {
+    window.closeSelfDriveModal = closeSelfDriveModal;
+}
