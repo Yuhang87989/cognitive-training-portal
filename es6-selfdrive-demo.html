@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Modules - 自驱力模块 Demo</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-size: 18px; font-weight: 600; }
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer;
+        }
+        .toast {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.85); color: white;
+            padding: 12px 24px; border-radius: 24px; font-size: 14px;
+            z-index: 99999; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">🧠 认知训练门户</div>
+        <div class="user-avatar" id="header-avatar">👤</div>
+    </div>
+
+    <div id="app-container"></div>
+
+    <script type="module">
+        // ===== 工具函数模块 =====
+        function showToast(message, duration = 2000) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // ===== 用户模块 =====
+        function getCurrentUser() {
+            try {
+                const data = JSON.parse(localStorage.getItem('cognitive_training_data') || '{}');
+                if (data.currentUser && data.users) {
+                    return data.users.find(u => u.id === data.currentUser);
+                }
+            } catch (e) {}
+            return { name: '同学' };
+        }
+
+        // ===== 自驱力模块 =====
+        const STORAGE_KEY = 'self_drive_data';
+
+        function getDriveData() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            } catch (e) { return {}; }
+        }
+
+        function saveDriveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function getGoals() {
+            const data = getDriveData();
+            return data.goals || [];
+        }
+
+        function saveGoals(goals) {
+            const data = getDriveData();
+            data.goals = goals;
+            saveDriveData(data);
+        }
+
+        function addGoal(title) {
+            const goals = getGoals();
+            goals.push({
+                id: 'goal_' + Date.now(),
+                title,
+                completed: false,
+                createdAt: new Date().toISOString()
+            });
+            saveGoals(goals);
+            showToast('目标添加成功！🎯');
+            return goals;
+        }
+
+        function toggleGoal(goalId) {
+            const goals = getGoals();
+            const goal = goals.find(g => g.id === goalId);
+            if (goal) {
+                goal.completed = !goal.completed;
+                saveGoals(goals);
+                showToast(goal.completed ? '目标完成！✅' : '目标已重置 🎯');
+            }
+            return goals;
+        }
+
+        function deleteGoal(goalId) {
+            const goals = getGoals().filter(g => g.id !== goalId);
+            saveGoals(goals);
+            showToast('目标已删除 🗑️');
+            return goals;
+        }
+
+        function renderSelfDrive(container) {
+            const goals = getGoals();
+            const completedCount = goals.filter(g => g.completed).length;
+            
+            container.innerHTML = `
+                <div style="padding: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="font-size: 20px;">🎯 自驱力训练</h2>
+                        <button id="sd-back-btn" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                            ← 返回
+                        </button>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg,#667eea15,#764ba215); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #666; margin-bottom: 8px;">今日目标进度</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${goals.length > 0 ? (completedCount / goals.length * 100) : 0}%; height: 100%; background: linear-gradient(135deg,#667eea,#764ba2); border-radius: 4px; transition: width 0.3s;"></div>
+                            </div>
+                            <span style="font-weight: 600; color: #667eea;">${completedCount}/${goals.length}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                        <input 
+                            type="text" 
+                            id="new-goal-input" 
+                            placeholder="输入新目标..." 
+                            style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                        >
+                        <button id="add-goal-btn" style="padding: 12px 20px; background: linear-gradient(135deg,#667eea,#764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                            + 添加
+                        </button>
+                    </div>
+                    
+                    <div id="goals-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        ${goals.length === 0 ? `
+                            <div style="text-align: center; padding: 40px; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 12px;">🎯</div>
+                                <div>还没有设定目标</div>
+                                <div style="font-size: 12px; margin-top: 8px;">设定一个小目标，开始行动吧！</div>
+                            </div>
+                        ` : goals.map(goal => `
+                            <div class="goal-item" data-id="${goal.id}" style="background: white; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                                <div class="goal-checkbox" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid ${goal.completed ? '#43E97B' : '#ddd'}; background: ${goal.completed ? '#43E97B' : 'white'}; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer;">
+                                    ${goal.completed ? '✓' : ''}
+                                </div>
+                                <div style="flex: 1; text-decoration: ${goal.completed ? 'line-through' : 'none'}; color: ${goal.completed ? '#999' : '#333'};">
+                                    ${goal.title}
+                                </div>
+                                <button class="delete-goal-btn" data-id="${goal.id}" style="padding: 6px 12px; background: #ff6b6b; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                                    删除
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // 绑定事件
+            bindSelfDriveEvents(container);
+        }
+
+        function bindSelfDriveEvents(container) {
+            container.querySelector('#sd-back-btn')?.addEventListener('click', () => {
+                renderHomePage(container);
+            });
+            
+            container.querySelector('#add-goal-btn')?.addEventListener('click', () => {
+                const input = container.querySelector('#new-goal-input');
+                if (input && input.value.trim()) {
+                    addGoal(input.value.trim());
+                    renderSelfDrive(container);
+                } else {
+                    showToast('请输入目标内容');
+                }
+            });
+            
+            container.querySelector('#new-goal-input')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    container.querySelector('#add-goal-btn')?.click();
+                }
+            });
+            
+            container.querySelectorAll('.goal-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', (e) => {
+                    const goalItem = e.target.closest('.goal-item');
+                    if (goalItem) {
+                        toggleGoal(goalItem.dataset.id);
+                        renderSelfDrive(container);
+                    }
+                });
+            });
+            
+            container.querySelectorAll('.delete-goal-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    deleteGoal(btn.dataset.id);
+                    renderSelfDrive(container);
+                });
+            });
+        }
+
+        // ===== 首页渲染 =====
+        function renderHomePage(container) {
+            const modules = [
+                { id: 'selfdrive', icon: '🎯', name: '自驱力', color: '#4facfe' },
+                { id: 'method', icon: '📚', name: '学霸方法', color: '#667eea' },
+                { id: 'thinking', icon: '🧠', name: '思维训练', color: '#764ba2' },
+                { id: 'wrongbook', icon: '📕', name: '错题本', color: '#ff6b6b' },
+                { id: 'pomodoro', icon: '🍅', name: '番茄钟', color: '#FF9A63' },
+                { id: 'deepseek', icon: '🤖', name: 'AI 助手', color: '#43E97B' },
+            ];
+            
+            const user = getCurrentUser();
+            
+            container.innerHTML = `
+                <div style="padding: 20px;">
+                    <div style="margin-bottom: 20px;">
+                        <h2 style="font-size: 20px; margin-bottom: 8px;">👋 你好，${user.name || '同学'}！</h2>
+                        <p style="color: #666; font-size: 14px;">今天也要加油哦 ~</p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        ${modules.map(m => `
+                            <div 
+                                class="module-card" 
+                                data-module="${m.id}"
+                                style="background: white; padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.2s;">
+                                <div style="font-size: 36px; margin-bottom: 8px;">${m.icon}</div>
+                                <div style="font-size: 14px; font-weight: 500; color: #333;">${m.name}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            container.querySelectorAll('.module-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const moduleId = card.dataset.module;
+                    if (moduleId === 'selfdrive') {
+                        renderSelfDrive(container);
+                    } else {
+                        showToast(`${moduleId} 模块开发中... 🚧`);
+                    }
+                });
+            });
+        }
+
+        // ===== 初始化 =====
+        const container = document.getElementById('app-container');
+        renderHomePage(container);
+        
+        document.getElementById('header-avatar').addEventListener('click', () => {
+            showToast('用户管理功能开发中... 👤');
+        });
+
+        console.log('✅ 自驱力模块 Demo 初始化完成！');
+        showToast('自驱力模块 Demo 加载成功！✨', 2500);
+    </script>
+</body>
+</html>
