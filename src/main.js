@@ -12,33 +12,34 @@ import * as utils from './utils.js';
 import * as db from './db.js';
 import { UserModule } from './user.js';
 
+// 导入功能模块
+import { initUI, navigateTo } from './modules/ui.js';
+
 // 导入事件绑定模块
 import { initEventBindings } from './event-bindings.js';
-
-// 导入功能模块（后续添加）
-// import * as ui from './modules/ui.js';
-// import * as deepseek from './modules/deepseek.js';
-// import * as selfdrive from './modules/self-drive.js';
 
 // 初始化应用
 async function initApp() {
     console.log('📦 初始化应用...');
     
-    // 初始化存储
+    // 1. 初始化存储
     storage.init();
     
-    // 显示当前用户
+    // 2. 显示当前用户
     const currentUser = storage.getCurrentUser();
     console.log('👤 当前用户:', currentUser?.name || '无');
     
-    // 绑定所有事件（这是关键！替代 HTML onclick）
+    // 3. 初始化 UI（渲染页面）
+    initUI();
+    
+    // 4. 绑定所有事件（这是关键！替代 HTML onclick）
     initEventBindings();
     
     console.log('✅ ES6 Modules 应用初始化完成！');
     
     // 显示就绪提示
     if (typeof utils.showToast === 'function') {
-        utils.showToast('ES6 Modules 加载成功！', 3000);
+        utils.showToast('认知训练门户加载成功！', 3000);
     }
 }
 
@@ -59,6 +60,12 @@ window.Utils = utils;
 window.DB = db;
 window.UserModule = UserModule;
 
+// 功能模块
+window.UI = {
+    initUI,
+    navigateTo,
+};
+
 // 快捷函数（兼容旧代码 onclick 调用）
 window.showToast = utils.showToast;
 window.loadData = storage.loadData;
@@ -66,7 +73,7 @@ window.saveData = storage.saveData;
 window.getCurrentUser = storage.getCurrentUser;
 window.switchUser = storage.switchUser;
 window.createUser = storage.createUser;
-window.deleteUser = UserModule.confirmDeleteUser;  // 用带确认的版本
+window.deleteUser = UserModule.confirmDeleteUser;
 window.quickLogin = UserModule.quickLogin;
 window.switchToUser = UserModule.switchToUser;
 window.showUserSwitchModal = UserModule.showUserSwitchModal;
@@ -76,10 +83,11 @@ window.closeCreateUserModal = UserModule.closeCreateUserModal;
 window.createNewUser = UserModule.createNewUser;
 window.showDeleteUserModal = UserModule.showDeleteUserModal;
 window.closeDeleteUserModal = UserModule.closeDeleteUserModal;
+window.navigateTo = navigateTo;
 
 // 初始化函数
 window.initApp = initApp;
 
-console.log('🌍 全局对象已就绪: Config, Storage, Utils, DB, UserModule');
-console.log('💡 可在控制台直接调用: UserModule.showUserSwitchModal()');
+console.log('🌍 全局对象已就绪: Config, Storage, Utils, DB, UserModule, UI');
+console.log('💡 可在控制台直接调用: UI.navigateTo("deepseek")');
 console.log('🔗 事件绑定系统已就绪 - HTML onclick 不再是必须的！');
