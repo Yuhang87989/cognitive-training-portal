@@ -874,39 +874,53 @@ if('serviceWorker' in navigator){
 
 <!-- 加载模块化JS文件 -->
 
-
-
 <script>
 (function() {
-    // 加载顺序必须与ui.js中的loadOrder一致
-    // 自动版本号：基于时间戳，每次部署自动更新
+    // V246: Bundle优先加载，失败则回退到逐个加载
     window.__APP_VERSION = Date.now();
+    const v = window.__APP_VERSION || Date.now();
     
     const loadOrder = ['js/config.js', 'js/ctm.js', 'js/audio.js', 'js/db.js', 'js/storage.js', 'js/utils.js', 'js/user.js', 'js/data/week-plans.js', 'js/data/topics.js', 'js/data/podcasts.js', 'js/data/videos.js', 'js/data/games-config.js', 'js/data/ability-model.js', 'js/modules/practice.js', 'js/modules/map.js', 'js/modules/plan.js', 'js/modules/topics.js', 'js/modules/method.js', 'js/modules/thinking.js', 'js/modules/podcast.js', 'js/modules/video.js', 'js/modules/player.js', 'js/modules/games.js', 'js/modules/ai.js', 'js/modules/deepseek.js', 'js/modules/wrongbook.js', 'js/modules/pomodoro.js', 'js/modules/radar-chart.js', 'js/modules/growth-chart.js', 'js/modules/local-db.js', 'js/modules/self-drive.js', 'js/modules/my-page.js', 'js/modules/journal.js', 'js/modules/library.js', 'js/modules/v255-modules.js', 'js/modules/ui.js'];
-    // 并行加载所有JS文件，大幅提升页面加载速度
-    const v = window.__APP_VERSION || Date.now();
-    let pending = loadOrder.length;
-    function onScriptLoaded() {
-        pending--;
-        if (pending <= 0) {
-            if (typeof window.initPortal === 'function') window.initPortal();
-            setTimeout(function() {
-                if (typeof initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
-                    initEnhancedVideoPlayer();
-                }
-            }, 50);
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js').catch(function(err) {});
+    
+    function onAllLoaded() {
+        if (typeof window.initPortal === 'function') window.initPortal();
+        setTimeout(function() {
+            if (typeof initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
+                initEnhancedVideoPlayer();
             }
+        }, 50);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(function(err) {});
         }
     }
-    loadOrder.forEach(function(src) {
-        const script = document.createElement('script');
-        script.src = src + '?v=' + v;
-        script.onload = onScriptLoaded;
-        script.onerror = function() { console.warn('Failed to load:', src); onScriptLoaded(); };
-        document.head.appendChild(script);
-    });
+    
+    // 先尝试加载Bundle版本
+    console.log('[V246] 尝试加载Bundle版本...');
+    const bundleScript = document.createElement('script');
+    bundleScript.src = 'dist/bundle.esm.js?v=' + v;
+    bundleScript.onload = function() {
+        console.log('[V246] Bundle加载成功！');
+        onAllLoaded();
+    };
+    bundleScript.onerror = function() {
+        console.warn('[V246] Bundle加载失败，回退到逐个加载...');
+        // 回退到逐个加载
+        let pending = loadOrder.length;
+        function onScriptLoaded() {
+            pending--;
+            if (pending <= 0) {
+                onAllLoaded();
+            }
+        }
+        loadOrder.forEach(function(src) {
+            const script = document.createElement('script');
+            script.src = src + '?v=' + v;
+            script.onload = onScriptLoaded;
+            script.onerror = function() { console.warn('Failed to load:', src); onScriptLoaded(); };
+            document.head.appendChild(script);
+        });
+    };
+    document.head.appendChild(bundleScript);
 })();
 </script>
 <!-- 元认知预测弹窗 -->
