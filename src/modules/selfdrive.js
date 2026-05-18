@@ -137,7 +137,7 @@ function bindSelfDriveEvents(container) {
     // 返回按钮
     container.querySelector('#sd-back-btn')?.addEventListener('click', () => {
         // 这里会由主应用处理导航
-        window.navigateTo('home');
+        window.App.ui.goHome();
     });
     
     // 添加目标按钮

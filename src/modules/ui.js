@@ -220,4 +220,13 @@ export function initUI() {
     console.log('✅ UI 模块初始化完成');
 }
 
+// 挂载常用函数到 window.App，供 HTML onclick 调用
+if (typeof window !== 'undefined') {
+    if (!window.App) window.App = {};
+    window.App.ui = {
+        goHome: () => navigateTo('home'),
+        navigateTo: navigateTo
+    };
+}
+
 console.log('✅ ui 模块加载完成');
