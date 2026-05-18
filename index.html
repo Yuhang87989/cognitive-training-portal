@@ -107,7 +107,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .bottom-nav{position:fixed;bottom:0;left:0;width:100%;max-width:480px;left:50%;transform:translateX(-50%);background:white;border-top:1px solid #f0f0f0;display:flex;padding:8px 0;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,0.05)}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px;cursor:pointer;color:var(--text-light);transition:all 0.2s}
 .nav-item.active{color:var(--blue)}
-.nav-icon{font-size:22px;margin-bottom:2px}
+.nav-icon{font-size:16px;margin-bottom:2px}
 .nav-label{font-size:8px}
 </style>
 <link rel="stylesheet" href="css/style.css"/>
@@ -201,7 +201,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 
     <div class="module-section">
-        <div class="module-grid-unified" style="grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div class="module-grid-unified" style="grid-template-columns: repeat(3, 1fr); gap: 8px;">
             <button class="module-btn gradient-green" onclick="openFullscreenPage('notepad')">
                 <div class="module-icon">📝</div>
                 <div class="module-name">学习日记</div>
@@ -893,13 +893,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 });
             }
             
-            // 优先尝试构建版本（ES Module），失败则回退到开发版本
-            tryLoadModule("dist/bundle.esm.js", "Rollup构建版本(ESM)")
-                .then(resolve)
-                .catch(function() {
-                    console.log("[V230] 回退到开发版本 js/main.js");
-                    return tryLoadModule("js/main.js", "开发版本");
-                })
+            // 直接加载开发版本 js/main.js（跳过旧的构建版本）
+            console.log("[V245] 直接加载 js/main.js");
+            tryLoadModule("js/main.js", "开发版本")
                 .then(resolve)
                 .catch(reject);
         });
