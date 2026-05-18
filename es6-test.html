@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Modules 测试</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-item { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .success { color: #43E97B; font-weight: bold; }
+        .error { color: #ff6b6b; font-weight: bold; }
+        button { padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🧪 ES6 Modules 测试页面</h1>
+    
+    <div id="test-results"></div>
+    
+    <div class="test-item">
+        <h3>测试 1: 调用存储模块</h3>
+        <button onclick="window.testStorage()">测试 loadData()</button>
+        <div id="result-1"></div>
+    </div>
+    
+    <div class="test-item">
+        <h3>测试 2: 当前用户</h3>
+        <button onclick="window.testCurrentUser()">测试 getCurrentUser()</button>
+        <div id="result-2"></div>
+    </div>
+
+    <script type="module">
+        // ES6 Modules 入口
+        console.log('🧪 ES6 Modules 测试页面加载...');
+        
+        import * as storage from './src/storage.js';
+        
+        // 暴露到全局供 onclick 调用
+        window.testStorage = function() {
+            try {
+                const data = storage.loadData();
+                document.getElementById('result-1').innerHTML = 
+                    `<span class="success">✅ 成功!</span><br>用户数: ${data.users.length}<br>当前用户: ${data.currentUser}`;
+            } catch (e) {
+                document.getElementById('result-1').innerHTML = 
+                    `<span class="error">❌ 失败: ${e.message}</span>`;
+            }
+        };
+        
+        window.testCurrentUser = function() {
+            try {
+                const user = storage.getCurrentUser();
+                document.getElementById('result-2').innerHTML = 
+                    `<span class="success">✅ 成功!</span><br>用户名: ${user?.name || '无'}<br>ID: ${user?.id || '无'}`;
+            } catch (e) {
+                document.getElementById('result-2').innerHTML = 
+                    `<span class="error">❌ 失败: ${e.message}</span>`;
+            }
+        };
+        
+        console.log('✅ ES6 Modules 测试环境就绪');
+    </script>
+</body>
+</html>
