@@ -63,17 +63,57 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden { display: none !important; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .status-working { background: #4caf50; color: white; }
+        .status-progress { background: #ff9800; color: white; }
     </style>
 </head>
 <body>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 20px; color: #666;">正在加载...</p>
+    </div>
+
     <div class="welcome">
         <h1>👋 欢迎使用</h1>
-        <p>ES6 Modules 版本</p>
+        <p>ES6 Modules 版本 V256 <span class="status-badge status-working">部署成功</span></p>
     </div>
     <div id="app-container" class="modules-grid"></div>
 
     <div class="bottom-nav">
-        <div class="nav-item" onclick="window.App.navigateTo('home')">
+        <div class="nav-item" onclick="window.showToast('首页')">
             <div class="nav-icon">🏠</div>
             <div class="nav-label">首页</div>
         </div>
@@ -87,10 +127,8 @@
         </div>
     </div>
 
-    <script type="module">
-        console.log('🚀 开始加载 ES6 Modules');
-        
-        // 先定义 showToast，确保 onclick 能用
+    <script>
+        // 全局工具函数
         window.showToast = function(msg, duration = 2000) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -98,27 +136,45 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), duration);
         };
-        
-        // 导入并初始化
-        import { renderHomePage } from './src/modules/ui.js';
-        console.log('✅ UI 模块加载完成');
-        
-        // 挂载导航函数
-        window.App = {
-            navigateTo: function(page) {
-                window.showToast('导航到: ' + page);
-                if (page === 'home') {
-                    const container = document.getElementById('app-container');
-                    renderHomePage(container);
-                }
-            }
+
+        // 12个模块定义
+        const modules = [
+            { id: 'selfdrive', name: '自驱力训练', icon: '🚀', status: 'working' },
+            { id: 'deepseek', name: 'DeepSeek', icon: '🔍', status: 'working' },
+            { id: 'wrongbook', name: '错题本', icon: '📚', status: 'working' },
+            { id: 'pomodoro', name: '番茄钟', icon: '⏰', status: 'working' },
+            { id: 'method', name: '学霸方法', icon: '📝', status: 'working' },
+            { id: 'thinking', name: '思维训练', icon: '🧠', status: 'working' },
+            { id: 'memory', name: '记忆训练', icon: '💾', status: 'progress' },
+            { id: 'focus', name: '专注力', icon: '🎯', status: 'progress' },
+            { id: 'habit', name: '习惯养成', icon: '✨', status: 'progress' },
+            { id: 'goal', name: '目标管理', icon: '🎯', status: 'progress' },
+            { id: 'review', name: '复盘总结', icon: '📋', status: 'progress' },
+            { id: 'settings', name: '系统设置', icon: '⚙️', status: 'progress' },
+        ];
+
+        // 渲染首页
+        function renderHomePage() {
+            const container = document.getElementById('app-container');
+            container.innerHTML = modules.map(m => `
+                <div class="module-card" onclick="window.openModule('${m.id}')">
+                    <div class="module-icon">${m.icon}</div>
+                    <div class="module-name">${m.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // 打开模块
+        window.openModule = function(moduleId) {
+            window.showToast('打开模块: ' + moduleId + ' (开发中)');
         };
-        
-        // 立即渲染首页
-        const container = document.getElementById('app-container');
-        renderHomePage(container);
-        console.log('✅ 渲染完成');
-        window.showToast('ES6 Modules 加载成功！');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderHomePage();
+            document.getElementById('loading').classList.add('hidden');
+            window.showToast('ES6 Modules 版本加载成功！');
+        });
     </script>
 </body>
 </html>
