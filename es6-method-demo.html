@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Modules - 学霸方法 Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .demo-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .demo-header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .demo-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .module-page {
+            padding: 0;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .page-header h2 {
+            font-size: 18px;
+            color: #333;
+            flex: 1;
+            text-align: center;
+            margin: 0 40px;
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .method-container {
+            padding: 16px;
+        }
+        
+        .method-intro {
+            text-align: center;
+            padding: 16px;
+            background: #f0f4ff;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .method-intro p {
+            color: #667eea;
+            font-size: 14px;
+        }
+        
+        .methods-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .method-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #eee;
+        }
+        
+        .method-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .method-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .method-info {
+            flex: 1;
+        }
+        
+        .method-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .method-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .method-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .method-detail {
+            padding: 0;
+        }
+        
+        .detail-header {
+            padding: 24px;
+            color: white;
+            text-align: center;
+        }
+        
+        .detail-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .detail-header h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .detail-section {
+            padding: 20px 24px;
+        }
+        
+        .detail-section h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .step-item:hover {
+            background: #f0f4ff;
+        }
+        
+        .step-item.completed {
+            background: #e8f5e9;
+        }
+        
+        .step-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #27ae60;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .step-item.completed .step-checkbox {
+            background: #27ae60;
+            border-color: #27ae60;
+            color: white;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-number {
+            font-size: 12px;
+            color: #999;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .step-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .tips-list {
+            list-style: none;
+        }
+        
+        .tips-list li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .tips-list li:before {
+            content: '•';
+            position: absolute;
+            left: 8px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .start-practice-btn {
+            width: calc(100% - 48px);
+            margin: 0 24px 24px;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .start-practice-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .login-btn {
+            width: calc(100% - 48px);
+            margin: 0 24px 24px;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .login-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        @keyframes slideOut {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(-50%, -20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>📚 ES6 Modules Demo - 学霸方法</h1>
+            <p>测试 ES6 模块化架构下的学习方法功能</p>
+        </div>
+        <div id="app-container"></div>
+    </div>
+    
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 导入所有模块
+        import './src/config.js';
+        import './src/utils.js';
+        import './src/storage.js';
+        import './src/db.js';
+        import './src/user.js';
+        import './src/modules/method.js';
+        import { initUI } from './src/modules/ui.js';
+        
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 ES6 Modules Demo 启动...');
+            initUI();
+        });
+    </script>
+</body>
+</html>

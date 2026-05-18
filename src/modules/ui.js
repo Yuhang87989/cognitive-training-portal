@@ -9,13 +9,14 @@ import { renderSelfDrive } from './selfdrive.js';
 import { renderDeepSeekPage } from './deepseek.js';
 import { renderWrongBookPage } from './wrongbook.js';
 import { renderPomodoroPage } from './pomodoro.js';
+import { renderMethodPage } from './method.js';
 
 // ========== 导航系统 ==========
 
 // 页面路由配置
 const routes = {
     home: renderHomePage,
-    method: renderMethodPage,
+    method: renderMethodModule,
     thinking: renderThinkingPage,
     wrongbook: renderWrongBookModule,
     pomodoro: renderPomodoroModule,
@@ -89,7 +90,10 @@ function renderPlaceholderPage(container, icon, name, color) {
     });
 }
 
-function renderMethodPage(container) { renderPlaceholderPage(container, '📚', '学霸方法', '#667eea'); }
+function renderMethodModule(container) {
+    container.innerHTML = '';
+    renderMethodPage(container);
+}
 function renderThinkingPage(container) { renderPlaceholderPage(container, '🧠', '思维训练', '#764ba2'); }
 function renderWrongBookModule(container) {
     container.innerHTML = '';
