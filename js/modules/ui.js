@@ -1509,6 +1509,7 @@ window.closeSettingsPanel = closeSettingsPanel;
 window.savePasswordChanges = savePasswordChanges;
 window.setDifficulty = setDifficulty;
 window.toggleUserMenu = toggleUserMenu;
+window.switchMainTab = switchMainTab;
 window.updateHomeUserInfo = updateHomeUserInfo;
 window.openRegisterModal = openRegisterModal;
 window.handleLogin = handleLogin;
