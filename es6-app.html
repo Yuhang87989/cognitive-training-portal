@@ -18,7 +18,7 @@
             padding: 20px;
         }
         
-        .app-container {
+        .app-wrapper {
             max-width: 600px;
             margin: 0 auto;
             background: white;
@@ -239,7 +239,7 @@
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-wrapper">
         <div class="app-header">
             <h1>🧠 认知训练门户</h1>
             <p>ES6 Modules 纯前端架构</p>
@@ -253,7 +253,7 @@
             <span class="es6-badge">ES6 Modules</span>
         </div>
         
-        <div id="main-content"></div>
+        <div id="app-container"></div>
     </div>
     
     <div id="detail-modal" class="modal">
@@ -282,23 +282,15 @@
             console.log('🚀 ES6 Modules 认知训练门户启动...');
             console.log('📦 已加载所有模块: config, utils, storage, db, user, ui, selfdrive, deepseek, wrongbook, pomodoro, method, thinking');
             
-            // 将 main-content 传递给 UI 初始化
-            const originalContainer = document.getElementById('app-container');
-            const mainContent = document.getElementById('main-content');
-            
-            // 临时替换全局容器引用
-            Object.defineProperty(document, 'getElementById', {
-                value: function(id) {
-                    if (id === 'app-container') return mainContent;
-                    return HTMLDocument.prototype.getElementById.call(document, id);
-                },
-                writable: true,
-                configurable: true
-            });
-            
             initUI();
             
-            showToast('🎉 ES6 Modules 版本加载成功！');
+            // 显示欢迎提示
+            setTimeout(() => {
+                const showToast = window.showToast || function(msg) {
+                    alert(msg);
+                };
+                showToast('🎉 ES6 Modules 版本加载成功！');
+            }, 500);
         });
     </script>
 </body>

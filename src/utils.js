@@ -137,3 +137,14 @@ export function stopTTSSpeech() {
 }
 
 console.log('✅ utils 模块加载完成');
+
+// 将常用函数挂载到 window，方便全局访问
+if (typeof window !== 'undefined') {
+    window.showToast = showToast;
+    window.escapeHtml = escapeHtml;
+    window.formatDate = formatDate;
+    window.formatDateTime = formatDateTime;
+    window.generateId = generateId;
+}
+
+console.log('✅ utils 模块加载完成');
