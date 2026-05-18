@@ -7,6 +7,7 @@ import { showToast } from '../utils.js';
 import { getCurrentUser } from '../user.js';
 import { renderSelfDrive } from './selfdrive.js';
 import { renderDeepSeekPage } from './deepseek.js';
+import { renderWrongBookPage } from './wrongbook.js';
 
 // ========== 导航系统 ==========
 
@@ -15,7 +16,7 @@ const routes = {
     home: renderHomePage,
     method: renderMethodPage,
     thinking: renderThinkingPage,
-    wrongbook: renderWrongBookPage,
+    wrongbook: renderWrongBookModule,
     pomodoro: renderPomodoroPage,
     deepseek: renderDeepSeekModule,
     selfdrive: renderSelfDrive,
@@ -89,7 +90,10 @@ function renderPlaceholderPage(container, icon, name, color) {
 
 function renderMethodPage(container) { renderPlaceholderPage(container, '📚', '学霸方法', '#667eea'); }
 function renderThinkingPage(container) { renderPlaceholderPage(container, '🧠', '思维训练', '#764ba2'); }
-function renderWrongBookPage(container) { renderPlaceholderPage(container, '📕', '错题本', '#ff6b6b'); }
+function renderWrongBookModule(container) {
+    container.innerHTML = '';
+    renderWrongBookPage(container);
+}
 function renderPomodoroPage(container) { renderPlaceholderPage(container, '🍅', '番茄钟', '#FF9A63'); }
 function renderDeepSeekModule(container) {
     container.innerHTML = renderDeepSeekPage();
