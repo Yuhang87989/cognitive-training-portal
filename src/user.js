@@ -163,4 +163,9 @@ export const UserModule = {
     deleteUser
 };
 
+// 挂载到全局
+if (typeof window !== 'undefined') {
+    window.UserModule = UserModule;
+}
+
 console.log('✅ user 模块加载完成');
