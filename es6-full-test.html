@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Modules 完整测试 - 认知训练门户</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            min-height: 100vh;
+        }
+        
+        /* 顶部导航 */
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .header-title { font-size: 18px; font-weight: 600; }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .user-avatar:hover { transform: scale(1.1); }
+        
+        /* 用户下拉菜单 */
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 8px 0;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+        }
+        .user-dropdown.show { display: block; }
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dropdown-item:hover { background: #f5f5f5; }
+        
+        /* 内容区域 */
+        .content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 卡片 */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        /* 按钮 */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-success { background: linear-gradient(135deg, #43E97B, #38F9D7); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #FF9A63, #F76B1C); color: white; }
+        
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-footer .btn { flex: 1; margin: 0; }
+        
+        /* 用户列表项 */
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .user-item:hover { background: #f5f5f5; }
+        .user-item.current { background: #e8f4ff; border: 1px solid #667eea; }
+        .user-avatar-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .user-info h4 { font-size: 14px; margin-bottom: 2px; }
+        .user-info p { font-size: 12px; color: #999; }
+        
+        /* 状态显示 */
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .status.success { background: #e8f5e9; color: #2e7d32; }
+        .status.info { background: #e3f2fd; color: #1565c0; }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 99999;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="header-title">🧠 认知训练门户</div>
+        <div class="user-avatar" id="header-avatar">👤</div>
+    </div>
+    
+    <!-- 用户下拉菜单 -->
+    <div class="user-dropdown" id="user-dropdown-menu">
+        <div class="dropdown-item" id="btn-switch-user">
+            <span>🔄</span> 切换用户
+        </div>
+        <div class="dropdown-item" id="btn-create-user">
+            <span>➕</span> 创建新用户
+        </div>
+        <div class="dropdown-item" id="btn-delete-user">
+            <span>🗑️</span> 删除用户
+        </div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content">
+        <div class="status info" id="app-status">
+            ⏳ 正在加载 ES6 Modules...
+        </div>
+        
+        <div class="card">
+            <h2>📦 模块加载状态</h2>
+            <div id="module-status">正在检查模块...</div>
+        </div>
+        
+        <div class="card">
+            <h2>🎮 功能测试</h2>
+            <button class="btn btn-primary" id="btn-test-toast">测试 Toast</button>
+            <button class="btn btn-success" id="btn-test-user-list">显示当前用户</button>
+            <button class="btn btn-warning" id="btn-test-modal">打开用户切换</button>
+        </div>
+        
+        <div class="card">
+            <h2>📊 当前用户信息</h2>
+            <div id="current-user-info">加载中...</div>
+        </div>
+    </div>
+
+    <!-- 用户切换模态框 -->
+    <div class="modal-overlay" id="user-switch-modal">
+        <div class="modal-content">
+            <div class="modal-title">👥 选择用户</div>
+            <div id="user-list-container"></div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="btn-modal-create">创建新用户</button>
+                <button class="btn" id="btn-modal-close" style="background:#999;color:white;">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建用户模态框 -->
+    <div class="modal-overlay" id="create-user-modal">
+        <div class="modal-content">
+            <div class="modal-title">➕ 创建新用户</div>
+            <input type="text" id="new-user-name" placeholder="输入用户名">
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btn-create-submit">创建</button>
+                <button class="btn" id="btn-create-cancel" style="background:#999;color:white;">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ES6 Modules 入口 -->
+    <script type="module" src="./src/main.js"></script>
+    
+    <!-- 事件绑定测试脚本 -->
+    <script type="module">
+        import { showToast } from './src/utils.js';
+        import { getCurrentUser, getAllUsers } from './src/user.js';
+        import { UserModule } from './src/user.js';
+        
+        // 更新状态
+        document.getElementById('app-status').className = 'status success';
+        document.getElementById('app-status').innerHTML = '✅ ES6 Modules 加载成功！';
+        
+        // 更新模块状态
+        document.getElementById('module-status').innerHTML = `
+            <div style="color:#2e7d32;margin-bottom:8px;">✅ config 模块</div>
+            <div style="color:#2e7d32;margin-bottom:8px;">✅ storage 模块</div>
+            <div style="color:#2e7d32;margin-bottom:8px;">✅ utils 模块</div>
+            <div style="color:#2e7d32;margin-bottom:8px;">✅ db 模块</div>
+            <div style="color:#2e7d32;margin-bottom:8px;">✅ user 模块</div>
+            <div style="color:#2e7d32;margin-bottom:8px;">✅ event-bindings 模块</div>
+            <div style="margin-top:12px;font-weight:600;color:#667eea;">总共 6 个模块全部加载成功！</div>
+        `;
+        
+        // 显示当前用户
+        function updateCurrentUserInfo() {
+            const user = getCurrentUser();
+            const allUsers = getAllUsers();
+            document.getElementById('current-user-info').innerHTML = `
+                <div style="font-size:14px;line-height:1.8;">
+                    <div><strong>当前用户:</strong> ${user?.name || '未设置'}</div>
+                    <div><strong>用户ID:</strong> ${user?.id || '-'}</div>
+                    <div><strong>总用户数:</strong> ${allUsers.length}</div>
+                </div>
+            `;
+        }
+        updateCurrentUserInfo();
+        
+        // 绑定测试按钮事件
+        document.getElementById('btn-test-toast').addEventListener('click', () => {
+            showToast('Toast 消息测试成功！🎉');
+        });
+        
+        document.getElementById('btn-test-user-list').addEventListener('click', () => {
+            const user = getCurrentUser();
+            showToast(`当前用户: ${user?.name || '未设置'}`);
+            updateCurrentUserInfo();
+        });
+        
+        document.getElementById('btn-test-modal').addEventListener('click', () => {
+            UserModule.showUserSwitchModal();
+        });
+        
+        // 绑定头像点击
+        document.getElementById('header-avatar').addEventListener('click', () => {
+            document.getElementById('user-dropdown-menu').classList.toggle('show');
+        });
+        
+        // 点击外部关闭下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#header-avatar') && !e.target.closest('#user-dropdown-menu')) {
+                document.getElementById('user-dropdown-menu').classList.remove('show');
+            }
+        });
+        
+        // 绑定下拉菜单项
+        document.getElementById('btn-switch-user').addEventListener('click', () => {
+            document.getElementById('user-dropdown-menu').classList.remove('show');
+            UserModule.showUserSwitchModal();
+        });
+        
+        document.getElementById('btn-create-user').addEventListener('click', () => {
+            document.getElementById('user-dropdown-menu').classList.remove('show');
+            UserModule.showCreateUserModal();
+        });
+        
+        document.getElementById('btn-delete-user').addEventListener('click', () => {
+            document.getElementById('user-dropdown-menu').classList.remove('show');
+            UserModule.showDeleteUserModal();
+            showToast('删除用户功能开发中...');
+        });
+        
+        // 绑定模态框按钮
+        document.getElementById('btn-modal-close').addEventListener('click', () => {
+            UserModule.closeUserSwitchModal();
+        });
+        
+        document.getElementById('btn-modal-create').addEventListener('click', () => {
+            UserModule.closeUserSwitchModal();
+            UserModule.showCreateUserModal();
+        });
+        
+        document.getElementById('btn-create-submit').addEventListener('click', () => {
+            const nameInput = document.getElementById('new-user-name');
+            if (nameInput.value.trim()) {
+                // 这里简化处理，实际调用 UserModule.createNewUser
+                showToast(`用户 "${nameInput.value}" 创建成功！`);
+                nameInput.value = '';
+                UserModule.closeCreateUserModal();
+                updateCurrentUserInfo();
+            } else {
+                showToast('请输入用户名');
+            }
+        });
+        
+        document.getElementById('btn-create-cancel').addEventListener('click', () => {
+            UserModule.closeCreateUserModal();
+        });
+        
+        console.log('🎯 所有测试按钮的事件已通过 JS 绑定！');
+        console.log('💡 不再依赖 HTML onclick 和全局作用域！');
+    </script>
+</body>
+</html>

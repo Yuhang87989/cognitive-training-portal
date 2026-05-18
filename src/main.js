@@ -12,6 +12,9 @@ import * as utils from './utils.js';
 import * as db from './db.js';
 import { UserModule } from './user.js';
 
+// 导入事件绑定模块
+import { initEventBindings } from './event-bindings.js';
+
 // 导入功能模块（后续添加）
 // import * as ui from './modules/ui.js';
 // import * as deepseek from './modules/deepseek.js';
@@ -27,6 +30,9 @@ async function initApp() {
     // 显示当前用户
     const currentUser = storage.getCurrentUser();
     console.log('👤 当前用户:', currentUser?.name || '无');
+    
+    // 绑定所有事件（这是关键！替代 HTML onclick）
+    initEventBindings();
     
     console.log('✅ ES6 Modules 应用初始化完成！');
     
@@ -76,3 +82,4 @@ window.initApp = initApp;
 
 console.log('🌍 全局对象已就绪: Config, Storage, Utils, DB, UserModule');
 console.log('💡 可在控制台直接调用: UserModule.showUserSwitchModal()');
+console.log('🔗 事件绑定系统已就绪 - HTML onclick 不再是必须的！');
