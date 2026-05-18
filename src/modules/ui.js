@@ -4,7 +4,7 @@
  */
 
 import { showToast } from '../utils.js';
-import { getCurrentUser } from '../user.js';
+import { getCurrentUser, UserModule } from '../user.js';
 import { renderSelfDrive } from './selfdrive.js';
 import { renderDeepSeekPage } from './deepseek.js';
 import { renderWrongBookPage } from './wrongbook.js';
@@ -186,8 +186,8 @@ function initNavigation() {
     const avatar = document.getElementById('header-avatar');
     if (avatar) {
         avatar.addEventListener('click', () => {
-            if (window.UserModule && window.UserModule.showUserSwitchModal) {
-                window.UserModule.showUserSwitchModal();
+            if (UserModule && UserModule.showUserSwitchModal) {
+                UserModule.showUserSwitchModal();
             } else {
                 showToast('用户系统加载中... 👤');
             }
