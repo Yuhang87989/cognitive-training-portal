@@ -35,8 +35,8 @@ export const AVATAR_LIST = [
 ];
 
 // 视觉AI API (硅基流动)
-export const VISION_SILICONFLOW_KEY = 'sk-upymyvbtqdunkmmksrmtqugootqqysvgevwkllyomqcvskrw';
-export const VISION_SILICONFLOW_URL = 'https://api.siliconflow.cn/v1/chat/completions';
-export const VISION_SILICONFLOW_MODEL = 'Qwen/Qwen3-VL-30B-A3B-Instruct';
+export const VISION_API_KEY = 'sk-upymyvbtqdunkmmksrmtqugootqqysvgevwkllyomqcvskrw';
+export const VISION_API_URL = 'https://api.siliconflow.cn/v1/chat/completions';
+export const VISION_MODEL = 'Qwen/Qwen3-VL-30B-A3B-Instruct';
 
 console.log('✅ config 模块加载完成');

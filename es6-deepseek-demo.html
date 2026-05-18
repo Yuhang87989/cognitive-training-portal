@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 Modules - DeepSeek AI 助手 Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .demo-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, #43E97B 0%, #38F9D7 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .demo-header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .demo-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .module-page {
+            padding: 0;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+        
+        .page-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .deepseek-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+        
+        .deepseek-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #f8f9fa;
+        }
+        
+        .chat-msg {
+            display: flex;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+        
+        .chat-msg.user {
+            flex-direction: row-reverse;
+        }
+        
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .chat-msg:not(.user) .chat-avatar {
+            background: linear-gradient(135deg, #43E97B, #38F9D7);
+        }
+        
+        .chat-msg.user .chat-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .chat-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .chat-msg:not(.user) .chat-bubble {
+            background: white;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .chat-msg.user .chat-bubble {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .ai-loading {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .loading-dots {
+            display: inline-block;
+        }
+        
+        .loading-dots span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #999;
+            border-radius: 50%;
+            margin-left: 3px;
+            animation: loading 1.4s infinite ease-in-out both;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes loading {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        .image-preview {
+            position: relative;
+            padding: 8px 16px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .image-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+        }
+        
+        .clear-image-btn {
+            position: absolute;
+            top: 4px;
+            left: 100px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .deepseek-input-area {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-top: 1px solid #eee;
+            gap: 8px;
+        }
+        
+        .image-upload-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .image-upload-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .image-upload-btn input {
+            display: none;
+        }
+        
+        #deepseek-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            resize: none;
+            max-height: 80px;
+            font-family: inherit;
+        }
+        
+        #deepseek-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #43E97B, #38F9D7);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .login-btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 12px;
+        }
+        
+        pre {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        strong {
+            font-weight: 600;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        @keyframes slideOut {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(-50%, -20px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🤖 ES6 Modules Demo - DeepSeek AI</h1>
+            <p>测试 ES6 模块化架构下的 AI 助手功能</p>
+        </div>
+        <div id="app-container"></div>
+    </div>
+    
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 导入所有模块
+        import './src/config.js';
+        import './src/utils.js';
+        import './src/storage.js';
+        import './src/db.js';
+        import './src/user.js';
+        import './src/modules/deepseek.js';
+        import { initUI } from './src/modules/ui.js';
+        
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 ES6 Modules Demo 启动...');
+            initUI();
+        });
+    </script>
+</body>
+</html>

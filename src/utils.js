@@ -98,4 +98,42 @@ export function deepClone(obj) {
     }
 }
 
+// 格式化AI响应
+export function formatAIResponse(text) {
+    if (typeof text !== 'string') return text;
+    
+    // 处理代码块
+    text = text.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    
+    // 处理加粗
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // 处理换行
+    text = text.replace(/\n/g, '<br>');
+    
+    return text;
+}
+
+// 语音朗读
+export function speakText(text) {
+    if (!('speechSynthesis' in window)) return;
+    
+    // 停止之前的朗读
+    stopTTSSpeech();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    
+    window.speechSynthesis.speak(utterance);
+}
+
+// 停止语音朗读
+export function stopTTSSpeech() {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+    }
+}
+
 console.log('✅ utils 模块加载完成');

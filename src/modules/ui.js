@@ -6,6 +6,7 @@
 import { showToast } from '../utils.js';
 import { getCurrentUser } from '../user.js';
 import { renderSelfDrive } from './selfdrive.js';
+import { renderDeepSeekPage } from './deepseek.js';
 
 // ========== 导航系统 ==========
 
@@ -16,8 +17,8 @@ const routes = {
     thinking: renderThinkingPage,
     wrongbook: renderWrongBookPage,
     pomodoro: renderPomodoroPage,
-    deepseek: renderDeepSeekPage,
-    selfdrive: renderSelfDrive,  // 使用自驱力模块的渲染函数
+    deepseek: renderDeepSeekModule,
+    selfdrive: renderSelfDrive,
     growth: renderGrowthPage,
 };
 
@@ -90,7 +91,9 @@ function renderMethodPage(container) { renderPlaceholderPage(container, '📚', 
 function renderThinkingPage(container) { renderPlaceholderPage(container, '🧠', '思维训练', '#764ba2'); }
 function renderWrongBookPage(container) { renderPlaceholderPage(container, '📕', '错题本', '#ff6b6b'); }
 function renderPomodoroPage(container) { renderPlaceholderPage(container, '🍅', '番茄钟', '#FF9A63'); }
-function renderDeepSeekPage(container) { renderPlaceholderPage(container, '🤖', 'AI 助手', '#43E97B'); }
+function renderDeepSeekModule(container) {
+    container.innerHTML = renderDeepSeekPage();
+}
 function renderGrowthPage(container) { renderPlaceholderPage(container, '📈', '成长轨迹', '#f6d365'); }
 
 // 页面导航
