@@ -498,3 +498,10 @@ if (typeof CTM !== 'undefined') {
         render: renderSelfDrive
     });
 }
+
+// V246 Bundle修复：挂载函数到window
+window.renderGoalPage = renderGoalPage;
+window.renderHabitPage = renderHabitPage;
+window.renderAchievementPage = renderAchievementPage;
+window.renderDiaryPage = renderDiaryPage;
+window.renderMethodPage = renderMethodPage;

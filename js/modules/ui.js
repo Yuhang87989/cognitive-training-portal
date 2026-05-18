@@ -347,29 +347,29 @@ function openFullscreenPage(module) {
     titleEl.textContent = moduleTitles[module] || '模块';
     
     switch(module) {
-        case 'practice': renderPractice(contentEl); break;
-        case 'map': renderMap(contentEl); break;
-        case 'plan': renderPlan(contentEl); break;
-        case 'topics': renderTopics(contentEl); break;
-        case 'method': renderMethod(contentEl); break;
-        case 'thinking': renderThinking(contentEl); break;
-        case 'podcast': renderPodcast(contentEl); break;
-        case 'video': renderVideo(contentEl); break;
-        case 'games': renderGames(contentEl); break;
-        case 'deepseek': renderDeepseek(contentEl); break;
-        case 'wrongbook': renderWrongbook(contentEl); break;
-        case 'pomodoro': renderPomodoro(contentEl); break;
-        case 'my': renderMyPage(contentEl); break;
+        case 'practice': window.renderPractice(contentEl); break;
+        case 'map': window.renderMap(contentEl); break;
+        case 'plan': window.renderPlan(contentEl); break;
+        case 'topics': window.renderTopics(contentEl); break;
+        case 'method': window.renderMethod(contentEl); break;
+        case 'thinking': window.renderThinking(contentEl); break;
+        case 'podcast': window.renderPodcast(contentEl); break;
+        case 'video': window.renderVideo(contentEl); break;
+        case 'games': window.renderGames(contentEl); break;
+        case 'deepseek': window.renderDeepseek(contentEl); break;
+        case 'wrongbook': window.renderWrongbook(contentEl); break;
+        case 'pomodoro': window.renderPomodoro(contentEl); break;
+        case 'my': window.renderMyPage(contentEl); break;
         case 'journal': 
             if (typeof renderJournalModule === 'function') {
-                renderJournalModule(contentEl);
+                window.renderJournalModule(contentEl);
             } else {
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习日记开发中...</p></div>';
             }
             break;
         case 'library': 
             if (typeof renderLibraryModule === 'function') {
-                renderLibraryModule(contentEl);
+                window.renderLibraryModule(contentEl);
             } else {
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习图书馆开发中...</p></div>';
             }
@@ -378,7 +378,7 @@ function openFullscreenPage(module) {
             if (typeof renderGoalPage === 'function') {
                 const modal = document.getElementById('detail-modal');
                 if (modal) modal.classList.add('show');
-                renderGoalPage();
+                window.renderGoalPage();
             } else {
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>自驱力训练开发中...</p></div>';
             }
@@ -1103,7 +1103,7 @@ function calculateCognitiveData() {
     const gameCounts = user.gameCounts || {};
     const methodStats = user.methodStats || {};
     const thinkingStats = user.thinkingStats || {};
-    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
 
 
 // ====== 1. 专注力计算 ======
@@ -1635,7 +1635,7 @@ function updateTodayStats() {
     if (!user) return;
     
     const today = new Date().toISOString().split('T')[0];
-    const todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0 };
     
     // 如果不是今天，重置统计
     if (todayStats.date !== today) {
@@ -1762,7 +1762,7 @@ function showDataStatsModal() {
     // 计算统计数据
     const totalDays = Object.keys(studyDays).length;
     const today = new Date().toISOString().split('T')[0];
-    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
     const accuracy = todayStats.questions > 0 ? Math.round(todayStats.correct / todayStats.questions * 100) : 0;
     
     const modal = document.getElementById('detail-modal');
