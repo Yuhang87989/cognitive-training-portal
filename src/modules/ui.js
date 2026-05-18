@@ -10,6 +10,7 @@ import { renderDeepSeekPage } from './deepseek.js';
 import { renderWrongBookPage } from './wrongbook.js';
 import { renderPomodoroPage } from './pomodoro.js';
 import { renderMethodPage } from './method.js';
+import { renderThinkingPage } from './thinking.js';
 
 // ========== 导航系统 ==========
 
@@ -17,7 +18,7 @@ import { renderMethodPage } from './method.js';
 const routes = {
     home: renderHomePage,
     method: renderMethodModule,
-    thinking: renderThinkingPage,
+    thinking: renderThinkingModule,
     wrongbook: renderWrongBookModule,
     pomodoro: renderPomodoroModule,
     deepseek: renderDeepSeekModule,
@@ -94,7 +95,10 @@ function renderMethodModule(container) {
     container.innerHTML = '';
     renderMethodPage(container);
 }
-function renderThinkingPage(container) { renderPlaceholderPage(container, '🧠', '思维训练', '#764ba2'); }
+function renderThinkingModule(container) {
+    container.innerHTML = '';
+    renderThinkingPage(container);
+}
 function renderWrongBookModule(container) {
     container.innerHTML = '';
     renderWrongBookPage(container);
