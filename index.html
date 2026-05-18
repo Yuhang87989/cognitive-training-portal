@@ -15,8 +15,50 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 10px 10px 80px 10px;
             margin: 0;
+        }
+        
+        /* 底部导航栏 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #667eea;
+        }
+        
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+        
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+            transition: transform 0.2s;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
         }
         
         /* 加载动画 */
@@ -105,6 +147,35 @@
         
         #app-container {
             min-height: 500px;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         
         /* 首页样式 */
@@ -263,8 +334,8 @@
         
         <div class="user-bar">
             <div class="user-info">
-                <div class="user-avatar">👤</div>
-                <span class="user-name">学习者</span>
+                <div class="user-avatar" id="header-avatar">👤</div>
+                <span class="user-name" id="user-name-display">学习者</span>
             </div>
             <span class="es6-badge">ES6 Modules</span>
         </div>
@@ -272,9 +343,202 @@
         <div id="app-container"></div>
     </div>
     
+    <!-- 底部导航栏 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="window.App.navigateTo('home')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">首页</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('practice')">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">训练</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('thinking')">
+            <span class="nav-icon">🧠</span>
+            <span class="nav-label">认知</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('deepseek')">
+            <span class="nav-icon">🤖</span>
+            <span class="nav-label">AI</span>
+        </div>
+        <div class="nav-item" onclick="window.App.navigateTo('profile')">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">我的</span>
+        </div>
+    </div>
+    
     <div id="detail-modal" class="modal">
         <div class="modal-content">
             <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <!-- 用户菜单模态框 -->
+    <div id="user-switch-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px; padding: 0; overflow: hidden;">
+            <!-- 用户信息头部 -->
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px; color: white;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div id="menu-user-avatar" style="width: 48px; height: 48px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
+                        👤
+                    </div>
+                    <div>
+                        <div id="menu-user-name" style="font-size: 18px; font-weight: 600; margin-bottom: 4px;">同学</div>
+                        <div id="menu-user-info" style="font-size: 13px; opacity: 0.8;">初一 · Lv.1</div>
+                    </div>
+                </div>
+                <div onclick="window.UserModule.closeUserSwitchModal()" style="position: absolute; top: 16px; right: 16px; font-size: 24px; cursor: pointer; opacity: 0.8;">✕</div>
+            </div>
+            
+            <!-- 功能菜单列表 -->
+            <div id="user-menu-list">
+                <div onclick="window.UserModule.showDifficultyModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">⭐</span>
+                    <span style="flex: 1; font-size: 15px;">难度调整</span>
+                    <span id="menu-difficulty" style="color: #999; font-size: 14px;">Lv.1</span>
+                </div>
+                <div onclick="window.UserModule.showAvatarModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">🎨</span>
+                    <span style="flex: 1; font-size: 15px;">更换头像</span>
+                    <span style="color: #ccc;">›</span>
+                </div>
+                <div onclick="window.UserModule.clearCurrentUserData()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">🗑️</span>
+                    <span style="flex: 1; font-size: 15px;">清除数据</span>
+                    <span style="color: #ccc;">›</span>
+                </div>
+                <div onclick="window.UserModule.showUserListModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">👥</span>
+                    <span style="flex: 1; font-size: 15px;">切换用户</span>
+                    <span style="color: #ccc;">›</span>
+                </div>
+                <div onclick="window.UserModule.closeUserSwitchModal();window.UserModule.showCreateUserModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">➕</span>
+                    <span style="flex: 1; font-size: 15px;">创建用户</span>
+                    <span style="color: #ccc;">›</span>
+                </div>
+                <div onclick="window.UserModule.showDeleteUserModal()" style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">🗑️</span>
+                    <span style="flex: 1; font-size: 15px;">删除用户</span>
+                    <span style="color: #ccc;">›</span>
+                </div>
+                <div onclick="window.UserModule.showSettingsModal()" style="display: flex; align-items: center; padding: 16px 20px; cursor: pointer;">
+                    <span style="font-size: 20px; margin-right: 12px;">⚙️</span>
+                    <span style="flex: 1; font-size: 15px;">设置</span>
+                    <span style="color: #ccc;">›</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户列表/切换模态框 -->
+    <div id="user-list-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 16px;">👥 切换用户</h3>
+            <div id="user-list-content"></div>
+            <div style="margin-top: 16px; text-align: right;">
+                <button onclick="window.UserModule.closeUserListModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 难度调整模态框 -->
+    <div id="difficulty-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 16px;">⭐ 调整难度</h3>
+            <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                <button onclick="window.UserModule.setDifficulty(1)" style="flex: 1; padding: 20px; background: #667eea; color: white; border: none; border-radius: 12px; cursor: pointer;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">1️⃣</div>
+                    <div style="font-weight: 600;">Lv.1</div>
+                    <div style="font-size: 12px; opacity: 0.8;">基础</div>
+                </button>
+                <button onclick="window.UserModule.setDifficulty(2)" style="flex: 1; padding: 20px; background: #f59e0b; color: white; border: none; border-radius: 12px; cursor: pointer;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">2️⃣</div>
+                    <div style="font-weight: 600;">Lv.2</div>
+                    <div style="font-size: 12px; opacity: 0.8;">进阶</div>
+                </button>
+                <button onclick="window.UserModule.setDifficulty(3)" style="flex: 1; padding: 20px; background: #ef4444; color: white; border: none; border-radius: 12px; cursor: pointer;">
+                    <div style="font-size: 24px; margin-bottom: 8px;">3️⃣</div>
+                    <div style="font-weight: 600;">Lv.3</div>
+                    <div style="font-size: 12px; opacity: 0.8;">挑战</div>
+                </button>
+            </div>
+            <div style="text-align: right;">
+                <button onclick="window.UserModule.closeDifficultyModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更换头像模态框 -->
+    <div id="avatar-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 16px;">🎨 选择头像</h3>
+            <div id="avatar-options" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;">
+            </div>
+            <div style="text-align: right;">
+                <button onclick="window.UserModule.closeAvatarModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 16px;">⚙️ 设置</h3>
+            <div style="padding: 20px 0; text-align: center; color: #999;">
+                设置功能开发中... 🚧
+            </div>
+            <div style="text-align: right;">
+                <button onclick="window.UserModule.closeSettingsModal()" style="padding: 10px 20px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建用户模态框 -->
+    <div id="create-user-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 16px;">✨ 创建新用户</h3>
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; margin-bottom: 4px; font-size: 14px;">用户名</label>
+                <input id="new-user-name" type="text" placeholder="请输入用户名" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label style="display: block; margin-bottom: 4px; font-size: 14px;">年级</label>
+                <select id="new-user-grade" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="未设置">未设置</option>
+                    <option value="小学">小学</option>
+                    <option value="初一">初一</option>
+                    <option value="初二">初二</option>
+                    <option value="初三">初三</option>
+                    <option value="高一">高一</option>
+                    <option value="高二">高二</option>
+                    <option value="高三">高三</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 4px; font-size: 14px;">难度等级</label>
+                <select id="new-user-difficulty" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="1">Lv.1 基础</option>
+                    <option value="2">Lv.2 进阶</option>
+                    <option value="3">Lv.3 挑战</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="window.UserModule.closeCreateUserModal()" style="flex: 1; padding: 12px; background: #eee; border: none; border-radius: 8px; cursor: pointer;">
+                    取消
+                </button>
+                <button onclick="window.UserModule.createNewUser()" style="flex: 1; padding: 12px; background: #43E97B; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    创建
+                </button>
+            </div>
         </div>
     </div>
 
@@ -303,13 +567,41 @@
         import './src/storage.js';
         import './src/db.js';
         import './src/user.js';
+        import './src/modules/ui.js';  // UI模块先导入，提供导航函数
         import './src/modules/selfdrive.js';
         import './src/modules/deepseek.js';
         import './src/modules/wrongbook.js';
         import './src/modules/pomodoro.js';
         import './src/modules/method.js';
         import './src/modules/thinking.js';
-        import { initUI } from './src/modules/ui.js';
+        import { initUI, navigateTo } from './src/modules/ui.js';
+        
+        // 全局 App 对象
+        window.App = {
+            navigateTo: (page) => {
+                // 更新导航栏状态
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const targetItem = document.querySelector(`.nav-item[onclick*="${page}"]`);
+                if (targetItem) {
+                    targetItem.classList.add('active');
+                }
+                
+                // 特殊页面处理
+                if (page === 'profile') {
+                    window.UserModule.showUserSwitchModal();
+                    return;
+                }
+                if (page === 'practice') {
+                    window.showToast('训练模块开发中... 🚧');
+                    return;
+                }
+                
+                // 导航到对应页面
+                navigateTo(page);
+            }
+        };
         
         // 初始化应用
         window.addEventListener('DOMContentLoaded', () => {
