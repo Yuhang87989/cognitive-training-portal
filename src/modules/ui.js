@@ -207,6 +207,7 @@ function initNavigation() {
 }
 
 export function initUI() {
+    console.log('🚀 initUI 函数被调用！');
     console.log('🎨 初始化 UI 模块...');
     
     initNavigation();

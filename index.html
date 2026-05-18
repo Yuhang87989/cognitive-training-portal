@@ -542,6 +542,15 @@
         </div>
     </div>
 
+    <script>
+        console.log('✅ index.html 开始加载');
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ DOMContentLoaded 事件触发');
+        });
+        window.addEventListener('load', () => {
+            console.log('✅ window load 事件触发');
+        });
+    </script>
     <script type="module" src="./src/main.js"></script>
 </body>
 </html>

@@ -83,6 +83,7 @@ function enhancedNavigateTo(page) {
 
 // 初始化应用
 async function initApp() {
+    console.log('🚀 initApp 函数被调用！');
     console.log('📦 初始化应用...');
     
     // 1. 初始化存储
