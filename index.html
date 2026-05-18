@@ -3,34 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ES6 测试</title>
+    <title>认知训练门户 - ES6 Modules</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 16px; margin: 10px 0; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px 10px 80px 10px;
+        }
+        .welcome { color: white; padding: 20px; text-align: center; }
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+        .module-card {
+            background: rgba(255,255,255,0.95);
+            padding: 20px 10px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .module-card:hover { transform: translateY(-4px); }
+        .module-icon { font-size: 32px; margin-bottom: 8px; }
+        .module-name { font-size: 14px; font-weight: 600; color: #333; }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        .nav-item {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .nav-icon { font-size: 20px; }
+        .nav-label { font-size: 12px; color: #666; }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
-    <h1>ES6 Module 测试</h1>
-    <div id="app-container"></div>
+    <div class="welcome">
+        <h1>👋 欢迎使用</h1>
+        <p>ES6 Modules 版本</p>
+    </div>
+    <div id="app-container" class="modules-grid"></div>
+
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="window.App.navigateTo('home')">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">首页</div>
+        </div>
+        <div class="nav-item" onclick="window.showToast('功能开发中')">
+            <div class="nav-icon">🎯</div>
+            <div class="nav-label">训练</div>
+        </div>
+        <div class="nav-item" onclick="window.showToast('功能开发中')">
+            <div class="nav-icon">🤖</div>
+            <div class="nav-label">AI</div>
+        </div>
+    </div>
 
     <script type="module">
-        console.log('✅ ES6 Module 开始执行');
+        console.log('🚀 开始加载 ES6 Modules');
         
-        // 测试基本导入
-        import { showToast } from './src/utils.js';
-        console.log('✅ 成功导入 showToast');
+        // 先定义 showToast，确保 onclick 能用
+        window.showToast = function(msg, duration = 2000) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), duration);
+        };
         
-        // 测试渲染
+        // 导入并初始化
         import { renderHomePage } from './src/modules/ui.js';
-        console.log('✅ 成功导入 renderHomePage');
+        console.log('✅ UI 模块加载完成');
         
-        // 先挂载全局函数
-        window.showToast = showToast;
+        // 挂载导航函数
+        window.App = {
+            navigateTo: function(page) {
+                window.showToast('导航到: ' + page);
+                if (page === 'home') {
+                    const container = document.getElementById('app-container');
+                    renderHomePage(container);
+                }
+            }
+        };
         
-        // 渲染首页
+        // 立即渲染首页
         const container = document.getElementById('app-container');
         renderHomePage(container);
         console.log('✅ 渲染完成');
+        window.showToast('ES6 Modules 加载成功！');
     </script>
 </body>
 </html>
