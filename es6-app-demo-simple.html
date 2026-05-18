@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ES6 App Demo - 认知训练门户</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-size: 18px; font-weight: 600; }
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer;
+        }
+        .modules-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px;
+        }
+        .module-card {
+            background: white; padding: 20px; border-radius: 16px;
+            text-align: center; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.2s;
+        }
+        .module-card:hover { transform: translateY(-4px); }
+        .module-icon { font-size: 36px; margin-bottom: 8px; display: block; }
+        .module-name { font-size: 14px; font-weight: 500; }
+        .toast {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.85); color: white;
+            padding: 12px 24px; border-radius: 24px; font-size: 14px;
+            z-index: 99999; animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none;
+            align-items: center; justify-content: center; z-index: 9999;
+            padding: 20px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-content {
+            background: white; padding: 24px; border-radius: 16px;
+            width: 100%; max-width: 400px;
+        }
+        .btn {
+            padding: 12px 20px; border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 500; cursor: pointer; color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        .btn-secondary { background: #999; }
+        .welcome { padding: 20px; }
+        .welcome h2 { font-size: 20px; margin-bottom: 8px; }
+        .welcome p { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">🧠 认知训练门户</div>
+        <div class="user-avatar" id="header-avatar">👤</div>
+    </div>
+
+    <div class="welcome">
+        <h2 id="welcome-text">👋 你好！</h2>
+        <p>欢迎使用 ES6 Modules 版本的认知训练门户</p>
+    </div>
+
+    <div class="modules-grid" id="modules-container">
+        <!-- 模块由 JS 动态渲染 -->
+    </div>
+
+    <div class="modal-overlay" id="user-modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 16px;">👥 用户中心</h3>
+            <p style="margin-bottom: 16px; color: #666;">这里可以切换用户、创建新用户</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" onclick="App.createUser()">创建新用户</button>
+                <button class="btn btn-secondary" onclick="App.closeModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // ===== 在单个模块中实现所有功能 =====
+        // 这样可以避免跨模块 import 的路径问题
+        
+        console.log('🚀 ES6 App Demo 启动...');
+        
+        // ===== 模块内的私有函数（不在全局作用域） =====
+        function showToastMessage(message, duration = 2000) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+        
+        function getCurrentUser() {
+            try {
+                const data = JSON.parse(localStorage.getItem('cognitive_training_data') || '{}');
+                if (data.currentUser && data.users) {
+                    return data.users.find(u => u.id === data.currentUser);
+                }
+            } catch (e) {}
+            return { name: '同学' };
+        }
+        
+        function renderModules() {
+            const modules = [
+                { icon: '📚', name: '学霸方法', id: 'method' },
+                { icon: '🧠', name: '思维训练', id: 'thinking' },
+                { icon: '📕', name: '错题本', id: 'wrongbook' },
+                { icon: '🍅', name: '番茄钟', id: 'pomodoro' },
+                { icon: '🤖', name: 'AI 助手', id: 'deepseek' },
+                { icon: '🎯', name: '自驱力', id: 'selfdrive' },
+            ];
+            
+            const container = document.getElementById('modules-container');
+            container.innerHTML = modules.map(m => `
+                <div class="module-card" data-id="${m.id}">
+                    <span class="module-icon">${m.icon}</span>
+                    <div class="module-name">${m.name}</div>
+                </div>
+            `).join('');
+            
+            // 绑定点击事件（JS 内部绑定，不依赖 onclick）
+            container.querySelectorAll('.module-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = card.dataset.id;
+                    showToastMessage(`即将打开: ${id} 模块`);
+                });
+            });
+        }
+        
+        function updateWelcome() {
+            const user = getCurrentUser();
+            document.getElementById('welcome-text').textContent = `👋 你好，${user.name}！`;
+        }
+        
+        // ===== 导出到全局的公共 API（暴露给 onclick） =====
+        window.App = {
+            showToast: showToastMessage,
+            
+            openUserModal: () => {
+                document.getElementById('user-modal').classList.add('show');
+            },
+            
+            closeModal: () => {
+                document.getElementById('user-modal').classList.remove('show');
+            },
+            
+            createUser: () => {
+                const name = prompt('请输入用户名：');
+                if (name && name.trim()) {
+                    showToastMessage(`用户 "${name.trim()}" 创建成功！`);
+                    // 实际项目中这里会保存到 localStorage
+                }
+            }
+        };
+        
+        // ===== 初始化 =====
+        document.getElementById('header-avatar').addEventListener('click', () => {
+            App.openUserModal();
+        });
+        
+        renderModules();
+        updateWelcome();
+        
+        console.log('✅ ES6 App Demo 初始化完成！');
+        showToastMessage('ES6 Modules 应用加载成功！', 2500);
+    </script>
+</body>
+</html>
