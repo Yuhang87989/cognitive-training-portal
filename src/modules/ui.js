@@ -38,24 +38,24 @@ export function renderHomePage(container) {
         { id: 'selfdrive', icon: '🎯', name: '自驱力', color: '#4facfe', status: 'done' },
     ];
     
-    // 迁移中的模块
+    // 迁移中的模块 - 全部放开，缺失的渲染函数会显示开发中提示
     const inProgressModules = [
-        { id: 'ai', icon: '💡', name: 'AI 工具', color: '#FFD700', status: 'progress' },
-        { id: 'games', icon: '🎮', name: '游戏化', color: '#FF6B9D', status: 'progress' },
-        { id: 'plan', icon: '📋', name: '计划', color: '#A855F7', status: 'progress' },
-        { id: 'practice', icon: '✍️', name: '练习', color: '#06B6D4', status: 'progress' },
-        { id: 'journal', icon: '📔', name: '日记', color: '#F97316', status: 'progress' },
-        { id: 'library', icon: '📖', name: '图书馆', color: '#84CC16', status: 'progress' },
-        { id: 'stats', icon: '📊', name: '统计', color: '#EC4899', status: 'progress' },
-        { id: 'topics', icon: '🎯', name: '题库', color: '#14B8A6', status: 'progress' },
-        { id: 'podcast', icon: '🎧', name: '播客', color: '#8B5CF6', status: 'progress' },
-        { id: 'video', icon: '🎬', name: '视频', color: '#EF4444', status: 'progress' },
-        { id: 'player', icon: '📱', name: '播放器', color: '#F59E0B', status: 'progress' },
-        { id: 'map', icon: '🗺️', name: '知识地图', color: '#10B981', status: 'progress' },
-        { id: 'mindmap', icon: '🌳', name: '思维导图', color: '#3B82F6', status: 'progress' },
-        { id: 'notepad', icon: '📝', name: '记事本', color: '#6366F1', status: 'progress' },
-        { id: 'calculator', icon: '🔢', name: '计算器', color: '#8B5CF6', status: 'progress' },
-        { id: 'mypage', icon: '👤', name: '我的', color: '#EC4899', status: 'progress' },
+        { id: 'ai', icon: '💡', name: 'AI 工具', color: '#FFD700', status: 'done' },
+        { id: 'games', icon: '🎮', name: '游戏化', color: '#FF6B9D', status: 'done' },
+        { id: 'plan', icon: '📋', name: '计划', color: '#A855F7', status: 'done' },
+        { id: 'practice', icon: '✍️', name: '练习', color: '#06B6D4', status: 'done' },
+        { id: 'journal', icon: '📔', name: '日记', color: '#F97316', status: 'done' },
+        { id: 'library', icon: '📖', name: '图书馆', color: '#84CC16', status: 'done' },
+        { id: 'stats', icon: '📊', name: '统计', color: '#EC4899', status: 'done' },
+        { id: 'topics', icon: '🎯', name: '题库', color: '#14B8A6', status: 'done' },
+        { id: 'podcast', icon: '🎧', name: '播客', color: '#8B5CF6', status: 'done' },
+        { id: 'video', icon: '🎬', name: '视频', color: '#EF4444', status: 'done' },
+        { id: 'player', icon: '📱', name: '播放器', color: '#F59E0B', status: 'done' },
+        { id: 'map', icon: '🗺️', name: '知识地图', color: '#10B981', status: 'done' },
+        { id: 'mindmap', icon: '🌳', name: '思维导图', color: '#3B82F6', status: 'done' },
+        { id: 'notepad', icon: '📝', name: '记事本', color: '#6366F1', status: 'done' },
+        { id: 'calculator', icon: '🔢', name: '计算器', color: '#8B5CF6', status: 'done' },
+        { id: 'mypage', icon: '👤', name: '我的', color: '#EC4899', status: 'done' },
     ];
     
     const allModules = [...migratedModules, ...inProgressModules];
@@ -154,9 +154,9 @@ export function navigateTo(pageId) {
         showToast(`已打开: ${pageId} 模块 ✨`);
         console.log(`📍 导航到: ${pageId}`);
     } else {
-        console.warn(`❌ 未找到页面: ${pageId}`);
-        showToast('页面开发中... 🚧');
-        renderHomePage(container);
+        console.warn(`⚠️ 模块正在迁移中，显示占位页面: ${pageId}`);
+        // 显示通用占位页面
+        renderPlaceholderPage(container, '🚧', pageId + ' 模块', '#667eea');
     }
 }
 
