@@ -45,9 +45,9 @@ function closeWelcomeModal() {
     }
 }
 
-function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+function window.closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
 
-function closeModal(modalId) {
+function window.closeModal(modalId) {
     if (!modalId) {
         // 如果没有指定 modalId，默认关闭 detail-modal
         const modal = document.getElementById('detail-modal');
@@ -320,7 +320,7 @@ function openHelp() {
                 </div>
             </div>
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:12px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:12px;">关闭</button>
     `;
 }
 
@@ -367,49 +367,66 @@ function openFullscreenPage(module) {
         return;
     }
     
-    // V242: 等待ES6 Module加载完成后再使用动态懒加载
-    function tryOpenModule() {
-        // 先显示加载状态
-        showModuleLoading(contentEl, moduleTitles[module] || module);
-        
-        // 检查ES6 Module是否已加载完成
-        if (window.MODULE_LAZY_LOAD_MAP && window.MODULE_LAZY_LOAD_MAP[module]) {
-            // 异步加载模块
-            lazyLoadModule(module)
-                .then((renderFunc) => {
-                    if (typeof renderFunc === 'function') {
-                        renderFunc(contentEl);
-                        // 重新添加返回按钮（因为模块可能重写了content）
-                        addBackButtonToModule(contentEl);
-                    } else {
-                        contentEl.innerHTML = '<div class="card"><p style="color:red;">模块加载异常：渲染函数未找到</p></div>';
-                        addBackButtonToModule(contentEl);
-                    }
-                })
-                .catch((error) => {
-                    console.error('模块加载失败:', error);
-                    contentEl.innerHTML = `
-                        <div class="card" style="text-align:center;padding:40px;">
-                            <p style="color:red;font-size:18px;margin-bottom:10px;">⚠️ 模块加载失败</p>
-                            <p style="color:#666;margin-bottom:20px;">${error.message || '请刷新页面重试'}</p>
-                            <button onclick="location.reload()" style="padding:10px 24px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;">刷新页面</button>
-                        </div>
-                    `;
-                    addBackButtonToModule(contentEl);
-                });
-        } else if (!window.ES6_MODULES_LOADED) {
-            // 还在加载中，等待一下再试
-            console.log('[V242] ES6 Module仍在加载中，等待 500ms 后重试...');
-            setTimeout(tryOpenModule, 500);
-        } else {
-            // 不支持懒加载的模块，降级处理或提示
-            contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
-            addBackButtonToModule(contentEl);
-        }
+    // V255: 直接调用渲染函数（所有模块已预先加载）
+    switch(module) {
+        case 'ai': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
+        case 'practice': if (typeof renderPractice === 'function') window.renderPractice(contentEl); break;
+        case 'map': if (typeof renderMap === 'function') window.renderMap(contentEl); break;
+        case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
+        case 'topics': if (typeof renderTopics === 'function') renderTopics(contentEl); break;
+        case 'method': if (typeof renderMethod === 'function') window.renderMethod(contentEl); break;
+        case 'thinking': if (typeof renderThinking === 'function') renderThinking(contentEl); break;
+        case 'podcast': if (typeof renderPodcast === 'function') window.renderPodcast(contentEl); break;
+        case 'video': if (typeof renderVideo === 'function') window.renderVideo(contentEl); break;
+        case 'games': if (typeof renderGames === 'function') renderGames(contentEl); break;
+        case 'deepseek': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
+        case 'wrongbook': if (typeof renderWrongbook === 'function') renderWrongbook(contentEl); break;
+        case 'pomodoro': if (typeof renderPomodoro === 'function') renderPomodoro(contentEl); break;
+        case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
+        case 'journal': 
+            if (typeof window.renderJournalModule === 'function') {
+                window.renderJournalModule(contentEl);
+            } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习日记开发中...</p></div>';
+            }
+            break;
+        case 'library': 
+            if (typeof window.renderLibraryModule === 'function') {
+                window.renderLibraryModule(contentEl);
+            } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习图书馆开发中...</p></div>';
+            }
+            break;
+        case 'selfdrive': 
+            if (typeof window.renderGoalPage === 'function') {
+                // 自驱力训练使用模态框方式
+                const modal = document.getElementById('detail-modal');
+                if (modal) modal.classList.add('show');
+                window.renderGoalPage();
+            } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>自驱力训练开发中...</p></div>';
+            }
+            break;
+        case 'growth': 
+            contentEl.innerHTML = `
+                <div style="padding:20px;">
+                    <h3 style="margin-bottom:20px;font-size:18px;">📈 成长轨迹</h3>
+                    <div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                        <canvas id="growth-chart-canvas" width="320" height="240" style="width:100%;height:auto;"></canvas>
+                    </div>
+                </div>
+            `;
+            setTimeout(() => {
+                if (typeof renderGrowthChart === 'function') {
+                    renderGrowthChart('growth-chart-canvas', 'week');
+                }
+            }, 100);
+            break;
+        default: contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块开发中...</p></div>';
     }
     
-    // 开始执行
-    tryOpenModule();
+    // 统一添加返回按钮
+    addBackButtonToModule(contentEl);
     
     container.classList.add('active');
 }
@@ -1018,7 +1035,7 @@ function renderSlide() {
 }
 
 
-function selectThinkingOpt(el, selectedIdx, questionIdx) {
+function window.selectThinkingOpt(el, selectedIdx, questionIdx) {
     const parent = el.parentElement;
     parent.querySelectorAll('.thinking-opt').forEach(opt => {
         opt.style.background = 'white';
@@ -1119,7 +1136,7 @@ function calculateCognitiveData() {
     const gameCounts = user.gameCounts || {};
     const methodStats = user.methodStats || {};
     const thinkingStats = user.thinkingStats || {};
-    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
 
 
 // ====== 1. 专注力计算 ======
@@ -1421,7 +1438,7 @@ function openAbout() {
         <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">
             © 2026 认知训练门户 版权所有
         </div>
-        <button class="modal-close" onclick="closeModal()" style="width:100%;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="width:100%;">关闭</button>
     `;
 }
 
@@ -1483,7 +1500,7 @@ function getWeekNumber() {
 function switchPlanDay(day) {
     window._planDay = day;
     const el = document.getElementById('module-content');
-    if (el) renderPlan(el);
+    if (el) window.renderPlan(el);
 }
 
 // ============================================================
@@ -1654,7 +1671,7 @@ function updateTodayStats() {
     if (!user) return;
     
     const today = new Date().toISOString().split('T')[0];
-    const todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0 };
     
     // 如果不是今天，重置统计
     if (todayStats.date !== today) {
@@ -1760,7 +1777,7 @@ function showDataStatsModal() {
     // 计算统计数据
     const totalDays = Object.keys(studyDays).length;
     const today = new Date().toISOString().split('T')[0];
-    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
     const accuracy = todayStats.questions > 0 ? Math.round(todayStats.correct / todayStats.questions * 100) : 0;
     
     const modal = document.getElementById('detail-modal');
@@ -1768,7 +1785,7 @@ function showDataStatsModal() {
     if (!modal || !content) return;
     
     modal.classList.add('show');
-    content.innerHTML = '<div class="modal-header" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"><div class="modal-title">📊 学习数据统计</div></div><div style="max-height:400px;overflow-y:auto;"><div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:16px;color:white;margin-bottom:16px;"><div style="font-size:14px;opacity:0.9;margin-bottom:8px;">今日学习</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;"><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.questions || 0) + '</div><div style="font-size:11px;opacity:0.8;">完成题目</div></div><div><div style="font-size:24px;font-weight:bold;">' + accuracy + '%</div><div style="font-size:11px;opacity:0.8;">正确率</div></div><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.minutes || 0) + '</div><div style="font-size:11px;opacity:0.8;">学习分钟</div></div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;"><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF6B6B;">' + wrongNotes.length + '</div><div style="font-size:11px;color:#666;">错题数量</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#43E97B;">' + totalDays + '</div><div style="font-size:11px;color:#666;">学习天数</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#667eea;">' + (stats.totalQuestions || 0) + '</div><div style="font-size:11px;color:#666;">累计题目</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF9A63;">' + (stats.totalMinutes || 0) + '</div><div style="font-size:11px;color:#666;">累计分钟</div></div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#333;">📈 历史正确率</div><div style="font-size:28px;font-weight:bold;color:#43E97B;">' + (stats.totalQuestions > 0 ? Math.round((stats.correctAnswers || 0) / stats.totalQuestions * 100) : 0) + '%</div><div style="font-size:11px;color:#999;margin-top:4px;">' + (stats.correctAnswers || 0) + ' / ' + (stats.totalQuestions || 0) + ' 题</div></div></div><button class="modal-close" onclick="closeModal()" style="margin-top:16px;width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>';
+    content.innerHTML = '<div class="modal-header" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"><div class="modal-title">📊 学习数据统计</div></div><div style="max-height:400px;overflow-y:auto;"><div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:16px;color:white;margin-bottom:16px;"><div style="font-size:14px;opacity:0.9;margin-bottom:8px;">今日学习</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;"><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.questions || 0) + '</div><div style="font-size:11px;opacity:0.8;">完成题目</div></div><div><div style="font-size:24px;font-weight:bold;">' + accuracy + '%</div><div style="font-size:11px;opacity:0.8;">正确率</div></div><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.minutes || 0) + '</div><div style="font-size:11px;opacity:0.8;">学习分钟</div></div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;"><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF6B6B;">' + wrongNotes.length + '</div><div style="font-size:11px;color:#666;">错题数量</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#43E97B;">' + totalDays + '</div><div style="font-size:11px;color:#666;">学习天数</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#667eea;">' + (stats.totalQuestions || 0) + '</div><div style="font-size:11px;color:#666;">累计题目</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF9A63;">' + (stats.totalMinutes || 0) + '</div><div style="font-size:11px;color:#666;">累计分钟</div></div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#333;">📈 历史正确率</div><div style="font-size:28px;font-weight:bold;color:#43E97B;">' + (stats.totalQuestions > 0 ? Math.round((stats.correctAnswers || 0) / stats.totalQuestions * 100) : 0) + '%</div><div style="font-size:11px;color:#999;margin-top:4px;">' + (stats.correctAnswers || 0) + ' / ' + (stats.totalQuestions || 0) + ' 题</div></div></div><button class="modal-close" onclick="window.closeModal()" style="margin-top:16px;width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>';
 }
 
 // 导出数据

@@ -524,3 +524,9 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 
+// V255: 将函数挂载到window，确保全局可访问
+window.renderGoalPage = renderGoalPage;
+window.renderHabitPage = renderHabitPage;
+window.renderAchievementPage = renderAchievementPage;
+window.renderDiaryPage = renderDiaryPage;
+window.renderMethodPage = renderMethodPage;

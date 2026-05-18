@@ -2901,3 +2901,146 @@ function calculateDataStats() {
 
 console.log('[ES6 Module] games.js 模块加载完成');
 window.renderGames = renderGames;
+
+
+// ==================== Bundle 兼容性：辅助函数（挂载到window）====================
+window.viewMethodNote = function(methodId) {
+    if (!window.METHOD_NOTES) return;
+    const note = window.METHOD_NOTES[methodId];
+    const content = note ? `<div class="method-note-content">${note}</div>` : '<div class="empty-state"><p>暂无笔记</p></div>';
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>方法笔记</h3>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+            </div>
+            <div class="modal-body">${content}</div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+window.deleteMethodNote = function(methodId) {
+    if (confirm('确定删除这条笔记吗？')) {
+        if (window.METHOD_NOTES) {
+            delete window.METHOD_NOTES[methodId];
+        }
+        alert('已删除');
+    }
+};
+
+window.submitTopicAnswer = function(topicId) {
+    const answerEl = document.getElementById(`topic-answer-${topicId}`);
+    if (!answerEl) return;
+    const answer = answerEl.value.trim();
+    if (!answer) {
+        alert('请输入答案');
+        return;
+    }
+    alert('提交成功！');
+};
+
+window.closeDetail = function() {
+    const panel = document.getElementById('detail-panel');
+    if (panel) panel.style.display = 'none';
+};
+
+window.closeModal = function() {
+    const modals = document.querySelectorAll('.modal-overlay, .modal-backdrop');
+    modals.forEach(m => m.remove());
+};
+
+window.submitMethodAnswers = function() {
+    alert('答案已提交！');
+};
+
+window.submitThinkingAnswers = function() {
+    alert('思考答案已提交！');
+};
+
+window.selectThinkingOpt = function(btn, option) {
+    const parent = btn.parentElement;
+    if (parent) {
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+};
+
+window.filterBooks = function(category) {
+    if (!window.LIBRARY_BOOKS) return;
+    const books = category === 'all'
+        ? window.LIBRARY_BOOKS
+        : window.LIBRARY_BOOKS.filter(b => b.category === category);
+    renderLibraryBooks(books);
+};
+
+window.filterMethod = function(category) {
+    if (!window.METHOD_DATA) return;
+    renderMethodList(window.METHOD_DATA, category);
+};
+
+// 辅助函数：渲染图书馆书籍列表
+function renderLibraryBooks(books) {
+    const container = document.getElementById('library-books-list');
+    if (!container) return;
+    container.innerHTML = books.map(book => `
+        <div class="book-card">
+            <div class="book-title">${book.title}</div>
+            <div class="book-author">${book.author || ''}</div>
+            <div class="book-category">${book.category || ''}</div>
+        </div>
+    `).join('');
+}
+
+// 辅助函数：渲染方法列表
+function renderMethodList(methods, category = 'all') {
+    const container = document.getElementById('method-list-container');
+    if (!container) return;
+    const filtered = category === 'all'
+        ? methods
+        : methods.filter(m => m.category === category);
+    container.innerHTML = filtered.map(method => `
+        <div class="method-card">
+            <div class="method-name">${method.name}</div>
+            <div class="method-desc">${method.description || ''}</div>
+        </div>
+    `).join('');
+}
+
+
+// ==================== Bundle 兼容性：学习图书馆模块 ====================
+// 学习图书馆渲染函数
+window.renderLibraryModule = function(container) {
+    // 确保 LIBRARY_BOOKS 存在
+    if (!window.LIBRARY_BOOKS) {
+        window.LIBRARY_BOOKS = [
+            { id: 1, title: '学习之道', author: '芭芭拉·奥克利', category: '学习方法' },
+            { id: 2, title: '刻意练习', author: '安德斯·艾利克森', category: '学习方法' },
+            { id: 3, title: '认知天性', author: '彼得·布朗', category: '认知科学' },
+            { id: 4, title: '思考，快与慢', author: '丹尼尔·卡尼曼', category: '思维方式' },
+            { id: 5, title: '深度工作', author: '卡尔·纽波特', category: '效率提升' },
+            { id: 6, title: '原子习惯', author: '詹姆斯·克利尔', category: '习惯养成' }
+        ];
+    }
+
+    container.innerHTML = `
+        <div style="padding:20px;">
+            <h2 style="margin-bottom:20px;">📚 学习图书馆</h2>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+                ${window.LIBRARY_BOOKS.map(book => `
+                    <div style="background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                        <div style="font-size:18px;font-weight:600;margin-bottom:8px;">${book.title}</div>
+                        <div style="color:#666;margin-bottom:8px;">${book.author}</div>
+                        <div style="display:inline-block;background:#e3f2fd;color:#1976d2;padding:4px 12px;border-radius:20px;font-size:12px;">
+                            ${book.category}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+};
+
+console.log('[Library] renderLibraryModule 已挂载到window');
