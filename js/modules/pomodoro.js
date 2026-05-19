@@ -82,7 +82,7 @@ function togglePomodoro() {
                 if (typeof SoundEffects !== 'undefined' && SoundEffects.playComplete) {
                     SoundEffects.playComplete();
                 }
-                showToast('🍅 番茄时间到！休息一下吧~');
+                window.showToast('🍅 番茄时间到！休息一下吧~');
                 // 更新统计
                 const user = window.getCurrentUserData();
                 if (user) {

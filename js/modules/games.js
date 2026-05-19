@@ -1350,7 +1350,7 @@ function startMethodPractice(method) {
 function startMethodQuiz(methodId, page = 0) {
     const questions = methodTrainingQuestions[methodId];
     if (!questions || questions.length === 0) {
-        showToast('暂无练习题');
+        window.showToast('暂无练习题');
         return;
     }
     
@@ -1406,7 +1406,7 @@ function startMethodQuiz(methodId, page = 0) {
 
 function startMethodTraining(methodId) {
     const questions = getMethodTraining(methodId);
-    if (questions.length === 0) { showToast('暂无训练题'); return; }
+    if (questions.length === 0) { window.showToast('暂无训练题'); return; }
     const methodNames = {
         feyman:'费曼学习法',pomodoro:'番茄工作法',ebbinghaus:'艾宾浩斯记忆法',
         mindmap:'思维导图法',cornell:'康奈尔笔记法',sq3r:'SQ3R阅读法',
@@ -1428,7 +1428,7 @@ function startMethodTraining(methodId) {
 function startThinkingQuiz(type, page = 0) {
     const questions = thinkingQuestions[type];
     if (!questions || questions.length === 0) {
-        showToast('暂无练习题');
+        window.showToast('暂无练习题');
         return;
     }
     
@@ -1482,7 +1482,7 @@ function startThinkingQuiz(type, page = 0) {
 }
 
 function startPractice(topicId) {
-    showToast('正在加载练习...');
+    window.showToast('正在加载练习...');
     const topic = topicsMath7.find(t => t.id === topicId) || 
                   topicsEnglish7.find(t => t.id === topicId) ||
                   topicsChinese7.find(t => t.id === topicId);
@@ -2370,7 +2370,7 @@ function updateTrainCount(count) {
     if (user) {
         user.trainCount = parseInt(count);
         syncUserData(user);
-        showToast('已设置每日训练 ' + count + ' 次');
+        window.showToast('已设置每日训练 ' + count + ' 次');
     }
 }
 
@@ -2412,10 +2412,10 @@ function checkDigit(correct) {
         gameScore++; 
         document.getElementById('game-score').textContent = gameScore; 
         SoundEffects.playCorrect(); // 正确音效
-        showToast('正确！');
+        window.showToast('正确！');
     } else {
         SoundEffects.playWrong(); // 错误音效
-        showToast('错误，正确答案是 ' + correct);
+        window.showToast('错误，正确答案是 ' + correct);
     }
     setTimeout(() => startDigit(), 500);
 }

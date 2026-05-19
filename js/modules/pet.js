@@ -66,42 +66,42 @@ function setupEventListeners() {
     eventBus.on('pomodoro:complete', () => {
         addExp(20);
         addMood(10);
-        showToast('🍅 番茄专注完成！宠物+20经验 +10心情');
+        window.showToast('🍅 番茄专注完成！宠物+20经验 +10心情');
     });
     
     // 完成训练
     eventBus.on('training:complete', () => {
         addExp(30);
         addMood(15);
-        showToast('🧠 训练完成！宠物+30经验 +15心情');
+        window.showToast('🧠 训练完成！宠物+30经验 +15心情');
     });
     
     // 自驱力打卡
     eventBus.on('selfdrive:checkin', () => {
         addExp(15);
         addMood(5);
-        showToast('✅ 打卡成功！宠物+15经验 +5心情');
+        window.showToast('✅ 打卡成功！宠物+15经验 +5心情');
     });
     
     // 完成目标
     eventBus.on('goal:complete', () => {
         addExp(50);
         addMood(20);
-        showToast('🎯 目标达成！宠物+50经验 +20心情');
+        window.showToast('🎯 目标达成！宠物+50经验 +20心情');
     });
     
     // 阅读书籍
     eventBus.on('library:read', () => {
         addExp(25);
         addMood(10);
-        showToast('📚 阅读完成！宠物+25经验 +10心情');
+        window.showToast('📚 阅读完成！宠物+25经验 +10心情');
     });
     
     // 完成思维导图
     eventBus.on('mindmap:complete', () => {
         addExp(40);
         addMood(15);
-        showToast('🗺️ 思维导图完成！宠物+40经验 +15心情');
+        window.showToast('🗺️ 思维导图完成！宠物+40经验 +15心情');
     });
 }
 
@@ -132,7 +132,7 @@ export function addExp(amount) {
         PET_SKINS.forEach(skin => {
             if (skin.unlockLevel === data.level && !data.unlockedSkins.includes(skin.id)) {
                 data.unlockedSkins.push(skin.id);
-                showToast(`🎉 恭喜升级到Lv.${data.level}！解锁新宠物：${skin.emoji} ${skin.name}`);
+                window.showToast(`🎉 恭喜升级到Lv.${data.level}！解锁新宠物：${skin.emoji} ${skin.name}`);
             }
         });
         
@@ -161,7 +161,7 @@ export function feedPet() {
         const lastTime = new Date(data.lastFeed);
         const cooldown = 2 * 60 * 60 * 1000; // 2小时
         if (Date.now() - lastTime.getTime() < cooldown) {
-            showToast('🍽️ 宠物刚刚吃过啦，等会儿再喂吧~');
+            window.showToast('🍽️ 宠物刚刚吃过啦，等会儿再喂吧~');
             return null;
         }
     }
@@ -172,7 +172,7 @@ export function feedPet() {
     data.totalInteractions++;
     
     saveData(data);
-    showToast('🍖 喂食成功！健康+15，心情+10');
+    window.showToast('🍖 喂食成功！健康+15，心情+10');
     return data;
 }
 
@@ -185,7 +185,7 @@ export function playWithPet() {
         const lastTime = new Date(data.lastPlay);
         const cooldown = 1 * 60 * 60 * 1000; // 1小时
         if (Date.now() - lastTime.getTime() < cooldown) {
-            showToast('🎮 宠物刚刚玩过啦，休息一下吧~');
+            window.showToast('🎮 宠物刚刚玩过啦，休息一下吧~');
             return null;
         }
     }
@@ -195,7 +195,7 @@ export function playWithPet() {
     data.totalInteractions++;
     
     saveData(data);
-    showToast('🎾 玩耍成功！心情+25');
+    window.showToast('🎾 玩耍成功！心情+25');
     return data;
 }
 
@@ -213,7 +213,7 @@ export function renamePet(newName) {
     const data = getPetData();
     data.name = newName;
     saveData(data);
-    showToast(`✨ 宠物改名为「${newName}」啦！`);
+    window.showToast(`✨ 宠物改名为「${newName}」啦！`);
     return data;
 }
 
@@ -221,14 +221,14 @@ export function renamePet(newName) {
 export function changeSkin(skinId) {
     const data = getPetData();
     if (!data.unlockedSkins.includes(skinId)) {
-        showToast('❌ 还没有解锁这个皮肤哦');
+        window.showToast('❌ 还没有解锁这个皮肤哦');
         return null;
     }
     
     data.skin = skinId;
     const skin = PET_SKINS.find(s => s.id === skinId);
     saveData(data);
-    showToast(`✨ 成功换上${skin.emoji} ${skin.name}！`);
+    window.showToast(`✨ 成功换上${skin.emoji} ${skin.name}！`);
     return data;
 }
 

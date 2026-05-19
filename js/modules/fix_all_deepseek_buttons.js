@@ -170,7 +170,7 @@
             if (window.UsageStatsModule) {
                 window.UsageStatsModule.openUsageStatsModal();
             } else {
-                showToast('使用统计模块加载中，请稍后再试');
+                window.showToast('使用统计模块加载中，请稍后再试');
             }
         };
         

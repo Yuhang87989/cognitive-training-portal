@@ -243,7 +243,7 @@ async function submitManualWrongNote() {
     var questionInput = document.getElementById('manual-question-input');
     var answerInput = document.getElementById('manual-answer-input');
     if (!questionInput || !questionInput.value.trim()) {
-        showToast('请输入题目内容');
+        window.showToast('请输入题目内容');
         return;
     }
     var questionText = questionInput.value.trim();
@@ -272,7 +272,7 @@ async function submitManualWrongNote() {
         };
         user.wrongNotes.push(wrongNote);
         syncUserData(user);
-        showToast('✅ 已保存到错题本');
+        window.showToast('✅ 已保存到错题本');
         backToWrongbook();
         return;
     }
@@ -301,7 +301,7 @@ async function submitManualWrongNote() {
         user.wrongNotes.push(wrongNote);
         syncUserData(user);
     }
-    showToast('✅ AI分析完成，已保存到错题本');
+    window.showToast('✅ AI分析完成，已保存到错题本');
     backToWrongbook();
 }
 
@@ -597,7 +597,7 @@ async function doWrongQuestionFromPhoto(photoId) {
     const note = user?.wrongNotes?.find(n => n.photoId === photoId);
     
     if (!note) {
-        showToast('题目不存在');
+        window.showToast('题目不存在');
         return;
     }
     
@@ -742,7 +742,7 @@ async function deleteWrongPhotoWithCleanup(photoId) {
     });
     syncUserData(user);
     
-    showToast('已删除');
+    window.showToast('已删除');
     showWrongPhotoGallery();
 }
 
@@ -991,7 +991,7 @@ function retryWrongNote(index) {
     const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const note = wrongNotes[index];
-    if (!note) { showToast('错题不存在'); return; }
+    if (!note) { window.showToast('错题不存在'); return; }
     
     const modal = document.getElementById('detail-modal');
     const content = document.getElementById('detail-content');
@@ -1108,7 +1108,7 @@ function selectRetryOption(el, noteIndex, optionIndex) {
 function submitRetryChoiceAnswer(noteIndex) {
     const selectedOption = parseInt(document.getElementById('retry-selected-option').value);
     if (selectedOption < 0) {
-        showToast('请选择一个答案');
+        window.showToast('请选择一个答案');
         return;
     }
     
@@ -1137,7 +1137,7 @@ function submitRetryChoiceAnswer(noteIndex) {
     note.userAnswer = String.fromCharCode(65 + selectedOption) + '. ' + note.options[selectedOption];
     if (isCorrect) {
         note.reviewed = true;
-        showToast('太棒了！回答正确！');
+        window.showToast('太棒了！回答正确！');
     }
     syncUserData(user);
     
@@ -1166,7 +1166,7 @@ async function submitRetryTextAnswer(noteIndex) {
     const userAns = textarea ? textarea.value.trim() : '';
     
     if (!userAns) {
-        showToast('请输入答案');
+        window.showToast('请输入答案');
         return;
     }
     
@@ -1249,7 +1249,7 @@ async function submitRetryTextAnswer(noteIndex) {
         note.userAnswer = userAns;
         if (isCorrect) {
             note.reviewed = true;
-            showToast('太棒了！回答正确！');
+            window.showToast('太棒了！回答正确！');
         }
         syncUserData(user);
         // V145修复：记录练习数据
@@ -1335,7 +1335,7 @@ async function analyzeWrongNoteWithAI(index) {
     const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const note = wrongNotes[index];
-    if (!note) { showToast('错题不存在'); return; }
+    if (!note) { window.showToast('错题不存在'); return; }
     
     const modal = document.getElementById('detail-modal');
     const content = document.getElementById('detail-content');
@@ -1477,7 +1477,7 @@ function markWrongNoteReviewed(index) {
     if (!user || !user.wrongNotes || !user.wrongNotes[index]) return;
     user.wrongNotes[index].reviewed = true;
     syncUserData(user);
-    showToast('✅ 已标记为已复习');
+    window.showToast('✅ 已标记为已复习');
     
     // 刷新显示
     const modal = document.getElementById('detail-modal');
@@ -1494,7 +1494,7 @@ function removeWrongNote(index) {
     if (user && user.wrongNotes) {
         user.wrongNotes.splice(index, 1);
         syncUserData(user);
-        showToast('已移除错题');
+        window.showToast('已移除错题');
         
         // 刷新显示
         const modal = document.getElementById('detail-modal');
@@ -1511,7 +1511,7 @@ function reviewAllWrongNotes() {
     const unreviewed = wrongNotes.filter(n => !n.reviewed);
     
     if (unreviewed.length === 0) {
-        showToast('所有错题已复习完毕！');
+        window.showToast('所有错题已复习完毕！');
         return;
     }
     
@@ -1529,7 +1529,7 @@ function clearWrongNotes() {
     if (user) {
         user.wrongNotes = [];
         syncUserData(user);
-        showToast('错题本已清空');
+        window.showToast('错题本已清空');
         
         // 刷新显示
         const modal = document.getElementById('detail-modal');
@@ -1604,11 +1604,11 @@ function openFeedback() {
 function submitFeedback() {
     const text = document.getElementById('feedback-text').value.trim();
     if (!text) {
-        showToast('请输入反馈内容');
+        window.showToast('请输入反馈内容');
         return;
     }
     closeDetail();
-    showToast('感谢您的反馈！我们会认真处理');
+    window.showToast('感谢您的反馈！我们会认真处理');
 }
 
 // ============================================================

@@ -123,7 +123,7 @@ function hasCheckedInToday() {
 
 function checkInToday() {
     if (hasCheckedInToday()) {
-        showToast('今天已经打过卡啦！');
+        window.showToast('今天已经打过卡啦！');
         return;
     }
     
@@ -131,7 +131,7 @@ function checkInToday() {
     checkins.push(new Date().toISOString());
     localStorage.setItem('self_drive_checkins', JSON.stringify(checkins));
     
-    showToast('🎉 打卡成功！继续加油！');
+    window.showToast('🎉 打卡成功！继续加油！');
     renderSelfDrive(document.getElementById('main-content') || document.querySelector('.content'));
 }
 
@@ -184,7 +184,7 @@ function addGoal() {
         completed: false
     });
     SelfDrive.save();
-    showToast('✅ 目标已添加');
+    window.showToast('✅ 目标已添加');
     renderGoalPage();
 }
 
@@ -257,7 +257,7 @@ function addHabit() {
         checkins: []
     });
     SelfDrive.save();
-    showToast('✅ 习惯已添加');
+    window.showToast('✅ 习惯已添加');
     renderHabitPage();
 }
 
@@ -269,7 +269,7 @@ function checkHabit(index) {
     
     const lastCheckin = habit.checkins.length > 0 ? new Date(habit.checkins[habit.checkins.length - 1]).toDateString() : null;
     if (lastCheckin === today) {
-        showToast('今天已经打过卡啦！');
+        window.showToast('今天已经打过卡啦！');
         return;
     }
     
@@ -282,7 +282,7 @@ function checkHabit(index) {
     }
     
     SelfDrive.save();
-    showToast('🎉 打卡成功！继续坚持！');
+    window.showToast('🎉 打卡成功！继续坚持！');
     renderHabitPage();
 }
 
@@ -385,7 +385,7 @@ function addDiary() {
         date: new Date().toLocaleString()
     });
     SelfDrive.save();
-    showToast('✅ 已保存');
+    window.showToast('✅ 已保存');
     renderDiaryPage();
 }
 

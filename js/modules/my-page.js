@@ -38,7 +38,7 @@ window.changeDifficulty = function(direction) {
         user.difficulty = newDiff;
         saveUserData(user);
         renderMyPage(document.getElementById('app-container'));
-        showToast('难度已调整为 Lv.' + newDiff);
+        window.showToast('难度已调整为 Lv.' + newDiff);
     }
 };
 
@@ -56,7 +56,7 @@ window.toggleSound = function() {
     const enabled = localStorage.getItem('sound_enabled') !== 'false';
     localStorage.setItem('sound_enabled', (!enabled).toString());
     renderMyPage(document.getElementById('app-container'));
-    showToast(enabled ? '提示音已关闭' : '提示音已开启');
+    window.showToast(enabled ? '提示音已关闭' : '提示音已开启');
 };
 
 // 清空错题本
@@ -67,7 +67,7 @@ window.clearWrongBook = function() {
             user.wrongNotes = [];
             saveUserData(user);
             renderMyPage(document.getElementById('app-container'));
-            showToast('错题本已清空');
+            window.showToast('错题本已清空');
         }
     }
 };
@@ -76,7 +76,7 @@ window.clearWrongBook = function() {
 window.toggleDeepSeekMode = function(mode) {
     localStorage.setItem('deepseek_mode', mode);
     renderMyPage(document.getElementById('app-container'));
-    showToast(mode === 'fast' ? '已切换为快速模式' : '已切换为专家模式');
+    window.showToast(mode === 'fast' ? '已切换为快速模式' : '已切换为专家模式');
 };
 
 // 清除AI上下文
@@ -87,7 +87,7 @@ window.clearAIContext = function() {
     if (typeof clearDeepSeekConversation === 'function') {
         clearDeepSeekConversation();
     }
-    showToast('AI上下文已清除');
+    window.showToast('AI上下文已清除');
 };
 
 // 打开AI使用统计
@@ -95,7 +95,7 @@ window.openUsageStats = function() {
     if (window.UsageStatsModule) {
         window.UsageStatsModule.openUsageStatsModal();
     } else {
-        showToast('使用统计模块加载中，请稍后再试');
+        window.showToast('使用统计模块加载中，请稍后再试');
     }
 };
 
@@ -314,7 +314,7 @@ window.doBackup = function() {
             a.href = url;
             a.download = '认知训练备份_' + new Date().toISOString().split('T')[0] + '.json';
             a.click();
-            showToast('备份成功，文件已下载');
+            window.showToast('备份成功，文件已下载');
         });
     }
 };
@@ -324,7 +324,7 @@ window.doRestore = function() {
     if (typeof LocalDB !== 'undefined' && LocalDB.importFromFile) {
         LocalDB.importFromFile(function(result) {
             if (result && result.success) {
-                showToast('数据恢复成功');
+                window.showToast('数据恢复成功');
                 location.reload();
             }
         });
@@ -336,10 +336,10 @@ window.saveApiKey = function() {
     const key = document.getElementById('deepseek-api-key').value.trim();
     if (key) {
         localStorage.setItem('deepseek_api_key', key);
-        showToast('API Key已保存');
+        window.showToast('API Key已保存');
     } else {
         localStorage.removeItem('deepseek_api_key');
-        showToast('API Key已清除，将使用默认配置');
+        window.showToast('API Key已清除，将使用默认配置');
     }
 };
 
@@ -354,7 +354,7 @@ window.clearAppCache = function() {
                 });
             });
         }
-        showToast('缓存已清除，页面即将刷新');
+        window.showToast('缓存已清除，页面即将刷新');
         setTimeout(function() { location.reload(); }, 1500);
     }
 };

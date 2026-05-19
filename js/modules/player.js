@@ -12,7 +12,7 @@ window.videoCtx = {
     isInitialized: false
 };
 
-function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } showToast('播放: ' + title); }
+function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } window.showToast('播放: ' + title); }
 
 function playVideo(title, url) {
     document.getElementById('vp-title').textContent = title;
@@ -34,7 +34,7 @@ function playVideo(title, url) {
 function playPodcastCourse(courseId) {
     var audioEl = document.getElementById('hidden-audio');
     if (!audioEl) {
-        showToast('播放器初始化失败，请刷新页面');
+        window.showToast('播放器初始化失败，请刷新页面');
         return;
     }
     var course = null;
@@ -53,7 +53,7 @@ function playPodcastCourse(courseId) {
     if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
     
     if (!course.shareUrl) {
-        showToast('该播客暂不可用');
+        window.showToast('该播客暂不可用');
         return;
     }
     
@@ -66,7 +66,7 @@ function playPodcastCourse(courseId) {
     updatePodcastListState(courseId);
     
     // 尝试获取播客数据（包含字幕文本）
-    showToast('正在加载播客...');
+    window.showToast('正在加载播客...');
     fetch(course.shareUrl, {redirect: 'follow'}).then(function(resp) {
         if (!resp.ok) throw new Error('fetch failed');
         return resp.json();
@@ -93,19 +93,19 @@ function playPodcastCourse(courseId) {
             audioEl.play().then(function() {
                 audioCtx.isPlaying = true;
                 updatePlayButtons();
-                showToast('正在播放: ' + course.title);
+                window.showToast('正在播放: ' + course.title);
             }).catch(function(e) {
-                showToast('播放失败，尝试语音朗读模式');
+                window.showToast('播放失败，尝试语音朗读模式');
                 startPodcastTTS();
             });
         } else {
             // 没有签名URL，使用TTS朗读模式
-            showToast('使用语音朗读模式播放');
+            window.showToast('使用语音朗读模式播放');
             startPodcastTTS();
         }
     }).catch(function(e) {
         console.error('播客加载失败:', e);
-        showToast('加载失败，尝试语音朗读');
+        window.showToast('加载失败，尝试语音朗读');
         startPodcastTTS();
     });
 }
@@ -125,7 +125,7 @@ function playVideoCourse(courseId) {
     if (playerEl) playerEl.style.display = 'flex';
     if (bigPlayEl) bigPlayEl.style.display = 'none';
     updateVideoListState(courseId);
-    evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
+    evpVideo.play().then(function() { videoCtx.isPlaying = true; window.showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
 }
 
 function playLocalAudio(audioId) {
@@ -136,19 +136,19 @@ function playLocalAudio(audioId) {
     // 播放音频
     const tempAudio = new Audio(audio.url);
     tempAudio.play();
-    showToast('正在播放: ' + audio.title);
+    window.showToast('正在播放: ' + audio.title);
 }
 
 function playLocalVideo(videoId) {
     const user = window.getCurrentUserData();
     const video = user?.localVideos?.find(v => v.id === videoId);
     if (!video) {
-        showToast('视频信息不存在');
+        window.showToast('视频信息不存在');
         return;
     }
     
     // 显示加载提示
-    showToast('正在加载视频...');
+    window.showToast('正在加载视频...');
     
     // 从 IndexedDB 读取视频文件
     getVideoFile(videoId).then(function(blob) {
@@ -158,11 +158,11 @@ function playLocalVideo(videoId) {
             openEnhancedVideoPlayer(video.title, videoUrl, videoId);
         } else {
             // 视频文件已丢失
-            showToast('视频文件已丢失，请重新上传');
+            window.showToast('视频文件已丢失，请重新上传');
         }
     }).catch(function(e) {
         console.error('读取视频失败:', e);
-        showToast('视频加载失败，请检查网络或重新上传');
+        window.showToast('视频加载失败，请检查网络或重新上传');
     });
 }
 
@@ -224,7 +224,7 @@ function playMediaCourse(courseId) {
     // 更新列表状态
     updateMediaListState(courseId);
     
-    showToast('正在播放: ' + course.title);
+    window.showToast('正在播放: ' + course.title);
 }
 
 function playAudioPos(pos) {
@@ -573,7 +573,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
                     const savedTime = (record.progress / 100) * videoEl.duration;
                     if (savedTime > 0 && !isNaN(savedTime)) {
                         videoEl.currentTime = savedTime;
-                        showToast('已恢复到上次观看位置');
+                        window.showToast('已恢复到上次观看位置');
                     }
                 }
             }
@@ -588,7 +588,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         
         // 检查URL是否有效
         if (!url || url === '' || url.indexOf('undefined') !== -1 || url.indexOf('null') !== -1) {
-            showToast('视频地址无效');
+            window.showToast('视频地址无效');
             if (loadingEl) loadingEl.style.display = 'none';
             if (bigPlayEl) bigPlayEl.style.display = 'flex';
             return;
@@ -648,7 +648,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
             videoEl.play().then(function() {
                 videoCtx.isPlaying = true;
                 if (bigPlayEl) bigPlayEl.style.display = 'none';
-                showToast('正在播放: ' + title);
+                window.showToast('正在播放: ' + title);
             }).catch(function(e) {
                 // 自动播放被阻止（常见于移动端），显示大播放按钮等待用户点击
                 videoCtx.isPlaying = false;
@@ -666,7 +666,7 @@ function toggleMiniPlayer() { if (!currentAudio) return; if (audioCtx.isPlaying)
 
 function toggleEnhancedFullscreen() { var playerEl = document.getElementById('enhanced-video-player'); if (!playerEl) return; if (document.fullscreenElement) { document.exitFullscreen().catch(function(e) {}); } else { playerEl.requestFullscreen().catch(function(e) {}); } }
 
-function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { showToast('画中画模式不支持'); }); } }
+function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { window.showToast('画中画模式不支持'); }); } }
 
 function updateMediaProgress() {
     var mediaEl = getCurrentMediaElement();
@@ -808,7 +808,7 @@ function onEnhancedVideoError(e) {
         videoEl.dataset.videoRetryCount = '0';
     }
     
-    showToast(errorMsg);
+    window.showToast(errorMsg);
     if (videoEl && videoEl.error) {
         console.error('视频加载错误:', videoEl.error);
     }
@@ -864,13 +864,13 @@ function handleAudioUpload(input) {
 
     // 检查文件类型
     if (!file.type.startsWith('audio/')) {
-        showToast('请上传音频文件');
+        window.showToast('请上传音频文件');
         return;
     }
 
     // 检查文件大小（限制50MB）
     if (file.size > 50 * 1024 * 1024) {
-        showToast('音频文件不能超过50MB');
+        window.showToast('音频文件不能超过50MB');
         return;
     }
 
@@ -905,7 +905,7 @@ function handleAudioUpload(input) {
         renderLocalAudioList();
     };
 
-    showToast('音频上传成功！');
+    window.showToast('音频上传成功！');
     renderLocalAudioList();
 }
 
@@ -943,7 +943,7 @@ function compressVideo(file, callback) {
         return;
     }
     
-    showToast('正在压缩视频，请稍候...');
+    window.showToast('正在压缩视频，请稍候...');
     
     var compressDiv = document.createElement('div');
     compressDiv.id = 'compress-progress';
@@ -959,7 +959,7 @@ function compressVideo(file, callback) {
     
     var timeoutId = setTimeout(function() {
         cleanup();
-        showToast('压缩超时，使用原视频');
+        window.showToast('压缩超时，使用原视频');
         callback(file);
     }, VIDEO_COMPRESS_CONFIG.timeout);
     
@@ -1005,7 +1005,7 @@ function compressVideo(file, callback) {
             });
         } catch(e) {
             cleanup();
-            showToast('浏览器不支持压缩，使用原视频');
+            window.showToast('浏览器不支持压缩，使用原视频');
             callback(file);
             return;
         }
@@ -1027,10 +1027,10 @@ function compressVideo(file, callback) {
             setTimeout(function() {
                 cleanup();
                 if (compressed.size < file.size * 0.9) {
-                    showToast('压缩完成：' + (file.size/1024/1024).toFixed(1) + 'MB → ' + (compressed.size/1024/1024).toFixed(1) + 'MB');
+                    window.showToast('压缩完成：' + (file.size/1024/1024).toFixed(1) + 'MB → ' + (compressed.size/1024/1024).toFixed(1) + 'MB');
                     callback(compressed);
                 } else {
-                    showToast('压缩效果不明显，使用原视频');
+                    window.showToast('压缩效果不明显，使用原视频');
                     callback(file);
                 }
             }, 500);
@@ -1071,7 +1071,7 @@ function compressVideo(file, callback) {
     
     video.onerror = function() {
         cleanup();
-        showToast('视频读取失败，使用原文件');
+        window.showToast('视频读取失败，使用原文件');
         callback(file);
     };
 }
@@ -1107,13 +1107,13 @@ function handleVideoUpload(input) {
     
     // 检查文件类型
     if (!file.type.startsWith('video/')) {
-        showToast('请上传视频文件');
+        window.showToast('请上传视频文件');
         return;
     }
     
     // 检查文件大小（限制100MB）
     if (file.size > 100 * 1024 * 1024) {
-        showToast('视频文件不能超过100MB');
+        window.showToast('视频文件不能超过100MB');
         return;
     }
     
@@ -1164,11 +1164,11 @@ function handleVideoUpload(input) {
             console.log('视频文件已持久化存储:', videoId, '大小:', (processedFile.size/1024/1024).toFixed(1) + 'MB');
         }).catch(function(e) {
             console.error('视频持久化存储失败:', e);
-            showToast('视频存储可能不稳定，请刷新重试');
+            window.showToast('视频存储可能不稳定，请刷新重试');
         });
     });
     
-    showToast('视频上传成功！' + (file.size > 5*1024*1024 ? ' 大视频将自动压缩' : ''));
+    window.showToast('视频上传成功！' + (file.size > 5*1024*1024 ? ' 大视频将自动压缩' : ''));
     renderLocalVideoList();
 }
 
@@ -1181,7 +1181,7 @@ function deleteLocalAudio(audioId) {
     user.localAudios = user.localAudios.filter(a => a.id !== audioId);
     syncUserData(user);
     renderLocalAudioList();
-    showToast('音频已删除');
+    window.showToast('音频已删除');
 }
 
 function deleteLocalVideo(videoId) {
@@ -1199,7 +1199,7 @@ function deleteLocalVideo(videoId) {
     });
     
     renderLocalVideoList();
-    showToast('视频已删除');
+    window.showToast('视频已删除');
 }
 
 function initMediaCourses() {

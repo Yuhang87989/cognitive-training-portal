@@ -131,7 +131,7 @@ async function callSiliconFlowVisionAPI(imageDataUrl, question) {
         return {success: false, content: '', message: '图片格式不正确'};
     }
     try {
-        showToast('正在识别图片...');
+        window.showToast('正在识别图片...');
         var messages = [
             { role: 'user', content: [
                 { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
@@ -152,7 +152,7 @@ async function callDeepSeekVisionAPI(imageDataUrl, question) {
         return {success: false, content: '', message: '图片格式不正确'};
     }
     try {
-        showToast('正在识别图片...');
+        window.showToast('正在识别图片...');
         var messages = [
             { role: 'user', content: [
                 { type: 'image_url', image_url: { url: imageDataUrl } },
@@ -403,7 +403,7 @@ async function callDeepSeekVisionEndpoint(messages, temperature) {
 function tipKeyboardVoice() {
     var input = document.getElementById('deepseek-input');
     if (input) { input.focus(); input.setAttribute('placeholder', '点击输入框后，用键盘🎤语音输入...'); }
-    showToast('🎤 请点击输入框，使用键盘上的语音按钮说话', 4000);
+    window.showToast('🎤 请点击输入框，使用键盘上的语音按钮说话', 4000);
 }
 window.tipKeyboardVoice = tipKeyboardVoice;
 
@@ -539,7 +539,7 @@ window.toggleDeepseekMode = function(mode) {
         btn.style.background = btn.dataset.mode === mode ? '#667eea' : '#f5f5f5';
         btn.style.color = btn.dataset.mode === mode ? 'white' : '#666';
     });
-    showToast(mode === 'fast' ? '🚀 快速模式：省token、响应快' : '💎 专家模式：完整上下文、回答详细');
+    window.showToast(mode === 'fast' ? '🚀 快速模式：省token、响应快' : '💎 专家模式：完整上下文、回答详细');
 };
 
 function getContextForMode() {
@@ -557,7 +557,7 @@ async function sendToDeepSeek() {
     const input = document.getElementById('deepseek-input');
     if (!input) { return; }
     const msg = input.value.trim();
-    if (!msg && !currentDeepSeekImage) { showToast('请输入问题或上传图片'); return; }
+    if (!msg && !currentDeepSeekImage) { window.showToast('请输入问题或上传图片'); return; }
     const messagesEl = document.getElementById('deepseek-messages');
     if (!messagesEl) return;
     stopTTSSpeech();
@@ -634,7 +634,7 @@ async function sendToDeepSeek() {
 window.sendToDeepSeek = sendToDeepSeek;
 async function analyzeTopicWithAI(topicId) {
     // 占位函数 - 话题AI分析
-    showToast('AI分析功能开发中');
+    window.showToast('AI分析功能开发中');
 }
 
 // ====== 充值入口 ======
@@ -900,7 +900,7 @@ function clearAllDeepSeekHistory() {
     localStorage.removeItem('ds_saved_chats');
     localStorage.removeItem('cognitive_training_ds_conversation');
     deepseekConversationHistory = [];
-    showToast('历史已清空');
+    window.showToast('历史已清空');
 }
 window.clearAllDeepSeekHistory = clearAllDeepSeekHistory;
 
@@ -911,7 +911,7 @@ function openApiConfigModalBridge(type) {
         try { var c = JSON.parse(localStorage.getItem('api_config') || '{}'); c.deepseek = key.trim(); localStorage.setItem('api_config', JSON.stringify(c)); } catch(e) {}
         localStorage.setItem('deepseek_api_key', key.trim());
         updateDeepSeekBalance();
-        showToast('API Key 已保存');
+        window.showToast('API Key 已保存');
     }
 }
 window.openApiConfigModal = window.openApiConfigModal || openApiConfigModalBridge;
@@ -923,7 +923,7 @@ function getSavedDeepSeekChats() {
 
 function saveCurrentDeepSeekChat() {
     if (!deepseekConversationHistory || deepseekConversationHistory.length === 0) {
-        showToast('当前没有对话可保存'); return;
+        window.showToast('当前没有对话可保存'); return;
     }
     var title = '';
     for (var i = 0; i < deepseekConversationHistory.length; i++) {
@@ -945,7 +945,7 @@ function saveCurrentDeepSeekChat() {
     // 最多保存20条
     if (saved.length > 1000) saved = saved.slice(saved.length - 1000);
     try { localStorage.setItem('ds_saved_chats', JSON.stringify(saved)); } catch(e) {}
-    showToast('对话已保存');
+    window.showToast('对话已保存');
 }
 window.saveCurrentDeepSeekChat = saveCurrentDeepSeekChat;
 
@@ -956,7 +956,7 @@ function loadSavedDeepSeekChat(index) {
     saveDeepSeekConversation();
     restoreDeepSeekChatHistory();
     toggleDeepSeekHistory();
-    showToast('已加载: ' + saved[index].title);
+    window.showToast('已加载: ' + saved[index].title);
 }
 window.loadSavedDeepSeekChat = loadSavedDeepSeekChat;
 
@@ -975,7 +975,7 @@ function startNewDeepSeekChat() {
     if (msgs) msgs.innerHTML = '';
     toggleDeepSeekHistory();
     renderDeepseek(document.getElementById('fullscreen-content'));
-    showToast('新对话已开始');
+    window.showToast('新对话已开始');
 }
 window.startNewDeepSeekChat = startNewDeepSeekChat;
 

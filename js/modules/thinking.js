@@ -384,7 +384,7 @@ function showThinkingType(type) {
 function startThinkingQuiz(type, page = 0) {
     const questions = window.thinkingQuestions[type];
     if (!questions || questions.length === 0) {
-        showToast('暂无练习题');
+        window.showToast('暂无练习题');
         return;
     }
     
@@ -455,7 +455,7 @@ async function analyzeThinkingPhotoWithAI() {
     const imageData = window.currentQuestionPhoto;
     
     if (!imageData) {
-        showToast('请先上传图片');
+        window.showToast('请先上传图片');
         return;
     }
     
@@ -597,7 +597,7 @@ function rateThinkingAnswer(type, isCorrect, questionIdx) {
     
     syncUserData(user);
     updateThinkingStats();
-    showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
+    window.showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
     // V145修复：记录练习数据
     if (window.recordPractice) window.recordPractice(1, isCorrect ? 1 : 0, 1);
 }
@@ -625,7 +625,7 @@ function handleThinkingNoteUpload(input) {
     const file = input.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-        showToast('请上传图片文件');
+        window.showToast('请上传图片文件');
         return;
     }
     
@@ -640,7 +640,7 @@ function handleThinkingNoteUpload(input) {
         uploadTime: new Date().toLocaleString()
     });
     syncUserData(user);
-    showToast('笔记上传成功！');
+    window.showToast('笔记上传成功！');
     renderThinkingNotes();
 }
 
@@ -692,7 +692,7 @@ function deleteThinkingNote(noteId) {
     user.thinkingNotes = user.thinkingNotes.filter(n => n.id !== noteId);
     syncUserData(user);
     renderThinkingNotes();
-    showToast('笔记已删除');
+    window.showToast('笔记已删除');
 }
 
 

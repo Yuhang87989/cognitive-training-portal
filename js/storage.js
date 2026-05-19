@@ -122,7 +122,7 @@ function clearCurrentUserData() {
     var user = data.users.find(function(u) { return u.id === data.currentUser; });
     
     if (!user) {
-        showToast('用户不存在');
+        window.showToast('用户不存在');
         return;
     }
     
@@ -143,7 +143,7 @@ function clearCurrentUserData() {
     updateUI();
     syncTodayStats();
     closeUserMenu();
-    showToast('已清除 ' + user.name + ' 的数据');
+    window.showToast('已清除 ' + user.name + ' 的数据');
 }
 
 function getApiConfig() {
@@ -163,7 +163,7 @@ function resetApiConfig() {
     if (!confirm('确定要恢复默认配置吗？')) return;
     
     localStorage.removeItem(API_CONFIG_KEY);
-    showToast('API配置已重置为默认值');
+    window.showToast('API配置已重置为默认值');
     updateApiStatusDisplay();
 }
 
@@ -279,7 +279,7 @@ function syncData() {
                 btn.textContent = '同步';
                 btn.disabled = false;
             }
-            showToast('✅ 数据同步成功');
+            window.showToast('✅ 数据同步成功');
             
             // 更新数据统计
             updateDataStatsDisplay();
@@ -289,7 +289,7 @@ function syncData() {
             btn.textContent = '同步';
             btn.disabled = false;
         }
-        showToast('请先登录');
+        window.showToast('请先登录');
     }
 }
 

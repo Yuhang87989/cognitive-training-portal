@@ -88,7 +88,7 @@ function handlePracticePhoto(input) {
     };
     
     reader.onerror = function() {
-        showToast('图片读取失败，请重试');
+        window.showToast('图片读取失败，请重试');
     };
     
     reader.readAsDataURL(file);
@@ -187,11 +187,11 @@ function handleQuestionPhoto(input, resultContainerId) {
         
         // 存储当前图片数据供后续分析使用
         window.currentQuestionPhoto = imageData;
-        showToast('图片已上传，可点击AI分析按钮');
+        window.showToast('图片已上传，可点击AI分析按钮');
     };
     
     reader.onerror = function() {
-        showToast('图片读取失败');
+        window.showToast('图片读取失败');
     };
     
     reader.readAsDataURL(file);
@@ -212,7 +212,7 @@ async function submitPracticeQuestion() {
     
     const question = input.value.trim();
     if (!question) {
-        showToast('请输入你的问题');
+        window.showToast('请输入你的问题');
         return;
     }
     
@@ -264,7 +264,7 @@ async function askPracticeAI() {
     
     const question = input.value.trim();
     if (!question) {
-        showToast('请输入你的问题');
+        window.showToast('请输入你的问题');
         return;
     }
     
@@ -318,7 +318,7 @@ window.askPracticeAI = askPracticeAI;
 async function handlePhotoToQuestion(imageData) {
     // 复用photoToQuestion
     if (typeof photoToQuestion === 'function') { photoToQuestion(imageData); }
-    else { showToast('拍照出题功能加载中，请稍后再试'); }
+    else { window.showToast('拍照出题功能加载中，请稍后再试'); }
 }
 window.handlePhotoToQuestion = handlePhotoToQuestion;
 

@@ -162,7 +162,7 @@ function bindPetEvents(container, pet, data) {
         animatePet(container);
         updatePetDisplay(container, pet);
         const hearts = ['❤️', '💕', '💖', '💗'];
-        showToast(hearts[Math.floor(Math.random() * hearts.length)] + ' 喵~');
+        window.showToast(hearts[Math.floor(Math.random() * hearts.length)] + ' 喵~');
     });
     
     // 改名

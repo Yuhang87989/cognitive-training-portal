@@ -213,7 +213,7 @@ function podcastPlay(podcast) {
                 podcastPlayerState.isPlaying = true;
                 updatePodcastUI();
                 if (typeof showToast === 'function') {
-                    showToast('正在播放: ' + podcast.title);
+                    window.showToast('正在播放: ' + podcast.title);
                 }
             }).catch(function(e) {
                 // 自动播放被阻止，等待用户交互
@@ -221,7 +221,7 @@ function podcastPlay(podcast) {
                 btn = document.getElementById('podcast-play-btn');
                 if (btn) btn.textContent = '▶';
                 if (typeof showToast === 'function') {
-                    showToast('点击播放按钮开始收听');
+                    window.showToast('点击播放按钮开始收听');
                 }
             });
         }
@@ -230,11 +230,11 @@ function podcastPlay(podcast) {
         audio.onerror = function() {
             podcastPlayerState.isPlaying = false;
             updatePodcastUI();
-            showToast('音频加载失败，请稍后重试');
+            window.showToast('音频加载失败，请稍后重试');
         };
     } else if (!podcast.url) {
         if (typeof showToast === 'function') {
-            showToast('该播客暂无音频');
+            window.showToast('该播客暂无音频');
         }
     }
     
@@ -304,7 +304,7 @@ function podcastTogglePlay() {
     
     if (!audio || !podcastPlayerState.currentPodcast) {
         if (typeof showToast === 'function') {
-            showToast('请先选择播客');
+            window.showToast('请先选择播客');
         }
         return;
     }
@@ -333,7 +333,7 @@ function podcastPrev() {
     
     if (!podcastPlayerState.currentPodcast) {
         if (typeof showToast === 'function') {
-            showToast('请先选择播客');
+            window.showToast('请先选择播客');
         }
         return;
     }
@@ -357,7 +357,7 @@ function podcastNext() {
     
     if (!podcastPlayerState.currentPodcast) {
         if (typeof showToast === 'function') {
-            showToast('请先选择播客');
+            window.showToast('请先选择播客');
         }
         return;
     }
@@ -398,7 +398,7 @@ function podcastCycleSpeed() {
     if (btn) btn.textContent = speeds[nextIndex] + 'x';
     
     if (typeof showToast === 'function') {
-        showToast('播放速度: ' + speeds[nextIndex] + 'x');
+        window.showToast('播放速度: ' + speeds[nextIndex] + 'x');
     }
 }
 
@@ -585,7 +585,7 @@ async function askPodcastAI() {
     
     var msg = input.value.trim();
     if (!msg) {
-        showToast('请输入问题');
+        window.showToast('请输入问题');
         return;
     }
     
@@ -665,7 +665,7 @@ function togglePodcastVoice() {
         var btn = document.getElementById('podcast-voice-btn');
         toggleVoiceInput(btn, 'podcast-chat-input');
     } else {
-        showToast('语音输入未就绪');
+        window.showToast('语音输入未就绪');
     }
 }
 

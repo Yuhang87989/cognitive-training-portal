@@ -40,18 +40,18 @@ function showUserSwitchModal() {
     var data = window.loadData();
     
     if (data.users.length === 0) {
-        showToast('暂无用户，请先创建账号');
+        window.showToast('暂无用户，请先创建账号');
         return;
     }
     
     if (data.users.length === 1) {
-        showToast('只有一个用户：' + data.users[0].name + '，无需切换');
+        window.showToast('只有一个用户：' + data.users[0].name + '，无需切换');
         return;
     }
     
     var container = document.getElementById('user-switch-list');
     if (!container) {
-        showToast('页面加载异常');
+        window.showToast('页面加载异常');
         return;
     }
     
@@ -189,7 +189,7 @@ function createNewUser() {
     var difficulty = diffEl ? parseInt(diffEl.value) : 1;
     
     if (!name) {
-        showToast('请输入名字');
+        window.showToast('请输入名字');
         return;
     }
     
@@ -197,7 +197,7 @@ function createNewUser() {
     
     // 检查名字是否重复
     if (data.users.some(function(u) { return u.name === name; })) {
-        showToast('名字已存在，请换一个');
+        window.showToast('名字已存在，请换一个');
         return;
     }
     
@@ -253,7 +253,7 @@ function createNewUser() {
     var difficultyText = document.getElementById('difficulty-text');
     if (difficultyText) difficultyText.textContent = 'Lv.' + difficulty;
     
-    showToast('创建成功: ' + name);
+    window.showToast('创建成功: ' + name);
     
     // 清空表单
     if (nameEl) nameEl.value = '';
@@ -268,18 +268,18 @@ function showDeleteUserModal() {
     var data = window.loadData();
     
     if (data.users.length === 0) {
-        showToast('暂无用户');
+        window.showToast('暂无用户');
         return;
     }
     
     if (data.users.length === 1) {
-        showToast('只有一个用户，无法删除');
+        window.showToast('只有一个用户，无法删除');
         return;
     }
     
     var container = document.getElementById('delete-user-list');
     if (!container) {
-        showToast('页面加载异常');
+        window.showToast('页面加载异常');
         return;
     }
     
@@ -315,7 +315,7 @@ function confirmDeleteUser(userId) {
     var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
     
     if (userIndex === -1) {
-        showToast('用户不存在');
+        window.showToast('用户不存在');
         return;
     }
     
@@ -341,11 +341,11 @@ function confirmDeleteUser(userId) {
     // 如果只剩一个用户，关闭模态框
     if (data.users.length <= 1) {
         closeDeleteUserModal();
-        showToast('已删除用户: ' + userName);
+        window.showToast('已删除用户: ' + userName);
     } else {
         // 刷新删除用户列表
         showDeleteUserModal();
-        showToast('已删除用户: ' + userName);
+        window.showToast('已删除用户: ' + userName);
     }
 }
 
@@ -371,7 +371,7 @@ function setDifficulty(level) {
             btn.style.borderColor = isSelected ? '#1A6BFF' : '#ddd';
             btn.style.background = isSelected ? '#E8F4FF' : 'white';
         });
-        showToast('难度已调整为 Lv.' + level);
+        window.showToast('难度已调整为 Lv.' + level);
     }
     closeDifficultyModal();
 }
@@ -388,7 +388,7 @@ function saveProfileChanges() {
     const newGrade = parseInt(document.getElementById('edit-grade').value);
     
     if (!newName) {
-        showToast('请输入姓名');
+        window.showToast('请输入姓名');
         return;
     }
     
@@ -400,7 +400,7 @@ function saveProfileChanges() {
     updateUI();
     openSettingsPanel(); // 刷新设置面板
     closeEditProfileModal();
-    showToast('个人信息已更新');
+    window.showToast('个人信息已更新');
 }
 
 function closeEditProfileModal() {
@@ -413,24 +413,24 @@ function savePasswordChanges() {
     const confirmPwd = document.getElementById('confirm-password').value;
     
     if (!currentPwd || !newPwd || !confirmPwd) {
-        showToast('请填写所有密码字段');
+        window.showToast('请填写所有密码字段');
         return;
     }
     
     if (newPwd !== confirmPwd) {
-        showToast('两次输入的新密码不一致');
+        window.showToast('两次输入的新密码不一致');
         return;
     }
     
     if (newPwd.length < 6) {
-        showToast('密码长度至少6位');
+        window.showToast('密码长度至少6位');
         return;
     }
     
     // 验证当前密码（简化版，实际应做密码验证）
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     if (data.password && data.password !== currentPwd) {
-        showToast('当前密码错误');
+        window.showToast('当前密码错误');
         return;
     }
     
@@ -439,7 +439,7 @@ function savePasswordChanges() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     
     closeChangePasswordModal();
-    showToast('密码修改成功');
+    window.showToast('密码修改成功');
 }
 
 function closeChangePasswordModal() {
@@ -489,7 +489,7 @@ function selectAvatar(emoji) {
         user.avatar = emoji;
         syncUserData(user);
         updateAllAvatarDisplays();
-        showToast('头像已更换');
+        window.showToast('头像已更换');
     }
     closeAvatarModal();
 }

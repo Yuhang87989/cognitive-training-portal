@@ -697,7 +697,7 @@ function openMethodQuestions(methodId) {
     
     const questions = window.methodTrainingQuestions[methodId];
     if (!questions || questions.length === 0) {
-        showToast('该学习方法暂无练习题');
+        window.showToast('该学习方法暂无练习题');
         return;
     }
     
@@ -740,7 +740,7 @@ async function analyzeMethodPhotoWithAI() {
     const imageData = window.currentQuestionPhoto;
     
     if (!imageData) {
-        showToast('请先上传图片');
+        window.showToast('请先上传图片');
         return;
     }
     
@@ -796,7 +796,7 @@ function handleMethodNoteUpload(input) {
             time: Date.now()
         });
         syncUserData(user);
-        showToast('笔记上传成功！');
+        window.showToast('笔记上传成功！');
         renderMethodNotes();
         input.value = '';
     };
@@ -855,7 +855,7 @@ window.showMethodNote = showMethodNote;
 function startMethodQuiz(methodId, page = 0) {
     const questions = window.methodTrainingQuestions[methodId];
     if (!questions || questions.length === 0) {
-        showToast('暂无练习题');
+        window.showToast('暂无练习题');
         return;
     }
     
@@ -954,7 +954,7 @@ function rateMethodAnswer(methodId, isCorrect, questionIndex) {
     
     syncUserData(user);
     updateMethodStats();
-    showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
+    window.showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
     // V145修复：记录练习数据
     if (window.recordPractice) window.recordPractice(1, isCorrect ? 1 : 0, 1);
 }

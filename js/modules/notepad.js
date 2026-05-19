@@ -60,7 +60,7 @@ function saveNote() {
     const content = contentEl.value.trim();
     
     if (!content) {
-        showToast('请输入笔记内容');
+        window.showToast('请输入笔记内容');
         return;
     }
     
@@ -74,7 +74,7 @@ function saveNote() {
     
     titleEl.value = '';
     contentEl.value = '';
-    showToast('笔记已保存');
+    window.showToast('笔记已保存');
     renderNotepad(document.getElementById('fullscreen-content'));
 }
 
@@ -83,7 +83,7 @@ function deleteNote(index) {
         const notes = loadNotes();
         notes.splice(index, 1);
         saveNotes(notes);
-        showToast('笔记已删除');
+        window.showToast('笔记已删除');
         renderNotepad(document.getElementById('fullscreen-content'));
     }
 }

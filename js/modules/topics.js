@@ -148,7 +148,7 @@ function findTopic(topicId) {
 function openTopicQuestion(topicId) {
     const topic = findTopic(topicId);
     if (!topic) {
-        showToast('题目不存在');
+        window.showToast('题目不存在');
         return;
     }
     
@@ -183,7 +183,7 @@ function checkTopicAnswer(topicId) {
     const topic = findTopic(topicId);
     
     if (!answer) {
-        showToast('请输入答案');
+        window.showToast('请输入答案');
         return;
     }
     
@@ -239,7 +239,7 @@ function checkTopicAnswer(topicId) {
 async function analyzeTopicWithAI(topicId) {
     const topic = findTopic(topicId);
     if (!topic) {
-        showToast('题目不存在');
+        window.showToast('题目不存在');
         return;
     }
     
@@ -264,7 +264,7 @@ async function analyzeTopicWithAI(topicId) {
                 aiResultArea.id = 'topic-ai-result';
                 content.appendChild(aiResultArea);
             } else {
-                showToast('无法显示AI辅导');
+                window.showToast('无法显示AI辅导');
                 return;
             }
         }
@@ -337,7 +337,7 @@ async function analyzeTopicWithAI(topicId) {
 
 function uploadTopicPhoto(topicId, input) {
     if (!input.files[0]) return;
-    showToast('照片上传成功，AI分析中...');
+    window.showToast('照片上传成功，AI分析中...');
     analyzeTopicWithAI(topicId);
 }
 

@@ -45,9 +45,9 @@ function closeWelcomeModal() {
     }
 }
 
-function window.closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
 
-function window.closeModal(modalId) {
+function closeModal(modalId) {
     if (!modalId) {
         // 如果没有指定 modalId，默认关闭 detail-modal
         const modal = document.getElementById('detail-modal');
@@ -460,7 +460,7 @@ function handleLogin() {
     const data = window.loadData();
     const btn = document.querySelector('.user-select-btn');
     if (!btn || !btn.dataset.userId) {
-        showToast('请先选择学习者');
+        window.showToast('请先选择学习者');
         return;
     }
     const userId = btn.dataset.userId;
@@ -481,7 +481,7 @@ function handleLogin() {
             showWelcomeMessage(user);
         }, 50);
     } else {
-        showToast('用户不存在，请重新选择');
+        window.showToast('用户不存在，请重新选择');
     }
 }
 
@@ -634,7 +634,7 @@ function switchToUser(userId) {
     var user = data.users.find(function(u) { return u.id === userId; });
     
     if (!user) {
-        showToast('用户不存在');
+        window.showToast('用户不存在');
         return;
     }
     
@@ -647,7 +647,7 @@ function switchToUser(userId) {
     showPage('home');
     updateUI();
     syncTodayStats();
-    showToast('已切换到: ' + user.name);
+    window.showToast('已切换到: ' + user.name);
 }
 
 function deleteUser(userId) {
@@ -657,7 +657,7 @@ function deleteUser(userId) {
     var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
     
     if (userIndex === -1) {
-        showToast('用户不存在');
+        window.showToast('用户不存在');
         return;
     }
     
@@ -676,7 +676,7 @@ function deleteUser(userId) {
     window.saveData(data);
     showUserSwitchModal(); // 刷新用户列表
     updateUI();
-    showToast('已删除用户: ' + userName);
+    window.showToast('已删除用户: ' + userName);
 }
 
 function registerNewUser() {
@@ -690,50 +690,50 @@ function registerNewUser() {
     
     // 验证姓名
     if (!name) {
-        showToast('请输入姓名');
+        window.showToast('请输入姓名');
         return;
     }
     if (name.length > 10) {
-        showToast('姓名不能超过10个字符');
+        window.showToast('姓名不能超过10个字符');
         return;
     }
     
     // 验证手机号
     if (!phone) {
-        showToast('请输入手机号');
+        window.showToast('请输入手机号');
         return;
     }
     if (!/^1[3-9]\d{9}$/.test(phone)) {
-        showToast('请输入正确的手机号');
+        window.showToast('请输入正确的手机号');
         return;
     }
     
     // 检查手机号是否已注册
     const data = window.loadData();
     if (data.users.find(u => u.phone === phone)) {
-        showToast('该手机号已注册，请直接登录或切换用户');
+        window.showToast('该手机号已注册，请直接登录或切换用户');
         return;
     }
     
     // 验证密码
     if (!password) {
-        showToast('请输入密码');
+        window.showToast('请输入密码');
         return;
     }
     if (password.length < 6) {
-        showToast('密码长度至少6位');
+        window.showToast('密码长度至少6位');
         return;
     }
     
     // 验证确认密码
     if (password !== confirmPassword) {
-        showToast('两次输入的密码不一致');
+        window.showToast('两次输入的密码不一致');
         return;
     }
     
     // 验证年级
     if (!grade) {
-        showToast('请选择年级');
+        window.showToast('请选择年级');
         return;
     }
     
@@ -777,7 +777,7 @@ function registerNewUser() {
     syncTodayStats();
     
     // 显示欢迎提示
-    showToast('欢迎 ' + name + '！开始你的认知训练之旅吧！');
+    window.showToast('欢迎 ' + name + '！开始你的认知训练之旅吧！');
 }
 
 function openChangePasswordModal() {
@@ -829,7 +829,7 @@ function setDifficulty(level) {
             btn.style.borderColor = isSelected ? '#1A6BFF' : '#ddd';
             btn.style.background = isSelected ? '#E8F4FF' : 'white';
         });
-        showToast('难度已调整为 Lv.' + level);
+        window.showToast('难度已调整为 Lv.' + level);
     }
     closeDifficultyModal();
 }
@@ -1040,7 +1040,7 @@ function renderSlide() {
 }
 
 
-function window.selectThinkingOpt(el, selectedIdx, questionIdx) {
+function selectThinkingOpt(el, selectedIdx, questionIdx) {
     const parent = el.parentElement;
     parent.querySelectorAll('.thinking-opt').forEach(opt => {
         opt.style.background = 'white';
@@ -1453,7 +1453,7 @@ function selectAvatar(emoji) {
         user.avatar = emoji;
         syncUserData(user);
         updateAllAvatarDisplays();
-        showToast('头像已更换');
+        window.showToast('头像已更换');
     }
     closeAvatarModal();
 }
@@ -1721,13 +1721,13 @@ function showDeleteUserModal() {
     var data = window.loadData();
     
     if (data.users.length === 0) {
-        showToast('暂无用户');
+        window.showToast('暂无用户');
         return;
     }
     
     var container = document.getElementById('delete-user-list');
     if (!container) {
-        showToast('页面加载异常');
+        window.showToast('页面加载异常');
         return;
     }
     
@@ -1771,7 +1771,7 @@ window.updateRecommendCard = updateRecommendCard;
 function showDataStatsModal() {
     const user = window.getCurrentUserData();
     if (!user) {
-        showToast('请先登录');
+        window.showToast('请先登录');
         return;
     }
     
@@ -1797,7 +1797,7 @@ function showDataStatsModal() {
 function exportData() {
     const data = window.loadData();
     if (!data) {
-        showToast('导出失败，无数据');
+        window.showToast('导出失败，无数据');
         return;
     }
     const exportData = {
@@ -1824,7 +1824,7 @@ function exportData() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('数据导出成功！');
+    window.showToast('数据导出成功！');
 }
 
 // 导入数据
@@ -1842,7 +1842,7 @@ function handleImportFile(event) {
         try {
             const importedData = JSON.parse(e.target.result);
             if (!importedData || !importedData.users || !Array.isArray(importedData.users)) {
-                showToast('文件格式错误');
+                window.showToast('文件格式错误');
                 return;
             }
             if (!confirm('确定要导入数据吗？这将覆盖当前所有用户数据！')) return;
@@ -1857,10 +1857,10 @@ function handleImportFile(event) {
             }
             window.saveData(currentData);
             updateUI();
-            showToast('数据导入成功！');
+            window.showToast('数据导入成功！');
         } catch(err) {
             console.error('导入失败:', err);
-            showToast('导入失败：' + err.message);
+            window.showToast('导入失败：' + err.message);
         }
     };
     reader.readAsText(file);
@@ -1885,7 +1885,7 @@ window.drawRadarChart = drawRadarChart;
 function clearCurrentUserData() {
     const user = window.getCurrentUserData();
     if (!user) {
-        showToast('请先登录');
+        window.showToast('请先登录');
         return;
     }
     
@@ -1905,7 +1905,7 @@ function clearCurrentUserData() {
     
     syncUserData(user);
     updateUI();
-    showToast('数据已清除');
+    window.showToast('数据已清除');
     closeUserMenu();
 }
 
@@ -1921,7 +1921,7 @@ function clearAllData() {
     localStorage.removeItem('self_drive_checkins');
     
     closeSettingsPanel();
-    showToast('所有数据已清除，页面即将刷新');
+    window.showToast('所有数据已清除，页面即将刷新');
     setTimeout(() => location.reload(), 1500);
 }
 
@@ -1929,7 +1929,7 @@ function clearAllData() {
 function syncData() {
     const data = window.loadData();
     if (!data) {
-        showToast('无数据可同步');
+        window.showToast('无数据可同步');
         return;
     }
     
@@ -1949,7 +1949,7 @@ function syncData() {
         if (syncTimeEl) {
             syncTimeEl.textContent = '上次同步：' + new Date().toLocaleString();
         }
-        showToast('数据同步完成');
+        window.showToast('数据同步完成');
     }, 1000);
 }
 
@@ -1957,7 +1957,7 @@ function syncData() {
 function openApiConfigModal(type) {
     const modal = document.getElementById('api-config-modal');
     if (!modal) {
-        showToast('功能加载中，请稍后再试');
+        window.showToast('功能加载中，请稍后再试');
         return;
     }
     
@@ -1996,7 +1996,7 @@ function saveApiConfig() {
     }
     
     closeApiConfigModal();
-    showToast('配置已保存');
+    window.showToast('配置已保存');
 }
 
 // 显示用户切换模态框
@@ -2005,13 +2005,13 @@ function showUserSwitchModal() {
     const data = window.loadData();
     
     if (data.users.length === 0) {
-        showToast('暂无用户，请先创建');
+        window.showToast('暂无用户，请先创建');
         return;
     }
     
     const container = document.getElementById('user-switch-list');
     if (!container) {
-        showToast('页面加载异常');
+        window.showToast('页面加载异常');
         return;
     }
     
@@ -2050,7 +2050,7 @@ function openAvatarModal() {
     const grid = document.getElementById('avatar-grid');
     
     if (!modal || !grid) {
-        showToast('头像功能加载中');
+        window.showToast('头像功能加载中');
         return;
     }
     

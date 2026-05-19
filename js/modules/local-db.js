@@ -206,9 +206,9 @@ window.LocalDB = {
             a.download = '认知训练备份_' + new Date().toISOString().slice(0, 10) + '.json';
             a.click();
             URL.revokeObjectURL(url);
-            showToast('✅ 备份已下载');
+            window.showToast('✅ 备份已下载');
         }).catch(function() {
-            showToast('❌ 备份失败');
+            window.showToast('❌ 备份失败');
         });
     },
     
@@ -226,16 +226,16 @@ window.LocalDB = {
                 try {
                     const data = JSON.parse(e.target.result);
                     LocalDB.importAll(data).then(function(result) {
-                        showToast('✅ 导入完成，恢复了' + result.success + '项数据');
+                        window.showToast('✅ 导入完成，恢复了' + result.success + '项数据');
                         if (callback) callback(true);
                         // 同时同步到localStorage
                         syncDBToLocalStorage();
                     }).catch(function() {
-                        showToast('❌ 导入失败');
+                        window.showToast('❌ 导入失败');
                         if (callback) callback(false);
                     });
                 } catch(e) {
-                    showToast('❌ 文件格式错误');
+                    window.showToast('❌ 文件格式错误');
                     if (callback) callback(false);
                 }
             };
@@ -283,7 +283,7 @@ window.AutoBackup = {
     toggle: function(enabled) {
         this.enabled = enabled;
         localStorage.setItem('auto_backup_enabled', enabled ? 'true' : 'false');
-        showToast(enabled ? '✅ 自动备份已开启' : '自动备份已关闭');
+        window.showToast(enabled ? '✅ 自动备份已开启' : '自动备份已关闭');
     },
     
     setInterval: function(hours) {

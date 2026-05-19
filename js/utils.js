@@ -243,10 +243,8 @@ function openAbout() {
     modal.classList.add('show');
 }
 window.openAbout = openAbout;
-window.closeSettingsPanel = closeSettingsPanel;
 window.exitSystem = exitSystem;
-window.openSettingsPanel = openSettingsPanel;
-window.toggleSettingsGroup = toggleSettingsGroup;
+// 注意：closeSettingsPanel、openSettingsPanel、toggleSettingsGroup 已移至 js/modules/ui.js 中
 
 
 // ============================================================
@@ -297,7 +295,7 @@ function loadPeerJS(callback) {
     }
     
     peerJsLoading = true;
-    showToast('正在加载音视频库...', 1000);
+    window.showToast('正在加载音视频库...', 1000);
     
     loadScript('https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js', function() {
         peerJsLoading = false;
@@ -308,7 +306,7 @@ function loadPeerJS(callback) {
         peerJsCallbacks.length = 0;
     }, function() {
         peerJsLoading = false;
-        showToast('音视频库加载失败', 2000);
+        window.showToast('音视频库加载失败', 2000);
     });
 }
 window.loadPeerJS = loadPeerJS;
@@ -336,7 +334,7 @@ function loadTesseract(callback) {
     }
     
     tesseractLoading = true;
-    showToast('正在加载OCR识别库...', 1000);
+    window.showToast('正在加载OCR识别库...', 1000);
     
     loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js', function() {
         tesseractLoading = false;
@@ -347,7 +345,7 @@ function loadTesseract(callback) {
         tesseractCallbacks.length = 0;
     }, function() {
         tesseractLoading = false;
-        showToast('OCR识别库加载失败', 2000);
+        window.showToast('OCR识别库加载失败', 2000);
     });
 }
 window.loadTesseract = loadTesseract;
@@ -396,7 +394,7 @@ function loadModuleData(moduleName, callback) {
     dataLoadingCallbacks[moduleName] = [];
     if (callback) dataLoadingCallbacks[moduleName].push(callback);
     
-    showToast('正在加载数据...', 800);
+    window.showToast('正在加载数据...', 800);
     
     loadScript(url, function() {
         loadedDataModules[moduleName] = true;
@@ -408,7 +406,7 @@ function loadModuleData(moduleName, callback) {
     }, function() {
         const callbacks = dataLoadingCallbacks[moduleName] || [];
         delete dataLoadingCallbacks[moduleName];
-        showToast('数据加载失败', 2000);
+        window.showToast('数据加载失败', 2000);
         callbacks.forEach(cb => {
             try { cb(); } catch(e) {}
         });
