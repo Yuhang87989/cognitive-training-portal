@@ -494,6 +494,14 @@ function selectAvatar(emoji) {
     closeAvatarModal();
 }
 
+function closeAvatarModal() {
+    document.getElementById('avatar-modal').classList.remove('show');
+}
+
+function closeApiConfigModal() {
+    document.getElementById('api-config-modal').classList.remove('show');
+}
+
 function openChangePasswordModal() {
     document.getElementById('current-password').value = '';
     document.getElementById('new-password').value = '';
@@ -508,6 +516,8 @@ function openChangePasswordModal() {
 // ============================================================
 
 // Window exports for onclick handlers
+window.closeApiConfigModal = closeApiConfigModal;
+window.closeAvatarModal = closeAvatarModal;
 window.closeChangePasswordModal = closeChangePasswordModal;
 window.closeCreateUserModal = closeCreateUserModal;
 window.closeDeleteUserModal = closeDeleteUserModal;
