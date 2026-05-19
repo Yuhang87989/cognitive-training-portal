@@ -767,6 +767,10 @@ window.renderMyPage = function(container) {
                 <div class="quick-card-icon">💪</div>
                 <div class="quick-card-title">自驱力训练</div>
             </div>
+            <div class="quick-card" onclick="openFullscreenPage('plan')">
+                <div class="quick-card-icon">📋</div>
+                <div class="quick-card-title">学习计划</div>
+            </div>
             <div class="quick-card" onclick="openFullscreenPage('backup')">
                 <div class="quick-card-icon">💾</div>
                 <div class="quick-card-title">数据备份</div>
