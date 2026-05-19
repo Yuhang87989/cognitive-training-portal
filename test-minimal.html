@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>ES6 最小测试</h1>
+    <div id="result"></div>
+    <script type="module">
+        // 测试1: 简单的内联export/import
+        console.log('开始测试...');
+        
+        // 创建一个简单的模块文件
+        const moduleCode = `
+            export function testFunc() {
+                return '✅ ES6 模块导入成功！';
+            }
+        `;
+        
+        // 用Blob创建模块
+        const blob = new Blob([moduleCode], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        
+        import(url).then(module => {
+            const result = module.testFunc();
+            console.log(result);
+            document.getElementById('result').textContent = result;
+        }).catch(e => {
+            console.error('导入失败:', e);
+            document.getElementById('result').textContent = '❌ 失败: ' + e.message;
+        });
+    </script>
+</body>
+</html>
