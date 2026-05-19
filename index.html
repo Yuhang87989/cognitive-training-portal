@@ -893,9 +893,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 });
             }
             
-            // 优先加载最新构建的bundle版本
-            console.log("[V246] 加载最新构建版本 bundle.esm.js");
-            tryLoadModule("dist/bundle.esm.js", "构建版本(ESM)")
+            // V255修复：直接加载js/main.js作为ES6入口
+            console.log("[V255] 加载ES6入口模块 js/main.js");
+            tryLoadModule("js/main.js", "ES6主入口")
                 .then(resolve)
                 .catch(reject);
         });

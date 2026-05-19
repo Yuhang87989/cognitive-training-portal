@@ -31,6 +31,8 @@ import './utils.js';
 import './user.js';
 import './audio.js';
 import './modules/ui.js';
+import './modules/pet.js';
+import '../ui-pet.js';
 
 // 数据模块 - 这些是配置数据，需要预先加载
 import './data/topics.js';
