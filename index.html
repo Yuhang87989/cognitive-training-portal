@@ -213,10 +213,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-name">学习计划</div>
                 <div class="module-desc">目标管理</div>
             </button>
-            <button class="module-btn gradient-blue" onclick="openFullscreenPage('weekly')">
-                <div class="module-icon">📅</div>
-                <div class="module-name">每周回顾</div>
-                <div class="module-desc">复盘总结</div>
+            <button class="module-btn gradient-blue" onclick="openFullscreenPage('mindmap')">
+                <div class="module-icon">🗺️</div>
+                <div class="module-name">思维导图</div>
+                <div class="module-desc">思维可视化</div>
+            </button>
+            <button class="module-btn gradient-indigo" onclick="openFullscreenPage('deepseek')">
+                <span class="module-tag">AI</span>
+                <div class="module-icon">🤖</div>
+                <div class="module-name">DeepSeek</div>
+                <div class="module-desc">AI智能对话</div>
             </button>
             <button class="module-btn gradient-pink" onclick="openFullscreenPage('practice')">
                 <div class="module-icon">📚</div>
@@ -252,6 +258,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-icon">🚀</div>
                 <div class="module-name">自驱力训练</div>
                 <div class="module-desc">自主学习</div>
+            </button>
+            <button class="module-btn gradient-purple" onclick="openFullscreenPage('pet')">
+                <span class="module-tag">NEW</span>
+                <div class="module-icon">🐱</div>
+                <div class="module-name">虚拟宠物</div>
+                <div class="module-desc">陪伴成长</div>
             </button>
             <button class="module-btn gradient-pink" onclick="openFullscreenPage('wrongbook')">
                 <div class="module-icon">📒</div>
@@ -943,7 +955,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         'js/modules/my-page.js',
         'js/modules/fix_all_deepseek_buttons.js',
         'js/modules/self-drive.js',
-        'js/modules/stats.js'
+        'js/modules/stats.js',
+        'js/modules/mindmap.js',
+        'js/modules/pet.js'
     ];
     
     // V229: ES6 Module模式下，业务模块使用动态import()懒加载
