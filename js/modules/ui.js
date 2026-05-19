@@ -407,6 +407,11 @@ function openFullscreenPage(module) {
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>自驱力训练开发中...</p></div>';
             }
             break;
+        case 'pet': 
+            import('../ui-pet.js').then(module => {
+                if (module.renderPetPage) module.renderPetPage(contentEl);
+            });
+            break;
         case 'growth': 
             contentEl.innerHTML = `
                 <div style="padding:20px;">
