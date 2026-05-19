@@ -1,6 +1,5 @@
 // 虚拟宠物UI渲染模块
-
-import { showToast } from './utils.js';
+// 直接使用window.showToast，避免ES6 import问题
 
 // 渲染宠物主页
 export async function renderPetPage(container) {

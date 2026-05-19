@@ -325,7 +325,7 @@ function openHelp() {
 }
 
 function openFullscreenPage(module) {
-    cleanupModuleState(); // 清理上一个模块的状态
+    window.cleanupModuleState(); // 清理上一个模块的状态
     closeUserMenu();
     const container = document.getElementById('fullscreen-container');
     const titleEl = document.getElementById('fullscreen-title');
@@ -454,7 +454,7 @@ function addBackButtonToModule(contentEl) {
     }
 }
 
-function closeFullscreenPage() { cleanupModuleState(); const el = document.getElementById('fullscreen-container'); if (el) el.classList.remove('active'); }
+function closeFullscreenPage() { window.cleanupModuleState(); const el = document.getElementById('fullscreen-container'); if (el) el.classList.remove('active'); }
 
 function handleLogin() {
     const data = window.loadData();
@@ -848,7 +848,7 @@ function switchMainTab(tab, element) {
     if (tab === 'home') {
         closeFullscreenPage();
         closeSettingsPanel();
-        cleanupModuleState(); // 清理所有模块状态，包括播放器
+        window.cleanupModuleState(); // 清理所有模块状态，包括播放器
     }
 }
 
