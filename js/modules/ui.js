@@ -359,6 +359,7 @@ function openFullscreenPage(module) {
     };
     
     titleEl.textContent = moduleTitles[module] || '模块';
+    contentEl.innerHTML = ''; // 先清空内容，避免上一个模块的内容残留
     
     // settings模块特殊处理
     if (module === 'settings') {
@@ -427,7 +428,7 @@ function openFullscreenPage(module) {
             `;
             setTimeout(() => {
                 if (typeof window.renderGrowthChart === 'function') {
-                    renderGrowthChart('growth-chart-canvas', 'week');
+                    window.renderGrowthChart('growth-chart-canvas', 'week');
                 }
             }, 100);
             break;
