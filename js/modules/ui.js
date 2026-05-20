@@ -2,10 +2,7 @@
 // Config - 全局配置
 // ============================================================
 
-// 版本: V255 - ES6模块测试
-
-// ES6模块测试：只导入计算器模块
-import { renderCalculator } from './calculator.js';
+// 版本: V144
 
 function closeUserMenu() {
     var el = document.getElementById('user-dropdown');
@@ -390,10 +387,7 @@ function openFullscreenPage(module) {
         case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
         case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
         case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
-        case 'calculator': 
-            // ES6模块测试：直接调用import进来的函数
-            renderCalculator(contentEl); 
-            break;
+        case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
         case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
         case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
         case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
