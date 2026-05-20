@@ -324,14 +324,6 @@ function openHelp() {
     `;
 }
 
-// ========== 历史记录导航系统 ==========
-window._historyStack = [];
-window._isHandlingPopState = false;
-    window._isHandlingPopState = false;
-});
-// ========== 历史记录导航系统结束 ==========
-
-
 
 // ========== 历史记录导航系统 ==========
 window._fullscreenOpen = false;
