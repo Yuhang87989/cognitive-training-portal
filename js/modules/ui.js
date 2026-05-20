@@ -422,8 +422,10 @@ function openFullscreenPage(module) {
             if (typeof window.renderPet === 'function') {
                 window.renderPet(contentEl);
             } else {
-                import('./ui-pet.js').then(module => {
+                import('../ui-pet.js').then(module => {
                     if (module.renderPetPage) module.renderPetPage(contentEl);
+                }).catch(err => {
+                    console.error('加载ui-pet.js失败:', err);
                 });
             }
             break;
