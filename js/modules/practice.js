@@ -327,15 +327,5 @@ window.handlePhotoToQuestion = handlePhotoToQuestion;
 // ES6 Module 导出
 // ============================================================
 
-export default {
-    renderPractice,
-    handlePracticePhoto,
-    showPracticePhotoModal,
-    analyzePracticePhoto,
-    handleQuestionPhoto,
-    submitPracticeQuestion,
-    askPracticeAI,
-    handlePhotoToQuestion
-};
 
 console.log('[ES6 Module] practice.js 模块加载完成');

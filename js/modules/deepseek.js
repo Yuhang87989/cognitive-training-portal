@@ -1007,29 +1007,5 @@ const deepseekModule = {
 };
 
 // 导出主要函数
-export default {
-    callDeepSeekAPI,
-    callVisionAPI,
-    escapeHtml,
-    clearDeepSeekImage,
-    formatAIResponse,
-    recordDeepSeekCall,
-    recordDetailedUsage,
-    saveDeepSeekConversation,
-    autoSaveDeepSeekHistory,
-    sendDeepSeekMessage,
-    toggleDeepSeekVoice,
-    copyLastResponse,
-    toggleDeepSeekHistory,
-    saveCurrentDeepSeekChat,
-    loadSavedDeepSeekChat,
-    deleteSavedDeepSeekChat,
-    startNewDeepSeekChat,
-    scrollToDeepSeekMessage,
-    showAPIKeyModal,
-    showAPIBalance,
-    openApiConfigModal,
-    showAPIRechargeModal
-};
 
 console.log('[ES6 Module] deepseek.js 模块加载完成');

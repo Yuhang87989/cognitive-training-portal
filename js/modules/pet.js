@@ -3,11 +3,40 @@
  * 通过完成训练、打卡、专注获得经验值
  */
 
-import { store } from '../store.js';
-import { eventBus } from '../event-bus.js';
-import { storage } from '../storage.js';
-
+// V264: 移除不存在的ES6依赖，改用window上的storage
 const STORAGE_KEY = 'pet_data';
+
+// 简单的store模拟，直接用localStorage
+const store = {
+    getState: function(key) {
+        try {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : null;
+        } catch(e) {
+            return null;
+        }
+    },
+    setState: function(key, data) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch(e) {}
+    }
+};
+
+// 简单的eventBus模拟，空实现，因为其他模块可能不发射这些事件
+const eventBus = {
+    on: function(event, callback) {
+        // 暂时不处理事件监听
+        console.log('[Pet] eventBus.on:', event);
+    },
+    emit: function(event, data) {
+        // 暂时不处理事件发射
+        console.log('[Pet] eventBus.emit:', event, data);
+    }
+};
+
+// 使用window上的storage
+const storage = window;
 
 // 宠物皮肤配置
 const PET_SKINS = [
@@ -47,7 +76,7 @@ const DEFAULT_DATA = {
 };
 
 // 初始化宠物模块
-export function initPet() {
+function initPet() {
     const savedData = storage.get(STORAGE_KEY, {});
     const data = { ...DEFAULT_DATA, ...savedData };
     
@@ -106,7 +135,7 @@ function setupEventListeners() {
 }
 
 // 获取宠物数据
-export function getPetData() {
+function getPetData() {
     return store.getState('pet');
 }
 
@@ -118,7 +147,7 @@ function saveData(data) {
 }
 
 // 增加经验值
-export function addExp(amount) {
+function addExp(amount) {
     const data = getPetData();
     data.exp += amount;
     
@@ -144,7 +173,7 @@ export function addExp(amount) {
 }
 
 // 增加心情
-export function addMood(amount) {
+function addMood(amount) {
     const data = getPetData();
     data.mood = Math.min(100, Math.max(0, data.mood + amount));
     saveData(data);
@@ -152,7 +181,7 @@ export function addMood(amount) {
 }
 
 // 喂食
-export function feedPet() {
+function feedPet() {
     const data = getPetData();
     const now = new Date().toISOString();
     
@@ -177,7 +206,7 @@ export function feedPet() {
 }
 
 // 玩耍
-export function playWithPet() {
+function playWithPet() {
     const data = getPetData();
     const now = new Date().toISOString();
     
@@ -200,7 +229,7 @@ export function playWithPet() {
 }
 
 // 抚摸
-export function petPet() {
+function petPet() {
     const data = getPetData();
     data.mood = Math.min(100, data.mood + 5);
     data.totalInteractions++;
@@ -209,7 +238,7 @@ export function petPet() {
 }
 
 // 改名字
-export function renamePet(newName) {
+function renamePet(newName) {
     const data = getPetData();
     data.name = newName;
     saveData(data);
@@ -218,7 +247,7 @@ export function renamePet(newName) {
 }
 
 // 切换皮肤
-export function changeSkin(skinId) {
+function changeSkin(skinId) {
     const data = getPetData();
     if (!data.unlockedSkins.includes(skinId)) {
         window.showToast('❌ 还没有解锁这个皮肤哦');
@@ -233,18 +262,18 @@ export function changeSkin(skinId) {
 }
 
 // 获取当前皮肤信息
-export function getCurrentSkin() {
+function getCurrentSkin() {
     const data = getPetData();
     return PET_SKINS.find(s => s.id === data.skin) || PET_SKINS[0];
 }
 
 // 获取所有皮肤
-export function getAllSkins() {
+function getAllSkins() {
     return PET_SKINS;
 }
 
 // 获取心情状态
-export function getMoodState() {
+function getMoodState() {
     const data = getPetData();
     for (let i = MOOD_STATES.length - 1; i >= 0; i--) {
         if (data.mood >= MOOD_STATES[i].threshold) {
@@ -255,22 +284,25 @@ export function getMoodState() {
 }
 
 // 获取当前状态
-export function getState() {
+function getState() {
     return store.getState('pet');
 }
 
-export default {
+
+// V264: 将宠物模块函数挂载到window
+window.petModule = {
     init: initPet,
     getData: getPetData,
-    addExp,
-    addMood,
+    addExp: addExp,
+    addMood: addMood,
     feed: feedPet,
     play: playWithPet,
     pet: petPet,
     rename: renamePet,
-    changeSkin,
-    getCurrentSkin,
-    getAllSkins,
-    getMoodState,
-    getState
+    changeSkin: changeSkin,
+    getCurrentSkin: getCurrentSkin,
+    getAllSkins: getAllSkins,
+    getMoodState: getMoodState,
+    getState: getState
 };
+console.log('[V264] 宠物模块已挂载到window.petModule');

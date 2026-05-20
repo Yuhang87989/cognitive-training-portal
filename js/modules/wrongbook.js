@@ -1623,25 +1623,5 @@ const wrongbookModule = {
 };
 
 // 导出主要函数
-export default {
-    renderWrongbook,
-    saveWrongNote,
-    viewWrongNote,
-    retryWrongNote,
-    selectRetryOption,
-    submitRetryChoiceAnswer,
-    submitRetryTextAnswer,
-    analyzeWrongNoteWithAI,
-    markWrongNoteReviewed,
-    removeWrongNote,
-    clearWrongNotes,
-    reviewAllWrongNotes,
-    openWrongPhotoCapture,
-    showWrongPhotoGallery,
-    deleteWrongPhotoWithCleanup,
-    viewWrongNotes,
-    openFeedback,
-    submitFeedback
-};
 
 console.log('[ES6 Module] wrongbook.js 模块加载完成');

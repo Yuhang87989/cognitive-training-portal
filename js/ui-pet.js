@@ -1,11 +1,15 @@
 // 虚拟宠物UI渲染模块
-// 直接使用window.showToast，避免ES6 import问题
-
-import pet from './modules/pet.js';
+// V264: 从window获取宠物模块，避免ES6 import问题
 
 // 渲染宠物主页
-export function renderPetPage(container) {
+function renderPetPage(container) {
     // 初始化宠物模块
+    const pet = window.petModule;
+    if (!pet) {
+        container.innerHTML = '<div style="padding: 20px; text-align: center;">宠物模块加载中...</div>';
+        return;
+    }
+    
     pet.init();
     
     const data = pet.getData();
@@ -212,6 +216,8 @@ function animatePet(container) {
 // 挂载到window，供ui.js调用
 window.renderPet = renderPetPage;
 
-export default {
-    renderPetPage
-};
+
+// V264: 将渲染函数挂载到window
+window.renderPet = renderPetPage;
+window.renderPetPage = renderPetPage;
+console.log('[V264] 宠物UI模块已挂载到window');

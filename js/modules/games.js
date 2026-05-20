@@ -2869,37 +2869,6 @@ const gamesModule = {
 };
 
 // 导出主要函数
-export default {
-    startGame,
-    exitGame,
-    resetGame,
-    checkSchulte,
-    clickAttention,
-    startAttentionSeq,
-    checkDigit,
-    checkPattern,
-    checkMathAnswer,
-    checkVisual,
-    textMemoryStartTest,
-    textMemoryCheck,
-    textMemoryNext,
-    checkWordAssoc,
-    classifyItem,
-    unclassifyItem,
-    checkClassification,
-    checkDiff,
-    checkReason,
-    checkShapeReason,
-    checkSpaceRotate,
-    playSound,
-    shuffleSlide,
-    tapTarget,
-    reset2048,
-    whackMole,
-    startSchulte,
-    startWhack,
-    startSnake
-};
 
 console.log('[ES6 Module] games.js 模块加载完成');
 window.renderGames = renderGames;
