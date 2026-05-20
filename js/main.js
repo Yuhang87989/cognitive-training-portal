@@ -22,6 +22,10 @@ window.SCRIPT_DIR = SCRIPT_DIR;
 
 console.log('[V231] 脚本目录:', SCRIPT_DIR);
 
+// ============================================================
+// V262 混合方案：大部分模块预先import，只留3个做ES6动态import测试
+// ============================================================
+
 // 导入核心模块 - 各模块会自行将关键函数挂载到window
 import './config.js';
 import './ctm.js';
@@ -41,38 +45,39 @@ import './data/podcasts.js';
 import './data/videos.js';
 import './data/games-config.js';
 
-console.log('[ES6 Module] 核心模块 + 数据模块加载完成！');
+// ============================================================
+// 大部分业务模块直接预先import，确保渲染函数挂载到window
+// ============================================================
+import './modules/practice.js';      // 母题训练
+import './modules/deepseek.js';      // DeepSeek
+import './modules/wrongbook.js';     // 错题本
+import './modules/games.js';         // 训练游戏
+import './modules/podcast.js';       // 播客课堂
+import './modules/video.js';         // 视频课程
+import './modules/thinking.js';      // 思维训练
+import './modules/method.js';        // 学霸方法
+import './modules/map.js';           // 认知地图
+import './modules/my-page.js';       // 我的页面
+import './modules/pomodoro.js';      // 番茄钟
+import './modules/notepad.js';       // 记事本
+
+console.log('[V262] 核心模块 + 业务模块 + 数据模块全部预先加载完成！');
 
 // ============================================================
-// 模块懒加载映射配置 - V231 使用绝对路径修复子目录部署问题
+// V262: 只留3个模块做ES6动态import测试，其余都预先加载
+// 
+// ES6测试模块（3个）：
+//   1. calculator - 计算器
+//   2. mindmap - 思维导图
+//   3. selfdrive - 自驱力训练
 // ============================================================
 window.MODULE_LAZY_LOAD_MAP = {
-    // 业务模块 - 点击时动态加载
-    'ai':         { path: resolveModulePath('./modules/deepseek.js'),  render: 'renderDeepseek' },
-    'practice':   { path: resolveModulePath('./modules/practice.js'),   render: 'renderPractice' },
-    'plan':       { path: resolveModulePath('./modules/plan.js'),       render: 'renderPlan' },
-    'games':      { path: resolveModulePath('./modules/games.js'),      render: 'renderGames' },
-    'deepseek':   { path: resolveModulePath('./modules/deepseek.js'),   render: 'renderDeepseek' },
-    'wrongbook':  { path: resolveModulePath('./modules/wrongbook.js'),  render: 'renderWrongbook' },
-    'podcast':    { path: resolveModulePath('./modules/podcast.js'),    render: 'renderPodcast' },
-    'video':      { path: resolveModulePath('./modules/video.js'),      render: 'renderVideo' },
-    'thinking':   { path: resolveModulePath('./modules/thinking.js'),   render: 'renderThinking' },
-    'topics':     { path: resolveModulePath('./modules/topics.js'),     render: 'renderTopics' },
-    'method':     { path: resolveModulePath('./modules/method.js'),     render: 'renderMethod' },
-    'pomodoro':   { path: resolveModulePath('./modules/pomodoro.js'),   render: 'renderPomodoro' },
     'calculator': { path: resolveModulePath('./modules/calculator.js'), render: 'renderCalculator' },
-    'notepad':    { path: resolveModulePath('./modules/notepad.js'),    render: 'renderNotepad' },
-    'map':        { path: resolveModulePath('./modules/map.js'),        render: 'renderMap' },
-    'selfdrive':  { path: resolveModulePath('./modules/self-drive.js'), render: 'renderSelfDrive' },
-    'weekly':     { path: resolveModulePath('./modules/stats.js'),      render: 'renderWeeklyReview' },
-    'progress':   { path: resolveModulePath('./modules/stats.js'),      render: 'renderProgressChart' },
-    'my':         { path: resolveModulePath('./modules/my-page.js'),    render: 'renderMyPage' },
-    'usage-stats':{ path: resolveModulePath('./modules/my-page.js'),    render: 'renderUsageStats' },
-    'backup':     { path: resolveModulePath('./modules/local-db.js'),   render: 'renderBackupManager' },
     'mindmap':    { path: resolveModulePath('./modules/mindmap.js'),    render: 'renderMindMap' },
-    
-    // player.js 由其他模块依赖，不单独懒加载
+    'selfdrive':  { path: resolveModulePath('./modules/self-drive.js'), render: 'renderSelfDrive' },
 };
+
+console.log('[V262] ES6测试模块配置完成：calculator, mindmap, selfdrive');
 
 // 已加载的模块缓存
 window.LOADED_MODULES = new Set();
