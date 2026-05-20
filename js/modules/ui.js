@@ -327,32 +327,29 @@ function openHelp() {
 // ========== 历史记录导航系统 ==========
 window._historyStack = [];
 window._isHandlingPopState = false;
-
-// 历史记录增强版 closeFullscreenPage
-window.closeFullscreenPageWithHistory = function() {
-    if (window._historyStack.length > 0) {
-        window._isHandlingPopState = true;
-    } else {
-        window.cleanupModuleState();
-        const el = document.getElementById('fullscreen-container');
-        if (el) el.classList.remove('active');
-    }
-};
-
-// 监听浏览器返回按钮
-window.addEventListener('popstate', function(event) {
-    if (window._historyStack.length > 0) {
-        window._historyStack.pop();
-        window.cleanupModuleState();
-        const el = document.getElementById('fullscreen-container');
-        if (el) el.classList.remove('active');
-    }
     window._isHandlingPopState = false;
 });
 // ========== 历史记录导航系统结束 ==========
 
 
+
+// ========== 历史记录导航系统 ==========
+window._fullscreenOpen = false;
+
+// 监听浏览器返回按钮
+window.addEventListener('popstate', function(event) {
+    if (window._fullscreenOpen) {
+        window.cleanupModuleState();
+        const el = document.getElementById('fullscreen-container');
+        if (el) el.classList.remove('active');
+        window._fullscreenOpen = false;
+    }
+});
+
+// 打开全屏页面
 function openFullscreenPage(module) {
+    window._fullscreenOpen = true;
+    history.pushState({fullscreen: true, module: module}, "", "");
     window.cleanupModuleState(); // 清理上一个模块的状态
     closeUserMenu();
     const container = document.getElementById('fullscreen-container');
@@ -383,24 +380,14 @@ function openFullscreenPage(module) {
         'backup': '💾 数据备份',
         'weekly': '📅 每周回顾',
         'progress': '📉 进步曲线',
-        'mindmap': '🌳 思维导图',
+        'exam': '📝 模拟考试',
         'pet': '🐱 虚拟宠物',
-        'journal': '📝 学习日记',
-        'library': '📚 学习图书馆'
+        'library': '📚 学习图书馆',
+        'mindmap': '🧠 思维导图'
     };
+    titleEl.textContent = moduleTitles[module] || module;
     
-    titleEl.textContent = moduleTitles[module] || '模块';
-    contentEl.innerHTML = ''; // 先清空内容，避免上一个模块的内容残留
-    
-    // settings模块特殊处理
-    if (module === 'settings') {
-        openSettingsPanel();
-        closeFullscreenPage();
-        return;
-    }
-    
-    // V255: 直接调用渲染函数（所有模块已预先加载）
-    switch(module) {
+    switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
         case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
@@ -415,36 +402,21 @@ function openFullscreenPage(module) {
         case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
         case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
         case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
-        case 'calculator': 
-            // V270: 传统方式加载 - 计算器
-            if (typeof window.renderCalculator === 'function') {
-                window.renderCalculator(contentEl);
-            }
-            break;
-        case 'exam': 
-            // V272: 模拟考试模块（原学习日记）
-            if (typeof window.renderNotepad === 'function') {
-                window.renderExam(contentEl);
-            }
-            break;
+        case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
+        case 'exam': if (typeof window.renderExam === 'function') window.renderExam(contentEl); break;
         case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
         case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
         case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
-        case 'journal': if (typeof window.renderNotepad === 'function') window.renderExam(contentEl); break;
-        case 'notepad': if (typeof window.renderNotepad === 'function') window.renderExam(contentEl); break;
-        case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
-        case 'mindmap': 
-            // V270: 传统方式加载 - 思维导图
-            if (typeof window.renderMindMap === 'function') {
-                window.renderMindMap(contentEl);
-            }
-            break;
+        case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'notepad': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'mindmap': if (typeof window.renderMindMap === 'function') window.renderMindMap(contentEl); break;
         case 'library': 
             if (typeof window.renderLibrary === 'function') {
                 window.renderLibrary(contentEl);
             }
             break;
+        case 'selfdrive': 
             // V269: 传统方式加载 - 调用完整的自驱力训练主页面
             if (typeof window.renderSelfDrive === 'function') {
                 window.renderSelfDrive(contentEl);
@@ -461,44 +433,30 @@ function openFullscreenPage(module) {
                 <div style="padding:20px;">
                     <h3 style="margin-bottom:20px;font-size:18px;">📈 成长轨迹</h3>
                     <div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                        <canvas id="growth-chart-canvas" width="320" height="240" style="width:100%;height:auto;"></canvas>
+                        <p style="color:#666;text-align:center;">功能开发中...</p>
                     </div>
                 </div>
             `;
-            setTimeout(() => {
-                if (typeof window.renderGrowthChart === 'function') {
-                    window.renderGrowthChart('growth-chart-canvas', 'week');
-                }
-            }, 100);
             break;
-        default: contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块开发中...</p></div>';
+        default:
+            contentEl.innerHTML = `
+                <div style="padding:40px;text-align:center;color:#999;">
+                    <div style="font-size:48px;margin-bottom:16px;">🚧</div>
+                    <div>模块开发中...</div>
+                </div>
+            `;
     }
-    
-    // 统一添加返回按钮
-    addBackButtonToModule(contentEl);
-    
     container.classList.add('active');
 }
 
-/**
- * 为模块页面添加返回按钮（V229: 抽离为独立函数）
- */
-function addBackButtonToModule(contentEl) {
-    if (!contentEl) return;
-    
-    const existingBack = contentEl.querySelector('.module-back-btn');
-    if (!existingBack) {
-        const backBtn = document.createElement('button');
-        backBtn.className = 'module-back-btn';
-        backBtn.textContent = '← 返回首页';
-        backBtn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 32px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:24px;font-size:14px;cursor:pointer;z-index:100;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.3);';
-        backBtn.onclick = function() { closeFullscreenPage(); };
-        contentEl.style.position = 'relative';
-        contentEl.appendChild(backBtn);
+// 关闭全屏页面 - 使用历史记录返回
+function closeFullscreenPage() {
+    if (window._fullscreenOpen) {
+        history.back();
     }
 }
 
-function closeFullscreenPage() { window.cleanupModuleState(); const el = document.getElementById('fullscreen-container'); if (el) el.classList.remove('active'); }
+
 
 function handleLogin() {
     const data = window.loadData();
