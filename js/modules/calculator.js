@@ -112,8 +112,12 @@ window.renderCalculator = renderCalculator;
 window.calcInput = calcInput;
 
 // ============================================================
-// ES6 Module 导出
+// ES6 Module 导出（V268: ES6测试模块）
 // ============================================================
+export { renderCalculator, calcInput };
+export default renderCalculator;
+
+// CommonJS 兼容
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         renderCalculator,
@@ -124,6 +128,3 @@ if (typeof module !== 'undefined' && module.exports) {
         calculatorWaitingForSecondNum
     };
 }
-
-    renderCalculator,
-    calcInput

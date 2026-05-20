@@ -1004,6 +1004,8 @@ window.libraryData = libraryData;
 console.log('[学习图书馆] 模块加载完成');
 
 // ============================================================
-// ES6 Module 导出
+// ES6 Module 导出（V268: ES6测试模块）
 // ============================================================
+export { renderMindMap };
+export default renderMindMap;
 

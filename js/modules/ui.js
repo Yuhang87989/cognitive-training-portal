@@ -405,6 +405,19 @@ function openFullscreenPage(module) {
         case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
         case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'mindmap': 
+            // V268: ES6测试模块 - 动态import加载（思维导图）
+            if (typeof window.renderMindMap === 'function') {
+                window.renderMindMap(contentEl);
+            } else {
+                import('./mindmap.js').then(module => {
+                    if (module.renderMindMap) module.renderMindMap(contentEl);
+                }).catch(err => {
+                    console.error('[ES6测试] 思维导图模块加载失败:', err);
+                    contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>ES6测试 - 思维导图模块加载失败: ' + err.message + '</p></div>';
+                });
+            }
+            break;
         case 'library': 
             // V267: 学习图书馆模块（mindmap.js实际是学习图书馆）
             if (typeof window.renderMindMap === 'function') {
