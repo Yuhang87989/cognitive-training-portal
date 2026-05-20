@@ -371,62 +371,96 @@ function openFullscreenPage(module) {
         return;
     }
     
-    // V255: 直接调用渲染函数（所有模块已预先加载）
-    switch(module) {
-        case 'ai': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
-        case 'practice': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
-        case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
-        case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
-        case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
-        case 'method': if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
-        case 'thinking': if (typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
-        case 'podcast': if (typeof window.renderPodcast === 'function') window.renderPodcast(contentEl); break;
-        case 'video': if (typeof window.renderVideo === 'function') window.renderVideo(contentEl); break;
-        case 'games': if (typeof window.renderGames === 'function') window.renderGames(contentEl); break;
-        case 'deepseek': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
-        case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
-        case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
-        case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
-        case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
-        case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
-        case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
-        case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
-        case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
-        case 'journal': 
-            if (typeof window.renderNotepad === 'function') {
-                window.renderNotepad(contentEl);
+    // V256: 使用懒加载系统动态加载模块
+    // 模块配置映射
+    const moduleRenderMap = {
+        'ai': 'renderDeepseek',
+        'practice': 'renderPractice',
+        'map': 'renderMap',
+        'plan': 'renderPlan',
+        'topics': 'renderTopics',
+        'method': 'renderMethod',
+        'thinking': 'renderThinking',
+        'podcast': 'renderPodcast',
+        'video': 'renderVideo',
+        'games': 'renderGames',
+        'deepseek': 'renderDeepseek',
+        'wrongbook': 'renderWrongbook',
+        'pomodoro': 'renderPomodoro',
+        'my': 'renderMyPage',
+        'calculator': 'renderCalculator',
+        'backup': 'renderBackupManager',
+        'progress': 'renderProgressChart',
+        'usage-stats': 'renderUsageStats',
+        'weekly': 'renderWeeklyReview',
+        'journal': 'renderNotepad',
+        'library': 'renderMindMap',
+        'selfdrive': 'renderGoalPage',
+        'pet': 'renderPet'
+    };
+    
+    const renderFnName = moduleRenderMap[module];
+    
+    // 如果渲染函数已存在，直接调用
+    if (renderFnName && typeof window[renderFnName] === 'function') {
+        if (module === 'selfdrive') {
+            // 自驱力训练使用模态框方式
+            const modal = document.getElementById('detail-modal');
+            if (modal) modal.classList.add('show');
+            window.renderGoalPage();
+        } else {
+            window[renderFnName](contentEl);
+        }
+    } 
+    // 如果有懒加载系统，使用懒加载
+    else if (typeof window.lazyLoadModule === 'function' && window.MODULE_LAZY_LOAD_MAP && window.MODULE_LAZY_LOAD_MAP[module]) {
+        // 显示加载中
+        if (typeof window.showModuleLoading === 'function') {
+            window.showModuleLoading(contentEl, moduleTitles[module] || module);
+        } else {
+            contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>正在加载...</p></div>';
+        }
+        
+        // 动态加载模块
+        window.lazyLoadModule(module).then(renderFn => {
+            if (typeof renderFn === 'function') {
+                contentEl.innerHTML = '';
+                if (module === 'selfdrive') {
+                    const modal = document.getElementById('detail-modal');
+                    if (modal) modal.classList.add('show');
+                    renderFn();
+                } else {
+                    renderFn(contentEl);
+                }
+                // 统一添加返回按钮
+                addBackButtonToModule(contentEl);
             } else {
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败，请刷新重试</p></div>';
+            }
+        }).catch(err => {
+            console.error('模块加载失败:', err);
+            contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败，请刷新重试</p></div>';
+        });
+    }
+    // 没有懒加载，检查特殊模块
+    else {
+        switch(module) {
+            case 'journal': 
                 import('./modules/notepad.js').then(module => {
                     if (module.renderNotepad) module.renderNotepad(contentEl);
                 });
-            }
-            break;
-        case 'library': 
-            if (typeof window.renderMindMap === 'function') {
-                window.renderMindMap(contentEl);
-            } else {
+                break;
+            case 'library': 
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习图书馆开发中...</p></div>';
-            }
-            break;
-        case 'selfdrive': 
-            if (typeof window.renderGoalPage === 'function') {
-                // 自驱力训练使用模态框方式
-                const modal = document.getElementById('detail-modal');
-                if (modal) modal.classList.add('show');
-                window.renderGoalPage();
-            } else {
+                break;
+            case 'selfdrive': 
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>自驱力训练开发中...</p></div>';
-            }
-            break;
-        case 'pet': 
-            if (typeof window.renderPet === 'function') {
-                window.renderPet(contentEl);
-            } else {
+                break;
+            case 'pet': 
                 import('./ui-pet.js').then(module => {
                     if (module.renderPetPage) module.renderPetPage(contentEl);
                 });
-            }
-            break;
+                break;
         case 'growth': 
             contentEl.innerHTML = `
                 <div style="padding:20px;">
