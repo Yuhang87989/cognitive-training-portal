@@ -858,7 +858,7 @@ window.renderMyPage = function(container) {
                         <span>🔢</span> 计算器
                     </button>
                     <button class="foldable-btn" onclick="openFullscreenPage('notepad')">
-                        <span>📝</span> 记事本
+                        <span>📝</span> 学习日记
                     </button>
                     <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')">
                         <span>📊</span> AI使用统计
