@@ -6210,5 +6210,5 @@ function showGameOver(score, total) {
 }
 window.showGameOver = showGameOver;
 
-// V270: 确保renderGames挂载到window
+
 window.renderGames = renderGames;
