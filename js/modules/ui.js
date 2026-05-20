@@ -425,27 +425,15 @@ function openFullscreenPage(module) {
             }
             break;
         case 'selfdrive': 
-            // V266: 调用完整的自驱力训练主页面
+            // V269: 传统方式加载 - 调用完整的自驱力训练主页面
             if (typeof window.renderSelfDrive === 'function') {
                 window.renderSelfDrive(contentEl);
-            } else {
-                import('./self-drive.js').then(module => {
-                    if (module.renderSelfDrive) {
-                        module.renderSelfDrive(contentEl);
-                    }
-                }).catch(err => {
-                    console.error('[ES6测试] 自驱力训练模块加载失败:', err);
-                    contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败: ' + err.message + '</p></div>';
-                });
             }
             break;
         case 'pet': 
+            // V269: 传统方式加载 - 虚拟宠物模块
             if (typeof window.renderPet === 'function') {
                 window.renderPet(contentEl);
-            } else {
-                import('./ui-pet.js').then(module => {
-                    if (module.renderPetPage) module.renderPetPage(contentEl);
-                });
             }
             break;
         case 'growth': 
