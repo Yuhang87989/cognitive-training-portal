@@ -2,7 +2,10 @@
 // Config - 全局配置
 // ============================================================
 
-// 版本: V144
+// 版本: V255 - ES6模块测试
+
+// ES6模块测试：只导入计算器模块
+import { renderCalculator } from './calculator.js';
 
 function closeUserMenu() {
     var el = document.getElementById('user-dropdown');
@@ -384,21 +387,13 @@ function openFullscreenPage(module) {
         case 'video': if (typeof window.renderVideo === 'function') window.renderVideo(contentEl); break;
         case 'games': if (typeof window.renderGames === 'function') window.renderGames(contentEl); break;
         case 'deepseek': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
-        case 'wrongbook': 
-            if (typeof window.renderWrongbook === 'function') {
-                try {
-                    contentEl.innerHTML = '<div style="padding:10px;background:#fff3cd;color:#856404;margin-bottom:10px;">[调试] window.renderWrongbook 函数存在，开始渲染...</div>';
-                    window.renderWrongbook(contentEl);
-                } catch (e) {
-                    contentEl.innerHTML += '<div style="padding:20px;color:red;"><h3>渲染错误</h3><p>' + e.message + '</p></div>';
-                }
-            } else {
-                contentEl.innerHTML = '<div style="padding:20px;color:red;"><h3>函数不存在</h3><p>window.renderWrongbook 未定义</p></div>';
-            }
-            break;
+        case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
         case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
         case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
-        case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
+        case 'calculator': 
+            // ES6模块测试：直接调用import进来的函数
+            renderCalculator(contentEl); 
+            break;
         case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
         case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
         case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
@@ -431,21 +426,10 @@ function openFullscreenPage(module) {
             break;
         case 'pet': 
             if (typeof window.renderPet === 'function') {
-                try {
-                    contentEl.innerHTML = '<div style="padding:10px;background:#fff3cd;color:#856404;margin-bottom:10px;">[调试] window.renderPet 函数存在，开始渲染...</div>';
-                    window.renderPet(contentEl);
-                } catch (e) {
-                    contentEl.innerHTML += '<div style="padding:20px;color:red;"><h3>宠物模块渲染错误</h3><p>' + e.message + '</p></div>';
-                }
+                window.renderPet(contentEl);
             } else {
-                contentEl.innerHTML = '<div style="padding:10px;background:#fff3cd;color:#856404;margin-bottom:10px;">[调试] window.renderPet 不存在，尝试动态加载ui-pet.js...</div>';
-                import('../ui-pet.js').then(module => {
-                    if (module.renderPetPage) {
-                        module.renderPetPage(contentEl);
-                        contentEl.innerHTML += '<div style="padding:10px;background:#d4edda;color:#155724;margin-top:10px;">[调试] ui-pet.js加载成功</div>';
-                    }
-                }).catch(err => {
-                    contentEl.innerHTML += '<div style="padding:20px;color:red;"><h3>ui-pet.js加载失败</h3><p>' + err.message + '</p></div>';
+                import('./ui-pet.js').then(module => {
+                    if (module.renderPetPage) module.renderPetPage(contentEl);
                 });
             }
             break;
