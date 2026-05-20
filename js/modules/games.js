@@ -1,6 +1,50 @@
 // 版本: V226 - ES6 Module
 // 训练游戏模块
 
+// V264: 添加缺失的 renderGames 函数，渲染游戏选择主页
+function renderGames(container) {
+    const gameList = [
+        { id: 'schulte', name: '🎯 舒尔特方格', desc: '提升注意力和反应速度' },
+        { id: 'whack', name: '🔨 打地鼠', desc: '锻炼手眼协调和反应' },
+        { id: 'snake', name: '🐍 贪吃蛇', desc: '经典游戏，提升专注力' },
+        { id: 'tetris', name: '🧱 俄罗斯方块', desc: '空间思维和反应' },
+        { id: '2048', name: '🎮 2048', desc: '数字合成策略游戏' },
+        { id: 'color', name: '🎨 色彩分辨', desc: '提升视觉分辨能力' },
+        { id: 'attentionTrack', name: '👁️ 注意力追踪', desc: '训练持续注意力' },
+        { id: 'attentionSeq', name: '🔢 注意力序列', desc: '训练序列记忆' },
+        { id: 'flipCard', name: '🃏 翻牌记忆', desc: '提升工作记忆' },
+        { id: 'visualTracking', name: '📈 视觉追踪', desc: '训练眼球运动控制' },
+        { id: 'spatialMemory', name: '🧠 空间记忆', desc: '提升空间记忆能力' },
+        { id: 'digit', name: '🔟 数字记忆', desc: '训练数字记忆广度' },
+        { id: 'pattern', name: '🔷 图形推理', desc: '提升逻辑推理能力' },
+        { id: 'mathCalc', name: '➕ 快速计算', desc: '提升心算速度' },
+        { id: 'linkup', name: '🔗 连连看', desc: '提升观察和反应' },
+        { id: 'slide', name: '🧩 滑动拼图', desc: '空间推理能力' },
+        { id: 'tap', name: '👆 快速点击', desc: '反应速度训练' },
+        { id: 'textMemory', name: '📝 文字记忆', desc: '提升语言记忆' },
+        { id: 'eliminate', name: '💎 消除游戏', desc: '快速决策训练' },
+        { id: 'stroop', name: '🧩 Stroop效应', desc: '认知冲突处理' },
+        { id: 'palace', name: '🏛️ 记忆宫殿', desc: '经典记忆方法' }
+    ];
+
+    container.innerHTML = `
+        <div style="padding: 16px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 22px; font-weight: bold; color: #333; margin-bottom: 8px;">🎮 训练游戏</h2>
+                <p style="font-size: 14px; color: #666;">选择一个游戏开始训练，提升你的能力！</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                ${gameList.map(game => `
+                    <div onclick="startGame('${game.id}')" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="font-size: 24px; margin-bottom: 8px;">${game.name.split(' ')[0]}</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px;">${game.name.split(' ').slice(1).join(' ')}</div>
+                        <div style="font-size: 12px; color: #999;">${game.desc}</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
 
 // 安全声明 - 防止游戏加载时序问题
 var playSound = playSound || function() {};
@@ -2868,9 +2912,62 @@ const gamesModule = {
     render: typeof renderGames !== 'undefined' ? renderGames : null
 };
 
+// V264: 添加缺失的 startGame 函数，根据游戏ID启动对应游戏
+function startGame(gameId) {
+    // 游戏ID到启动函数的映射
+    const gameMap = {
+        'schulte': startSchulte,
+        'whack': startWhack,
+        'snake': startSnake,
+        'tetris': startTetris,
+        '2048': start2048,
+        'color': startColor,
+        'attentionTrack': startAttentionTrack,
+        'attentionSeq': startAttentionSeq,
+        'flipCard': startFlipCard,
+        'visualTracking': startVisualTracking,
+        'spatialMemory': startSpatialMemory,
+        'digit': startDigit,
+        'pattern': startPattern,
+        'mathCalc': startMathCalc,
+        'linkup': startLinkUp,
+        'slide': startSlide,
+        'tap': startTap,
+        'textMemory': startTextMemory,
+        'eliminate': startEliminate,
+        'stroop': startStroop,
+        'palace': startPalace
+    };
+    
+    const startFn = gameMap[gameId];
+    if (typeof startFn === 'function') {
+        // 先显示游戏界面容器
+        const container = document.querySelector('.fp-content') || document.querySelector('.fullscreen-content');
+        if (container) {
+            container.innerHTML = `
+                <div style="padding: 16px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                        <h3 id="game-title" style="font-size: 18px; font-weight: bold; margin: 0;">🎮 游戏</h3>
+                        <div style="font-weight: bold; color: #667eea;">得分: <span id="game-score">0</span></div>
+                    </div>
+                    <div id="game-board" style="min-height: 400px;"></div>
+                </div>
+            `;
+        }
+        // 启动游戏
+        gameType = gameId;
+        startFn();
+    } else {
+        alert('该游戏正在开发中，敬请期待！');
+    }
+}
+
+// 将 startGame 挂载到 window，方便 onclick 调用
+window.startGame = startGame;
+
 // 导出主要函数
 
-console.log('[ES6 Module] games.js 模块加载完成');
+console.log('[V264] games.js 模块加载完成，renderGames 和 startGame 已挂载');
 window.renderGames = renderGames;
 
 

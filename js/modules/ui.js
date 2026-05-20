@@ -373,11 +373,11 @@ function openFullscreenPage(module) {
     
     // V255: 直接调用渲染函数（所有模块已预先加载）
     switch(module) {
-        case 'ai': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
-        case 'practice': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
+        case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
+        case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
+        case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
         case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
-        case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'method': if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
         case 'thinking': if (typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
         case 'podcast': if (typeof window.renderPodcast === 'function') window.renderPodcast(contentEl); break;
