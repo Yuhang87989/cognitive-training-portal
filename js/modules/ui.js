@@ -385,17 +385,15 @@ function openFullscreenPage(module) {
         case 'games': if (typeof window.renderGames === 'function') window.renderGames(contentEl); break;
         case 'deepseek': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
         case 'wrongbook': 
-            console.log('[V255] 开始渲染错题本模块');
             if (typeof window.renderWrongbook === 'function') {
                 try {
+                    contentEl.innerHTML = '<div style="padding:10px;background:#fff3cd;color:#856404;margin-bottom:10px;">[调试] window.renderWrongbook 函数存在，开始渲染...</div>';
                     window.renderWrongbook(contentEl);
-                    console.log('[V255] 错题本渲染完成');
                 } catch (e) {
-                    console.error('[V255] 错题本渲染错误:', e);
-                    contentEl.innerHTML = '<div style="padding:20px;color:red;"><h3>渲染错误</h3><p>' + e.message + '</p></div>';
+                    contentEl.innerHTML += '<div style="padding:20px;color:red;"><h3>渲染错误</h3><p>' + e.message + '</p></div>';
                 }
             } else {
-                console.warn('[V255] window.renderWrongbook不存在！');
+                contentEl.innerHTML = '<div style="padding:20px;color:red;"><h3>函数不存在</h3><p>window.renderWrongbook 未定义</p></div>';
             }
             break;
         case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
@@ -432,25 +430,22 @@ function openFullscreenPage(module) {
             }
             break;
         case 'pet': 
-            console.log('[V255] 开始渲染宠物模块');
             if (typeof window.renderPet === 'function') {
                 try {
+                    contentEl.innerHTML = '<div style="padding:10px;background:#fff3cd;color:#856404;margin-bottom:10px;">[调试] window.renderPet 函数存在，开始渲染...</div>';
                     window.renderPet(contentEl);
-                    console.log('[V255] 宠物模块渲染完成');
                 } catch (e) {
-                    console.error('[V255] 宠物模块渲染错误:', e);
-                    contentEl.innerHTML = '<div style="padding:20px;color:red;"><h3>宠物模块渲染错误</h3><p>' + e.message + '</p></div>';
+                    contentEl.innerHTML += '<div style="padding:20px;color:red;"><h3>宠物模块渲染错误</h3><p>' + e.message + '</p></div>';
                 }
             } else {
-                console.log('[V255] window.renderPet不存在，尝试动态加载ui-pet.js');
+                contentEl.innerHTML = '<div style="padding:10px;background:#fff3cd;color:#856404;margin-bottom:10px;">[调试] window.renderPet 不存在，尝试动态加载ui-pet.js...</div>';
                 import('../ui-pet.js').then(module => {
                     if (module.renderPetPage) {
                         module.renderPetPage(contentEl);
-                        console.log('[V255] ui-pet.js加载并渲染完成');
+                        contentEl.innerHTML += '<div style="padding:10px;background:#d4edda;color:#155724;margin-top:10px;">[调试] ui-pet.js加载成功</div>';
                     }
                 }).catch(err => {
-                    console.error('[V255] 加载ui-pet.js失败:', err);
-                    contentEl.innerHTML = '<div style="padding:20px;color:red;"><h3>ui-pet.js加载失败</h3><p>' + err.message + '</p></div>';
+                    contentEl.innerHTML += '<div style="padding:20px;color:red;"><h3>ui-pet.js加载失败</h3><p>' + err.message + '</p></div>';
                 });
             }
             break;
