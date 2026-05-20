@@ -345,3 +345,392 @@ window.prevQuestion = prevQuestion;
 window.nextQuestion = nextQuestion;
 window.jumpToQuestion = jumpToQuestion;
 window.submitExam = submitExam;
+
+// ========== 拍照上传 & 导入导出 ==========
+
+// 自定义试卷题库
+window.customExamQuestions = [];
+
+// 显示拍照上传界面
+function showExamUpload() {
+    const container = document.getElementById('examInterface');
+    container.style.display = 'block';
+    document.getElementById('examMenu').style.display = 'none';
+    
+    container.innerHTML = `
+        <div style="padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <button onclick="renderExam(document.getElementById('fullscreen-content'))" style="padding:8px 16px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+                <h2 style="margin:0;font-size:18px;">📷 拍照上传试卷</h2>
+                <div style="width:60px;"></div>
+            </div>
+            
+            <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <!-- 拍照/上传区域 -->
+                <div style="border:2px dashed #ddd;border-radius:12px;padding:40px 20px;text-align:center;margin-bottom:20px;cursor:pointer;" onclick="document.getElementById('examPhotoInput').click()">
+                    <div style="font-size:48px;margin-bottom:12px;">📸</div>
+                    <div style="font-size:16px;color:#667eea;font-weight:bold;margin-bottom:8px;">点击拍照或选择图片</div>
+                    <div style="font-size:12px;color:#999;">支持JPG、PNG格式</div>
+                    <input type="file" id="examPhotoInput" accept="image/*" capture="environment" style="display:none;" onchange="handleExamPhotoUpload(event)">
+                </div>
+                
+                <!-- 预览区域 -->
+                <div id="photoPreview" style="display:none;margin-bottom:20px;">
+                    <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">📷 图片预览</div>
+                    <img id="previewImage" style="width:100%;border-radius:8px;">
+                </div>
+                
+                <!-- OCR识别结果 -->
+                <div id="ocrResult" style="display:none;">
+                    <div style="font-size:14px;font-weight:bold;margin-bottom:12px;">📝 识别结果</div>
+                    <textarea id="ocrText" style="width:100%;height:150px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;"></textarea>
+                    <div style="margin-top:12px;color:#999;font-size:12px;">💡 提示：每行一道题，格式：题目|选项A|选项B|选项C|选项D|正确答案序号(0-3)</div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div id="ocrButtons" style="display:none;display:grid;gap:12px;margin-top:20px;">
+                    <button onclick="convertToQuestions()" style="padding:14px;background:#667eea;color:white;border:none;border-radius:12px;font-size:14px;cursor:pointer;font-weight:bold;">
+                        🔄 转换为题目
+                    </button>
+                    <button onclick="startCustomExam()" id="startCustomBtn" style="display:none;padding:14px;background:#4caf50;color:white;border:none;border-radius:12px;font-size:14px;cursor:pointer;font-weight:bold;">
+                        🚀 开始自定义考试
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 导入导出 -->
+            <div style="margin-top:16px;background:white;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <div style="font-size:16px;font-weight:bold;margin-bottom:16px;">📁 导入导出</div>
+                <div style="display:grid;gap:12px;">
+                    <button onclick="exportQuestions()" style="padding:12px;background:#2196f3;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">
+                        📤 导出自定义题库
+                    </button>
+                    <div style="position:relative;">
+                        <button onclick="document.getElementById('importQuestions').click()" style="width:100%;padding:12px;background:#ff9800;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">
+                            📥 导入题库文件
+                        </button>
+                        <input type="file" id="importQuestions" accept=".json" style="display:none;" onchange="importQuestions(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 处理图片上传
+function handleExamPhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('photoPreview').style.display = 'block';
+        document.getElementById('previewImage').src = e.target.result;
+        document.getElementById('ocrResult').style.display = 'block';
+        document.getElementById('ocrButtons').style.display = 'grid';
+        document.getElementById('ocrText').value = '识别中...\n\n（提示：纯前端OCR功能需要加载OCR库，这里模拟识别结果）\n\n1+1=?|1|2|3|4|1\n2+2=?|2|3|4|5|2\n3+3=?|4|5|6|7|2';
+        
+        // 模拟识别延迟
+        setTimeout(() => {
+            window.showToast('📷 图片已上传，OCR识别功能开发中');
+        }, 1000);
+    };
+    reader.readAsDataURL(file);
+}
+
+// 转换为题目
+function convertToQuestions() {
+    const text = document.getElementById('ocrText').value;
+    const lines = text.trim().split('\n').filter(line => line.trim());
+    
+    window.customExamQuestions = [];
+    
+    lines.forEach(line => {
+        const parts = line.split('|');
+        if (parts.length >= 6) {
+            window.customExamQuestions.push({
+                q: parts[0].trim(),
+                options: [parts[1].trim(), parts[2].trim(), parts[3].trim(), parts[4].trim()],
+                answer: parseInt(parts[5])
+            });
+        }
+    });
+    
+    if (window.customExamQuestions.length > 0) {
+        document.getElementById('startCustomBtn').style.display = 'block';
+        window.showToast(`✅ 成功转换 ${window.customExamQuestions.length} 道题目`);
+    } else {
+        window.showToast('❌ 未能识别题目，请检查格式');
+    }
+}
+
+// 开始自定义考试
+function startCustomExam() {
+    if (window.customExamQuestions.length === 0) {
+        window.showToast('请先上传或导入题目');
+        return;
+    }
+    startExam(window.customExamQuestions, '自定义试卷', window.customExamQuestions.length * 60);
+}
+
+// 导出自定义题库
+function exportQuestions() {
+    const data = {
+        questions: window.customExamQuestions,
+        exportTime: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `题库_${new Date().toLocaleDateString()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    window.showToast('✅ 题库已导出');
+}
+
+// 导入题库
+function importQuestions(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            window.customExamQuestions = data.questions || [];
+            window.showToast(`✅ 成功导入 ${window.customExamQuestions.length} 道题目`);
+        } catch (err) {
+            window.showToast('❌ 导入失败，文件格式错误');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ========== 仿真笔迹功能 ==========
+let handwritingCanvas = null;
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+
+// 显示仿真笔迹答题卡
+function showHandwritingAnswer() {
+    const container = document.getElementById('examInterface');
+    
+    container.innerHTML = `
+        <div style="padding:20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <button onclick="renderCurrentQuestion()" style="padding:8px 16px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回题目</button>
+                <h2 style="margin:0;font-size:18px;">✍️ 仿真笔迹答题</h2>
+                <div style="width:60px;"></div>
+            </div>
+            
+            <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <!-- 工具栏 -->
+                <div style="display:flex;gap:8px;margin-bottom:16px;">
+                    <button onclick="setPenColor('#000000')" style="width:32px;height:32px;background:#000;border:none;border-radius:50%;cursor:pointer;"></button>
+                    <button onclick="setPenColor('#1a1a1a')" style="width:32px;height:32px;background:#1a1a1a;border:none;border-radius:50%;cursor:pointer;"></button>
+                    <button onclick="setPenColor('#333333')" style="width:32px;height:32px;background:#333;border:none;border-radius:50%;cursor:pointer;"></button>
+                    <button onclick="setPenColor('#0066cc')" style="width:32px;height:32px;background:#0066cc;border:none;border-radius:50%;cursor:pointer;"></button>
+                    <div style="width:1px;background:#ddd;margin:0 8px;"></div>
+                    <button onclick="setPenSize(2)" style="padding:4px 12px;background:#f5f5f5;border:none;border-radius:4px;cursor:pointer;">细</button>
+                    <button onclick="setPenSize(4)" style="padding:4px 12px;background:#f5f5f5;border:none;border-radius:4px;cursor:pointer;">中</button>
+                    <button onclick="setPenSize(6)" style="padding:4px 12px;background:#f5f5f5;border:none;border-radius:4px;cursor:pointer;">粗</button>
+                    <div style="width:1px;background:#ddd;margin:0 8px;"></div>
+                    <button onclick="undoStroke()" style="padding:4px 12px;background:#f5f5f5;border:none;border-radius:4px;cursor:pointer;">↩️ 撤销</button>
+                    <button onclick="clearCanvas()" style="padding:4px 12px;background:#f5f5f5;border:none;border-radius:4px;cursor:pointer;">🗑️ 清空</button>
+                </div>
+                
+                <!-- 绘图画布 -->
+                <div style="border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fffef8;">
+                    <canvas id="handwritingCanvas" width="600" height="400" style="width:100%;cursor:crosshair;touch-action:none;"></canvas>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div style="display:flex;gap:12px;margin-top:20px;">
+                    <button onclick="saveHandwriting()" style="flex:1;padding:14px;background:#4caf50;color:white;border:none;border-radius:12px;font-size:14px;cursor:pointer;font-weight:bold;">
+                        💾 保存笔迹
+                    </button>
+                    <button onclick="renderCurrentQuestion()" style="flex:1;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">
+                        返回
+                    </button>
+                </div>
+            </div>
+            
+            <div style="margin-top:16px;padding:16px;background:#e3f2fd;border-radius:12px;">
+                <div style="font-size:14px;font-weight:bold;color:#1976d2;margin-bottom:8px;">💡 使用提示</div>
+                <div style="font-size:13px;color:#1976d2;line-height:1.6;">
+                    用手指或鼠标在画布上书写答案，笔迹会自动模拟手写效果。可以选择不同颜色和粗细。
+                </div>
+            </div>
+        </div>
+    `;
+    
+    initHandwritingCanvas();
+}
+
+// 初始化笔迹画布
+function initHandwritingCanvas() {
+    handwritingCanvas = document.getElementById('handwritingCanvas');
+    const ctx = handwritingCanvas.getContext('2d');
+    
+    // 设置画布样式
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 3;
+    
+    // 存储笔迹历史
+    window.strokeHistory = [];
+    window.currentStroke = [];
+    
+    // 鼠标事件
+    handwritingCanvas.addEventListener('mousedown', startDrawing);
+    handwritingCanvas.addEventListener('mousemove', draw);
+    handwritingCanvas.addEventListener('mouseup', stopDrawing);
+    handwritingCanvas.addEventListener('mouseout', stopDrawing);
+    
+    // 触摸事件
+    handwritingCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = handwritingCanvas.getBoundingClientRect();
+        const scaleX = handwritingCanvas.width / rect.width;
+        const scaleY = handwritingCanvas.height / rect.height;
+        startDrawing({
+            offsetX: (touch.clientX - rect.left) * scaleX,
+            offsetY: (touch.clientY - rect.top) * scaleY
+        });
+    });
+    handwritingCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = handwritingCanvas.getBoundingClientRect();
+        const scaleX = handwritingCanvas.width / rect.width;
+        const scaleY = handwritingCanvas.height / rect.height;
+        draw({
+            offsetX: (touch.clientX - rect.left) * scaleX,
+            offsetY: (touch.clientY - rect.top) * scaleY
+        });
+    });
+    handwritingCanvas.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    window.currentStroke = [{x: e.offsetX, y: e.offsetY}];
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    
+    const ctx = handwritingCanvas.getContext('2d');
+    
+    // 模拟手写抖动效果
+    const jitter = 0.5;
+    const jitterX = (Math.random() - 0.5) * jitter;
+    const jitterY = (Math.random() - 0.5) * jitter;
+    
+    ctx.beginPath();
+    ctx.moveTo(lastX + jitterX, lastY + jitterY);
+    
+    // 模拟压力效果（越慢越粗）
+    const dist = Math.sqrt(Math.pow(e.offsetX - lastX, 2) + Math.pow(e.offsetY - lastY, 2));
+    const speed = dist || 1;
+    const pressure = Math.max(1, ctx.lineWidth * (1 - Math.min(0.3, speed / 50)));
+    ctx.lineWidth = pressure;
+    
+    ctx.lineTo(e.offsetX + jitterX, e.offsetY + jitterY);
+    ctx.stroke();
+    
+    [lastX, lastY] = [e.offsetX, e.offsetY];
+    window.currentStroke.push({x: e.offsetX, y: e.offsetY});
+}
+
+function stopDrawing() {
+    if (isDrawing && window.currentStroke.length > 0) {
+        window.strokeHistory.push([...window.currentStroke]);
+    }
+    isDrawing = false;
+    window.currentStroke = [];
+}
+
+function setPenColor(color) {
+    if (handwritingCanvas) {
+        handwritingCanvas.getContext('2d').strokeStyle = color;
+    }
+}
+
+function setPenSize(size) {
+    if (handwritingCanvas) {
+        handwritingCanvas.getContext('2d').lineWidth = size;
+    }
+}
+
+function undoStroke() {
+    if (!handwritingCanvas || window.strokeHistory.length === 0) return;
+    
+    window.strokeHistory.pop();
+    redrawCanvas();
+}
+
+function clearCanvas() {
+    if (!handwritingCanvas) return;
+    
+    const ctx = handwritingCanvas.getContext('2d');
+    ctx.clearRect(0, 0, handwritingCanvas.width, handwritingCanvas.height);
+    window.strokeHistory = [];
+}
+
+function redrawCanvas() {
+    if (!handwritingCanvas) return;
+    
+    const ctx = handwritingCanvas.getContext('2d');
+    ctx.clearRect(0, 0, handwritingCanvas.width, handwritingCanvas.height);
+    
+    // 重画所有笔迹
+    window.strokeHistory.forEach(stroke => {
+        if (stroke.length < 2) return;
+        ctx.beginPath();
+        ctx.moveTo(stroke[0].x, stroke[0].y);
+        for (let i = 1; i < stroke.length; i++) {
+            ctx.lineTo(stroke[i].x, stroke[i].y);
+        }
+        ctx.stroke();
+    });
+}
+
+function saveHandwriting() {
+    if (!handwritingCanvas) return;
+    
+    const dataUrl = handwritingCanvas.toDataURL('image/png');
+    
+    // 保存到本地存储
+    const key = `handwriting_${Date.now()}`;
+    localStorage.setItem(key, dataUrl);
+    
+    window.showToast('✅ 笔迹已保存');
+}
+
+// 在考试菜单中添加上传按钮
+const originalRenderExam = window.renderExam;
+window.renderExam = function(container) {
+    originalRenderExam(container);
+    
+    // 添加上传入口按钮
+    setTimeout(() => {
+        const menu = document.getElementById('examMenu');
+        if (menu) {
+            const uploadBtn = document.createElement('div');
+            uploadBtn.innerHTML = `
+                <div onclick="showExamUpload()" style="background:linear-gradient(135deg,#fa709a,#fee140);color:white;padding:20px;border-radius:12px;margin-bottom:12px;cursor:pointer;">
+                    <div style="font-size:18px;font-weight:bold;margin-bottom:4px;">📷 拍照上传试卷</div>
+                    <div style="font-size:13px;opacity:0.9;">拍照识别题目 · 导入导出 · 仿真笔迹答题</div>
+                </div>
+            `;
+            menu.insertBefore(uploadBtn.firstChild, menu.firstChild.nextSibling);
+        }
+    }, 100);
+};
