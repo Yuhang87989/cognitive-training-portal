@@ -1602,6 +1602,8 @@ window.updateUI = updateUI;
 window.switchPlanDay = switchPlanDay;
 window.showWelcomeMessage = showWelcomeMessage;
 window.toggleTask = toggleTask;
+window.showCreateUserModal = showCreateUserModal;
+window.showDeleteUserModal = showDeleteUserModal;
 
 function showWelcomeMessage(user) {
     const hour = new Date().getHours();
