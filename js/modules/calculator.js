@@ -43,7 +43,7 @@ function renderCalculator(container) {
                 <button onclick="window.calcInput('=')" style="padding:20px;background:#2ed573;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">=</button>
             </div>
             
-            <button onclick="window.closeFullscreenPage()" style="margin-top:20px;width:100%;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+            <button onclick="history.back()" style="margin-top:20px;width:100%;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
         </div>
     `;
 }

@@ -324,6 +324,35 @@ function openHelp() {
     `;
 }
 
+// ========== 历史记录导航系统 ==========
+window._historyStack = [];
+window._isHandlingPopState = false;
+
+// 历史记录增强版 closeFullscreenPage
+window.closeFullscreenPageWithHistory = function() {
+    if (window._historyStack.length > 0) {
+        window._isHandlingPopState = true;
+        history.back();
+    } else {
+        window.cleanupModuleState();
+        const el = document.getElementById('fullscreen-container');
+        if (el) el.classList.remove('active');
+    }
+};
+
+// 监听浏览器返回按钮
+window.addEventListener('popstate', function(event) {
+    if (window._historyStack.length > 0) {
+        window._historyStack.pop();
+        window.cleanupModuleState();
+        const el = document.getElementById('fullscreen-container');
+        if (el) el.classList.remove('active');
+    }
+    window._isHandlingPopState = false;
+});
+// ========== 历史记录导航系统结束 ==========
+
+
 function openFullscreenPage(module) {
     window.cleanupModuleState(); // 清理上一个模块的状态
     closeUserMenu();
@@ -396,15 +425,15 @@ function openFullscreenPage(module) {
         case 'exam': 
             // V272: 模拟考试模块（原学习日记）
             if (typeof window.renderNotepad === 'function') {
-                window.renderNotepad(contentEl);
+                window.renderExam(contentEl);
             }
             break;
         case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
         case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
         case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
-        case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
-        case 'notepad': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'journal': if (typeof window.renderNotepad === 'function') window.renderExam(contentEl); break;
+        case 'notepad': if (typeof window.renderNotepad === 'function') window.renderExam(contentEl); break;
         case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
         case 'mindmap': 
             // V270: 传统方式加载 - 思维导图

@@ -607,7 +607,7 @@ function renderMethod(container) {
         </div>
         
         <!-- 返回按钮 -->
-        <button onclick="window.closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
+        <button onclick="history.back()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
     `;
     
     // 更新统计数据
