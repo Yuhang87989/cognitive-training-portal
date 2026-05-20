@@ -419,21 +419,17 @@ function openFullscreenPage(module) {
             }
             break;
         case 'selfdrive': 
-            // V262: ES6测试模块 - 动态import加载
-            if (typeof window.renderGoalPage === 'function') {
-                const modal = document.getElementById('detail-modal');
-                if (modal) modal.classList.add('show');
-                window.renderGoalPage();
+            // V266: 调用完整的自驱力训练主页面
+            if (typeof window.renderSelfDrive === 'function') {
+                window.renderSelfDrive(contentEl);
             } else {
                 import('./self-drive.js').then(module => {
-                    if (module.renderGoalPage) {
-                        const modal = document.getElementById('detail-modal');
-                        if (modal) modal.classList.add('show');
-                        module.renderGoalPage();
+                    if (module.renderSelfDrive) {
+                        module.renderSelfDrive(contentEl);
                     }
                 }).catch(err => {
                     console.error('[ES6测试] 自驱力训练模块加载失败:', err);
-                    contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>ES6测试 - 自驱力训练模块加载失败: ' + err.message + '</p></div>';
+                    contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败: ' + err.message + '</p></div>';
                 });
             }
             break;
