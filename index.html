@@ -40,6 +40,9 @@ window.initPortal = function() {
 };
 
 console.log('[V232] 占位函数已初始化');
+
+// V261: 优先用传统方式加载UI核心模块，确保模块按钮可用
+document.write('<script src="js/modules/ui.js?v=' + Date.now() + '"><\/script>');
 </script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
