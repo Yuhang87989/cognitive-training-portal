@@ -1,7 +1,7 @@
 // ============================================================
-// V288 学习图书馆模块 - 新增高效记忆书籍
+// V289 学习图书馆模块 - 导入功能+下载菜单
 // 功能：书架、书籍阅读、目录、听书、阅读进度、笔记、收藏、下载导出
-// 新增：七种学霸方法教程 + 语音朗读 + 高效记忆全书
+// 新增：用户导入书籍、下载下拉菜单、高效记忆全书
 // ============================================================
 
 (function() {
@@ -479,18 +479,17 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                     <button onclick="history.back()" style="padding:8px 14px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回</button>
                     <h2 style="margin:0;font-size:18px;color:#333;">📚 学习图书馆</h2>
-                    <button onclick="window.downloadAllLibraryBooks()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📥 全部下载</button>
-                </div>
-                
-                <!-- 快捷入口：思维导图 -->
-                <div onclick="openMindMapFromLibrary()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:16px;border-radius:16px;margin-bottom:20px;cursor:pointer;box-shadow:0 4px 12px rgba(102,126,234,0.3);">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <span style="font-size:32px;">🧠</span>
-                        <div>
-                            <div style="font-size:16px;font-weight:bold;">打开思维导图</div>
-                            <div style="font-size:12px;opacity:0.8;">创建和编辑你的知识地图</div>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="window.showImportBookModal()" style="padding:8px 14px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📤 导入</button>
+                        <div style="position:relative;">
+                            <button onclick="window.toggleDownloadMenu()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:4px;">📥 下载 <span style="font-size:10px;">▼</span></button>
+                            <div id="download-dropdown" style="display:none;position:absolute;top:100%;right:0;background:white;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:100;min-width:160px;margin-top:4px;">
+                                <div onclick="window.downloadAllLibraryBooks();window.toggleDownloadMenu()" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:14px;color:#333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">📚 全部下载</div>
+                                ${data.books.map(book => `
+                                    <div onclick="window.downloadBookById('${book.id}');window.toggleDownloadMenu()" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:14px;color:#333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">${book.emoji} ${book.title}</div>
+                                `).join('')}
+                            </div>
                         </div>
-                        <span style="margin-left:auto;font-size:20px;">→</span>
                     </div>
                 </div>
                 
@@ -712,18 +711,153 @@
         toggleFavorite(bookId);
     }
     
+    // 切换下载下拉菜单
+    function toggleDownloadMenu() {
+        const dropdown = document.getElementById('download-dropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+    }
+    
+    // 根据ID下载单本书
+    function downloadBookById(bookId) {
+        const data = getLibraryData();
+        const book = data.books.find(b => b.id === bookId);
+        if (book) {
+            downloadBook(book);
+        }
+    }
+    
+    // 显示导入书籍弹窗
+    function showImportBookModal() {
+        const modal = document.createElement('div');
+        modal.id = 'import-book-modal';
+        modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+        modal.innerHTML = `
+            <div style="background:white;border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="padding:16px 20px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;">
+                    <h3 style="margin:0;font-size:18px;color:#333;">📤 导入书籍</h3>
+                    <button onclick="document.getElementById('import-book-modal').remove()" style="width:32px;height:32px;border-radius:50%;border:none;background:#f5f5f5;color:#666;cursor:pointer;font-size:16px;">×</button>
+                </div>
+                <div style="padding:20px;flex:1;overflow-y:auto;">
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:14px;color:#666;margin-bottom:8px;">书籍名称</label>
+                        <input type="text" id="import-book-title" placeholder="请输入书名" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:14px;color:#666;margin-bottom:8px;">作者</label>
+                        <input type="text" id="import-book-author" placeholder="请输入作者" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:14px;color:#666;margin-bottom:8px;">分类</label>
+                        <select id="import-book-category" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;box-sizing:border-box;background:white;">
+                            <option value="学习方法">学习方法</option>
+                            <option value="记忆方法">记忆方法</option>
+                            <option value="时间管理">时间管理</option>
+                            <option value="学科知识">学科知识</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:14px;color:#666;margin-bottom:8px;">书籍内容（记事本格式，每行一段，空行分隔章节）</label>
+                        <textarea id="import-book-content" placeholder="第一章：标题&#10;章节内容...&#10;&#10;第二章：标题&#10;章节内容..." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;min-height:200px;box-sizing:border-box;resize:vertical;font-family:monospace;"></textarea>
+                    </div>
+                    <div style="font-size:12px;color:#999;line-height:1.6;">
+                        <p>📝 格式说明：</p>
+                        <p>• 第一行写章节标题（如：第一章：什么是费曼学习法）</p>
+                        <p>• 后续行写章节内容</p>
+                        <p>• 空行分隔不同章节</p>
+                    </div>
+                </div>
+                <div style="padding:16px 20px;border-top:1px solid #f0f0f0;display:flex;gap:12px;">
+                    <button onclick="document.getElementById('import-book-modal').remove()" style="flex:1;padding:12px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">取消</button>
+                    <button onclick="window.importBookFromText()" style="flex:1;padding:12px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">✅ 导入</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // 从文本导入书籍
+    function importBookFromText() {
+        const title = document.getElementById('import-book-title').value.trim();
+        const author = document.getElementById('import-book-author').value.trim() || '佚名';
+        const category = document.getElementById('import-book-category').value;
+        const content = document.getElementById('import-book-content').value.trim();
+        
+        if (!title) {
+            window.showToast('请输入书籍名称');
+            return;
+        }
+        if (!content) {
+            window.showToast('请输入书籍内容');
+            return;
+        }
+        
+        // 解析内容：空行分隔章节
+        const parts = content.split(/\n\s*\n/);
+        const chapters = [];
+        
+        parts.forEach(part => {
+            const lines = part.trim().split('\n');
+            if (lines.length > 0) {
+                const chapterTitle = lines[0].trim();
+                const chapterContent = lines.slice(1).join('\n').trim() || chapterTitle;
+                chapters.push({
+                    title: chapterTitle,
+                    content: chapterContent
+                });
+            }
+        });
+        
+        if (chapters.length === 0) {
+            window.showToast('未解析到有效章节');
+            return;
+        }
+        
+        // 创建新书
+        const newBook = {
+            id: 'import_' + Date.now(),
+            title: title,
+            author: author,
+            emoji: '📖',
+            gradient: '#a855f7,#6366f1',
+            category: category,
+            favorite: false,
+            progress: 0,
+            chapters: chapters,
+            notes: []
+        };
+        
+        // 保存到数据
+        const data = getLibraryData();
+        data.books.push(newBook);
+        saveLibraryData(data);
+        
+        // 关闭弹窗并刷新
+        document.getElementById('import-book-modal').remove();
+        window.showToast(`✅ 成功导入《${title}》，共${chapters.length}章`);
+        
+        // 重新渲染
+        const container = document.getElementById('library-main-container');
+        if (container) renderLibraryHome(container);
+    }
+    
     // 导出到window
     window.renderLibrary = renderLibrary;
     window.openBook = openBook;
     window.prevChapter = prevChapter;
     window.nextChapter = nextChapter;
     window.backToLibrary = backToLibrary;
-    window.openMindMapFromLibrary = openMindMapFromLibrary;
     window.toggleTTS = toggleTTS;
     window.downloadCurrentBook = downloadCurrentBook;
     window.downloadAllLibraryBooks = downloadAllLibraryBooks;
     window.toggleBookFavorite = toggleBookFavorite;
     window.stopSpeaking = stopSpeaking;
+    window.toggleDownloadMenu = toggleDownloadMenu;
+    window.downloadBookById = downloadBookById;
+    window.showImportBookModal = showImportBookModal;
+    window.importBookFromText = importBookFromText;
     
-    console.log('[V287] 学习图书馆模块加载完成 - 7种学霸方法+下载+听书');
+    console.log('[V288] 学习图书馆模块加载完成 - 导入+下载菜单+高效记忆');
 })();
