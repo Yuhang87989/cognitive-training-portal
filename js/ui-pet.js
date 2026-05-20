@@ -1,10 +1,10 @@
 // 虚拟宠物UI渲染模块
 // 直接使用window.showToast，避免ES6 import问题
 
+import pet from './modules/pet.js';
+
 // 渲染宠物主页
-export async function renderPetPage(container) {
-    const { default: pet } = await import('./modules/pet.js');
-    
+export function renderPetPage(container) {
     // 初始化宠物模块
     pet.init();
     
@@ -208,6 +208,9 @@ function animatePet(container) {
         emoji.style.transform = 'scale(1)';
     }, 300);
 }
+
+// 挂载到window，供ui.js调用
+window.renderPet = renderPetPage;
 
 export default {
     renderPetPage
