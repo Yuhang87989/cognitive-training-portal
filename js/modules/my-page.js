@@ -381,7 +381,7 @@ window.openCalculator = function() {
     openFullscreenPage('calculator');
 };
 
-// 打开记事本
+// 打开学习日记
 window.openNotepad = function() {
     openFullscreenPage('notepad');
 };
