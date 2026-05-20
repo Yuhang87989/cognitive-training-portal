@@ -332,7 +332,6 @@ window._isHandlingPopState = false;
 window.closeFullscreenPageWithHistory = function() {
     if (window._historyStack.length > 0) {
         window._isHandlingPopState = true;
-        history.back();
     } else {
         window.cleanupModuleState();
         const el = document.getElementById('fullscreen-container');

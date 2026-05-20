@@ -8,7 +8,7 @@ function renderExam(container) {
     container.innerHTML = `
         <div style="padding:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <button onclick="history.back()" style="padding:8px 16px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+                <button onclick="window.closeFullscreenPage()" style="padding:8px 16px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
                 <h2 style="margin:0;font-size:18px;">📝 模拟考试</h2>
                 <div style="width:60px;"></div>
             </div>
@@ -328,7 +328,7 @@ function submitExam() {
                 <button onclick="renderExam(document.getElementById('fullscreen-content'))" style="padding:14px;background:#667eea;color:white;border:none;border-radius:12px;font-size:16px;cursor:pointer;font-weight:bold;">
                     返回考试首页
                 </button>
-                <button onclick="history.back()" style="padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:16px;cursor:pointer;">
+                <button onclick="window.closeFullscreenPage()" style="padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:16px;cursor:pointer;">
                     返回首页
                 </button>
             </div>
