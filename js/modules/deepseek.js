@@ -1000,12 +1000,14 @@ window.scrollToDeepSeekMessage = scrollToDeepSeekMessage;
 // ============================================================
 
 // DeepSeek模块对象
+const deepseekModule = {
     name: 'deepseek',
     icon: '🤖',
     render: typeof renderDeepseek !== 'undefined' ? renderDeepseek : null
 };
 
 // 导出主要函数
+export default {
     callDeepSeekAPI,
     callVisionAPI,
     escapeHtml,

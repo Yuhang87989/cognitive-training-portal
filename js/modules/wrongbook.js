@@ -1616,12 +1616,14 @@ function submitFeedback() {
 // ============================================================
 
 // 错题本模块对象
+const wrongbookModule = {
     name: 'wrongbook',
     icon: '📒',
     render: typeof renderWrongbook !== 'undefined' ? renderWrongbook : null
 };
 
 // 导出主要函数
+export default {
     renderWrongbook,
     saveWrongNote,
     viewWrongNote,
