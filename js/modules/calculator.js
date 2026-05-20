@@ -112,12 +112,8 @@ window.renderCalculator = renderCalculator;
 window.calcInput = calcInput;
 
 // ============================================================
-// ES6 Module 导出（V268: ES6测试模块）
+// V270: 传统方式加载，移除ES6 export
 // ============================================================
-export { renderCalculator, calcInput };
-export default renderCalculator;
-
-// CommonJS 兼容
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         renderCalculator,

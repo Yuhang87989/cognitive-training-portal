@@ -388,16 +388,9 @@ function openFullscreenPage(module) {
         case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
         case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
         case 'calculator': 
-            // V262: ES6测试模块 - 动态import加载
+            // V270: 传统方式加载 - 计算器
             if (typeof window.renderCalculator === 'function') {
                 window.renderCalculator(contentEl);
-            } else {
-                import('./calculator.js').then(module => {
-                    if (module.renderCalculator) module.renderCalculator(contentEl);
-                }).catch(err => {
-                    console.error('[ES6测试] 计算器模块加载失败:', err);
-                    contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>ES6测试 - 计算器模块加载失败: ' + err.message + '</p></div>';
-                });
             }
             break;
         case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
@@ -406,16 +399,9 @@ function openFullscreenPage(module) {
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
         case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
         case 'mindmap': 
-            // V268: ES6测试模块 - 动态import加载（思维导图）
+            // V270: 传统方式加载 - 思维导图
             if (typeof window.renderMindMap === 'function') {
                 window.renderMindMap(contentEl);
-            } else {
-                import('./mindmap.js').then(module => {
-                    if (module.renderMindMap) module.renderMindMap(contentEl);
-                }).catch(err => {
-                    console.error('[ES6测试] 思维导图模块加载失败:', err);
-                    contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>ES6测试 - 思维导图模块加载失败: ' + err.message + '</p></div>';
-                });
             }
             break;
         case 'library': 
