@@ -1,223 +1,149 @@
+// ============================================================
 // 虚拟宠物UI渲染模块
-// V264: 从window获取宠物模块，避免ES6 import问题
+// ============================================================
 
-// 渲染宠物主页
 function renderPetPage(container) {
-    // 初始化宠物模块
     const pet = window.petModule;
     if (!pet) {
-        container.innerHTML = '<div style="padding: 20px; text-align: center;">宠物模块加载中...</div>';
+        container.innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">🐾 宠物模块加载中...</div>';
         return;
     }
     
     pet.init();
-    
     const data = pet.getData();
-    const currentSkin = pet.getCurrentSkin();
     const moodState = pet.getMoodState();
-    const allSkins = pet.getAllSkins();
+    const levelTitle = pet.getLevelTitle();
     
     container.innerHTML = `
-        <div class="pet-container">
-            <!-- 返回按钮栏 -->
-            <div class="module-nav-bar">
-                <button class="back-btn" id="petBackBtn">← 返回</button>
-                <h2>🐾 我的宠物</h2>
-                <button class="edit-btn" id="renamePetBtn">✏️</button>
+        <div style="padding:16px;min-height:100%;background:linear-gradient(180deg,#e3f2fd,#fce4ec);">
+            <!-- 顶部栏 -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <button onclick="history.back()" style="padding:8px 14px;background:white;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1);">← 返回</button>
+                <h2 style="margin:0;font-size:18px;color:#333;">🐾 我的宠物</h2>
+                <button onclick="showRenameDialog()" style="padding:8px 14px;background:white;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1);">✏️</button>
             </div>
-
-            <!-- 宠物展示区 -->
-            <div class="pet-display-card">
-                <div class="pet-avatar-area">
-                    <div class="pet-emoji" id="petEmoji">${currentSkin.emoji}</div>
-                    <div class="pet-level-badge">Lv.${data.level}</div>
-                </div>
-                <div class="pet-info">
-                    <h3 class="pet-name">${data.name}</h3>
-                    <p class="pet-mood">${moodState.emoji} ${moodState.name} · ${moodState.desc}</p>
+            
+            <!-- 宠物展示卡 -->
+            <div style="background:white;border-radius:24px;padding:24px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.1);margin-bottom:16px;">
+                <div style="font-size:80px;margin-bottom:12px;animation:bounce 2s infinite;">${data.skin}</div>
+                <h3 style="margin:0 0 4px 0;font-size:22px;color:#333;">${data.name}</h3>
+                <div style="font-size:14px;color:#999;margin-bottom:16px;">Lv.${data.level} ${levelTitle}</div>
+                
+                <!-- 心情状态 -->
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;">
+                    <span style="font-size:24px;">${moodState.emoji}</span>
+                    <span style="font-size:16px;color:${moodState.color};font-weight:bold;">${moodState.text}</span>
                 </div>
                 
                 <!-- 经验条 -->
-                <div class="pet-stats">
-                    <div class="stat-row">
-                        <span class="stat-label">经验值</span>
-                        <div class="exp-bar">
-                            <div class="exp-fill" style="width: ${(data.exp / data.expToNextLevel) * 100}%"></div>
-                        </div>
-                        <span class="stat-value">${data.exp} / ${data.expToNextLevel}</span>
+                <div style="text-align:left;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;color:#999;margin-bottom:6px;">
+                        <span>经验值</span>
+                        <span>${data.exp} / ${data.expToNext}</span>
                     </div>
-                    <div class="stat-row">
-                        <span class="stat-label">❤️ 健康</span>
-                        <div class="health-bar">
-                            <div class="health-fill" style="width: ${data.health}%"></div>
-                        </div>
-                        <span class="stat-value">${data.health}/100</span>
+                    <div style="height:10px;background:#f0f0f0;border-radius:5px;overflow:hidden;">
+                        <div style="height:100%;width:${(data.exp / data.expToNext) * 100}%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:5px;transition:width 0.3s;"></div>
                     </div>
                 </div>
             </div>
-
+            
+            <!-- 属性状态 -->
+            <div style="background:white;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:16px;">
+                <div style="font-weight:bold;font-size:15px;margin-bottom:16px;color:#333;">📊 状态</div>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                    <div style="background:#fff3e0;padding:12px;border-radius:12px;">
+                        <div style="font-size:12px;color:#ff9800;margin-bottom:4px;">🍖 饱食度</div>
+                        <div style="height:6px;background:#ffe0b2;border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${data.hunger}%;background:#ff9800;border-radius:3px;"></div>
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${data.hunger}%</div>
+                    </div>
+                    <div style="background:#e3f2fd;padding:12px;border-radius:12px;">
+                        <div style="font-size:12px;color:#2196f3;margin-bottom:4px;">⚡ 精力</div>
+                        <div style="height:6px;background:#bbdefb;border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${data.energy}%;background:#2196f3;border-radius:3px;"></div>
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${data.energy}%</div>
+                    </div>
+                    <div style="background:#fce4ec;padding:12px;border-radius:12px;">
+                        <div style="font-size:12px;color:#e91e63;margin-bottom:4px;">❤️ 健康</div>
+                        <div style="height:6px;background:#f8bbd9;border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${data.health}%;background:#e91e63;border-radius:3px;"></div>
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${data.health}%</div>
+                    </div>
+                    <div style="background:#e8f5e9;padding:12px;border-radius:12px;">
+                        <div style="font-size:12px;color:#4caf50;margin-bottom:4px;">💝 亲密度</div>
+                        <div style="height:6px;background:#c8e6c9;border-radius:3px;overflow:hidden;">
+                            <div style="height:100%;width:${Math.min(100, data.totalInteractions)}%;background:#4caf50;border-radius:3px;"></div>
+                        </div>
+                        <div style="font-size:11px;color:#999;margin-top:4px;">${data.totalInteractions}次互动</div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- 互动按钮 -->
-            <div class="section-card">
-                <h3>🎮 互动一下</h3>
-                <div class="action-buttons pet-actions">
-                    <button class="action-btn" id="feedPetBtn">
-                        <span class="action-icon">🍖</span>
-                        <span>喂食</span>
-                    </button>
-                    <button class="action-btn" id="playPetBtn">
-                        <span class="action-icon">🎾</span>
-                        <span>玩耍</span>
-                    </button>
-                    <button class="action-btn" id="touchPetBtn">
-                        <span class="action-icon">🤚</span>
-                        <span>抚摸</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- 宠物皮肤 -->
-            <div class="section-card">
-                <h3>🎨 宠物皮肤</h3>
-                <div class="skins-grid">
-                    ${allSkins.map(skin => {
-                        const unlocked = data.unlockedSkins.includes(skin.id);
-                        const equipped = data.skin === skin.id;
-                        return `
-                            <div class="skin-card ${unlocked ? '' : 'locked'} ${equipped ? 'equipped' : ''}" data-skin="${skin.id}">
-                                <div class="skin-emoji">${skin.emoji}</div>
-                                <div class="skin-name">${skin.name}</div>
-                                <div class="skin-desc">${skin.desc}</div>
-                                ${equipped ? '<span class="equipped-tag">使用中</span>' : ''}
-                                ${!unlocked ? '<span class="locked-tag">🔒 Lv.' + skin.unlockLevel + '解锁</span>' : ''}
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
-
-            <!-- 宠物档案 -->
-            <div class="section-card">
-                <h3>📋 宠物档案</h3>
-                <div class="pet-stats-detail">
-                    <div class="stat-item">
-                        <span class="stat-icon">🎂</span>
-                        <span class="stat-text">生日：${new Date(data.birthDate).toLocaleDateString()}</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">👆</span>
-                        <span class="stat-text">互动次数：${data.totalInteractions}次</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">🎁</span>
-                        <span class="stat-text">已解锁皮肤：${data.unlockedSkins.length}/${allSkins.length}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 成长说明 -->
-            <div class="section-card">
-                <h3>💡 如何获得经验？</h3>
-                <div class="tips-list">
-                    <div class="tip-item">🍅 完成番茄专注 → +20经验</div>
-                    <div class="tip-item">🧠 完成认知训练 → +30经验</div>
-                    <div class="tip-item">✅ 每日打卡 → +15经验</div>
-                    <div class="tip-item">🎯 完成目标 → +50经验</div>
-                    <div class="tip-item">📚 阅读书籍 → +25经验</div>
-                    <div class="tip-item">🗺️ 完成思维导图 → +40经验</div>
-                </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                <button onclick="doPetAction('feed')" style="padding:16px;background:#ff9800;color:white;border:none;border-radius:16px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(255,152,0,0.3);">
+                    🍖 喂食
+                </button>
+                <button onclick="doPetAction('play')" style="padding:16px;background:#e91e63;color:white;border:none;border-radius:16px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(233,30,99,0.3);">
+                    🎾 玩耍
+                </button>
+                <button onclick="doPetAction('pet')" style="padding:16px;background:#9c27b0;color:white;border:none;border-radius:16px;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(156,39,176,0.3);">
+                    🤚 抚摸
+                </button>
             </div>
         </div>
-    `;
-    
-    // 绑定事件
-    bindPetEvents(container, pet, data);
-}
-
-// 绑定宠物页面事件
-function bindPetEvents(container, pet, data) {
-    // 返回按钮
-    container.querySelector('#petBackBtn').addEventListener('click', () => {
-        // 返回我的页面
-        renderMyCenter(container);
-    });
-    
-    // 喂食
-    container.querySelector('#feedPetBtn').addEventListener('click', () => {
-        const result = pet.feed();
-        if (result) {
-            animatePet(container);
-            updatePetDisplay(container, pet);
-        }
-    });
-    
-    // 玩耍
-    container.querySelector('#playPetBtn').addEventListener('click', () => {
-        const result = pet.play();
-        if (result) {
-            animatePet(container);
-            updatePetDisplay(container, pet);
-        }
-    });
-    
-    // 抚摸
-    container.querySelector('#touchPetBtn').addEventListener('click', () => {
-        pet.pet();
-        animatePet(container);
-        updatePetDisplay(container, pet);
-        const hearts = ['❤️', '💕', '💖', '💗'];
-        window.showToast(hearts[Math.floor(Math.random() * hearts.length)] + ' 喵~');
-    });
-    
-    // 改名
-    container.querySelector('#renamePetBtn').addEventListener('click', () => {
-        const newName = prompt('给宠物取个新名字吧：', data.name);
-        if (newName && newName.trim()) {
-            pet.rename(newName.trim());
-            renderPetPage(container);
-        }
-    });
-    
-    // 切换皮肤
-    container.querySelectorAll('.skin-card:not(.locked)').forEach(card => {
-        card.addEventListener('click', () => {
-            const skinId = card.dataset.skin;
-            if (skinId !== data.skin) {
-                pet.changeSkin(skinId);
-                renderPetPage(container);
+        
+        <style>
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
             }
-        });
-    });
+        </style>
+    `;
 }
 
-// 更新宠物显示
-function updatePetDisplay(container, pet) {
-    const data = pet.getData();
-    const currentSkin = pet.getCurrentSkin();
-    const moodState = pet.getMoodState();
+// 执行宠物动作
+function doPetAction(action) {
+    const pet = window.petModule;
+    if (!pet) return;
     
-    container.querySelector('.pet-emoji').textContent = currentSkin.emoji;
-    container.querySelector('.pet-level-badge').textContent = 'Lv.' + data.level;
-    container.querySelector('.pet-name').textContent = data.name;
-    container.querySelector('.pet-mood').textContent = moodState.emoji + ' ' + moodState.name + ' · ' + moodState.desc;
-    container.querySelector('.exp-fill').style.width = (data.exp / data.expToNextLevel) * 100 + '%';
-    container.querySelector('.stat-value').textContent = data.exp + ' / ' + data.expToNextLevel;
-    container.querySelector('.health-fill').style.width = data.health + '%';
+    let message = '';
+    switch(action) {
+        case 'feed':
+            pet.feed();
+            message = '🍖 吃得饱饱的！心情+10 经验+10';
+            break;
+        case 'play':
+            pet.play();
+            message = '🎾 玩得超开心！心情+20 经验+15';
+            break;
+        case 'pet':
+            pet.pet();
+            message = '🤚 舒服地呼噜噜~ 心情+5';
+            break;
+    }
+    
+    window.showToast(message);
+    renderPetPage(document.getElementById('fullscreen-content'));
 }
 
-// 宠物动画
-function animatePet(container) {
-    const emoji = container.querySelector('.pet-emoji');
-    emoji.style.transform = 'scale(1.3)';
-    setTimeout(() => {
-        emoji.style.transform = 'scale(1)';
-    }, 300);
+// 重命名对话框
+function showRenameDialog() {
+    const pet = window.petModule;
+    if (!pet) return;
+    
+    const data = pet.getData();
+    const newName = prompt('给你的宠物起个新名字吧：', data.name);
+    if (newName && newName.trim()) {
+        pet.rename(newName.trim());
+        window.showToast('✅ 名字已更新！');
+        renderPetPage(document.getElementById('fullscreen-content'));
+    }
 }
 
-// 挂载到window，供ui.js调用
-window.renderPet = renderPetPage;
-
-
-// V264: 将渲染函数挂载到window
+// 挂载到window
 window.renderPet = renderPetPage;
 window.renderPetPage = renderPetPage;
-console.log('[V264] 宠物UI模块已挂载到window');

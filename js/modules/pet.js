@@ -1,230 +1,75 @@
-/* 虚拟宠物模块 - ES6 Modules标准
- * 陪伴小孩学习成长的虚拟宠物系统
- * 通过完成训练、打卡、专注获得经验值
- */
+// ============================================================
+// 虚拟宠物模块
+// ============================================================
 
-// V264: 移除不存在的ES6依赖，改用window上的storage
-const STORAGE_KEY = 'pet_data';
+const PET_STORAGE_KEY = 'virtual_pet_data';
 
-// 简单的store模拟，直接用localStorage
-const store = {
-    getState: function(key) {
-        try {
-            const data = localStorage.getItem(STORAGE_KEY);
-            return data ? JSON.parse(data) : null;
-        } catch(e) {
-            return null;
-        }
-    },
-    setState: function(key, data) {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        } catch(e) {}
-    }
-};
-
-// 简单的eventBus模拟，空实现，因为其他模块可能不发射这些事件
-const eventBus = {
-    on: function(event, callback) {
-        // 暂时不处理事件监听
-        console.log('[Pet] eventBus.on:', event);
-    },
-    emit: function(event, data) {
-        // 暂时不处理事件发射
-        console.log('[Pet] eventBus.emit:', event, data);
-    }
-};
-
-// 使用window上的storage
-const storage = window;
-
-// 宠物皮肤配置
-const PET_SKINS = [
-    { id: 'cat', name: '小橘猫', emoji: '🐱', unlockLevel: 1, desc: '初始宠物' },
-    { id: 'dog', name: '小柴犬', emoji: '🐕', unlockLevel: 5, desc: '5级解锁' },
-    { id: 'rabbit', name: '小白兔', emoji: '🐰', unlockLevel: 10, desc: '10级解锁' },
-    { id: 'panda', name: '小熊猫', emoji: '🐼', unlockLevel: 15, desc: '15级解锁' },
-    { id: 'dragon', name: '小神龙', emoji: '🐲', unlockLevel: 20, desc: '20级解锁' },
-    { id: 'unicorn', name: '独角兽', emoji: '🦄', unlockLevel: 30, desc: '30级传说级' }
-];
-
-// 心情状态
-const MOOD_STATES = [
-    { threshold: 20, emoji: '😢', name: '难过', desc: '需要陪伴' },
-    { threshold: 40, emoji: '😐', name: '一般', desc: '有点无聊' },
-    { threshold: 60, emoji: '🙂', name: '开心', desc: '心情不错' },
-    { threshold: 80, emoji: '😄', name: '快乐', desc: '非常开心' },
-    { threshold: 100, emoji: '🥰', name: '超幸福', desc: '简直太开心啦！' }
-];
-
-// 默认数据
-const DEFAULT_DATA = {
-    name: '小助手',
-    skin: 'cat',
+// 默认宠物数据
+const DEFAULT_PET = {
+    name: '小橘猫',
     level: 1,
     exp: 0,
-    expToNextLevel: 100,
-    mood: 80,
-    health: 100,
-    lastFeed: null,
-    lastPlay: null,
+    expToNext: 100,
+    mood: 80, // 心情 0-100
+    health: 100, // 健康 0-100
+    hunger: 50, // 饥饿 0-100
+    energy: 80, // 精力 0-100
+    skin: '🐱',
+    birthDate: Date.now(),
     totalInteractions: 0,
-    unlockedSkins: ['cat'],
-    equippedItems: [],
-    birthDate: new Date().toISOString(),
-    achievements: []
+    lastFeed: null,
+    lastPlay: null
 };
-
-// 初始化宠物模块
-function initPet() {
-    const savedData = storage.get(STORAGE_KEY, {});
-    const data = { ...DEFAULT_DATA, ...savedData };
-    
-    store.setState('pet', data);
-    
-    console.log('[Pet] 虚拟宠物模块初始化完成');
-    eventBus.emit('module:ready', 'pet');
-    
-    // 监听全局事件获得经验
-    setupEventListeners();
-}
-
-// 设置事件监听
-function setupEventListeners() {
-    // 番茄专注完成
-    eventBus.on('pomodoro:complete', () => {
-        addExp(20);
-        addMood(10);
-        window.showToast('🍅 番茄专注完成！宠物+20经验 +10心情');
-    });
-    
-    // 完成训练
-    eventBus.on('training:complete', () => {
-        addExp(30);
-        addMood(15);
-        window.showToast('🧠 训练完成！宠物+30经验 +15心情');
-    });
-    
-    // 自驱力打卡
-    eventBus.on('selfdrive:checkin', () => {
-        addExp(15);
-        addMood(5);
-        window.showToast('✅ 打卡成功！宠物+15经验 +5心情');
-    });
-    
-    // 完成目标
-    eventBus.on('goal:complete', () => {
-        addExp(50);
-        addMood(20);
-        window.showToast('🎯 目标达成！宠物+50经验 +20心情');
-    });
-    
-    // 阅读书籍
-    eventBus.on('library:read', () => {
-        addExp(25);
-        addMood(10);
-        window.showToast('📚 阅读完成！宠物+25经验 +10心情');
-    });
-    
-    // 完成思维导图
-    eventBus.on('mindmap:complete', () => {
-        addExp(40);
-        addMood(15);
-        window.showToast('🗺️ 思维导图完成！宠物+40经验 +15心情');
-    });
-}
 
 // 获取宠物数据
 function getPetData() {
-    return store.getState('pet');
-}
-
-// 保存数据
-function saveData(data) {
-    storage.set(STORAGE_KEY, data);
-    store.setState('pet', data);
-    eventBus.emit('pet:updated', data);
-}
-
-// 增加经验值
-function addExp(amount) {
-    const data = getPetData();
-    data.exp += amount;
-    
-    // 检查升级
-    while (data.exp >= data.expToNextLevel) {
-        data.exp -= data.expToNextLevel;
-        data.level++;
-        data.expToNextLevel = Math.floor(100 * Math.pow(1.2, data.level - 1));
-        
-        // 检查解锁新皮肤
-        PET_SKINS.forEach(skin => {
-            if (skin.unlockLevel === data.level && !data.unlockedSkins.includes(skin.id)) {
-                data.unlockedSkins.push(skin.id);
-                window.showToast(`🎉 恭喜升级到Lv.${data.level}！解锁新宠物：${skin.emoji} ${skin.name}`);
-            }
-        });
-        
-        eventBus.emit('pet:levelup', { level: data.level });
+    const saved = localStorage.getItem(PET_STORAGE_KEY);
+    if (saved) {
+        return JSON.parse(saved);
     }
-    
-    saveData(data);
-    return data;
+    return { ...DEFAULT_PET };
 }
 
-// 增加心情
-function addMood(amount) {
+// 保存宠物数据
+function savePetData(data) {
+    localStorage.setItem(PET_STORAGE_KEY, JSON.stringify(data));
+}
+
+// 初始化宠物
+function initPet() {
+    // 自动恢复心情
     const data = getPetData();
-    data.mood = Math.min(100, Math.max(0, data.mood + amount));
-    saveData(data);
-    return data;
+    const now = Date.now();
+    const hoursSinceLastPlay = data.lastPlay ? (now - data.lastPlay) / (1000 * 60 * 60) : 24;
+    
+    // 每小时恢复2点心情
+    if (hoursSinceLastPlay > 1) {
+        data.mood = Math.min(100, data.mood + Math.floor(hoursSinceLastPlay) * 2);
+        savePetData(data);
+    }
 }
 
 // 喂食
 function feedPet() {
     const data = getPetData();
-    const now = new Date().toISOString();
-    
-    // 冷却检查
-    if (data.lastFeed) {
-        const lastTime = new Date(data.lastFeed);
-        const cooldown = 2 * 60 * 60 * 1000; // 2小时
-        if (Date.now() - lastTime.getTime() < cooldown) {
-            window.showToast('🍽️ 宠物刚刚吃过啦，等会儿再喂吧~');
-            return null;
-        }
-    }
-    
-    data.lastFeed = now;
-    data.health = Math.min(100, data.health + 15);
+    data.hunger = Math.min(100, data.hunger + 30);
     data.mood = Math.min(100, data.mood + 10);
+    data.lastFeed = Date.now();
     data.totalInteractions++;
-    
-    saveData(data);
-    window.showToast('🍖 喂食成功！健康+15，心情+10');
+    addExp(10);
+    savePetData(data);
     return data;
 }
 
 // 玩耍
 function playWithPet() {
     const data = getPetData();
-    const now = new Date().toISOString();
-    
-    if (data.lastPlay) {
-        const lastTime = new Date(data.lastPlay);
-        const cooldown = 1 * 60 * 60 * 1000; // 1小时
-        if (Date.now() - lastTime.getTime() < cooldown) {
-            window.showToast('🎮 宠物刚刚玩过啦，休息一下吧~');
-            return null;
-        }
-    }
-    
-    data.lastPlay = now;
-    data.mood = Math.min(100, data.mood + 25);
+    data.energy = Math.max(0, data.energy - 20);
+    data.mood = Math.min(100, data.mood + 20);
+    data.lastPlay = Date.now();
     data.totalInteractions++;
-    
-    saveData(data);
-    window.showToast('🎾 玩耍成功！心情+25');
+    addExp(15);
+    savePetData(data);
     return data;
 }
 
@@ -233,76 +78,65 @@ function petPet() {
     const data = getPetData();
     data.mood = Math.min(100, data.mood + 5);
     data.totalInteractions++;
-    saveData(data);
+    savePetData(data);
     return data;
 }
 
-// 改名字
-function renamePet(newName) {
+// 增加经验值
+function addExp(amount) {
     const data = getPetData();
-    data.name = newName;
-    saveData(data);
-    window.showToast(`✨ 宠物改名为「${newName}」啦！`);
-    return data;
-}
-
-// 切换皮肤
-function changeSkin(skinId) {
-    const data = getPetData();
-    if (!data.unlockedSkins.includes(skinId)) {
-        window.showToast('❌ 还没有解锁这个皮肤哦');
-        return null;
+    data.exp += amount;
+    
+    // 升级判断
+    while (data.exp >= data.expToNext) {
+        data.exp -= data.expToNext;
+        data.level++;
+        data.expToNext = Math.floor(data.expToNext * 1.2); // 升级所需经验递增
+        window.showToast(`🎉 恭喜！升到 ${data.level} 级啦！`);
     }
     
-    data.skin = skinId;
-    const skin = PET_SKINS.find(s => s.id === skinId);
-    saveData(data);
-    window.showToast(`✨ 成功换上${skin.emoji} ${skin.name}！`);
+    savePetData(data);
     return data;
 }
 
-// 获取当前皮肤信息
-function getCurrentSkin() {
+// 重命名
+function renamePet(newName) {
     const data = getPetData();
-    return PET_SKINS.find(s => s.id === data.skin) || PET_SKINS[0];
+    data.name = newName || '小宠物';
+    savePetData(data);
+    return data;
 }
 
-// 获取所有皮肤
-function getAllSkins() {
-    return PET_SKINS;
-}
-
-// 获取心情状态
+// 获取心情状态描述
 function getMoodState() {
     const data = getPetData();
-    for (let i = MOOD_STATES.length - 1; i >= 0; i--) {
-        if (data.mood >= MOOD_STATES[i].threshold) {
-            return MOOD_STATES[i];
-        }
-    }
-    return MOOD_STATES[0];
+    if (data.mood >= 90) return { text: '超级开心', emoji: '🥰', color: '#e91e63' };
+    if (data.mood >= 70) return { text: '很开心', emoji: '😊', color: '#4caf50' };
+    if (data.mood >= 50) return { text: '还不错', emoji: '🙂', color: '#2196f3' };
+    if (data.mood >= 30) return { text: '有点无聊', emoji: '😐', color: '#ff9800' };
+    return { text: '不开心', emoji: '😢', color: '#f44336' };
 }
 
-// 获取当前状态
-function getState() {
-    return store.getState('pet');
+// 获取等级称号
+function getLevelTitle() {
+    const data = getPetData();
+    if (data.level >= 30) return '传说宠物';
+    if (data.level >= 20) return '神兽';
+    if (data.level >= 15) return '精英宠物';
+    if (data.level >= 10) return '高级宠物';
+    if (data.level >= 5) return '成长中';
+    return '小宝贝';
 }
 
-
-// V264: 将宠物模块函数挂载到window
+// 挂载到window
 window.petModule = {
     init: initPet,
     getData: getPetData,
     addExp: addExp,
-    addMood: addMood,
     feed: feedPet,
     play: playWithPet,
     pet: petPet,
     rename: renamePet,
-    changeSkin: changeSkin,
-    getCurrentSkin: getCurrentSkin,
-    getAllSkins: getAllSkins,
     getMoodState: getMoodState,
-    getState: getState
+    getLevelTitle: getLevelTitle
 };
-console.log('[V264] 宠物模块已挂载到window.petModule');
