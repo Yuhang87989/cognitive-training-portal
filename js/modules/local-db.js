@@ -5,7 +5,7 @@
 
 window.LocalDB = {
     dbName: 'CognitiveTrainingDB',
-    version: 1,
+    version: 2, // V286 升级版本号，添加moduleData表
     db: null,
     
     // 初始化数据库
@@ -47,8 +47,12 @@ window.LocalDB = {
             if (!db.objectStoreNames.contains('trainingRecords')) {
                 db.createObjectStore('trainingRecords', { keyPath: 'id' });
             }
+            // V286 添加模块数据同步表
+            if (!db.objectStoreNames.contains('moduleData')) {
+                db.createObjectStore('moduleData', { keyPath: 'id' });
+            }
             
-            console.log('IndexedDB表创建完成');
+            console.log('IndexedDB表创建完成 V286');
         };
         
         request.onsuccess = function(e) {

@@ -302,9 +302,12 @@ window.openDeepseekHelpModal = function() {
     modal.classList.add("show");
 };
 
-// 数据备份
+// V286 数据备份 - 使用DataSync模块
 window.doBackup = function() {
-    if (typeof exportData === 'function') {
+    if (typeof DataSync !== 'undefined' && DataSync.downloadBackup) {
+        DataSync.downloadBackup();
+        window.showToast('备份成功，文件已下载');
+    } else if (typeof exportData === 'function') {
         exportData();
     } else if (typeof LocalDB !== 'undefined' && LocalDB.exportAll) {
         LocalDB.exportAll().then(function(data) {
@@ -319,15 +322,50 @@ window.doBackup = function() {
     }
 };
 
-// 数据恢复
+// V286 数据恢复 - 使用DataSync模块
 window.doRestore = function() {
-    if (typeof LocalDB !== 'undefined' && LocalDB.importFromFile) {
-        LocalDB.importFromFile(function(result) {
-            if (result && result.success) {
-                window.showToast('数据恢复成功');
-                location.reload();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backupData = JSON.parse(e.target.result);
+                if (typeof DataSync !== 'undefined' && DataSync.importAll) {
+                    DataSync.importAll(backupData, function(result) {
+                        if (result && result.success) {
+                            window.showToast('数据恢复成功，共恢复 ' + result.success + ' 个模块');
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            window.showToast('数据恢复失败');
+                        }
+                    });
+                } else {
+                    window.showToast('数据同步模块未就绪，请稍后再试');
+                }
+            } catch (err) {
+                console.error('恢复失败:', err);
+                window.showToast('恢复失败：文件格式错误');
             }
-        });
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
+};
+
+// V286 数据同步 - 同步到IndexedDB
+window.syncData = function() {
+    if (typeof DataSync !== 'undefined' && DataSync.syncAllToIndexedDB) {
+        DataSync.syncAllToIndexedDB();
+        window.showToast('数据同步完成');
+    } else {
+        window.showToast('数据同步模块未就绪');
     }
 };
 
@@ -528,6 +566,23 @@ window.renderMyPage = function(container) {
     }
     
     const user = window.getCurrentUserData();
+    
+    // V286 使用DataSync获取用户统计信息
+    let userStats = {
+        level: 1,
+        exp: 0,
+        totalTime: 0,
+        totalDays: 1
+    };
+    
+    if (typeof DataSync !== 'undefined' && DataSync.user) {
+        userStats = DataSync.user.getStats();
+        userStats.level = DataSync.user.getCurrent().level || 1;
+        userStats.exp = DataSync.user.getCurrent().exp || 0;
+        userStats.totalTime = DataSync.user.getCurrent().totalStudyTime || 0;
+        userStats.totalDays = DataSync.user.getCurrent().totalDays || 1;
+    }
+    
     const streakDays = calculateStreakDays();
     const wrongCount = (user && user.wrongNotes) ? user.wrongNotes.length : 0;
     const dailyGoal = user && user.dailyGoal ? user.dailyGoal : 8;
@@ -730,7 +785,7 @@ window.renderMyPage = function(container) {
     container.innerHTML = `
     <style>${myPageStyle}</style>
     <div style="padding:16px;">
-        <!-- 用户信息卡片 -->
+        <!-- 用户信息卡片 V286 -->
         <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px;color:white;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
                 <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;">
@@ -738,20 +793,28 @@ window.renderMyPage = function(container) {
                 </div>
                 <div>
                     <div style="font-size:18px;font-weight:600;">${user.name || '同学'}</div>
-                    <div style="font-size:12px;opacity:0.8;">连续学习 ${streakDays} 天</div>
+                    <div style="font-size:12px;opacity:0.8;">Lv.${userStats.level} | 经验 ${userStats.exp}/${userStats.level * 100}</div>
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+            <!-- 经验条 V286 -->
+            <div style="background:rgba(255,255,255,0.2);border-radius:10px;height:6px;margin-bottom:12px;">
+                <div style="width:${Math.min(100, (userStats.exp / (userStats.level * 100)) * 100)}%;height:100%;background:white;border-radius:10px;transition:width 0.3s;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;">
                 <div>
-                    <div style="font-size:20px;font-weight:bold;">${user.totalTime || 0}</div>
+                    <div style="font-size:18px;font-weight:bold;">${userStats.totalDays}</div>
+                    <div style="font-size:11px;opacity:0.8;">学习天数</div>
+                </div>
+                <div>
+                    <div style="font-size:18px;font-weight:bold;">${userStats.totalTime}</div>
                     <div style="font-size:11px;opacity:0.8;">学习分钟</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;font-weight:bold;">${user.completedTasks || 0}</div>
-                    <div style="font-size:11px;opacity:0.8;">完成任务</div>
+                    <div style="font-size:18px;font-weight:bold;">${streakDays}</div>
+                    <div style="font-size:11px;opacity:0.8;">连续天数</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;font-weight:bold;">${(user.accuracy || 0).toFixed(0)}%</div>
+                    <div style="font-size:18px;font-weight:bold;">${(user.accuracy || 0).toFixed(0)}%</div>
                     <div style="font-size:11px;opacity:0.8;">正确率</div>
                 </div>
             </div>
