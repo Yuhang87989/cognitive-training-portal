@@ -125,8 +125,3 @@ if (typeof module !== 'undefined' && module.exports) {
         NOTEPAD_NOTES_KEY
     };
 }
-
-    renderNotepad,
-    saveNote,
-    deleteNote,
-    loadNotes
