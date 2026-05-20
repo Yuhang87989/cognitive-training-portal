@@ -401,18 +401,33 @@ function openFullscreenPage(module) {
     
     const renderFnName = moduleRenderMap[module];
     
-    console.log('[V259] openFullscreenPage 被调用:', module);
-    console.log('[V259] lazyLoadModule 存在:', typeof window.lazyLoadModule === 'function');
-    console.log('[V259] MODULE_LAZY_LOAD_MAP 存在:', typeof window.MODULE_LAZY_LOAD_MAP === 'object');
-    if (window.MODULE_LAZY_LOAD_MAP) {
-        console.log('[V259] 模块在映射中存在:', module in window.MODULE_LAZY_LOAD_MAP);
-    }
+    // V260: 不依赖main.js，直接在ui.js中实现动态加载
+    const modulePathMap = {
+        'ai': './deepseek.js',
+        'practice': './practice.js',
+        'map': './map.js',
+        'method': './method.js',
+        'thinking': './thinking.js',
+        'podcast': './podcast.js',
+        'video': './video.js',
+        'games': './games.js',
+        'deepseek': './deepseek.js',
+        'wrongbook': './wrongbook.js',
+        'pomodoro': './pomodoro.js',
+        'calculator': './calculator.js',
+        'notepad': './notepad.js',
+        'backup': '../storage.js',
+        'weekly': '../storage.js',
+        'progress': '../storage.js',
+        'usage-stats': './my-page.js',
+        'my': './my-page.js',
+        'mindmap': './mindmap.js',
+        'selfdrive': './self-drive.js',
+    };
     
     // 如果渲染函数已存在，直接调用
     if (renderFnName && typeof window[renderFnName] === 'function') {
-        console.log('[V259] 渲染函数已存在，直接调用:', renderFnName);
         if (module === 'selfdrive') {
-            // 自驱力训练使用模态框方式
             const modal = document.getElementById('detail-modal');
             if (modal) modal.classList.add('show');
             window.renderGoalPage();
@@ -420,20 +435,22 @@ function openFullscreenPage(module) {
             window[renderFnName](contentEl);
         }
     } 
-    // 如果有懒加载系统，使用懒加载
-    else if (typeof window.lazyLoadModule === 'function' && window.MODULE_LAZY_LOAD_MAP && window.MODULE_LAZY_LOAD_MAP[module]) {
-        console.log('[V259] 使用懒加载系统加载模块:', module);
+    // V260: 直接动态import加载，不依赖main.js
+    else if (modulePathMap[module]) {
         // 显示加载中
-        if (typeof window.showModuleLoading === 'function') {
-            window.showModuleLoading(contentEl, moduleTitles[module] || module);
-        } else {
-            contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>正在加载...</p></div>';
-        }
+        contentEl.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:20px;">
+                <div style="width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;animation:spin 1s linear infinite;"></div>
+                <div style="color:#666;font-size:16px;">正在加载 ${moduleTitles[module] || module}...</div>
+            </div>
+            <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        `;
         
-        // 动态加载模块
-        window.lazyLoadModule(module).then(renderFn => {
+        // 动态加载模块 - 路径相对于js/modules/目录
+        import(modulePathMap[module]).then(() => {
+            contentEl.innerHTML = '';
+            const renderFn = window[renderFnName];
             if (typeof renderFn === 'function') {
-                contentEl.innerHTML = '';
                 if (module === 'selfdrive') {
                     const modal = document.getElementById('detail-modal');
                     if (modal) modal.classList.add('show');
@@ -441,22 +458,20 @@ function openFullscreenPage(module) {
                 } else {
                     renderFn(contentEl);
                 }
-                // 统一添加返回按钮
                 addBackButtonToModule(contentEl);
             } else {
-                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败，请刷新重试</p></div>';
+                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载完成，但渲染函数未找到</p></div>';
             }
         }).catch(err => {
             console.error('模块加载失败:', err);
-            contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败，请刷新重试</p></div>';
+            contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>模块加载失败: ' + err.message + '</p></div>';
         });
     }
-    // 没有懒加载，检查特殊模块
+    // 特殊处理的模块
     else {
-        console.log('[V259] 懒加载条件不满足，走备用分支');
         switch(module) {
             case 'journal': 
-                import('./modules/notepad.js').then(module => {
+                import('./notepad.js').then(module => {
                     if (module.renderNotepad) module.renderNotepad(contentEl);
                 });
                 break;
@@ -467,7 +482,7 @@ function openFullscreenPage(module) {
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>自驱力训练开发中...</p></div>';
                 break;
             case 'pet': 
-                import('./ui-pet.js').then(module => {
+                import('../ui-pet.js').then(module => {
                     if (module.renderPetPage) module.renderPetPage(contentEl);
                 });
                 break;
