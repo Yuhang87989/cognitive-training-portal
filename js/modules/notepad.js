@@ -22,7 +22,7 @@ function renderNotepad(container) {
     
     container.innerHTML = `
         <div class="card" style="max-width:500px;margin:0 auto;">
-            <h3 style="text-align:center;margin-bottom:16px;">📝 记事本</h3>
+            <h3 style="text-align:center;margin-bottom:16px;">📝 学习日记</h3>
             
             <div style="margin-bottom:16px;">
                 <input type="text" id="note-title" placeholder="标题（可选）" style="width:100%;padding:12px;margin-bottom:10px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">

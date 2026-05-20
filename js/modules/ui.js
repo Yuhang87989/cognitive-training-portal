@@ -347,7 +347,7 @@ function openFullscreenPage(module) {
         'wrongbook': '📒 错题本',
         'pomodoro': '🍅 番茄闹钟',
         'calculator': '🧮 计算器',
-        'notepad': '📝 记事本',
+        'notepad': '📝 学习日记',
         'usage-stats': '📊 AI使用统计',
         'settings': '⚙️ 设置',
         'my': '👤 我的',
