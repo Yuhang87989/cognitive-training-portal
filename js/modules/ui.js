@@ -384,16 +384,23 @@ function openFullscreenPage(module) {
         case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
         case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
         case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
+        case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
+        case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
+        case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
+        case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
+        case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
         case 'journal': 
-            if (typeof window.renderJournalModule === 'function') {
-                window.renderJournalModule(contentEl);
+            if (typeof window.renderNotepad === 'function') {
+                window.renderNotepad(contentEl);
             } else {
-                contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习日记开发中...</p></div>';
+                import('./modules/notepad.js').then(module => {
+                    if (module.renderNotepad) module.renderNotepad(contentEl);
+                });
             }
             break;
         case 'library': 
-            if (typeof window.renderLibraryModule === 'function') {
-                window.renderLibraryModule(contentEl);
+            if (typeof window.renderMindMap === 'function') {
+                window.renderMindMap(contentEl);
             } else {
                 contentEl.innerHTML = '<div class="card" style="text-align:center;padding:40px;"><p>学习图书馆开发中...</p></div>';
             }
