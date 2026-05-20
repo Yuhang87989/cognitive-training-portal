@@ -442,12 +442,10 @@ function openFullscreenPage(module) {
             }
             break;
         case 'library': 
-            // V267: 学习图书馆模块（mindmap.js实际是学习图书馆）
-            if (typeof window.renderMindMap === 'function') {
-                window.renderMindMap(contentEl);
+            if (typeof window.renderLibrary === 'function') {
+                window.renderLibrary(contentEl);
             }
             break;
-        case 'selfdrive': 
             // V269: 传统方式加载 - 调用完整的自驱力训练主页面
             if (typeof window.renderSelfDrive === 'function') {
                 window.renderSelfDrive(contentEl);
