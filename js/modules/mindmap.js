@@ -641,9 +641,46 @@ let ttsState = {
 
 // 思维导图状态
 let mindmapState = {
-    nodes: [],
-    selectedNode: null
+    nodes: [
+        { id: 'root', x: 500, y: 400, text: '中心主题', color: '#667eea', type: 'root', parent: null },
+        { id: 'node-1', x: 700, y: 250, text: '分支一', color: '#f093fb', type: 'branch', parent: 'root' },
+        { id: 'node-2', x: 700, y: 400, text: '分支二', color: '#4facfe', type: 'branch', parent: 'root' },
+        { id: 'node-3', x: 700, y: 550, text: '分支三', color: '#11998e', type: 'branch', parent: 'root' }
+    ],
+    selectedNode: null,
+    draggingNode: null,
+    dragOffset: { x: 0, y: 0 },
+    nextId: 4
 };
+
+// 从本地存储加载思维导图
+function loadMindmapFromStorage() {
+    try {
+        const saved = localStorage.getItem('mindmap_data');
+        if (saved) {
+            const data = JSON.parse(saved);
+            mindmapState.nodes = data.nodes || mindmapState.nodes;
+            mindmapState.nextId = data.nextId || mindmapState.nextId;
+        }
+    } catch(e) {
+        console.log('加载思维导图失败', e);
+    }
+}
+
+// 保存思维导图到本地存储
+function saveMindmapToStorage() {
+    try {
+        localStorage.setItem('mindmap_data', JSON.stringify({
+            nodes: mindmapState.nodes,
+            nextId: mindmapState.nextId
+        }));
+    } catch(e) {
+        console.log('保存思维导图失败', e);
+    }
+}
+
+// 初始化时加载
+loadMindmapFromStorage();
 
 // ============================================================
 // 主渲染函数
@@ -795,12 +832,14 @@ function renderMindmapView() {
     return `
         <div style="height:100%;display:flex;flex-direction:column;">
             <!-- 工具栏 -->
-            <div style="padding:12px 16px;background:white;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;gap:12px;">
-                <button onclick="generateMindmapFromBook()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">📚 从书籍生成</button>
-                <button onclick="addMindmapNode()" style="padding:8px 16px;background:#11998e;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">➕ 添加节点</button>
-                <button onclick="exportMindmapImage()" style="padding:8px 16px;background:#f093fb;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">📷 导出图片</button>
+            <div style="padding:12px 16px;background:white;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <button onclick="generateMindmapFromBook()" style="padding:8px 12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;">📚 从书籍生成</button>
+                <button onclick="addMindmapNode()" style="padding:8px 12px;background:#11998e;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;">➕ 添加节点</button>
+                <button onclick="deleteMindmapNode()" style="padding:8px 12px;background:#f5576c;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;">🗑️ 删除节点</button>
+                <button onclick="clearMindmap()" style="padding:8px 12px;background:#fa709a;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;">🔄 清空</button>
+                <button onclick="exportMindmapImage()" style="padding:8px 12px;background:#f093fb;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;">📷 导出</button>
                 <div style="flex:1;"></div>
-                <span style="font-size:12px;color:#999;">点击节点可编辑 · 拖动可移动</span>
+                <span style="font-size:11px;color:#999;">点击选中 · 双击编辑 · 拖动移动 · 自动保存</span>
             </div>
             
             <!-- 思维导图画布 -->
@@ -834,23 +873,92 @@ function renderMindmapView() {
 // 渲染思维导图节点
 // ============================================================
 function renderMindmapNodes() {
-    const nodes = [
-        { x: 700, y: 250, text: '记忆方法', color: '#f093fb' },
-        { x: 700, y: 400, text: '学习技巧', color: '#4facfe' },
-        { x: 700, y: 550, text: '时间管理', color: '#11998e' },
-        { x: 850, y: 200, text: '间隔重复', color: '#f5576c' },
-        { x: 850, y: 300, text: '联想记忆', color: '#f5576c' },
-        { x: 850, y: 380, text: '费曼技巧', color: '#00f2fe' },
-        { x: 850, y: 480, text: '番茄工作法', color: '#00f2fe' },
-        { x: 850, y: 580, text: '要事第一', color: '#43e97b' }
-    ];
-    
-    return nodes.map(node => `
-        <g transform="translate(${node.x}, ${node.y})" style="cursor:pointer;">
-            <rect x="-60" y="-20" width="120" height="40" rx="20" fill="${node.color}" opacity="0.9"/>
-            <text text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12">${node.text}</text>
+    return mindmapState.nodes.map(node => {
+        const isRoot = node.type === 'root';
+        const w = isRoot ? 160 : 120;
+        const h = isRoot ? 60 : 40;
+        const rx = isRoot ? 30 : 20;
+        const fontSize = isRoot ? 16 : 13;
+        
+        return `
+        <g transform="translate(${node.x}, ${node.y})" 
+           style="cursor:move;"
+           onmousedown="startDragMindmapNode(event, '${node.id}')"
+           ondblclick="editMindmapNode('${node.id}')">
+            <rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="${rx}" 
+                  fill="${node.color}" 
+                  opacity="${mindmapState.selectedNode === node.id ? 1 : 0.9}"
+                  stroke="${mindmapState.selectedNode === node.id ? '#fff' : 'none'}"
+                  stroke-width="3"/>
+            <text text-anchor="middle" dominant-baseline="middle" fill="white" 
+                  font-size="${fontSize}" font-weight="${isRoot ? 'bold' : 'normal'}">
+                ${node.text}
+            </text>
         </g>
-    `).join('');
+        <!-- 连接线 -->
+        ${node.parent ? renderMindmapLine(node) : ''}
+    `}).join('');
+}
+
+// 渲染节点连接线
+function renderMindmapLine(node) {
+    const parent = mindmapState.nodes.find(n => n.id === node.parent);
+    if (!parent) return '';
+    
+    return `
+        <line x1="${parent.x}" y1="${parent.y}" 
+              x2="${node.x}" y2="${node.y}" 
+              stroke="${node.color}" stroke-width="3" opacity="0.5"/>
+    `;
+}
+
+// 开始拖拽节点
+window.startDragMindmapNode = function(e, nodeId) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    mindmapState.selectedNode = nodeId;
+    mindmapState.draggingNode = nodeId;
+    
+    const node = mindmapState.nodes.find(n => n.id === nodeId);
+    if (node) {
+        mindmapState.dragOffset = {
+            x: e.clientX - node.x,
+            y: e.clientY - node.y
+        };
+    }
+    
+    document.addEventListener('mousemove', dragMindmapNode);
+    document.addEventListener('mouseup', stopDragMindmapNode);
+    
+    updateMindmapView();
+};
+
+// 拖拽节点
+function dragMindmapNode(e) {
+    if (!mindmapState.draggingNode) return;
+    
+    const node = mindmapState.nodes.find(n => n.id === mindmapState.draggingNode);
+    if (node) {
+        node.x = e.clientX - mindmapState.dragOffset.x;
+        node.y = e.clientY - mindmapState.dragOffset.y;
+        updateMindmapView();
+    }
+}
+
+// 停止拖拽
+function stopDragMindmapNode() {
+    mindmapState.draggingNode = null;
+    document.removeEventListener('mousemove', dragMindmapNode);
+    document.removeEventListener('mouseup', stopDragMindmapNode);
+    saveMindmapToStorage();
+}
+
+// 更新思维导图视图
+function updateMindmapView() {
+    const nodesEl = document.getElementById('mindmap-nodes');
+    const linesEl = document.getElementById('mindmap-lines');
+    if (nodesEl) nodesEl.innerHTML = renderMindmapNodes();
 }
 
 // ============================================================
@@ -979,20 +1087,117 @@ function startTTS() {
 // 思维导图功能
 // ============================================================
 window.generateMindmapFromBook = function() {
-    const bookNames = libraryData.books.map(b => b.title).join('、');
-    alert(`将根据以下书籍生成思维导图：\n${bookNames}\n\n（功能开发中...）`);
+    if (!libraryData.currentBook) {
+        alert('请先在书架中选择一本书！');
+        return;
+    }
+    
+    const book = libraryData.currentBook;
+    const colors = ['#f093fb', '#4facfe', '#11998e', '#f5576c', '#00f2fe', '#43e97b'];
+    
+    // 清空现有节点（保留根节点）
+    mindmapState.nodes = mindmapState.nodes.filter(n => n.type === 'root');
+    
+    // 添加章节节点
+    book.chapters.forEach((ch, idx) => {
+        const nodeId = 'node-' + (++mindmapState.nextId);
+        mindmapState.nodes.push({
+            id: nodeId,
+            x: 750,
+            y: 200 + idx * 120,
+            text: ch.title.replace(/第.+章：/, '').substring(0, 10),
+            color: colors[idx % colors.length],
+            type: 'branch',
+            parent: 'root'
+        });
+    });
+    
+    updateMindmapView();
+    saveMindmapToStorage();
+    alert(`已根据「${book.title}」生成思维导图！\n共 ${book.chapters.length} 个章节节点`);
 };
 
+// 添加节点
 window.addMindmapNode = function() {
     const text = prompt('请输入节点名称：');
     if (text && text.trim()) {
-        // 实际项目中添加节点逻辑
-        alert(`节点「${text}」已添加！`);
+        const colors = ['#f093fb', '#4facfe', '#11998e', '#f5576c', '#00f2fe', '#43e97b', '#fa709a', '#fee140'];
+        const parentId = mindmapState.selectedNode || 'root';
+        const parent = mindmapState.nodes.find(n => n.id === parentId);
+        
+        const nodeId = 'node-' + (++mindmapState.nextId);
+        mindmapState.nodes.push({
+            id: nodeId,
+            x: parent ? parent.x + 180 : 700,
+            y: parent ? parent.y + (mindmapState.nodes.filter(n => n.parent === parentId).length * 80) : 400,
+            text: text.substring(0, 12),
+            color: colors[Math.floor(Math.random() * colors.length)],
+            type: 'branch',
+            parent: parentId
+        });
+        
+        updateMindmapView();
+        saveMindmapToStorage();
     }
 };
 
+// 编辑节点
+window.editMindmapNode = function(nodeId) {
+    const node = mindmapState.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+    
+    const newText = prompt('编辑节点名称：', node.text);
+    if (newText && newText.trim()) {
+        node.text = newText.substring(0, 12);
+        updateMindmapView();
+        saveMindmapToStorage();
+    }
+};
+
+// 删除选中节点
+window.deleteMindmapNode = function() {
+    if (!mindmapState.selectedNode) {
+        alert('请先点击选择要删除的节点');
+        return;
+    }
+    if (mindmapState.selectedNode === 'root') {
+        alert('根节点不能删除！');
+        return;
+    }
+    
+    if (confirm('确定要删除选中的节点吗？')) {
+        // 删除节点及其子节点
+        const toDelete = [mindmapState.selectedNode];
+        let i = 0;
+        while (i < toDelete.length) {
+            mindmapState.nodes
+                .filter(n => n.parent === toDelete[i])
+                .forEach(n => toDelete.push(n.id));
+            i++;
+        }
+        
+        mindmapState.nodes = mindmapState.nodes.filter(n => !toDelete.includes(n.id));
+        mindmapState.selectedNode = null;
+        
+        updateMindmapView();
+        saveMindmapToStorage();
+    }
+};
+
+// 清空思维导图
+window.clearMindmap = function() {
+    if (confirm('确定要清空整个思维导图吗？')) {
+        mindmapState.nodes = mindmapState.nodes.filter(n => n.type === 'root');
+        mindmapState.nodes[0].text = '中心主题';
+        mindmapState.selectedNode = null;
+        updateMindmapView();
+        saveMindmapToStorage();
+    }
+};
+
+// 导出图片
 window.exportMindmapImage = function() {
-    alert('思维导图导出功能开发中...');
+    alert('导出功能：\n\n当前思维导图已保存到本地存储\n刷新页面后数据不会丢失\n\n图片导出功能需集成Canvas库，建议使用html2canvas实现');
 };
 
 // ============================================================
