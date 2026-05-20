@@ -1,14 +1,13 @@
 // ============================================================
-// V287 学习计划模块 - 修复并增强
+// V290 学习计划模块 - 修复作用域问题
 // ============================================================
 
-(function() {
-    const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-    let currentWeek = 1;
-    let selectedDay = new Date().getDay();
-    
-    // 渲染学习计划
-    function renderPlan(container) {
+const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+let currentWeek = 1;
+let selectedDay = new Date().getDay();
+
+// 渲染学习计划
+function renderPlan(container) {
         const tasks = getPlanTasks();
         const todayTasks = getTasksForDay(selectedDay);
         
@@ -160,12 +159,11 @@
         renderPlan(document.getElementById('fullscreen-content'));
     }
     
-    // 导出到window
-    window.renderPlan = renderPlan;
-    window.toggleTaskPlan = toggleTask;
-    window.addTaskPlan = addTask;
-    window.selectDayPlan = selectDay;
-    window.changeWeekPlan = changeWeek;
-    
-    console.log('[V287] 学习计划模块加载完成');
-})();
+// 导出到window
+window.renderPlan = renderPlan;
+window.toggleTaskPlan = toggleTask;
+window.addTaskPlan = addTask;
+window.selectDayPlan = selectDay;
+window.changeWeekPlan = changeWeek;
+
+console.log('[V290] 学习计划模块加载完成');

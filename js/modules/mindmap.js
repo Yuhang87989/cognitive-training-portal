@@ -1,14 +1,13 @@
 // ============================================================
-// V287 思维导图模块 - 手机适配版 + IIFE封装
+// V290 思维导图模块 - 修复作用域问题
 // 功能：可拖拽节点、编辑节点、添加子节点、删除节点、自动保存
 // ============================================================
 
-(function() {
-    const MINDMAP_STORAGE_KEY = 'mindmap_data';
-    let currentMindMap = null;
-    let draggedNode = null;
-    let dragOffset = { x: 0, y: 0 };
-    let selectedNode = null;
+const MINDMAP_STORAGE_KEY = 'mindmap_data';
+let currentMindMap = null;
+let draggedNode = null;
+let dragOffset = { x: 0, y: 0 };
+let selectedNode = null;
 
 // 加载思维导图数据
 function loadMindMap() {
@@ -326,17 +325,15 @@ function resetMindMap() {
         selectedNode = null;
         renderCanvas();
     }
-}
 
-    // 挂载到window
-    window.renderMindMap = renderMindMap;
-    window.selectNode = selectNode;
-    window.startDrag = startDrag;
-    window.editSelectedNode = editSelectedNode;
-    window.addChildToSelected = addChildToSelected;
-    window.promptAddChild = promptAddChild;
-    window.deleteSelectedNode = deleteSelectedNode;
-    window.resetMindMap = resetMindMap;
-    
-    console.log('[V287] 思维导图模块加载完成');
-})();
+// 挂载到window
+window.renderMindMap = renderMindMap;
+window.selectNode = selectNode;
+window.startDrag = startDrag;
+window.editSelectedNode = editSelectedNode;
+window.addChildToSelected = addChildToSelected;
+window.promptAddChild = promptAddChild;
+window.deleteSelectedNode = deleteSelectedNode;
+window.resetMindMap = resetMindMap;
+
+console.log('[V290] 思维导图模块加载完成');
