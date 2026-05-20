@@ -401,8 +401,16 @@ function openFullscreenPage(module) {
     
     const renderFnName = moduleRenderMap[module];
     
+    console.log('[V259] openFullscreenPage 被调用:', module);
+    console.log('[V259] lazyLoadModule 存在:', typeof window.lazyLoadModule === 'function');
+    console.log('[V259] MODULE_LAZY_LOAD_MAP 存在:', typeof window.MODULE_LAZY_LOAD_MAP === 'object');
+    if (window.MODULE_LAZY_LOAD_MAP) {
+        console.log('[V259] 模块在映射中存在:', module in window.MODULE_LAZY_LOAD_MAP);
+    }
+    
     // 如果渲染函数已存在，直接调用
     if (renderFnName && typeof window[renderFnName] === 'function') {
+        console.log('[V259] 渲染函数已存在，直接调用:', renderFnName);
         if (module === 'selfdrive') {
             // 自驱力训练使用模态框方式
             const modal = document.getElementById('detail-modal');
@@ -414,6 +422,7 @@ function openFullscreenPage(module) {
     } 
     // 如果有懒加载系统，使用懒加载
     else if (typeof window.lazyLoadModule === 'function' && window.MODULE_LAZY_LOAD_MAP && window.MODULE_LAZY_LOAD_MAP[module]) {
+        console.log('[V259] 使用懒加载系统加载模块:', module);
         // 显示加载中
         if (typeof window.showModuleLoading === 'function') {
             window.showModuleLoading(contentEl, moduleTitles[module] || module);
@@ -444,6 +453,7 @@ function openFullscreenPage(module) {
     }
     // 没有懒加载，检查特殊模块
     else {
+        console.log('[V259] 懒加载条件不满足，走备用分支');
         switch(module) {
             case 'journal': 
                 import('./modules/notepad.js').then(module => {
