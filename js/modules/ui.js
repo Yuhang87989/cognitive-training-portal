@@ -355,7 +355,10 @@ function openFullscreenPage(module) {
         'backup': '💾 数据备份',
         'weekly': '📅 每周回顾',
         'progress': '📉 进步曲线',
-        'mindmap': '🌳 思维导图'
+        'mindmap': '🌳 思维导图',
+        'pet': '🐱 虚拟宠物',
+        'journal': '📝 学习日记',
+        'library': '📚 学习图书馆'
     };
     
     titleEl.textContent = moduleTitles[module] || '模块';
