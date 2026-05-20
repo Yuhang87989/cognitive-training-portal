@@ -639,7 +639,7 @@ async function askPodcastAI() {
         var aiMsgHtml = '<div style="display:flex;justify-content:flex-start;margin-bottom:8px;">';
         aiMsgHtml += '<div style="background:#f0f0f0;color:#333;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:85%;font-size:13px;line-height:1.6;">';
         aiMsgHtml += result.content.replace(/\n/g, '<br>');
-        aiMsgHtml += '<div style="margin-top:4px;text-align:right;"><button onclick="speakText(this.parentElement.previousElementSibling ? this.parentElement.parentElement.innerText : \'\')" style="padding:2px 6px;background:#667eea;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">🔊</button></div>';
+        aiMsgHtml += '<div style="margin-top:4px;text-align:right;"><button onclick="window.speakText(this.parentElement.previousElementSibling ? this.parentElement.parentElement.innerText : \'\')" style="padding:2px 6px;background:#667eea;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">🔊</button></div>';
         aiMsgHtml += '</div></div>';
         
         if (loadingEl) {

@@ -356,7 +356,7 @@ function showThinkingType(type) {
             <div style="font-size:13px;color:#666;line-height:1.6;">${typeDescs[type]}</div>
         </div>
         <button onclick="startThinkingQuiz('${type}', 0)" class="login-btn login-btn-primary" style="margin-bottom:8px;">开始练习</button>
-        <button class="modal-close" onclick="closeModal()">返回</button>
+        <button class="modal-close" onclick="window.closeModal()">返回</button>
     `;
 }
 
@@ -429,7 +429,7 @@ function submitMethodAnswers(methodId, page) {
             ${page > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${page - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${page < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${page + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()">关闭</button>
     `;
 }
 
@@ -497,7 +497,7 @@ function submitThinkingAnswers(type, page) {
             ${page > 0 ? `<button onclick="startThinkingQuiz('${type}', ${page - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${page < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${page + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()">关闭</button>
     `;
 }
 
@@ -607,7 +607,7 @@ function renderMethod(container) {
         </div>
         
         <!-- 返回按钮 -->
-        <button onclick="closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
+        <button onclick="window.closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
     `;
     
     // 更新统计数据
@@ -729,7 +729,7 @@ function openMethodQuestions(methodId) {
             `).join('')}
         </div>
         <button onclick="submitMethodAnswers('${methodId}', 0)" class="login-btn login-btn-primary" style="margin-top:12px;width:100%;">提交答案</button>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;width:100%;">返回</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;width:100%;">返回</button>
     `;
     document.getElementById('detail-modal').classList.add('show');
 }
@@ -832,7 +832,7 @@ function showMethodNote(image) {
     content.innerHTML = `
         <div class="modal-title">📷 笔记预览</div>
         <img src="${image}" style="width:100%;border-radius:12px;"/>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:12px;width:100%;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:12px;width:100%;">关闭</button>
     `;
     document.getElementById('detail-modal').classList.add('show');
 }
@@ -905,7 +905,7 @@ function startMethodQuiz(methodId, page = 0) {
             ${currentPage > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;">关闭</button>
     `;
 }
 
@@ -1085,7 +1085,7 @@ async function photoToQuestion(imageData) {
             '<div style="padding:10px;font-size:13px;line-height:1.8;max-height:400px;overflow-y:auto;">' +
                 formatAIResponse(dsResult.content) +
             '</div>' +
-            '<button onclick="closeModal()" class="login-btn login-btn-secondary" style="margin-top:8px;">关闭</button>';
+            '<button onclick="window.closeModal()" class="login-btn login-btn-secondary" style="margin-top:8px;">关闭</button>';
         
     } catch(e) {
         if (document.getElementById('photo-ocr-status')) {
@@ -1104,7 +1104,7 @@ function showGameOver(score, total) {
             '<div style="font-size:36px;font-weight:bold;color:#667eea;">' + score + ' / ' + total + '</div>' +
             '<div style="font-size:14px;color:#666;margin-top:8px;">正确率: ' + (total > 0 ? Math.round(score/total*100) : 0) + '%</div>' +
         '</div>' +
-        '<button onclick="closeModal()" class="login-btn login-btn-primary">确定</button>';
+        '<button onclick="window.closeModal()" class="login-btn login-btn-primary">确定</button>';
     modal.classList.add('show');
 }
 window.showGameOver = showGameOver;

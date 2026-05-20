@@ -1343,7 +1343,7 @@ function startMethodPractice(method) {
     practice.tasks.forEach((task, i) => {
         html += '<div class="plan-task" onclick="this.classList.toggle(\'completed\')"><div class="task-checkbox" id="task-' + i + '"></div><div class="task-text">' + task + '</div></div>';
     });
-    html += '<button class="modal-close" onclick="closeModal()">完成训练</button>';
+    html += '<button class="modal-close" onclick="window.closeModal()">完成训练</button>';
     content.innerHTML = html;
 }
 
@@ -1400,7 +1400,7 @@ function startMethodQuiz(methodId, page = 0) {
             ${currentPage > 0 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startMethodQuiz('${methodId}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;">关闭</button>
     `;
 }
 
@@ -1477,7 +1477,7 @@ function startThinkingQuiz(type, page = 0) {
             ${currentPage > 0 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;">关闭</button>
     `;
 }
 

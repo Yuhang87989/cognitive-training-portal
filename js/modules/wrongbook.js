@@ -159,7 +159,7 @@ function openWrongPhotoCapture() {
         <div class="modal-header">
             <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
             <div class="modal-title">📝 添加错题</div>
-            <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
+            <button class="close-btn" onclick="window.closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div class="capture-container">
             <div class="capture-icon">📝</div>
@@ -222,7 +222,7 @@ function manualInputWrongNote() {
         <div class="modal-header">
             <button class="back-btn" onclick="openWrongPhotoCapture()">← 返回</button>
             <div class="modal-title">✏️ 手动输入题目</div>
-            <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
+            <button class="close-btn" onclick="window.closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div style="padding:4px 0;">
             <div style="margin-bottom:12px;">
@@ -1425,7 +1425,7 @@ ${note.explanation || '无'}
                     ${analysisContent}
                 </div>
                 
-                <button class="speak-btn" onclick="speakText(this.previousElementSibling.textContent)">🔊 朗读</button>
+                <button class="speak-btn" onclick="window.speakText(this.previousElementSibling.textContent)">🔊 朗读</button>
             </div>
             
             <button class="back-btn-full" onclick="backToWrongbook()">← 返回错题本</button>

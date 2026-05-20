@@ -102,7 +102,7 @@ function renderWeeklyReview(container) {
             </div>
             
             <div style="margin-top:24px;text-align:center;">
-                <button onclick="closeFullscreenPage()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
+                <button onclick="window.closeFullscreenPage()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
                     返回继续学习
                 </button>
             </div>
@@ -203,7 +203,7 @@ function renderProgressChart(container) {
             </div>
             
             <div style="margin-top:24px;text-align:center;">
-                <button onclick="closeFullscreenPage()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
+                <button onclick="window.closeFullscreenPage()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
                     返回继续学习
                 </button>
             </div>

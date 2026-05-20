@@ -463,7 +463,7 @@ function openApiConfigModal(type) {
             </div>
             <button onclick="saveApiConfigModal('deepseek')" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存配置</button>
             <div style="margin-top:8px;">
-                <button onclick="showAPIRechargeModal()" style="width:100%;padding:10px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">💳 API平台充值</button>
+                <button onclick="window.showAPIRechargeModal()" style="width:100%;padding:10px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">💳 API平台充值</button>
             </div>
             <button onclick="closeApiConfigModal()" class="login-btn login-btn-secondary">取消</button>
         `;

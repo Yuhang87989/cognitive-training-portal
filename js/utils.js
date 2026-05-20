@@ -238,7 +238,7 @@ function openAbout() {
                 <p>开发团队：Coze AI Agent</p>
             </div>
         </div>
-        <button onclick="closeModal()" style="width:100%;padding:14px;background:#3377FF;color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;">关闭</button>
+        <button onclick="window.closeModal()" style="width:100%;padding:14px;background:#3377FF;color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;">关闭</button>
     `;
     modal.classList.add('show');
 }

@@ -46,7 +46,7 @@ function renderPomodoro(container) {
                 </div>
             </div>
             
-            <button onclick="closeFullscreenPage()" style="margin-top:20px;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+            <button onclick="window.closeFullscreenPage()" style="margin-top:20px;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
         </div>
     `;
 }

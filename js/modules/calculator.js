@@ -18,32 +18,32 @@ function renderCalculator(container) {
             </div>
             
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
-                <button onclick="calcInput('C')" style="padding:20px;background:#ff6b6b;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">C</button>
-                <button onclick="calcInput('±')" style="padding:20px;background:#667eea;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">±</button>
-                <button onclick="calcInput('%')" style="padding:20px;background:#667eea;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">%</button>
-                <button onclick="calcInput('÷')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">÷</button>
+                <button onclick="window.calcInput('C')" style="padding:20px;background:#ff6b6b;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">C</button>
+                <button onclick="window.calcInput('±')" style="padding:20px;background:#667eea;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">±</button>
+                <button onclick="window.calcInput('%')" style="padding:20px;background:#667eea;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">%</button>
+                <button onclick="window.calcInput('÷')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">÷</button>
                 
-                <button onclick="calcInput('7')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">7</button>
-                <button onclick="calcInput('8')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">8</button>
-                <button onclick="calcInput('9')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">9</button>
-                <button onclick="calcInput('×')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">×</button>
+                <button onclick="window.calcInput('7')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">7</button>
+                <button onclick="window.calcInput('8')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">8</button>
+                <button onclick="window.calcInput('9')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">9</button>
+                <button onclick="window.calcInput('×')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">×</button>
                 
-                <button onclick="calcInput('4')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">4</button>
-                <button onclick="calcInput('5')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">5</button>
-                <button onclick="calcInput('6')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">6</button>
-                <button onclick="calcInput('-')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">-</button>
+                <button onclick="window.calcInput('4')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">4</button>
+                <button onclick="window.calcInput('5')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">5</button>
+                <button onclick="window.calcInput('6')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">6</button>
+                <button onclick="window.calcInput('-')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">-</button>
                 
-                <button onclick="calcInput('1')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">1</button>
-                <button onclick="calcInput('2')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">2</button>
-                <button onclick="calcInput('3')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">3</button>
-                <button onclick="calcInput('+')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">+</button>
+                <button onclick="window.calcInput('1')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">1</button>
+                <button onclick="window.calcInput('2')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">2</button>
+                <button onclick="window.calcInput('3')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">3</button>
+                <button onclick="window.calcInput('+')" style="padding:20px;background:#ffa502;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">+</button>
                 
-                <button onclick="calcInput('0')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;grid-column:span 2;">0</button>
-                <button onclick="calcInput('.')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">.</button>
-                <button onclick="calcInput('=')" style="padding:20px;background:#2ed573;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">=</button>
+                <button onclick="window.calcInput('0')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;grid-column:span 2;">0</button>
+                <button onclick="window.calcInput('.')" style="padding:20px;background:#f1f2f6;color:#333;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">.</button>
+                <button onclick="window.calcInput('=')" style="padding:20px;background:#2ed573;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold;cursor:pointer;">=</button>
             </div>
             
-            <button onclick="closeFullscreenPage()" style="margin-top:20px;width:100%;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+            <button onclick="window.closeFullscreenPage()" style="margin-top:20px;width:100%;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
         </div>
     `;
 }

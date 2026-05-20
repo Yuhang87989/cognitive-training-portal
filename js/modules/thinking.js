@@ -65,7 +65,7 @@ function renderThinking(container) {
             <div id="thinking-notes-list"></div>
         </div>
     
-        <button onclick="closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
+        <button onclick="window.closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
 `;
     
     renderThinkingNotes();
@@ -376,7 +376,7 @@ function showThinkingType(type) {
             <div style="font-size:13px;color:#666;line-height:1.6;">${typeDescs[type]}</div>
         </div>
         <button onclick="startThinkingQuiz('${type}', 0)" class="login-btn login-btn-primary" style="margin-bottom:8px;">开始练习</button>
-        <button class="modal-close" onclick="closeModal()">返回</button>
+        <button class="modal-close" onclick="window.closeModal()">返回</button>
     `;
 }
 
@@ -445,7 +445,7 @@ function startThinkingQuiz(type, page = 0) {
             ${currentPage > 0 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;">关闭</button>
     `;
 }
 
@@ -543,7 +543,7 @@ function submitThinkingAnswers(type, page) {
             ${page > 0 ? `<button onclick="startThinkingQuiz('${type}', ${page - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${page < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${page + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()">关闭</button>
     `;
 }
 
@@ -682,7 +682,7 @@ function viewThinkingNote(noteId) {
         <div class="modal-title">📝 思维训练笔记</div>
         <img src="${note.image}" style="width:100%;border-radius:8px;margin-bottom:16px;">
         <div style="font-size:12px;color:#999;margin-bottom:16px;">上传时间：${note.uploadTime}</div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()">关闭</button>
     `;
 }
 
@@ -830,7 +830,7 @@ async function photoToQuestion(imageData) {
             '<div style="padding:10px;font-size:13px;line-height:1.8;max-height:400px;overflow-y:auto;">' +
                 formatAIResponse(dsResult.content) +
             '</div>' +
-            '<button onclick="closeModal()" class="login-btn login-btn-secondary" style="margin-top:8px;">关闭</button>';
+            '<button onclick="window.closeModal()" class="login-btn login-btn-secondary" style="margin-top:8px;">关闭</button>';
         
     } catch(e) {
         if (document.getElementById('photo-ocr-status')) {

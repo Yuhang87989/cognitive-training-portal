@@ -508,7 +508,7 @@ async function ocrImageAndSend(base64) {
         } else {
             if (bubbles.length > 0) {
                 bubbles[bubbles.length-1].classList.remove('ai-loading');
-                bubbles[bubbles.length-1].innerHTML = formatAIResponse(dsResult.content) + '<button onclick="speakText(this.parentElement.textContent)" style="margin-top:8px;padding:4px 8px;background:#f0f0f0;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button>';
+                bubbles[bubbles.length-1].innerHTML = formatAIResponse(dsResult.content) + '<button onclick="window.speakText(this.parentElement.textContent)" style="margin-top:8px;padding:4px 8px;background:#f0f0f0;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button>';
             }
             deepseekConversationHistory.push({role: 'assistant', content: dsResult.content});
             saveDeepSeekConversation();
@@ -598,9 +598,9 @@ async function sendToDeepSeek() {
         if (result.error) {
             if (bubbles.length > 0) {
                 if (result.type === 'vision') {
-                    bubbles[bubbles.length - 1].innerHTML = '⚠️ ' + result.message + '<br><button onclick="showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:6px;cursor:pointer;">💳 充值硅基流动</button>';
+                    bubbles[bubbles.length - 1].innerHTML = '⚠️ ' + result.message + '<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:6px;cursor:pointer;">💳 充值硅基流动</button>';
                 } else if (result.type === 'balance') {
-                    bubbles[bubbles.length - 1].innerHTML = '⚠️ ' + result.message + '<br><button onclick="showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:6px;cursor:pointer;">💳 充值</button>';
+                    bubbles[bubbles.length - 1].innerHTML = '⚠️ ' + result.message + '<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:6px;cursor:pointer;">💳 充值</button>';
                 } else {
                     bubbles[bubbles.length - 1].innerHTML = '❌ 抱歉，' + result.message;
                 }
@@ -609,7 +609,7 @@ async function sendToDeepSeek() {
             const responseContent = result.content;
             if (bubbles.length > 0) {
                 bubbles[bubbles.length - 1].innerHTML = formatAIResponse(responseContent) + 
-                    '<button onclick="speakText(this.parentElement.querySelector(\'.ai-text\').textContent || this.parentElement.textContent)" style="margin-top:8px;padding:4px 8px;background:#f0f0f0;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button>';
+                    '<button onclick="window.speakText(this.parentElement.querySelector(\'.ai-text\').textContent || this.parentElement.textContent)" style="margin-top:8px;padding:4px 8px;background:#f0f0f0;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button>';
             }
             deepseekConversationHistory.push({role: 'assistant', content: responseContent});
             saveDeepSeekConversation();
@@ -663,7 +663,7 @@ function showAPIRechargeModal() {
                     '<div style="font-size:14px;font-weight:600;color:#333;">DeepSeek</div>' +
                     '<div style="font-size:11px;color:#999;">AI对话</div>' +
                 '</div>' +
-                '<button onclick="openDeepSeekRecharge()" style="padding:6px 14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">充值</button>' +
+                '<button onclick="window.openDeepSeekRecharge()" style="padding:6px 14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">充值</button>' +
             '</div>' +
         '</div>' +
         '<div style="padding:12px;margin-bottom:8px;background:#f0fff4;border-radius:10px;">' +
@@ -672,10 +672,10 @@ function showAPIRechargeModal() {
                     '<div style="font-size:14px;font-weight:600;color:#333;">硅基流动</div>' +
                     '<div style="font-size:11px;color:#999;">图片识别 🎁送14元</div>' +
                 '</div>' +
-                '<button onclick="openSiliconFlowRecharge()" style="padding:6px 14px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">充值</button>' +
+                '<button onclick="window.openSiliconFlowRecharge()" style="padding:6px 14px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">充值</button>' +
             '</div>' +
         '</div>' +
-        '<button onclick="closeModal()" style="width:100%;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">关闭</button>';
+        '<button onclick="window.closeModal()" style="width:100%;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">关闭</button>';
 }
 
 window.openDeepSeekRecharge = openDeepSeekRecharge;
@@ -729,14 +729,14 @@ function renderDeepseek(contentEl) {
         // 顶部信息卡
         '<div style="padding:10px 12px;background:white;border-bottom:1px solid #f0f0f0;flex-shrink:0;">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleDeepSeekHistory()" title="点击查看聊天历史">' +
+                '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="window.toggleDeepSeekHistory()" title="点击查看聊天历史">' +
                     '<div style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(102,126,234,0.3);">🤖</div>' +
                     '<div><div style="font-size:13px;font-weight:600;color:#333;">DeepSeek AI 助手</div><div style="font-size:10px;color:#999;">智能学习助手 · 点击看历史</div></div>' +
                 '</div>' +
                 '<div style="display:flex;align-items:center;gap:8px;">' +
                     '<div style="font-size:10px;color:#999;">余额 <span id="ds-balance" style="color:#43a047;font-weight:600;">¥' + balance + '</span></div>' +
-        '<button onclick="openApiConfigModal(\'deepseek\')" style="padding:4px 8px;background:#f0f0f0;color:#666;border:none;border-radius:6px;font-size:11px;cursor:pointer;">配置</button>' +
-        '<button onclick="showAPIRechargeModal()" style="padding:4px 8px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">充值</button>' +
+        '<button onclick="window.openApiConfigModal(\'deepseek\')" style="padding:4px 8px;background:#f0f0f0;color:#666;border:none;border-radius:6px;font-size:11px;cursor:pointer;">配置</button>' +
+        '<button onclick="window.showAPIRechargeModal()" style="padding:4px 8px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">充值</button>' +
                 '</div>' +
             '</div>' +
         '</div>' +
@@ -744,10 +744,10 @@ function renderDeepseek(contentEl) {
         '<div id="deepseek-messages" style="flex:1;overflow-y:auto;padding:10px;font-size:13px;"></div>' +
         // 模式切换按钮
         '<div style="padding:6px 10px;background:#f9f9f9;border-top:1px solid #eee;display:flex;gap:8px;flex-shrink:0;">' +
-        '  <button class="ds-mode-btn" data-mode="fast" onclick="toggleDeepseekMode(\'fast\')" style="flex:1;padding:6px 12px;border:none;border-radius:16px;font-size:11px;cursor:pointer;background:#667eea;color:white;transition:all 0.2s;">' +
+        '  <button class="ds-mode-btn" data-mode="fast" onclick="window.toggleDeepseekMode(\'fast\')" style="flex:1;padding:6px 12px;border:none;border-radius:16px;font-size:11px;cursor:pointer;background:#667eea;color:white;transition:all 0.2s;">' +
         '    🚀 快速模式' +
         '  </button>' +
-        '  <button class="ds-mode-btn" data-mode="expert" onclick="toggleDeepseekMode(\'expert\')" style="flex:1;padding:6px 12px;border:none;border-radius:16px;font-size:11px;cursor:pointer;background:#f5f5f5;color:#666;transition:all 0.2s;">' +
+        '  <button class="ds-mode-btn" data-mode="expert" onclick="window.toggleDeepseekMode(\'expert\')" style="flex:1;padding:6px 12px;border:none;border-radius:16px;font-size:11px;cursor:pointer;background:#f5f5f5;color:#666;transition:all 0.2s;">' +
         '    💎 专家模式' +
         '  </button>' +
         '</div>' +
