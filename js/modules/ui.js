@@ -393,11 +393,19 @@ function openFullscreenPage(module) {
                 window.renderCalculator(contentEl);
             }
             break;
+        case 'exam': 
+            // V272: 模拟考试模块（原学习日记）
+            if (typeof window.renderNotepad === 'function') {
+                window.renderNotepad(contentEl);
+            }
+            break;
         case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
         case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
         case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
         case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'notepad': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
         case 'mindmap': 
             // V270: 传统方式加载 - 思维导图
             if (typeof window.renderMindMap === 'function') {

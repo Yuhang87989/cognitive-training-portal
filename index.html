@@ -90,6 +90,7 @@ window.__loaded_modules = [];
 <script src="js/modules/notepad.js?v=270"></script>
 <script src="js/modules/mindmap.js?v=270"></script>
 <script src="js/modules/calculator.js?v=270"></script>
+<script src="js/modules/plan.js?v=270"></script>
 
 <script>
 console.log('[V270] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
@@ -256,10 +257,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
     <div class="module-section">
         <div class="module-grid-unified" style="grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <button class="module-btn gradient-green" onclick="openFullscreenPage('notepad')">
+            <button class="module-btn gradient-green" onclick="openFullscreenPage('exam')">
                 <div class="module-icon">📝</div>
-                <div class="module-name">学习日记</div>
-                <div class="module-desc">记录成长</div>
+                <div class="module-name">模拟考试</div>
+                <div class="module-desc">自我检测</div>
             </button>
             <button class="module-btn gradient-blue" onclick="openFullscreenPage('mindmap')">
                 <div class="module-icon">🗺️</div>
