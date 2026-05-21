@@ -146,7 +146,7 @@ window.renderCozeSyncPage = function(container) {
             document.getElementById('coze-token').value = 'pat_kaqK0gILxJXypmRXoo76YBV5YPe68CzkD6jX4JxDAdjywcSngSExOtFIgS5olupW';
         }
         if (!window.CozeSync.config.botId) {
-            document.getElementById('coze-bot-id').value = '7626319930325139754';
+            document.getElementById('coze-bot-id').value = '7642285667988586496';
         }
     }
 };
