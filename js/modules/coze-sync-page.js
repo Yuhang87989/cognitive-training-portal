@@ -159,18 +159,29 @@ window.renderCozeSyncPage = function(container) {
 // 保存配置
 window.saveCozeConfig = function() {
     if (!window.CozeSync) {
-        window.addCozeLog('❌ CozeSync模块未加载', 'error');
+        alert('❌ CozeSync模块未加载');
         return;
     }
     
     const token = document.getElementById('coze-token').value;
     const botId = document.getElementById('coze-bot-id').value;
     
+    if (!token || token.length < 10) {
+        alert('⚠️ 请输入有效的Access Token');
+        return;
+    }
+    
+    if (!botId || botId.length < 5) {
+        alert('⚠️ 请输入有效的Bot ID');
+        return;
+    }
+    
     window.CozeSync.config.accessToken = token;
     window.CozeSync.config.botId = botId;
     window.CozeSync.saveConfig();
     
     window.addCozeLog('✅ 配置已保存', 'success');
+    alert('✅ 配置已保存！');
     
     // 重新渲染以更新状态
     setTimeout(function() {
@@ -183,12 +194,19 @@ window.saveCozeConfig = function() {
 
 // 批量同步Week1-Week10学习计划
 window.syncAllWeeksFromCoze = function() {
+    // 检查配置状态
+    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
+        alert('⚠️ 请先在上方配置Access Token和Bot ID');
+        return;
+    }
+    
     window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
     
     window.CozeSync.syncAllWeeksFromCoze()
     .then(function(result) {
         if (result.success) {
             window.addCozeLog('✅ 同步成功！新增 ' + result.count + ' 个任务', 'success');
+            alert('✅ 同步成功！新增 ' + result.count + ' 个任务');
             // 刷新页面显示新数据
             setTimeout(function() {
                 const container = document.getElementById('app-container');
@@ -198,21 +216,29 @@ window.syncAllWeeksFromCoze = function() {
             }, 500);
         } else {
             window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
+            alert('❌ 同步失败: ' + (result.error || '未知错误'));
         }
     })
     .catch(function(error) {
         window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
+        alert('❌ 同步异常: ' + error.message);
     });
 };
 
 // 同步学习计划
 window.syncPlanFromCoze = function() {
+    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
+        alert('⚠️ 请先配置Access Token和Bot ID');
+        return;
+    }
+    
     window.addCozeLog('🔄 正在从扣子同步学习计划...', 'info');
     
     window.CozeSync.syncPlanFromCoze()
     .then(function(result) {
         if (result.success) {
             window.addCozeLog('✅ 同步成功！导入 ' + result.count + ' 个任务', 'success');
+            alert('✅ 同步成功！导入 ' + result.count + ' 个任务');
             // 刷新页面显示新数据
             setTimeout(function() {
                 const container = document.getElementById('app-container');
@@ -222,66 +248,97 @@ window.syncPlanFromCoze = function() {
             }, 500);
         } else {
             window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
+            alert('❌ 同步失败: ' + (result.error || '未知错误'));
         }
     })
     .catch(function(error) {
         window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
+        alert('❌ 同步异常: ' + error.message);
     });
 };
 
 // 同步思维导图
 window.syncMindMapFromCoze = function() {
+    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
+        alert('⚠️ 请先配置Access Token和Bot ID');
+        return;
+    }
+    
     window.addCozeLog('🔄 正在请求AI生成思维导图...', 'info');
     
     window.CozeSync.syncMindMapFromCoze()
     .then(function(result) {
         if (result.success) {
             window.addCozeLog('✅ 生成成功！导图ID: ' + result.mapId, 'success');
+            alert('✅ 思维导图生成成功！');
         } else {
             window.addCozeLog('❌ 生成失败', 'error');
+            alert('❌ 生成失败');
         }
     })
     .catch(function(error) {
         window.addCozeLog('❌ 生成异常: ' + error.message, 'error');
+        alert('❌ 生成异常: ' + error.message);
     });
 };
 
 // 上传学习计划
 window.uploadPlanToCoze = function() {
+    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
+        alert('⚠️ 请先配置Access Token和Bot ID');
+        return;
+    }
+    
     window.addCozeLog('⬆️ 正在上传学习计划到扣子...', 'info');
     
     window.CozeSync.uploadDataToCoze('plan')
     .then(function(result) {
         if (result.success) {
             window.addCozeLog('✅ 上传成功！', 'success');
+            alert('✅ 学习计划上传成功！');
         } else {
             window.addCozeLog('❌ 上传失败', 'error');
+            alert('❌ 上传失败');
         }
     })
     .catch(function(error) {
         window.addCozeLog('❌ 上传异常: ' + error.message, 'error');
+        alert('❌ 上传异常: ' + error.message);
     });
 };
 
 // 上传思维导图
 window.uploadMindMapToCoze = function() {
+    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
+        alert('⚠️ 请先配置Access Token和Bot ID');
+        return;
+    }
+    
     window.addCozeLog('⬆️ 正在上传思维导图到扣子...', 'info');
     
     window.CozeSync.uploadDataToCoze('mindmap')
     .then(function(result) {
         if (result.success) {
             window.addCozeLog('✅ 上传成功！', 'success');
+            alert('✅ 思维导图上传成功！');
         } else {
             window.addCozeLog('❌ 上传失败', 'error');
+            alert('❌ 上传失败');
         }
     })
     .catch(function(error) {
         window.addCozeLog('❌ 上传异常: ' + error.message, 'error');
+        alert('❌ 上传异常: ' + error.message);
     });
 };
 
 // 生成练习题
 window.generateQuestions = function() {
+    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
+        alert('⚠️ 请先配置Access Token和Bot ID');
+        return;
+    }
+    
     const subject = document.getElementById('ai-subject').value;
     const difficulty = document.getElementById('ai-difficulty').value;
     const count = document.getElementById('ai-count').value;
@@ -291,10 +348,12 @@ window.generateQuestions = function() {
     window.CozeSync.generateQuestions(subject, difficulty, count)
     .then(function(result) {
         window.addCozeLog('✅ 生成完成！', 'success');
+        alert('✅ ' + subject + '练习题生成完成！');
         console.log('生成结果:', result);
     })
     .catch(function(error) {
         window.addCozeLog('❌ 生成异常: ' + error.message, 'error');
+        alert('❌ 生成异常: ' + error.message);
     });
 };
 
