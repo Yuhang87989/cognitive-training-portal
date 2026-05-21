@@ -158,7 +158,6 @@ window.renderCozeSyncPage = function(container) {
 
 // 保存配置
 window.saveCozeConfig = function() {
-    alert("按钮已点击！");
     if (!window.CozeSync) {
         alert('❌ CozeSync模块未加载');
         return;
