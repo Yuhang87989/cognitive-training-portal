@@ -11,7 +11,7 @@ window.renderCozeSyncPage = function(container) {
         <div style="padding:20px;background:#f8f9fa;min-height:100vh;">
             <!-- 顶部栏 -->
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <button onclick="history.back()" style="padding:10px 16px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回</button>
+                <button onclick="window.closeCozeSyncPage()" style="padding:10px 16px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回</button>
                 <h2 style="margin:0;font-size:18px;color:#333;">🔗 扣子数据同步</h2>
                 <div style="width:60px;"></div>
             </div>
@@ -277,4 +277,48 @@ window.addCozeLog = function(message, type) {
     logDiv.insertBefore(entry, logDiv.firstChild);
 };
 
-console.log('[V298] 扣子数据同步可视化页面加载完成');
+// 打开同步页面（从菜单调用）
+window.openCozeSyncPage = function() {
+    // 关闭用户菜单
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+    
+    // 隐藏首页，显示同步页面
+    const homePage = document.getElementById('page-home');
+    if (homePage) {
+        homePage.style.display = 'none';
+    }
+    
+    // 创建或获取app容器
+    let appContainer = document.getElementById('app-container');
+    if (!appContainer) {
+        appContainer = document.createElement('div');
+        appContainer.id = 'app-container';
+        appContainer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#f8f9fa;z-index:9999;overflow-y:auto;';
+        document.body.appendChild(appContainer);
+    }
+    
+    appContainer.style.display = 'block';
+    window.renderCozeSyncPage(appContainer);
+    
+    console.log('[CozeSync] 已打开数据同步页面');
+};
+
+// 关闭同步页面，返回首页
+window.closeCozeSyncPage = function() {
+    const appContainer = document.getElementById('app-container');
+    if (appContainer) {
+        appContainer.style.display = 'none';
+    }
+    
+    const homePage = document.getElementById('page-home');
+    if (homePage) {
+        homePage.style.display = 'block';
+    }
+    
+    console.log('[CozeSync] 已返回首页');
+};
+
+console.log('[V299] 扣子数据同步可视化页面加载完成');

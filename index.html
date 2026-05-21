@@ -76,9 +76,9 @@ window.__loaded_modules = [];
 <script src="js/data/podcasts.js?v=270"></script>
 <script src="js/data/videos.js?v=270"></script>
 <script src="js/data/games-config.js?v=270"></script>
-<script src="js/modules/data-sync.js?v=298"></script>
-<script src="js/modules/coze-sync.js?v=298"></script>
-<script src="js/modules/coze-sync-page.js?v=298"></script>
+<script src="js/modules/data-sync.js?v=300"></script>
+<script src="js/modules/coze-sync.js?v=300"></script>
+<script src="js/modules/coze-sync-page.js?v=300"></script>
 
 <!-- 业务模块 - 全部用传统方式加载，确保可用 -->
 <script src="js/modules/practice.js?v=270"></script>
@@ -235,6 +235,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                         </div>
                         <div class="user-dropdown-divider"></div>
                         
+                        <div class="user-dropdown-item" onclick="openCozeSyncPage()">
+                            <span>🔗</span>
+                            <span>扣子数据同步</span>
+                        </div>
                         <div class="user-dropdown-item" onclick="openSettingsPanel()">
                             <span>⚙️</span>
                             <span>设置</span>
