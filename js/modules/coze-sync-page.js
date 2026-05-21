@@ -31,7 +31,7 @@ window.renderCozeSyncPage = function(container) {
                         <input type="text" id="coze-bot-id" placeholder="734286681234567890" value="${window.CozeSync ? window.CozeSync.config.botId : ''}" style="width:100%;padding:12px 16px;border:2px solid #eee;border-radius:10px;font-size:14px;box-sizing:border-box;" />
                     </div>
                     
-                    <button onclick="window.saveCozeConfig()" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">
+                    <button onclick="alert('test');window.saveCozeConfig()" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">
                         💾 保存配置
                     </button>
                 </div>
