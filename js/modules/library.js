@@ -420,6 +420,435 @@
                 { title: '面试技巧与真题', content: '历年综评面试真题分享，答题技巧总结。' }
             ],
             notes: []
+        },
+        // --- 志愿填报补充（5-9）---
+        {
+            id: '志愿_5',
+            title: '军校报考全指南',
+            author: '军校招生办公室',
+            emoji: '🎖️',
+            gradient: '#30cfd0,#330867',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-5.pdf',
+            chapters: [
+                { title: '27所军校介绍', content: '军委直属、陆军、海军、空军、火箭军、武警等各类军校。' },
+                { title: '体检标准详解', content: '身高、体重、视力、色觉、体能等各项体检标准。' },
+                { title: '政治考核要求', content: '政审内容、流程、注意事项，哪些情况不能报考。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_6',
+            title: '公安类院校报考指南',
+            author: '公安部政治部',
+            emoji: '👮',
+            gradient: '#09203f,#537895',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-6.pdf',
+            chapters: [
+                { title: '公安部直属5所院校', content: '中国人民公安大学、中国人民警察大学等5所顶尖警校。' },
+                { title: '省属公安院校', content: '各省警察学院，入警率高，就业有保障。' },
+                { title: '体能测试项目与标准', content: '50米跑、立定跳远、1000米跑、引体向上等项目标准。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_7',
+            title: '师范类院校报考指南',
+            author: '教育部师范教育司',
+            emoji: '👨‍🏫',
+            gradient: '#868f96,#596164',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-7.pdf',
+            chapters: [
+                { title: '公费师范生政策', content: '两免一补、包分配、有编制，值得报考的好政策。' },
+                { title: '教育部直属6所师范大学', content: '北师大、华东师大、华中师大、东北师大、陕师大、西南大学。' },
+                { title: '师范专业与非师范专业', content: '两者的区别，教师资格证考试政策。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_8',
+            title: '医学院校报考指南',
+            author: '医学教育认证中心',
+            emoji: '🏥',
+            gradient: '#e6d5b8,#e6a4b4',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-8.pdf',
+            chapters: [
+                { title: '顶级医学院校', content: '协和医学院、北大医学部、复旦上海医学院、上交医学院等。' },
+                { title: '医学类专业学制', content: '5年本科、5+3一体化、8年本博连读的区别。' },
+                { title: '规培政策详解', content: '住院医师规范化培训，医学生的必经之路。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_9',
+            title: '中外合作办学报考指南',
+            author: '国际教育交流中心',
+            emoji: '🌍',
+            gradient: '#09c6f9,#045de9',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-9.pdf',
+            chapters: [
+                { title: '什么是中外合作办学', content: '中外高校合作培养，双学位项目，国际化教育。' },
+                { title: '上海纽约大学等顶级合作院校', content: '录取标准、学费、毕业去向全解析。' },
+                { title: '值不值得报考？', content: '优势与劣势分析，适合什么样的学生。' }
+            ],
+            notes: []
+        },
+        // --- 专业选择补充（6-15）---
+        {
+            id: 'major_6',
+            title: '电子信息类专业详解',
+            author: '电子信息教指委',
+            emoji: '📡',
+            gradient: '#37ecba,#72afd3',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-6.pdf',
+            chapters: [
+                { title: '电子信息工程', content: '软硬件结合，就业面广，适应性强。' },
+                { title: '通信工程', content: '5G时代的核心专业，华为、中兴、运营商主要招聘方向。' },
+                { title: '微电子科学与工程', content: '芯片设计与制造，国家大力扶持的卡脖子领域。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_7',
+            title: '自动化与控制类专业',
+            author: '自动化教指委',
+            emoji: '🤖',
+            gradient: '#6a11cb,#2575fc',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-7.pdf',
+            chapters: [
+                { title: '自动化专业', content: '万金油专业，工业4.0时代需求旺盛。' },
+                { title: '机器人工程', content: '新兴专业，智能制造时代的核心人才。' },
+                { title: '电气工程及其自动化', content: '国家电网、南方电网的主要招聘专业。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_8',
+            title: '土木建筑类专业',
+            author: '土建教指委',
+            emoji: '🏗️',
+            gradient: '#f5d799,#f8b500',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-8.pdf',
+            chapters: [
+                { title: '土木工程', content: '基建行业的核心专业，设计院、施工单位、甲方都需要。' },
+                { title: '建筑学', content: '5年制，需要美术基础，设计建筑的灵魂。' },
+                { title: '给排水、暖通、电气', content: '建筑设备三专业，设计院必不可少。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_9',
+            title: '机械工程类专业',
+            author: '机械教指委',
+            emoji: '⚙️',
+            gradient: '#8e2de2,#4a00e0',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-9.pdf',
+            chapters: [
+                { title: '机械设计制造及其自动化', content: '工科第一大专业，任何制造企业都需要。' },
+                { title: '车辆工程', content: '汽车工业的核心专业，新能源汽车发展迅速。' },
+                { title: '航空航天工程', content: '大国重器，北航、南航、西工大等强校。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_10',
+            title: '化工材料类专业',
+            author: '化工教指委',
+            emoji: '🧪',
+            gradient: '#00b09b,#96c93d',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-10.pdf',
+            chapters: [
+                { title: '化学工程与工艺', content: '石化、医药、新能源行业都需要的专业。' },
+                { title: '材料科学与工程', content: '新材料是工业的基础，国家战略新兴产业。' },
+                { title: '环境工程', content: '绿水青山就是金山银山，环保产业发展迅速。' }
+            ],
+            notes: []
+        },
+        // --- 学习方法补充（6-10）---
+        {
+            id: 'study_6',
+            title: '高中化学学习法',
+            author: '化学特级教师',
+            emoji: '⚗️',
+            gradient: '#43e97b,#38f9d7',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-6.pdf',
+            chapters: [
+                { title: '元素化合物知识网络', content: '构建知识网络，让零散的知识点系统化。' },
+                { title: '化学反应原理理解', content: '热力学、动力学、电化学，理解是关键。' },
+                { title: '有机化学学习技巧', content: '官能团决定性质，掌握这个规律就简单了。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_7',
+            title: '高中生物学习法',
+            author: '生物竞赛教练',
+            emoji: '🧬',
+            gradient: '#fa709a,#fee140',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-7.pdf',
+            chapters: [
+                { title: '课本是最好的资料', content: '生物教材要精读，每个字都可能成为考点。' },
+                { title: '图文结合记忆', content: '利用课本插图，理解记忆细胞结构、生理过程。' },
+                { title: '遗传题解题技巧', content: '遗传概率计算，掌握方法就不难。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_8',
+            title: '高中历史学习法',
+            author: '历史特级教师',
+            emoji: '📜',
+            gradient: '#a18cd1,#fbc2eb',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-8.pdf',
+            chapters: [
+                { title: '时间轴记忆法', content: '把历史事件按时间顺序串起来，建立时空观念。' },
+                { title: '政治经济文化三维分析', content: '任何历史事件都可以从这三个维度分析。' },
+                { title: '材料题答题模板', content: '原因类、影响类、比较类，各类题型答题套路。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_9',
+            title: '高中地理学习法',
+            author: '地理特级教师',
+            emoji: '🌍',
+            gradient: '#667eea,#764ba2',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-9.pdf',
+            chapters: [
+                { title: '地图是地理的第二语言', content: '学会看图、画图，地理就学会了一半。' },
+                { title: '自然地理理解为主', content: '大气环流、洋流、地壳运动，理解原理是关键。' },
+                { title: '人文地理模板化', content: '区位因素分析有固定套路，记住就可以套用。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_10',
+            title: '高中思想政治学习法',
+            author: '政治特级教师',
+            emoji: '📚',
+            gradient: '#f093fb,#f5576c',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-10.pdf',
+            chapters: [
+                { title: '经济生活逻辑体系', content: '生产、分配、交换、消费，四大环节环环相扣。' },
+                { title: '政治生活主体分析法', content: '公民、政府、党、人大、政协，每个主体的职权要分清。' },
+                { title: '哲学生活原理+方法论', content: '每个哲学原理对应一个方法论，成对记忆。' }
+            ],
+            notes: []
+        },
+        // --- 升学规划补充（11-20）---
+        {
+            id: 'college_11',
+            title: '浙江大学报考指南',
+            author: '浙大招生办',
+            emoji: '🌿',
+            gradient: '#11998e,#38ef7d',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-11.pdf',
+            chapters: [
+                { title: '浙大历史与现状', content: '求是创新，东方剑桥，学科齐全的综合性大学。' },
+                { title: '竺可桢学院', content: '浙大的尖子班，培养拔尖创新人才的荣誉学院。' },
+                { title: '优势专业与录取分数', content: '计算机、农学、数学、临床医学等专业实力强劲。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_12',
+            title: '中国科学技术大学报考指南',
+            author: '中科大招生办',
+            emoji: '🔭',
+            gradient: '#5c258d,#4389a2',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-12.pdf',
+            chapters: [
+                { title: '千生一院士', content: '中国科学家的摇篮，出国深造比例全国最高。' },
+                { title: '少年班与创新试点班', content: '天才少年的培养基地，不拘一格降人才。' },
+                { title: '物理系与物理系', content: '理科全国第一，基础学科实力雄厚。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_13',
+            title: '南京大学报考指南',
+            author: '南大招生办',
+            emoji: '🌟',
+            gradient: '#2c3e50,#4ca1af',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-13.pdf',
+            chapters: [
+                { title: '诚朴雄伟，励学敦行', content: '历史悠久的百年名校，低调有实力。' },
+                { title: '天文学全国第一', content: '南大天文，中国天文的半壁江山。' },
+                { title: '文理科实力均衡', content: '文科理科都是顶尖水平，华东五校之一。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_14',
+            title: 'C9联盟院校全解析',
+            author: '高等教育研究会',
+            emoji: '💎',
+            gradient: '#0f0c29,#302b63,#24243e',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-14.pdf',
+            chapters: [
+                { title: '什么是C9联盟', content: '中国的常春藤，九所顶尖大学组成的高校联盟。' },
+                { title: 'C9院校优势', content: '交换培养、联合科研、保研率高、出国深造机会多。' },
+                { title: '各校特色对比', content: '清北、华五、哈工大、西交大，各校优势学科分析。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_15',
+            title: '国防七子全解析',
+            author: '国防科工局',
+            emoji: '🛡️',
+            gradient: '#141e30,#243b55',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-15.pdf',
+            chapters: [
+                { title: '什么是国防七子', content: '工信部直属的七所国防特色鲜明的大学。' },
+                { title: '北航、北理工、哈工大', content: '三所985，航空航天、武器装备领域的顶尖学府。' },
+                { title: '西工大、南航、南理工、哈工程', content: '各具特色，在各自领域实力雄厚。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_16',
+            title: '两电一邮报考指南',
+            author: '电子信息教育联盟',
+            emoji: '📶',
+            gradient: '#6dd5ed,#2193b0',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-16.pdf',
+            chapters: [
+                { title: '电子科技大学', content: '中国电子类院校的排头兵，两电一邮之首。' },
+                { title: '西安电子科技大学', content: '西军电传承，通信、电子、计算机实力强劲。' },
+                { title: '北京邮电大学', content: '互联网界的黄埔军校，IT企业就业质量极高。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_17',
+            title: '五院四系法学强校',
+            author: '法学教育研究会',
+            emoji: '⚖️',
+            gradient: '#cc2b5e,#753a88',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-17.pdf',
+            chapters: [
+                { title: '五院：政法专门院校', content: '中国政法、西南政法、华东政法、中南财经政法、西北政法。' },
+                { title: '四系：综合大学法学院', content: '北大、人大、吉大、武大，四大法学院系。' },
+                { title: '法学专业就业前景', content: '律师、法官、检察官、公司法务，职业选择多样。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_18',
+            title: '建筑老八校报考指南',
+            author: '建筑教育评估委员会',
+            emoji: '🏛️',
+            gradient: '#ee0979,#ff6a00',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-18.pdf',
+            chapters: [
+                { title: '什么是建筑老八校', content: '新中国最早开设建筑学专业的八所高校。' },
+                { title: '四大王牌：清华、东南、天大、同济', content: '建筑学A+学科院校，中国建筑教育的最高水平。' },
+                { title: '其他四校：华工、重大、哈建大、西建大', content: '各具特色，在建筑界认可度极高。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_19',
+            title: '财经类院校排名与报考',
+            author: '财经教育联盟',
+            emoji: '💰',
+            gradient: '#2b5876,#4e4376',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-19.pdf',
+            chapters: [
+                { title: '两财一贸：上财、央财、对外经贸', content: '中国财经类院校的第一梯队，就业质量堪比985。' },
+                { title: '西南财经、中南财经政法', content: '区域强校，金融界校友众多。' },
+                { title: '东北财经、江西财经', content: '行业认可度高，性价比之选。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_20',
+            title: '电力部直属院校全解析',
+            author: '国家电网人力资源部',
+            emoji: '⚡',
+            gradient: '#0f0c29,#302b63,#24243e',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-20.pdf',
+            chapters: [
+                { title: '电气二龙四虎', content: '电气专业顶尖院校，进入国家电网的绿色通道。' },
+                { title: '原电力部直属院校', content: '东北电力、上海电力、南京工程、三峡大学等。' },
+                { title: '国家电网招聘考试', content: '考试内容、录取比例、备考策略分享。' }
+            ],
+            notes: []
         }
     ];
     
