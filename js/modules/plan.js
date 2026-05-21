@@ -9,9 +9,9 @@ window.planState = {
 
 // 初始化任务数据
 window.initPlanTasks = function() {
-    const saved = localStorage.getItem('learningPlanTasks');
-    if (saved) {
-        window.planState.tasks = JSON.parse(saved);
+    const savedData = window.DataSync.get('plan');
+    if (savedData && savedData.tasks && savedData.tasks.length > 0) {
+        window.planState.tasks = savedData.tasks;
     } else {
         // 默认任务
         window.planState.tasks = [
@@ -24,9 +24,13 @@ window.initPlanTasks = function() {
     }
 };
 
-// 保存任务
+// 保存任务到DataSync
 window.savePlanTasks = function() {
-    localStorage.setItem('learningPlanTasks', JSON.stringify(window.planState.tasks));
+    window.DataSync.set('plan', { 
+        tasks: window.planState.tasks, 
+        categories: ['语文', '数学', '英语', '其他'], 
+        version: 1 
+    });
 };
 
 window.renderPlan = function(container) {

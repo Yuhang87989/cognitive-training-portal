@@ -12,8 +12,12 @@ window.mindmapState = {
 window.renderMindMap = function(container) {
     console.log('[V295] renderMindMap 被调用，container:', container);
     
-    // 初始化默认节点数据
-    if (window.mindmapState.nodes.length === 0) {
+    // 从DataSync加载节点数据
+    var savedData = window.DataSync.get('mindmap');
+    if (savedData && savedData.nodes && savedData.nodes.length > 0) {
+        window.mindmapState.nodes = savedData.nodes;
+    } else {
+        // 默认节点数据
         window.mindmapState.nodes = [
             { id: 1, text: '我的学习', x: 50, y: 50, color: '#667eea', isRoot: true },
             { id: 2, text: '🔤 语文', x: 25, y: 28, color: '#f093fb', parent: 1 },
@@ -22,6 +26,11 @@ window.renderMindMap = function(container) {
             { id: 5, text: '📅 计划', x: 75, y: 68, color: '#fa709a', parent: 1 }
         ];
     }
+    
+    // 保存到DataSync
+    window.saveMindMapData = function() {
+        window.DataSync.set('mindmap', { nodes: window.mindmapState.nodes, version: 1 });
+    };
     
     container.innerHTML = `
         <div style="height:100%;display:flex;flex-direction:column;background:#f8f9fa;">
@@ -159,7 +168,10 @@ window.renderAllMindMapNodes = function() {
     
     // 停止拖拽
     document.addEventListener('mouseup', function() {
-        window.mindmapState.isDragging = false;
+        if (window.mindmapState.isDragging) {
+            window.mindmapState.isDragging = false;
+            window.saveMindMapData();
+        }
     });
 };
 
@@ -195,6 +207,7 @@ window.addChildNode = function() {
     });
     
     window.renderAllMindMapNodes();
+    window.saveMindMapData();
 };
 
 // 编辑选中节点
@@ -211,6 +224,7 @@ window.editSelectedNode = function() {
     if (newText) {
         node.text = newText;
         window.renderAllMindMapNodes();
+        window.saveMindMapData();
     }
 };
 
@@ -242,6 +256,7 @@ window.deleteSelectedNode = function() {
         deleteChildren(node.id);
         window.mindmapState.selectedNode = null;
         window.renderAllMindMapNodes();
+        window.saveMindMapData();
     }
 };
 
@@ -257,6 +272,7 @@ window.resetMindMap = function() {
         ];
         window.mindmapState.selectedNode = null;
         window.renderAllMindMapNodes();
+        window.saveMindMapData();
     }
 };
 
