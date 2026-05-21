@@ -118,7 +118,7 @@ window.renderMindMap = function(container) {
             <div style="padding:8px 16px;background:#fafafa;display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
                 <span style="font-size:13px;color:#666;">样式：</span>
                 ${window.mindmapState.styles.map((s, index) => `
-                    <button class="style-btn" data-style="${s}" style="padding:4px 10px;background:${s === window.mindmapState.currentStyle ? '#667eea' : '#fff'};color:${s === window.mindmapState.currentStyle ? 'white' : '#666'};border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;">${s === 'default' ? '默认' : s === 'colorful' ? '多彩' : s === 'minimal' ? '简约' : s === 'ocean' ? '海洋' : '日落'}</button>
+                    <button onclick="window.switchMindMapStyle('${s}')" class="style-btn" data-style="${s}" style="padding:4px 10px;background:${s === window.mindmapState.currentStyle ? '#667eea' : '#fff'};color:${s === window.mindmapState.currentStyle ? 'white' : '#666'};border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;">${s === 'default' ? '默认' : s === 'colorful' ? '多彩' : s === 'minimal' ? '简约' : s === 'ocean' ? '海洋' : '日落'}</button>
                 `).join('')}
             </div>
             

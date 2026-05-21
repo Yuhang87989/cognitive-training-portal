@@ -99,8 +99,9 @@ window.renderPlan = function(container) {
             </div>
             
             <!-- 添加任务按钮 -->
-            <div style="margin-top:20px;display:flex;gap:12px;">
-                <button onclick="window.addPlanTask()" style="padding:12px 20px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;flex:1;">➕ 添加新任务</button>
+            <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+                <button onclick="window.addPlanTask()" style="padding:12px 20px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;flex:1;min-width:120px;">➕ 添加新任务</button>
+                <button onclick="window.importWeekPlanFromCoze()" style="padding:12px 20px;background:#43e97b;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;flex:1;min-width:120px;">🔗 同步Week计划</button>
                 <button onclick="window.clearCompletedTasks()" style="padding:12px 20px;background:#fa709a;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">🗑️ 清理已完成</button>
             </div>
             
@@ -210,4 +211,28 @@ window.clearCompletedTasks = function() {
     }
 };
 
-console.log('[V297] 学习计划模块加载完成，window.renderPlan:', typeof window.renderPlan);
+// 从扣子同步Week学习计划
+window.importWeekPlanFromCoze = function() {
+    const weekNum = prompt('请输入要同步的周数（1-10）：', '1');
+    if (!weekNum || isNaN(weekNum) || weekNum < 1 || weekNum > 10) {
+        alert('请输入有效的周数（1-10）');
+        return;
+    }
+    
+    if (!confirm(`确定要同步 Week${weekNum} 的学习计划吗？这将添加到当前日期的任务列表中。`)) {
+        return;
+    }
+    
+    // 直接打开扣子数据同步页面
+    alert('即将跳转到扣子数据同步页面，请选择对应的Week进行同步');
+    
+    // 跳转到同步页面
+    const container = document.getElementById('app-container');
+    if (container && typeof window.renderCozeSyncPage === 'function') {
+        window.renderCozeSyncPage(container);
+    } else {
+        alert('请从头像菜单进入扣子数据同步页面');
+    }
+};
+
+console.log('[V305] 学习计划模块加载完成，window.renderPlan:', typeof window.renderPlan);
