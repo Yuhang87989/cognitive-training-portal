@@ -397,12 +397,17 @@ function openFullscreenPage(module) {
     };
     titleEl.textContent = moduleTitles[module] || module;
     
+    console.log('[V292] 打开模块:', module, 'renderPlan类型:', typeof window.renderPlan, 'renderMindMap类型:', typeof window.renderMindMap);
+    
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
         case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
-        case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
+        case 'plan': 
+            console.log('[V292] 渲染学习计划');
+            window.renderPlan(contentEl); 
+            break;
         case 'method': if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
         case 'thinking': if (typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
         case 'podcast': if (typeof window.renderPodcast === 'function') window.renderPodcast(contentEl); break;
@@ -420,7 +425,10 @@ function openFullscreenPage(module) {
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
         case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
         case 'notepad': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
-        case 'mindmap': if (typeof window.renderMindMap === 'function') window.renderMindMap(contentEl); break;
+        case 'mindmap': 
+            console.log('[V292] 渲染思维导图');
+            window.renderMindMap(contentEl); 
+            break;
         case 'library': 
             if (typeof window.renderLibrary === 'function') {
                 window.renderLibrary(contentEl);
