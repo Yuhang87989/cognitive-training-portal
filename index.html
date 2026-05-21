@@ -76,7 +76,7 @@ window.__loaded_modules = [];
 <script src="js/data/podcasts.js?v=270"></script>
 <script src="js/data/videos.js?v=270"></script>
 <script src="js/data/games-config.js?v=270"></script>
-<script src="js/modules/data-sync.js?v=295"></script>
+<script src="js/modules/data-sync.js?v=297"></script>
 
 <!-- 业务模块 - 全部用传统方式加载，确保可用 -->
 <script src="js/modules/practice.js?v=270"></script>
@@ -93,16 +93,16 @@ window.__loaded_modules = [];
         <script src="js/modules/library.js?v=285"></script>
 <script src="js/modules/notepad.js?v=270"></script>
         <script src="js/modules/exam.js?v=285"></script>
-<script src="js/modules/mindmap.js?v=295"></script>
+<script src="js/modules/mindmap.js?v=297"></script>
 <script src="js/modules/calculator.js?v=270"></script>
-<script src="js/modules/plan.js?v=295"></script>
+<script src="js/modules/plan.js?v=297"></script>
 
 <script>
-console.log('[V295] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
+console.log('[V297] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
 // 初始化数据同步系统
 if (window.DataSync && window.DataSync.init) {
     window.DataSync.init();
-    console.log('[V295] DataSync数据同步系统已启动');
+    console.log('[V297] DataSync数据同步系统已启动');
 }
 </script>
 

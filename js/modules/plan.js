@@ -1,46 +1,32 @@
 // ============================================================
-// V295 学习计划模块 - 恢复完整交互功能
+// V297 学习计划模块 - 完善日期切换、数据保存、任务管理
 // ============================================================
 
 window.planState = {
-    currentDate: new Date().toISOString().split('T')[0],
-    tasks: []
+    currentDate: new Date().toISOString().split('T')[0]
 };
 
-// 初始化任务数据
-window.initPlanTasks = function() {
+// 获取任务数据
+window.getPlanTasks = function() {
     const savedData = window.DataSync.get('plan');
-    if (savedData && savedData.tasks && savedData.tasks.length > 0) {
-        window.planState.tasks = savedData.tasks;
-    } else {
-        // 默认任务
-        window.planState.tasks = [
-            { id: 1, text: '背诵20个英语单词', time: '09:00 - 09:30', icon: '🔤', completed: false, date: window.planState.currentDate },
-            { id: 2, text: '完成数学练习', time: '10:00 - 11:00', icon: '🔢', completed: false, date: window.planState.currentDate },
-            { id: 3, text: '阅读语文课文', time: '14:00 - 14:30', icon: '📖', completed: false, date: window.planState.currentDate },
-            { id: 4, text: '复习历史知识点', time: '16:00 - 17:00', icon: '📜', completed: false, date: window.planState.currentDate }
-        ];
-        window.savePlanTasks();
-    }
+    return savedData && savedData.tasks ? savedData.tasks : [];
 };
 
-// 保存任务到DataSync
-window.savePlanTasks = function() {
+// 保存任务数据
+window.savePlanTasks = function(tasks) {
     window.DataSync.set('plan', { 
-        tasks: window.planState.tasks, 
+        tasks: tasks, 
         categories: ['语文', '数学', '英语', '其他'], 
         version: 1 
     });
+    console.log('[Plan] 数据已保存');
 };
 
 window.renderPlan = function(container) {
-    console.log('[V295] renderPlan 被调用，container:', container);
+    console.log('[V297] renderPlan 被调用，container:', container);
     
-    // 初始化数据
-    window.initPlanTasks();
-    
-    // 获取当天任务
-    const todayTasks = window.planState.tasks.filter(t => t.date === window.planState.currentDate);
+    const tasks = window.getPlanTasks();
+    const todayTasks = tasks.filter(t => t.date === window.planState.currentDate);
     const completedCount = todayTasks.filter(t => t.completed).length;
     const totalCount = todayTasks.length;
     const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -48,6 +34,7 @@ window.renderPlan = function(container) {
     // 格式化日期显示
     const dateObj = new Date(window.planState.currentDate);
     const dateDisplay = dateObj.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+    const isToday = window.planState.currentDate === new Date().toISOString().split('T')[0];
     
     container.innerHTML = `
         <div style="padding:20px;background:#f8f9fa;min-height:100vh;">
@@ -60,9 +47,19 @@ window.renderPlan = function(container) {
             
             <!-- 日期选择 -->
             <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;">
-                <button onclick="window.changeDate(-1)" style="padding:8px 12px;background:white;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);">◀</button>
-                <div style="font-size:15px;font-weight:bold;color:#333;">${dateDisplay}</div>
-                <button onclick="window.changeDate(1)" style="padding:8px 12px;background:white;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);">▶</button>
+                <button onclick="window.changePlanDate(-1)" style="padding:10px 14px;background:white;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);font-size:16px;">◀</button>
+                <div style="text-align:center;">
+                    <div style="font-size:16px;font-weight:bold;color:#333;">${dateDisplay}</div>
+                    <div style="font-size:12px;color:#666;">${isToday ? '（今天）' : ''}</div>
+                </div>
+                <button onclick="window.changePlanDate(1)" style="padding:10px 14px;background:white;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);font-size:16px;">▶</button>
+            </div>
+            
+            <!-- 快捷日期选择 -->
+            <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;">
+                <button onclick="window.goToToday()" style="padding:6px 12px;background:${isToday ? '#667eea' : '#fff'};color:${isToday ? 'white' : '#666'};border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;">今天</button>
+                <button onclick="window.changePlanDate(-7)" style="padding:6px 12px;background:#fff;color:#666;border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;">一周前</button>
+                <button onclick="window.changePlanDate(7)" style="padding:6px 12px;background:#fff;color:#666;border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;">一周后</button>
             </div>
             
             <!-- 进度卡片 -->
@@ -94,35 +91,38 @@ window.renderPlan = function(container) {
                     `).join('') : `
                         <div style="text-align:center;padding:40px;color:#999;">
                             <div style="font-size:48px;margin-bottom:12px;">📋</div>
-                            <div>今天还没有任务哦</div>
+                            <div>今天还没有任务</div>
+                            <div style="font-size:13px;margin-top:8px;">点击下方按钮添加新任务</div>
                         </div>
                     `}
                 </div>
             </div>
             
             <!-- 添加任务按钮 -->
-            <div style="margin-top:20px;text-align:center;">
-                <button onclick="window.addPlanTask()" style="padding:12px 20px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">➕ 添加新任务</button>
+            <div style="margin-top:20px;display:flex;gap:12px;">
+                <button onclick="window.addPlanTask()" style="padding:12px 20px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;flex:1;">➕ 添加新任务</button>
+                <button onclick="window.clearCompletedTasks()" style="padding:12px 20px;background:#fa709a;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">🗑️ 清理已完成</button>
             </div>
             
             <!-- 版本提示 -->
             <div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">
-                <div style="font-size:12px;color:#1976d2;text-align:center;">✅ V295 - 学习计划完整功能版</div>
+                <div style="font-size:12px;color:#1976d2;text-align:center;">✅ V297 - 学习计划完整功能版 | 数据已同步</div>
             </div>
         </div>
     `;
     
-    console.log('[V295] 学习计划渲染完成');
+    console.log('[V297] 学习计划渲染完成，当前日期:', window.planState.currentDate, '任务数:', todayTasks.length);
 };
 
 // 切换任务完成状态
 window.togglePlanTask = function(taskId) {
-    const task = window.planState.tasks.find(t => t.id === taskId);
+    const tasks = window.getPlanTasks();
+    const task = tasks.find(t => t.id === taskId);
     if (task) {
         task.completed = !task.completed;
-        window.savePlanTasks();
+        window.savePlanTasks(tasks);
         
-        // 重新渲染更新进度
+        // 重新渲染
         const container = document.getElementById('app-container');
         if (container) {
             window.renderPlan(container);
@@ -131,10 +131,23 @@ window.togglePlanTask = function(taskId) {
 };
 
 // 切换日期
-window.changeDate = function(days) {
+window.changePlanDate = function(days) {
     const current = new Date(window.planState.currentDate);
     current.setDate(current.getDate() + days);
     window.planState.currentDate = current.toISOString().split('T')[0];
+    
+    console.log('[Plan] 切换日期到:', window.planState.currentDate);
+    
+    // 重新渲染
+    const container = document.getElementById('app-container');
+    if (container) {
+        window.renderPlan(container);
+    }
+};
+
+// 回到今天
+window.goToToday = function() {
+    window.planState.currentDate = new Date().toISOString().split('T')[0];
     
     // 重新渲染
     const container = document.getElementById('app-container');
@@ -151,12 +164,13 @@ window.addPlanTask = function() {
     const time = prompt('请输入时间（如：09:00 - 10:00）：', '09:00 - 10:00');
     if (!time) return;
     
-    const icons = ['🔤', '🔢', '📖', '📜', '🌍', '🧪', '🎨', '🎵', '⚽', '📝'];
+    const icons = ['🔤', '🔢', '📖', '📜', '🌍', '🧪', '🎨', '🎵', '⚽', '📝', '💻', '📚'];
     const icon = icons[Math.floor(Math.random() * icons.length)];
     
-    const newId = Math.max(0, ...window.planState.tasks.map(t => t.id)) + 1;
+    const tasks = window.getPlanTasks();
+    const newId = Math.max(0, ...tasks.map(t => t.id)) + 1;
     
-    window.planState.tasks.push({
+    tasks.push({
         id: newId,
         text: text,
         time: time,
@@ -165,7 +179,7 @@ window.addPlanTask = function() {
         date: window.planState.currentDate
     });
     
-    window.savePlanTasks();
+    window.savePlanTasks(tasks);
     
     // 重新渲染
     const container = document.getElementById('app-container');
@@ -174,4 +188,26 @@ window.addPlanTask = function() {
     }
 };
 
-console.log('[V295] 学习计划模块加载完成，window.renderPlan:', typeof window.renderPlan);
+// 清理已完成任务
+window.clearCompletedTasks = function() {
+    const tasks = window.getPlanTasks();
+    const todayCompletedTasks = tasks.filter(t => t.date === window.planState.currentDate && t.completed);
+    
+    if (todayCompletedTasks.length === 0) {
+        alert('今天没有已完成的任务需要清理');
+        return;
+    }
+    
+    if (confirm(`确定要删除今天已完成的 ${todayCompletedTasks.length} 个任务吗？`)) {
+        const newTasks = tasks.filter(t => !(t.date === window.planState.currentDate && t.completed));
+        window.savePlanTasks(newTasks);
+        
+        // 重新渲染
+        const container = document.getElementById('app-container');
+        if (container) {
+            window.renderPlan(container);
+        }
+    }
+};
+
+console.log('[V297] 学习计划模块加载完成，window.renderPlan:', typeof window.renderPlan);
