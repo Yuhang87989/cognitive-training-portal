@@ -73,27 +73,27 @@ window.renderCozeSyncPage = function(container) {
                 <h3 style="margin:0 0 16px 0;font-size:16px;color:#333;">🔄 同步操作</h3>
                 
                 <div style="display:flex;flex-direction:column;gap:12px;">
-                    <button onclick="window.syncAllWeeksFromCoze()" style="padding:14px;background:#e91e63;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold;" ${!status.configured ? 'disabled' : ''}>
+                    <button onclick="window.syncAllWeeksFromCoze()" style="padding:14px;background:#e91e63;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold;">
                         <span style="font-size:18px;">📚</span>
                         批量同步Week1-Week10学习计划
                     </button>
                     
-                    <button onclick="window.syncPlanFromCoze()" style="padding:14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" ${!status.configured ? 'disabled' : ''}>
+                    <button onclick="window.syncPlanFromCoze()" style="padding:14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">📋</span>
                         从扣子同步学习计划
                     </button>
                     
-                    <button onclick="window.syncMindMapFromCoze()" style="padding:14px;background:#9c27b0;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" ${!status.configured ? 'disabled' : ''}>
+                    <button onclick="window.syncMindMapFromCoze()" style="padding:14px;background:#9c27b0;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">🗺️</span>
                         AI生成并导入思维导图
                     </button>
                     
-                    <button onclick="window.uploadPlanToCoze()" style="padding:14px;background:#2196f3;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" ${!status.configured ? 'disabled' : ''}>
+                    <button onclick="window.uploadPlanToCoze()" style="padding:14px;background:#2196f3;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">⬆️</span>
                         上传学习计划到扣子
                     </button>
                     
-                    <button onclick="window.uploadMindMapToCoze()" style="padding:14px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" ${!status.configured ? 'disabled' : ''}>
+                    <button onclick="window.uploadMindMapToCoze()" style="padding:14px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">⬆️</span>
                         上传思维导图到扣子
                     </button>
@@ -123,7 +123,7 @@ window.renderCozeSyncPage = function(container) {
                     <div style="display:flex;gap:8px;align-items:center;">
                         <span style="font-size:14px;color:#666;">生成数量：</span>
                         <input type="number" id="ai-count" value="5" min="1" max="20" style="width:80px;padding:10px;border:2px solid #eee;border-radius:10px;font-size:14px;" />
-                        <button onclick="window.generateQuestions()" style="flex:1;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;" ${!status.configured ? 'disabled' : ''}>
+                        <button onclick="window.generateQuestions()" style="flex:1;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">
                             🎯 生成练习题
                         </button>
                     </div>

@@ -1135,15 +1135,32 @@
     let isPlaying = false;
     let currentUtterance = null;
     
-    // 获取图书馆数据
+    // 获取图书馆数据 - 确保所有60本书都存在
     function getLibraryData() {
         try {
             const saved = localStorage.getItem(LIBRARY_STORAGE_KEY);
+            const allBooks = [...DEFAULT_BOOKS, ...LEARNING_METHODS, ...COLLEGE_PLANNING_BOOKS];
+            
             if (saved) {
                 const data = JSON.parse(saved);
-                // 确保有七种学霸方法
-                if (!data.books || data.books.findIndex(b => b.category === '学霸方法') === -1) {
-                    data.books = [...(data.books || []), ...LEARNING_METHODS];
+                // 确保所有书籍都已导入，不覆盖用户的阅读进度和收藏状态
+                if (data.books) {
+                    const existingIds = new Set(data.books.map(b => b.id));
+                    let needUpdate = false;
+                    
+                    // 添加缺失的书籍
+                    allBooks.forEach(book => {
+                        if (!existingIds.has(book.id)) {
+                            data.books.push({...book});
+                            needUpdate = true;
+                        }
+                    });
+                    
+                    if (needUpdate) {
+                        saveLibraryData(data);
+                    }
+                } else {
+                    data.books = allBooks;
                     saveLibraryData(data);
                 }
                 return data;
@@ -1152,7 +1169,7 @@
             console.error('读取图书馆数据失败:', e);
         }
         
-        // 默认数据
+        // 默认数据 - 完整60本书
         return {
             currentBookId: null,
             currentChapterIndex: 0,
