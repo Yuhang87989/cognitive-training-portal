@@ -536,6 +536,22 @@ window.renameMindMap = function() {
 // 切换样式
 window.switchMindMapStyle = function(styleName) {
     window.mindmapState.currentStyle = styleName;
+    
+    // 更新所有节点颜色，应用新样式
+    const currentMap = window.getCurrentMindMap();
+    const style = window.getMindMapStyle(styleName);
+    
+    currentMap.nodes.forEach((node, index) => {
+        if (node.isRoot) {
+            // 根节点使用样式的根颜色
+            node.color = style.rootColor || '#667eea';
+        } else {
+            // 普通节点从样式颜色数组中循环选取
+            const colorIndex = (index - 1) % style.colors.length;
+            node.color = style.colors[colorIndex];
+        }
+    });
+    
     window.saveMindMapData();
     
     // 重新渲染
