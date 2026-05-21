@@ -390,6 +390,49 @@ window.week9Plan = {
 };
 CTM.registerPlan('week9', week9Plan);
 
+window.week10Plan = {
+    weekId:'week10',weekTitle:'Week10：认知能力整合与终身学习体系构建周',
+    weekDesc:'整合9周训练成果，构建可持续的终身学习体系，实现认知能力自动化运行与持续自我进化',
+    days:[
+        {day:1,title:'9周训练成果全面复盘与能力评估',tasks:[
+            {id:'w10d1t1',title:'全周期能力成长曲线分析',type:'review',duration:20,completed:false},
+            {id:'w10d1t2',title:'核心认知能力量化评估',type:'quiz',duration:25,completed:false},
+            {id:'w10d1t3',title:'个人成长里程碑总结',type:'writing',duration:15,completed:false}
+        ]},
+        {day:2,title:'认知能力系统整合与自动化运行',tasks:[
+            {id:'w10d2t1',title:'注意力记忆法系统整合',type:'practice',duration:20,completed:false},
+            {id:'w10d2t2',title:'思维方法工具箱完善',type:'creative',duration:20,completed:false},
+            {id:'w10d2t3',title:'自动化触发机制建立',type:'planning',duration:10,completed:false}
+        ]},
+        {day:3,title:'个人学习哲学与方法论提炼',tasks:[
+            {id:'w10d3t1',title:'总结最适合自己的学习方法',type:'writing',duration:20,completed:false},
+            {id:'w10d3t2',title:'建立个人学习原则体系',type:'creative',duration:20,completed:false},
+            {id:'w10d3t3',title:'学习风格与环境匹配优化',type:'practice',duration:10,completed:false}
+        ]},
+        {day:4,title:'终身学习体系与知识管理',tasks:[
+            {id:'w10d4t1',title:'个人知识管理系统建立',type:'creative',duration:25,completed:false},
+            {id:'w10d4t2',title:'持续学习资源库建设',type:'planning',duration:15,completed:false},
+            {id:'w10d4t3',title:'学习社交圈与互助机制',type:'social',duration:10,completed:false}
+        ]},
+        {day:5,title:'目标管理与长期规划能力',tasks:[
+            {id:'w10d5t1',title:'年度目标与3年愿景制定',type:'planning',duration:20,completed:false},
+            {id:'w10d5t2',title:'目标分解与里程碑设置',type:'practice',duration:20,completed:false},
+            {id:'w10d5t3',title:'复盘机制与动态调整',type:'review',duration:10,completed:false}
+        ]},
+        {day:6,title:'学习迁移与跨学科应用能力',tasks:[
+            {id:'w10d6t1',title:'已掌握方法的学科迁移实践',type:'practice',duration:25,completed:false},
+            {id:'w10d6t2',title:'新领域快速入门方法论',type:'strategy',duration:20,completed:false},
+            {id:'w10d6t3',title:'知识输出与分享能力训练',type:'social',duration:15,completed:false}
+        ]},
+        {day:7,title:'Week10总结与新的起点',tasks:[
+            {id:'w10d7t1',title:'10周完整训练成果报告',type:'writing',duration:20,completed:false},
+            {id:'w10d7t2',title:'下阶段进阶方向选择',type:'planning',duration:15,completed:false},
+            {id:'w10d7t3',title:'开启终身学习新旅程',type:'strategy',duration:5,completed:false}
+        ]}
+    ]
+};
+CTM.registerPlan('week10', week10Plan);
+
 
 // ===== Week Plans 映射 =====
 window.weekPlans = {
@@ -401,7 +444,8 @@ window.weekPlans = {
     week6: week6Plan,
     week7: week7Plan,
     week8: week8Plan,
-    week9: week9Plan
+    week9: week9Plan,
+    week10: week10Plan
 };
 
 
