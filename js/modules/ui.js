@@ -328,6 +328,24 @@ function openHelp() {
 // ========== 历史记录导航系统 ==========
 window._fullscreenOpen = false;
 
+// 清理模块状态 - 解决模块切换冲突问题
+window.cleanupModuleState = function() {
+    // 清空内容容器
+    const contentEl = document.getElementById('fullscreen-content');
+    if (contentEl) contentEl.innerHTML = '';
+    
+    // 清理可能的全局状态污染
+    if (window._petInterval) {
+        clearInterval(window._petInterval);
+        window._petInterval = null;
+    }
+    
+    // 清理所有模态框
+    document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(el => el.remove());
+    
+    console.log('[DataSync] 模块状态已清理');
+};
+
 // 监听浏览器返回按钮
 window.addEventListener('popstate', function(event) {
     if (window._fullscreenOpen) {

@@ -337,8 +337,8 @@
     }
     
     function startRandomSpeech() {
-        if (animationInterval) clearInterval(animationInterval);
-        animationInterval = setInterval(() => {
+        if (window._petInterval) clearInterval(window._petInterval);
+        window._petInterval = setInterval(() => {
             const container = document.getElementById('pet-container');
             const pet = getPetData();
             if (container && Math.random() < 0.3) {
