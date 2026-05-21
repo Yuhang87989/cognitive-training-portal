@@ -294,29 +294,41 @@ function openHelp() {
     modal.classList.add('show');
     content.innerHTML = `
         <div class="modal-title">📖 使用帮助</div>
-        <div style="max-height:300px;overflow-y:auto;">
+        <div style="max-height:400px;overflow-y:auto;">
             <div style="margin-bottom:16px;">
-                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🎯 训练模块</div>
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🧠 思维导图</div>
                 <div style="font-size:13px;color:#666;line-height:1.6;">
-                    • 每日完成8次训练可获得积分奖励<br>
-                    • 难度级别影响题目难度和积分倍数<br>
-                    • 连续训练可获得额外奖励
+                    • 拖拽节点调整位置<br>
+                    • 支持5种视觉样式切换<br>
+                    • 可创建多个导图文件<br>
+                    • 数据自动保存到本地
                 </div>
             </div>
             <div style="margin-bottom:16px;">
-                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">📚 母题训练</div>
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">📅 学习计划</div>
                 <div style="font-size:13px;color:#666;line-height:1.6;">
-                    • 选择年级和科目开始训练<br>
-                    • 支持拍照上传题目获取AI解析<br>
-                    • 错题自动加入错题本
+                    • 点击日期切换查看不同日期<br>
+                    • 勾选任务标记完成状态<br>
+                    • 支持从扣子同步Week1-Week10<br>
+                    • 数据本地持久化存储
                 </div>
             </div>
             <div style="margin-bottom:16px;">
-                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🤖 AI功能</div>
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🔗 扣子数据同步</div>
                 <div style="font-size:13px;color:#666;line-height:1.6;">
-                    • DeepSeek AI 支持多学科问答<br>
-                    • AI数字分身提供个性化辅导<br>
-                    • 拍照识别自动解题
+                    • 点击头像菜单进入同步页面<br>
+                    • 配置Bot ID和Token完成对接<br>
+                    • 一键批量同步Week学习计划<br>
+                    • AI自动生成思维导图
+                </div>
+            </div>
+            <div style="margin-bottom:16px;">
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">📝 模拟考试</div>
+                <div style="font-size:13px;color:#666;line-height:1.6;">
+                    • 选择科目和难度开始考试<br>
+                    • 答题后即时查看详细解析<br>
+                    • 错题自动加入错题本<br>
+                    • 支持导出试卷导出成绩记录
                 </div>
             </div>
         </div>
@@ -1435,29 +1447,43 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V144</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V305</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                认知训练门户是一款专为12-16岁青少年设计的注意力和记忆力训练应用。通过科学系统的训练方法，帮助学生提升学习效率，培养良好的学习习惯。
+                认知训练门户是一款专为12-16岁青少年设计的综合学习平台。通过科学的认知训练、思维导图工具和AI智能辅导，帮助学生提升学习效率，培养良好的学习习惯。
             </div>
         </div>
         <div style="background:#fff3e0;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">✨ 核心功能</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                • 12大训练模块（AI分身、母题、播客等）<br>
-                • 23个认知训练游戏<br>
-                • 378道经典母题库<br>
-                • DeepSeek AI 智能辅导<br>
-                • 个性化学习计划
+                • 🧠 思维导图 - 拖拽编辑、5种视觉样式、多文件管理<br>
+                • 📅 学习计划 - Week1-Week10同步、日期切换、数据持久化<br>
+                • 🔗 扣子数据同步 - Coze API对接、AI生成、批量同步<br>
+                • 📝 模拟考试 - 完整测评体系<br>
+                • 📚 学习图书馆 - 多格式阅读支持<br>
+                • 🐱 虚拟宠物 - 陪伴式成长激励<br>
+                • 💪 自驱力训练 - 学习动力培养<br>
+                • 🤖 AI精准练 - 薄弱点智能诊断<br>
+                • 🎧 播客课堂 - 音频学习资源<br>
+                • 📒 错题本 - 自动收集、反复练习
+            </div>
+        </div>
+        <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">🔧 技术架构</div>
+            <div style="font-size:13px;color:#666;line-height:1.8;">
+                • 传统Script模块化架构（放弃ES6 Modules）<br>
+                • 全函数挂载window，确保兼容性<br>
+                • localStorage本地数据持久化<br>
+                • Coze Bot API 智能集成
             </div>
         </div>
         <div style="background:#e8f5e9;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">👨‍💻 开发团队</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                Coze AI Agent 智能助手<br>
-                技术支持：DeepSeek API
+                Coze AI Agent 智能开发团队<br>
+                技术支持：扣子 Coze API
             </div>
         </div>
         <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">

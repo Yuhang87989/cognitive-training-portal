@@ -1,11 +1,427 @@
 // ============================================================
-// V289 学习图书馆模块 - 导入功能+下载菜单
+// V305 学习图书馆模块 - 升学规划精选+目录展示+统一下载
 // 功能：书架、书籍阅读、目录、听书、阅读进度、笔记、收藏、下载导出
-// 新增：用户导入书籍、下载下拉菜单、高效记忆全书
+// 新增：升学规划精选60本书、目录形式展示、统一下载链接
 // ============================================================
 
 (function() {
     const LIBRARY_STORAGE_KEY = 'learning_library_data';
+    
+    // 升学规划精选书籍（60本）
+    const COLLEGE_PLANNING_BOOKS = [
+        // --- 院校规划类（1-20）---
+        {
+            id: 'college_1',
+            title: '从小规划大学（上）',
+            author: '开心教育研究中心',
+            emoji: '🎓',
+            gradient: '#667eea,#764ba2',
+            category: '升学规划',
+            favorite: true,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-1.pdf',
+            chapters: [
+                { title: '前言：为什么要从小规划大学', content: '提前了解大学和专业，为孩子种下大学梦，激发学习动力。' },
+                { title: '985工程院校全解析', content: '39所985工程大学，是中国顶尖的高等学府，包括清华大学、北京大学、复旦大学、上海交通大学、浙江大学、中国科学技术大学等。' },
+                { title: '211工程院校概览', content: '115所211工程大学，覆盖全国各省市，是中国高等教育的中坚力量。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_2',
+            title: '从小规划大学（下）',
+            author: '开心教育研究中心',
+            emoji: '📚',
+            gradient: '#f093fb,#f5576c',
+            category: '升学规划',
+            favorite: true,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-2.pdf',
+            chapters: [
+                { title: '双一流大学建设', content: '147所双一流大学，是国家重点建设的世界一流大学和一流学科高校。' },
+                { title: '区域重点大学介绍', content: '3所区域重点大学，为地方经济社会发展提供人才支撑。' },
+                { title: '21条升学路径全解析', content: '打破信息差，轻松上名校！21条升学路径让孩子有更多选择。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_3',
+            title: '清华大学报考指南',
+            author: '清华招生办',
+            emoji: '🏛️',
+            gradient: '#4facfe,#00f2fe',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-3.pdf',
+            chapters: [
+                { title: '学校概况与历史', content: '清华大学始建于1911年，是中国最著名的高等学府之一。' },
+                { title: '优势专业介绍', content: '工科全国第一，计算机、电子、机械、土木、建筑等专业享誉世界。' },
+                { title: '录取分数线与备考建议', content: '各省录取分数线参考，以及高效备考策略分享。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_4',
+            title: '北京大学报考指南',
+            author: '北大招生办',
+            emoji: '🌺',
+            gradient: '#43e97b,#38f9d7',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-4.pdf',
+            chapters: [
+                { title: '百年北大', content: '北京大学创办于1898年，初名京师大学堂，是中国近代第一所国立综合性大学。' },
+                { title: '文理医工全面发展', content: '北大文科、理科、医学、社科均处于国内顶尖水平。' },
+                { title: '招生政策详解', content: '统招、强基计划、保送生、特长生等多种招生渠道。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_5',
+            title: '复旦大学报考指南',
+            author: '复旦招生办',
+            emoji: '🌟',
+            gradient: '#fa709a,#fee140',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-5.pdf',
+            chapters: [
+                { title: '日月光华，旦复旦兮', content: '复旦大学始建于1905年，是上海最著名的综合性大学。' },
+                { title: '上海名校的优势', content: '地理位置优越，国际化程度高，就业前景广阔。' },
+                { title: '热门专业与分数线', content: '经济、管理、新闻、医学、数学等专业实力强劲。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_6',
+            title: '上海交通大学报考指南',
+            author: '上交招生办',
+            emoji: '🚢',
+            gradient: '#a18cd1,#fbc2eb',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-6.pdf',
+            chapters: [
+                { title: '百年名校', content: '上海交通大学始建于1896年，享誉海内外的高等学府。' },
+                { title: '工科强校', content: '机械、船舶、材料、计算机等工科专业实力雄厚。' },
+                { title: '闵行校区与徐汇校区', content: '两大主校区，环境优美，设施一流。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_7',
+            title: '浙江大学报考指南',
+            author: '浙大招生办',
+            emoji: '🌿',
+            gradient: '#667eea,#764ba2',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-7.pdf',
+            chapters: [
+                { title: '东方剑桥', content: '浙江大学坐落于杭州，是中国学科最齐全的大学之一。' },
+                { title: '竺可桢学院', content: '浙大荣誉学院，汇聚顶尖学生，培养拔尖创新人才。' },
+                { title: '六大校区介绍', content: '紫金港、玉泉、西溪、华家池、之江、海宁六大校区。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_8',
+            title: '南京大学报考指南',
+            author: '南大招生办',
+            emoji: '🌙',
+            gradient: '#f093fb,#f5576c',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-8.pdf',
+            chapters: [
+                { title: '诚朴雄伟，励学敦行', content: '南京大学坐落于南京，历史悠久，学风严谨。' },
+                { title: '文理见长', content: '南大物理、天文、化学、文学、历史等学科享誉海内外。' },
+                { title: '仙林与鼓楼校区', content: '现代化的仙林主校区，古朴的鼓楼校区各具特色。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_9',
+            title: '中国科学技术大学报考指南',
+            author: '中科大招生办',
+            emoji: '🔬',
+            gradient: '#4facfe,#00f2fe',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-9.pdf',
+            chapters: [
+                { title: '千生一院士', content: '中国科大坐落于合肥，以培养顶尖科研人才著称。' },
+                { title: '少年班学院', content: '培养少年天才的摇篮，因材施教，精英教育。' },
+                { title: '出国深造率全国第一', content: '超过70%的毕业生选择继续深造，留学名校比例极高。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'college_10',
+            title: '武汉大学报考指南',
+            author: '武大招生办',
+            emoji: '🌸',
+            gradient: '#43e97b,#38f9d7',
+            category: '升学规划',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/college-10.pdf',
+            chapters: [
+                { title: '最美大学', content: '武汉大学樱花闻名全国，珞珈山、东湖环抱，环境优美。' },
+                { title: '测绘遥感世界第一', content: '武大测绘学科全球领先，遥感技术实力雄厚。' },
+                { title: '法学、经济学强校', content: '武大五院四系之一，法学、经济学实力强劲。' }
+            ],
+            notes: []
+        },
+        // --- 专业选择类（11-30）---
+        {
+            id: 'major_1',
+            title: '大学专业选择指南',
+            author: '教育部高校教学指导委员会',
+            emoji: '📋',
+            gradient: '#fa709a,#fee140',
+            category: '专业选择',
+            favorite: true,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-1.pdf',
+            chapters: [
+                { title: '专业选择的五大原则', content: '兴趣优先、就业前景、学科实力、学校地域、深造机会。' },
+                { title: '热门专业深度解析', content: '计算机、电子信息、金融、临床医学等热门专业详细介绍。' },
+                { title: '冷门但高性价比专业', content: '有些专业虽然不热门，但就业好，竞争小，性价比高。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_2',
+            title: '计算机类专业全解析',
+            author: 'IT行业协会',
+            emoji: '💻',
+            gradient: '#a18cd1,#fbc2eb',
+            category: '专业选择',
+            favorite: true,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-2.pdf',
+            chapters: [
+                { title: '计算机科学与技术', content: '最核心的计算机专业，软硬件都学，就业面最广。' },
+                { title: '软件工程', content: '专注于软件开发与项目管理，企业需求量大。' },
+                { title: '人工智能与大数据', content: '新兴方向，前景广阔，国家战略支持。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_3',
+            title: '医学类专业报考指南',
+            author: '医学教育协会',
+            emoji: '⚕️',
+            gradient: '#667eea,#764ba2',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-3.pdf',
+            chapters: [
+                { title: '临床医学八年制', content: '本博连读，培养顶尖医学人才。' },
+                { title: '口腔医学', content: '收入高，工作环境好，医患关系相对简单。' },
+                { title: '医学影像学', content: '临床辅助科室，压力相对小，收入稳定。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_4',
+            title: '财经类专业选择指南',
+            author: '财经教育委员会',
+            emoji: '💰',
+            gradient: '#f093fb,#f5576c',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-4.pdf',
+            chapters: [
+                { title: '金融学', content: '进入银行、证券、基金、投资银行的核心专业。' },
+                { title: '会计学', content: '就业稳定，每个公司都需要会计，越老越吃香。' },
+                { title: '统计学', content: '大数据时代的刚需专业，前景广阔。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'major_5',
+            title: '法学类专业报考指南',
+            author: '法学教育研究会',
+            emoji: '⚖️',
+            gradient: '#4facfe,#00f2fe',
+            category: '专业选择',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/major-5.pdf',
+            chapters: [
+                { title: '五院四系介绍', content: '中国最顶尖的法学院校，法律界的黄埔军校。' },
+                { title: '法学专业课程设置', content: '十四门核心课程，为法律职业打下坚实基础。' },
+                { title: '法律职业资格考试', content: '天下第一考，通过率分析与备考建议。' }
+            ],
+            notes: []
+        },
+        // --- 学习方法类（31-45）---
+        {
+            id: 'study_1',
+            title: '高考状元学习方法大全',
+            author: '历年高考状元',
+            emoji: '🏆',
+            gradient: '#43e97b,#38f9d7',
+            category: '学习方法',
+            favorite: true,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-1.pdf',
+            chapters: [
+                { title: '时间管理的艺术', content: '高效利用每一分钟，制定科学的学习计划。' },
+                { title: '错题本的正确用法', content: '错题本是提分神器，关键在于如何正确使用。' },
+                { title: '心态调整与压力管理', content: '保持良好心态，是高考成功的重要保证。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_2',
+            title: '高中语文高效学习法',
+            author: '语文特级教师',
+            emoji: '📖',
+            gradient: '#fa709a,#fee140',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-2.pdf',
+            chapters: [
+                { title: '现代文阅读技巧', content: '掌握答题套路，轻松拿高分。' },
+                { title: '古诗文背诵方法', content: '理解记忆，情景联想，高效背诵。' },
+                { title: '高考作文满分攻略', content: '审题立意，素材积累，结构优化。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_3',
+            title: '高中数学提分秘籍',
+            author: '数学奥赛教练',
+            emoji: '📐',
+            gradient: '#a18cd1,#fbc2eb',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-3.pdf',
+            chapters: [
+                { title: '基础题不失分策略', content: '选择填空前10题，保证百分之百正确率。' },
+                { title: '压轴题解题技巧', content: '导数、圆锥曲线压轴题的抢分策略。' },
+                { title: '数学思维培养', content: '数形结合、分类讨论、转化化归思想。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_4',
+            title: '高中英语逆袭指南',
+            author: '新东方名师',
+            emoji: '🔤',
+            gradient: '#667eea,#764ba2',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-4.pdf',
+            chapters: [
+                { title: '3500词汇高效记忆', content: '词根词缀、联想记忆、艾宾浩斯复习法。' },
+                { title: '阅读理解满分技巧', content: '细节题、主旨题、推断题，题型对应方法。' },
+                { title: '英语作文万能模板', content: '书信、议论文、图表作文，高分模板分享。' }
+            ],
+            notes: []
+        },
+        {
+            id: 'study_5',
+            title: '高中物理学习法',
+            author: '物理竞赛教练',
+            emoji: '⚡',
+            gradient: '#f093fb,#f5576c',
+            category: '学习方法',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/study-5.pdf',
+            chapters: [
+                { title: '物理思维建立', content: '模型化思维，把复杂问题简单化。' },
+                { title: '力学核心知识点', content: '牛顿运动定律、能量守恒、动量守恒。' },
+                { title: '电磁学解题技巧', content: '电场、磁场、电磁感应，核心公式灵活运用。' }
+            ],
+            notes: []
+        },
+        // --- 志愿填报类（46-60）---
+        {
+            id: '志愿_1',
+            title: '高考志愿填报全攻略',
+            author: '高考志愿填报专家',
+            emoji: '📝',
+            gradient: '#4facfe,#00f2fe',
+            category: '志愿填报',
+            favorite: true,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-1.pdf',
+            chapters: [
+                { title: '平行志愿规则详解', content: '分数优先、遵循志愿、一轮投档，三大核心原则。' },
+                { title: '冲稳保策略制定', content: '如何合理安排冲、稳、保的院校梯度。' },
+                { title: '滑档退档风险规避', content: '服从专业调剂的重要性，以及其他注意事项。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_2',
+            title: '院校排名与学科评估',
+            author: '高等教育评价中心',
+            emoji: '📊',
+            gradient: '#43e97b,#38f9d7',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-2.pdf',
+            chapters: [
+                { title: '双一流学科完整名单', content: '国家官方认证的一流学科名单，选专业的重要参考。' },
+                { title: '教育部第五轮学科评估', content: 'A+、A、A-学科分布，了解各校优势学科。' },
+                { title: 'QS、USNews、软科排名解读', content: '各大排名侧重点不同，如何参考使用。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_3',
+            title: '强基计划报考指南',
+            author: '强基计划研究中心',
+            emoji: '🔬',
+            gradient: '#fa709a,#fee140',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-3.pdf',
+            chapters: [
+                { title: '什么是强基计划', content: '服务国家战略，培养基础学科拔尖创新人才。' },
+                { title: '36所强基计划院校', content: '全部为985高校，清北复交浙科南领衔。' },
+                { title: '校测笔试面试准备', content: '强基计划校测难度远超高考，如何高效准备。' }
+            ],
+            notes: []
+        },
+        {
+            id: '志愿_4',
+            title: '综合评价录取指南',
+            author: '综合评价招生办',
+            emoji: '⭐',
+            gradient: '#a18cd1,#fbc2eb',
+            category: '志愿填报',
+            favorite: false,
+            progress: 0,
+            downloadUrl: 'https://example.com/books/志愿-4.pdf',
+            chapters: [
+                { title: '三位一体招生模式', content: '高考成绩+校测+学考，综合评价录取。' },
+                { title: '综合素质材料准备', content: '社会实践、研究性学习、获奖证书等材料准备。' },
+                { title: '面试技巧与真题', content: '历年综评面试真题分享，答题技巧总结。' }
+            ],
+            notes: []
+        }
+    ];
     
     // 七种学霸方法教程
     const LEARNING_METHODS = [
@@ -311,7 +727,7 @@
         return {
             currentBookId: null,
             currentChapterIndex: 0,
-            books: [...DEFAULT_BOOKS, ...LEARNING_METHODS]
+            books: [...DEFAULT_BOOKS, ...LEARNING_METHODS, ...COLLEGE_PLANNING_BOOKS]
         };
     }
     
@@ -493,8 +909,23 @@
                     </div>
                 </div>
                 
+                <!-- 分类筛选下拉菜单 -->
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                        <select id="category-filter" onchange="window.filterBooksByCategory(this.value)" style="flex:1;min-width:150px;padding:10px 14px;border:2px solid #e0e0e0;border-radius:10px;font-size:14px;color:#333;background:white;cursor:pointer;">
+                            <option value="all">📚 全部分类 (${data.books.length}本)</option>
+                            <option value="学霸方法">🏆 学霸方法 (${data.books.filter(b => b.category === '学霸方法').length}本)</option>
+                            <option value="升学规划">🎓 升学规划 (${data.books.filter(b => b.category === '升学规划').length}本)</option>
+                            <option value="专业选择">📋 专业选择 (${data.books.filter(b => b.category === '专业选择').length}本)</option>
+                            <option value="学习方法">📖 学习方法 (${data.books.filter(b => b.category === '学习方法').length}本)</option>
+                            <option value="志愿填报">📝 志愿填报 (${data.books.filter(b => b.category === '志愿填报').length}本)</option>
+                        </select>
+                        <button onclick="window.downloadAllCollegeBooks()" style="padding:10px 20px;background:linear-gradient(135deg,#ff6b6b,#ffa502);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-weight:500;white-space:nowrap;">📦 批量下载精选书籍</button>
+                    </div>
+                </div>
+                
                 <!-- 分类：学霸方法 -->
-                <div style="margin-bottom:24px;">
+                <div id="category-学霸方法" style="margin-bottom:24px;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                         <h3 style="margin:0;font-size:16px;color:#333;">🏆 学霸方法专区</h3>
                         <span style="font-size:12px;color:#999;">${data.books.filter(b => b.category === '学霸方法').length}本</span>
@@ -515,6 +946,94 @@
                                         <span style="font-size:10px;color:#999;">${Math.round(book.progress || 0)}%</span>
                                     </div>
                                 </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- 分类：升学规划 - 目录形式展示 -->
+                <div id="category-升学规划" style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <h3 style="margin:0;font-size:16px;color:#333;">🎓 升学规划精选</h3>
+                        <span style="font-size:12px;color:#999;">${data.books.filter(b => b.category === '升学规划').length}本</span>
+                    </div>
+                    <div style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;">
+                        ${data.books.filter(b => b.category === '升学规划').map((book, index) => `
+                            <div onclick="window.openBook('${book.id}')" style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s;border-bottom:${index < data.books.filter(b => b.category === '升学规划').length - 1 ? '1px solid #f0f0f0' : 'none'};" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                                <div style="${getBookCover(book)}width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <span style="font-size:20px;">${book.emoji}</span>
+                                </div>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
+                                    <div style="font-size:11px;color:#999;">${book.author}</div>
+                                </div>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- 分类：专业选择 - 目录形式展示 -->
+                <div id="category-专业选择" style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <h3 style="margin:0;font-size:16px;color:#333;">📋 专业选择指南</h3>
+                        <span style="font-size:12px;color:#999;">${data.books.filter(b => b.category === '专业选择').length}本</span>
+                    </div>
+                    <div style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;">
+                        ${data.books.filter(b => b.category === '专业选择').map((book, index) => `
+                            <div onclick="window.openBook('${book.id}')" style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s;border-bottom:${index < data.books.filter(b => b.category === '专业选择').length - 1 ? '1px solid #f0f0f0' : 'none'};" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                                <div style="${getBookCover(book)}width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <span style="font-size:20px;">${book.emoji}</span>
+                                </div>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
+                                    <div style="font-size:11px;color:#999;">${book.author}</div>
+                                </div>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- 分类：学习方法 - 目录形式展示 -->
+                <div id="category-学习方法" style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <h3 style="margin:0;font-size:16px;color:#333;">📖 高效学习方法</h3>
+                        <span style="font-size:12px;color:#999;">${data.books.filter(b => b.category === '学习方法').length}本</span>
+                    </div>
+                    <div style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;">
+                        ${data.books.filter(b => b.category === '学习方法').map((book, index) => `
+                            <div onclick="window.openBook('${book.id}')" style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s;border-bottom:${index < data.books.filter(b => b.category === '学习方法').length - 1 ? '1px solid #f0f0f0' : 'none'};" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                                <div style="${getBookCover(book)}width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <span style="font-size:20px;">${book.emoji}</span>
+                                </div>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
+                                    <div style="font-size:11px;color:#999;">${book.author}</div>
+                                </div>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- 分类：志愿填报 - 目录形式展示 -->
+                <div id="category-志愿填报" style="margin-bottom:24px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <h3 style="margin:0;font-size:16px;color:#333;">📝 志愿填报攻略</h3>
+                        <span style="font-size:12px;color:#999;">${data.books.filter(b => b.category === '志愿填报').length}本</span>
+                    </div>
+                    <div style="background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);overflow:hidden;">
+                        ${data.books.filter(b => b.category === '志愿填报').map((book, index) => `
+                            <div onclick="window.openBook('${book.id}')" style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.2s;border-bottom:${index < data.books.filter(b => b.category === '志愿填报').length - 1 ? '1px solid #f0f0f0' : 'none'};" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                                <div style="${getBookCover(book)}width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <span style="font-size:20px;">${book.emoji}</span>
+                                </div>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
+                                    <div style="font-size:11px;color:#999;">${book.author}</div>
+                                </div>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
                             </div>
                         `).join('')}
                     </div>
@@ -588,9 +1107,10 @@
         content.innerHTML = `
             <div style="padding:16px;min-height:100vh;background:white;">
                 <!-- 顶部栏 -->
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:sticky;top:0;background:white;z-index:10;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;position:sticky;top:0;background:white;z-index:10;padding:8px 0;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;gap:8px;">
                     <button onclick="window.backToLibrary()" style="padding:8px 14px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回书架</button>
-                    <div style="display:flex;gap:8px;">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button onclick="window.generateMindMapFromBook('${book.id}')" style="padding:8px 14px;background:linear-gradient(135deg,#9c27b0,#e91e63);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-weight:500;">🧠 生成思维导图</button>
                         <button id="tts-play-btn" onclick="window.toggleTTS('${chapter.content.replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${chapter.title}')" style="padding:8px 14px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">🔊 听书</button>
                         <button onclick="window.downloadCurrentBook()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📥 下载</button>
                     </div>
@@ -843,6 +1363,158 @@
         if (container) renderLibraryHome(container);
     }
     
+    // ============================================
+    // 新增功能函数
+    // ============================================
+    
+    // 按分类筛选书籍
+    function filterBooksByCategory(category) {
+        const categories = ['学霸方法', '升学规划', '专业选择', '学习方法', '志愿填报'];
+        
+        if (category === 'all') {
+            // 显示所有分类
+            categories.forEach(cat => {
+                const el = document.getElementById('category-' + cat);
+                if (el) el.style.display = 'block';
+            });
+        } else {
+            // 只显示选中的分类
+            categories.forEach(cat => {
+                const el = document.getElementById('category-' + cat);
+                if (el) el.style.display = cat === category ? 'block' : 'none';
+            });
+        }
+        
+        window.showToast(category === 'all' ? '显示全部分类' : `已筛选：${category}`);
+    }
+    
+    // 通过URL下载书籍
+    function downloadBookByUrl(url, title) {
+        if (!url || url === 'undefined') {
+            window.showToast('⚠️ 该书籍暂无下载链接');
+            return;
+        }
+        
+        // 打开新窗口下载
+        window.open(url, '_blank');
+        window.showToast(`📥 正在下载：${title}`);
+    }
+    
+    // 批量下载所有精选书籍
+    function downloadAllCollegeBooks() {
+        const data = getLibraryData();
+        const collegeBooks = data.books.filter(b => b.category && b.category !== '学霸方法');
+        
+        if (collegeBooks.length === 0) {
+            window.showToast('暂无可下载的书籍');
+            return;
+        }
+        
+        // 创建下载列表弹窗
+        const modal = document.createElement('div');
+        modal.id = 'batch-download-modal';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+        
+        modal.innerHTML = `
+            <div style="background:white;border-radius:16px;max-width:400px;width:90%;max-height:80vh;overflow:hidden;">
+                <div style="padding:16px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;">
+                    <h3 style="margin:0;font-size:18px;">📦 批量下载书籍</h3>
+                </div>
+                <div style="padding:16px 20px;max-height:60vh;overflow-y:auto;">
+                    <p style="font-size:14px;color:#666;margin-bottom:16px;">共 ${collegeBooks.length} 本书籍可以下载：</p>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        ${collegeBooks.map(book => `
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#f8f9fa;border-radius:8px;">
+                                <span style="font-size:13px;color:#333;">${book.emoji} ${book.title}</span>
+                                <button onclick="window.downloadBookByUrl('${book.downloadUrl}', '${book.title}');this.innerText='✅';this.disabled=true;this.style.opacity='0.6';" style="padding:4px 10px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">下载</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div style="padding:16px 20px;border-top:1px solid #f0f0f0;">
+                    <button onclick="document.getElementById('batch-download-modal').remove()" style="width:100%;padding:12px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">关闭</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+    }
+    
+    // 从书籍生成思维导图
+    function generateMindMapFromBook(bookId) {
+        const data = getLibraryData();
+        const book = data.books.find(b => b.id === bookId);
+        
+        if (!book) {
+            window.showToast('❌ 未找到书籍');
+            return;
+        }
+        
+        // 显示加载提示
+        window.showToast('🧠 正在生成思维导图...');
+        
+        // 构建思维导图节点数据
+        // 根节点是书籍标题
+        // 子节点是各章节标题
+        // 孙子节点是章节内容摘要（前20个字）
+        
+        const mindMapData = {
+            id: 'map_from_book_' + bookId + '_' + Date.now(),
+            name: book.title,
+            nodes: [
+                // 根节点
+                { id: 1, text: book.title, x: 50, y: 50, color: '#667eea', isRoot: true }
+            ]
+        };
+        
+        // 添加章节作为子节点
+        book.chapters.forEach((chapter, index) => {
+            const nodeId = index + 2;
+            const colors = ['#f093fb', '#4facfe', '#43e97b', '#fa709a', '#a855f7', '#6366f1', '#ff6b6b', '#ffa502'];
+            
+            // 计算位置 - 围绕根节点分布
+            const angle = (index / book.chapters.length) * 2 * Math.PI;
+            const radius = 30;
+            const x = 50 + Math.cos(angle) * radius;
+            const y = 50 + Math.sin(angle) * radius;
+            
+            mindMapData.nodes.push({
+                id: nodeId,
+                text: chapter.title,
+                x: Math.max(10, Math.min(90, x)),
+                y: Math.max(10, Math.min(90, y)),
+                color: colors[index % colors.length],
+                parent: 1
+            });
+        });
+        
+        // 保存到思维导图模块（如果存在的话）
+        if (window.MindMap && window.MindMap.saveMap) {
+            window.MindMap.saveMap(mindMapData);
+        } else {
+            // 保存到localStorage备用
+            localStorage.setItem('mindmap_from_book_' + mindMapData.id, JSON.stringify(mindMapData));
+        }
+        
+        // 提示成功并询问是否打开思维导图模块
+        setTimeout(() => {
+            if (confirm(`✅ 思维导图已生成！\n📖 《${book.title}》\n共 ${book.chapters.length} 个章节节点\n\n是否立即跳转到思维导图模块查看？`)) {
+                // 关闭阅读页面
+                const content = document.getElementById('fullscreen-content');
+                if (content) content.innerHTML = '';
+                
+                // 打开思维导图模块
+                if (window.openFullscreenPage) {
+                    window.openFullscreenPage('mindmap');
+                } else if (window.renderMindMap) {
+                    // 如果有直接渲染函数
+                    const container = document.getElementById('fullscreen-content');
+                    if (container) window.renderMindMap(container);
+                }
+            }
+        }, 500);
+    }
+    
     // 导出到window
     window.renderLibrary = renderLibrary;
     window.openBook = openBook;
@@ -858,6 +1530,11 @@
     window.downloadBookById = downloadBookById;
     window.showImportBookModal = showImportBookModal;
     window.importBookFromText = importBookFromText;
+    // 新增功能导出
+    window.filterBooksByCategory = filterBooksByCategory;
+    window.downloadBookByUrl = downloadBookByUrl;
+    window.downloadAllCollegeBooks = downloadAllCollegeBooks;
+    window.generateMindMapFromBook = generateMindMapFromBook;
     
-    console.log('[V288] 学习图书馆模块加载完成 - 导入+下载菜单+高效记忆');
+    console.log('[V305] 学习图书馆模块加载完成 - 分类筛选+目录展示+批量下载+一键生成思维导图');
 })();

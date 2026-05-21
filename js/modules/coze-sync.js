@@ -8,7 +8,7 @@ window.CozeSync = {
     config: {
         apiBaseUrl: 'https://api.coze.cn',
         accessToken: '',
-        botId: '',
+        botId: '7642285667988586496',
         userId: 'cognitive_train_user_' + Date.now()
     },
     
