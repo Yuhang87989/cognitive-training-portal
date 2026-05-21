@@ -156,41 +156,52 @@ window.renderMindMap = function(container) {
 
 // 绑定思维导图的所有事件
 window.bindMindMapEvents = function(container) {
-    // 导图选择下拉框
-    const selector = document.getElementById('mindmap-selector');
-    if (selector) {
-        selector.addEventListener('change', function(e) {
-            window.switchMindMap(e.target.value);
+    // 延时绑定，确保DOM完全渲染
+    setTimeout(function() {
+        console.log('[MindMap] 开始绑定事件，样式按钮数量:', document.querySelectorAll('.style-btn').length);
+        
+        // 导图选择下拉框
+        const selector = document.getElementById('mindmap-selector');
+        if (selector) {
+            selector.addEventListener('change', function(e) {
+                console.log('[MindMap] 切换导图:', e.target.value);
+                window.switchMindMap(e.target.value);
+            });
+        }
+        
+        // 新建导图按钮
+        const newBtn = document.getElementById('btn-new-map');
+        if (newBtn) {
+            newBtn.addEventListener('click', function() {
+                console.log('[MindMap] 点击新建按钮');
+                window.newMindMap();
+            });
+        }
+        
+        // 重置导图按钮
+        const resetBtn = document.getElementById('btn-reset-map');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                console.log('[MindMap] 点击重置按钮');
+                window.resetMindMap();
+            });
+        }
+        
+        // 样式切换按钮 - 使用document全局查找
+        const styleBtns = document.querySelectorAll('.style-btn');
+        console.log('[MindMap] 找到样式按钮数量:', styleBtns.length);
+        
+        styleBtns.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const styleName = this.getAttribute('data-style');
+                console.log('[MindMap] 点击样式按钮，切换样式:', styleName);
+                window.switchMindMapStyle(styleName);
+            });
         });
-    }
-    
-    // 新建导图按钮
-    const newBtn = document.getElementById('btn-new-map');
-    if (newBtn) {
-        newBtn.addEventListener('click', function() {
-            window.newMindMap();
-        });
-    }
-    
-    // 重置导图按钮
-    const resetBtn = document.getElementById('btn-reset-map');
-    if (resetBtn) {
-        resetBtn.addEventListener('click', function() {
-            window.resetMindMap();
-        });
-    }
-    
-    // 样式切换按钮
-    const styleBtns = container.querySelectorAll('.style-btn');
-    styleBtns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const styleName = this.getAttribute('data-style');
-            console.log('[MindMap] 切换样式:', styleName);
-            window.switchMindMapStyle(styleName);
-        });
-    });
-    
-    console.log('[MindMap] 事件绑定完成');
+        
+        console.log('[MindMap] 事件绑定完成');
+    }, 50);
 };
 
 // 渲染所有节点和连接线

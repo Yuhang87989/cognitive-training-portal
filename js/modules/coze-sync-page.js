@@ -73,6 +73,11 @@ window.renderCozeSyncPage = function(container) {
                 <h3 style="margin:0 0 16px 0;font-size:16px;color:#333;">🔄 同步操作</h3>
                 
                 <div style="display:flex;flex-direction:column;gap:12px;">
+                    <button onclick="window.syncAllWeeksFromCoze()" style="padding:14px;background:#e91e63;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold;" ${!status.configured ? 'disabled' : ''}>
+                        <span style="font-size:18px;">📚</span>
+                        批量同步Week1-Week10学习计划
+                    </button>
+                    
                     <button onclick="window.syncPlanFromCoze()" style="padding:14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" ${!status.configured ? 'disabled' : ''}>
                         <span style="font-size:18px;">📋</span>
                         从扣子同步学习计划
@@ -176,6 +181,30 @@ window.saveCozeConfig = function() {
     }, 500);
 };
 
+// 批量同步Week1-Week10学习计划
+window.syncAllWeeksFromCoze = function() {
+    window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
+    
+    window.CozeSync.syncAllWeeksFromCoze()
+    .then(function(result) {
+        if (result.success) {
+            window.addCozeLog('✅ 同步成功！新增 ' + result.count + ' 个任务', 'success');
+            // 刷新页面显示新数据
+            setTimeout(function() {
+                const container = document.getElementById('app-container');
+                if (container) {
+                    window.renderCozeSyncPage(container);
+                }
+            }, 500);
+        } else {
+            window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
+        }
+    })
+    .catch(function(error) {
+        window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
+    });
+};
+
 // 同步学习计划
 window.syncPlanFromCoze = function() {
     window.addCozeLog('🔄 正在从扣子同步学习计划...', 'info');
@@ -184,6 +213,13 @@ window.syncPlanFromCoze = function() {
     .then(function(result) {
         if (result.success) {
             window.addCozeLog('✅ 同步成功！导入 ' + result.count + ' 个任务', 'success');
+            // 刷新页面显示新数据
+            setTimeout(function() {
+                const container = document.getElementById('app-container');
+                if (container) {
+                    window.renderCozeSyncPage(container);
+                }
+            }, 500);
         } else {
             window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
         }
