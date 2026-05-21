@@ -104,26 +104,26 @@ window.renderMindMap = function(container) {
                 <button onclick="history.back()" style="padding:8px 12px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
                 <span style="font-weight:bold;font-size:16px;color:#333;flex:1;text-align:center;">🧠 ${currentMap.name}</span>
                 <div style="display:flex;gap:8px;">
-                    <select id="mindmap-selector" onchange="window.switchMindMap(this.value)" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
+                    <select id="mindmap-selector" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
                         ${Object.values(window.mindmapState.maps).map(map => 
                             `<option value="${map.id}" ${map.id === window.mindmapState.currentMapId ? 'selected' : ''}>${map.name}</option>`
                         ).join('')}
                     </select>
-                    <button onclick="window.newMindMap()" style="padding:8px 12px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">+ 新建</button>
-                    <button onclick="window.resetMindMap()" style="padding:8px 12px;background:#fa709a;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">重置</button>
+                    <button id="btn-new-map" style="padding:8px 12px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">+ 新建</button>
+                    <button id="btn-reset-map" style="padding:8px 12px;background:#fa709a;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">重置</button>
                 </div>
             </div>
             
             <!-- 样式选择 -->
             <div style="padding:8px 16px;background:#fafafa;display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
                 <span style="font-size:13px;color:#666;">样式：</span>
-                ${window.mindmapState.styles.map(s => `
-                    <button onclick="window.switchMindMapStyle('${s}')" style="padding:4px 10px;background:${s === window.mindmapState.currentStyle ? '#667eea' : '#fff'};color:${s === window.mindmapState.currentStyle ? 'white' : '#666'};border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;">${s === 'default' ? '默认' : s === 'colorful' ? '多彩' : s === 'minimal' ? '简约' : s === 'ocean' ? '海洋' : '日落'}</button>
+                ${window.mindmapState.styles.map((s, index) => `
+                    <button class="style-btn" data-style="${s}" style="padding:4px 10px;background:${s === window.mindmapState.currentStyle ? '#667eea' : '#fff'};color:${s === window.mindmapState.currentStyle ? 'white' : '#666'};border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;">${s === 'default' ? '默认' : s === 'colorful' ? '多彩' : s === 'minimal' ? '简约' : s === 'ocean' ? '海洋' : '日落'}</button>
                 `).join('')}
             </div>
             
             <!-- 导图区域 -->
-            <div id="mindmap-canvas" style="flex:1;position:relative;overflow:hidden;background:${style.bg};touch-action:none;">
+            <div id="mindmap-canvas" style="flex:1;position:relative;overflow:hidden;background:${style.bg};touch-action:pan-x pan-y;">
                 <!-- SVG 连接线层 -->
                 <svg id="mindmap-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></svg>
                 <!-- 节点层 -->
@@ -148,7 +148,49 @@ window.renderMindMap = function(container) {
     // 渲染所有节点和连接线
     window.renderAllMindMapNodes();
     
+    // 绑定事件监听器
+    window.bindMindMapEvents(container);
+    
     console.log('[V297] 思维导图渲染完成');
+};
+
+// 绑定思维导图的所有事件
+window.bindMindMapEvents = function(container) {
+    // 导图选择下拉框
+    const selector = document.getElementById('mindmap-selector');
+    if (selector) {
+        selector.addEventListener('change', function(e) {
+            window.switchMindMap(e.target.value);
+        });
+    }
+    
+    // 新建导图按钮
+    const newBtn = document.getElementById('btn-new-map');
+    if (newBtn) {
+        newBtn.addEventListener('click', function() {
+            window.newMindMap();
+        });
+    }
+    
+    // 重置导图按钮
+    const resetBtn = document.getElementById('btn-reset-map');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            window.resetMindMap();
+        });
+    }
+    
+    // 样式切换按钮
+    const styleBtns = container.querySelectorAll('.style-btn');
+    styleBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const styleName = this.getAttribute('data-style');
+            console.log('[MindMap] 切换样式:', styleName);
+            window.switchMindMapStyle(styleName);
+        });
+    });
+    
+    console.log('[MindMap] 事件绑定完成');
 };
 
 // 渲染所有节点和连接线
@@ -276,6 +318,9 @@ document.addEventListener('mousemove', function(e) {
 // 触摸移动（移动端）
 document.addEventListener('touchmove', function(e) {
     if (window.mindmapState.draggingNode) {
+        // 阻止页面滚动，只进行拖拽
+        e.preventDefault();
+        
         const canvas = document.getElementById('mindmap-canvas');
         if (!canvas) return;
         
@@ -297,7 +342,7 @@ document.addEventListener('touchmove', function(e) {
             window.renderAllMindMapNodes();
         }
     }
-});
+}, { passive: false });
 
 // 鼠标/触摸抬起 - 全局监听
 document.addEventListener('mouseup', function() {

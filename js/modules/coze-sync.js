@@ -99,6 +99,25 @@ window.CozeSync = {
         });
     },
     
+    // 获取AI返回的文本内容
+    getMessageContent: function(result) {
+        // 尝试不同的响应格式
+        if (result.data && result.data.choices && result.data.choices[0]) {
+            return result.data.choices[0].message.content;
+        }
+        if (result.choices && result.choices[0]) {
+            return result.choices[0].message.content;
+        }
+        if (result.messages && result.messages[0]) {
+            return result.messages[0].content;
+        }
+        if (result.content) {
+            return result.content;
+        }
+        console.warn('[CozeSync] 无法解析响应格式:', result);
+        return null;
+    },
+    
     // ============= 数据同步功能 =============
     
     // 同步学习计划：从扣子平台获取任务列表
@@ -108,8 +127,11 @@ window.CozeSync = {
         return this.chat('请返回我的学习计划任务列表，使用JSON格式返回，格式为：[{"text":"任务名称","time":"09:00 - 10:00","icon":"📚","date":"2026-05-21"}]')
         .then(function(result) {
             try {
-                // 解析AI返回的JSON
-                const content = result.data.choices[0].message.content;
+                const content = self.getMessageContent(result);
+                if (!content) {
+                    return { success: false, error: '无法获取响应内容' };
+                }
+                
                 const tasks = JSON.parse(content);
                 
                 if (Array.isArray(tasks)) {
@@ -155,6 +177,69 @@ window.CozeSync = {
         });
     },
     
+    // 批量同步Week1-Week10学习计划
+    syncAllWeeksFromCoze: function() {
+        const self = this;
+        
+        return this.chat('请返回Week1到Week10的全部学习计划，使用JSON格式返回，格式为：[{"week":"Week1","tasks":[{"text":"Day1 任务名称","time":"09:00 - 10:00","icon":"📚","date":"2026-05-21"}]}]')
+        .then(function(result) {
+            try {
+                const content = self.getMessageContent(result);
+                if (!content) {
+                    return { success: false, error: '无法获取响应内容' };
+                }
+                
+                const weekData = JSON.parse(content);
+                
+                if (Array.isArray(weekData)) {
+                    // 获取现有任务
+                    const savedData = window.DataSync.get('plan');
+                    const existingTasks = savedData && savedData.tasks ? savedData.tasks : [];
+                    let newCount = 0;
+                    
+                    // 遍历所有Week
+                    weekData.forEach(function(week) {
+                        if (week.tasks && Array.isArray(week.tasks)) {
+                            week.tasks.forEach(function(newTask) {
+                                const exists = existingTasks.some(function(t) {
+                                    return t.text === newTask.text && t.date === newTask.date;
+                                });
+                                
+                                if (!exists) {
+                                    const newId = Math.max(0, ...existingTasks.map(function(t) { return t.id; })) + 1;
+                                    existingTasks.push({
+                                        id: newId,
+                                        text: newTask.text,
+                                        time: newTask.time,
+                                        icon: newTask.icon || '📋',
+                                        completed: false,
+                                        date: newTask.date || new Date().toISOString().split('T')[0]
+                                    });
+                                    newCount++;
+                                }
+                            });
+                        }
+                    });
+                    
+                    // 保存到DataSync
+                    window.DataSync.set('plan', {
+                        tasks: existingTasks,
+                        categories: ['语文', '数学', '英语', '其他'],
+                        version: 1,
+                        lastSync: new Date().toISOString()
+                    });
+                    
+                    console.log('[CozeSync] Week1-Week10同步完成，共新增', newCount, '个任务');
+                    return { success: true, count: newCount };
+                }
+            } catch (e) {
+                console.error('[CozeSync] 解析Week计划失败:', e);
+            }
+            
+            return { success: false, error: '解析失败' };
+        });
+    },
+    
     // 同步思维导图：从扣子平台获取节点结构
     syncMindMapFromCoze: function() {
         const self = this;
@@ -162,7 +247,10 @@ window.CozeSync = {
         return this.chat('请返回一个学习思维导图的节点结构，使用JSON格式返回，格式为：{"name":"导图名称","nodes":[{"id":1,"text":"中心主题","x":50,"y":50,"color":"#667eea","isRoot":true},{"id":2,"text":"子节点","x":25,"y":28,"color":"#f093fb","parent":1}]}')
         .then(function(result) {
             try {
-                const content = result.data.choices[0].message.content;
+                const content = self.getMessageContent(result);
+                if (!content) {
+                    return { success: false, error: '无法获取响应内容' };
+                }
                 const mapData = JSON.parse(content);
                 
                 if (mapData.nodes) {
