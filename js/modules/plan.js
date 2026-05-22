@@ -7,7 +7,8 @@ var TRAINING_START_DATE = new Date('2026-05-20');
 
 window.planState = {
     currentDate: null,
-    completedTasks: {}
+    completedTasks: {},
+    customTasks: {}  // 自定义任务：按日期存储 { "2026-05-20": [task1, task2, ...] }
 };
 
 window.initPlanState = function() {
@@ -15,9 +16,11 @@ window.initPlanState = function() {
     if (!saved) {
         window.planState.currentDate = new Date().toISOString().split('T')[0];
         window.planState.completedTasks = {};
+        window.planState.customTasks = {};
     } else {
         window.planState.currentDate = saved.currentDate || new Date().toISOString().split('T')[0];
         window.planState.completedTasks = saved.completedTasks || {};
+        window.planState.customTasks = saved.customTasks || {};
     }
     console.log('[Plan] initPlanState:', window.planState.currentDate);
 };
@@ -117,6 +120,30 @@ window.renderPlan = function(container) {
     html += '<button onclick="changeDate(-7)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">上周</button>';
     html += '<button onclick="goToToday()" style="padding:6px 12px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">今天</button>';
     html += '<button onclick="changeDate(7)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">下周</button>';
+    // 自定义任务区域
+    html += '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
+    html += '<h4 style="margin:0;font-size:15px;color:#333;">✏️ 自定义任务</h4>';
+    html += '<button onclick="showAddCustomTask()" style="padding:6px 12px;background:#ff9800;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">+ 添加任务</button>';
+    html += '</div>';
+    
+    var dateKey = window.planState.currentDate;
+    var dayCustomTasks = window.planState.customTasks[dateKey] || [];
+    
+    if (dayCustomTasks.length === 0) {
+        html += '<div style="text-align:center;padding:20px;color:#999;font-size:13px;">暂无自定义任务，点击上方按钮添加</div>';
+    } else {
+        for (var k = 0; k < dayCustomTasks.length; k++) {
+            var customTask = dayCustomTasks[k];
+            var customDone = window.planState.completedTasks[customTask.id];
+            html += '<div style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (customDone ? '#fff3e0' : '#fafafa') + ';border:2px solid ' + (customDone ? '#ffb74d' : '#eee') + ';">';
+            html += '<span style="font-size:18px;margin-right:10px;">✏️</span>';
+            html += '<div style="flex:1;cursor:pointer;" onclick="toggleTaskComplete(\'' + customTask.id + '\')">';
+            html += '<div style="font-size:13px;color:#333;text-decoration:' + (customDone ? 'line-through' : 'none') + ';opacity:' + (customDone ? '0.6' : '1') + ';">' + customTask.title + '</div></div>';
+            html += '<button onclick="deleteCustomTask(\'' + customTask.id + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;margin-left:8px;">删除</button>';
+            html += '</div>';
+        }
+    }
     html += '</div>';
     
     if (isInTraining) {
@@ -163,7 +190,7 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V349 - 调试切换问题</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V350 - 支持自定义任务</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
@@ -205,4 +232,58 @@ window.toggleTaskComplete = function(taskId) {
     }
 };
 
-console.log('[V349] 学习计划模块加载完成');
+// 显示添加自定义任务弹窗
+window.showAddCustomTask = function() {
+    var taskTitle = prompt('请输入自定义任务名称：');
+    if (taskTitle && taskTitle.trim()) {
+        window.addCustomTask(taskTitle.trim());
+    }
+};
+
+// 添加自定义任务
+window.addCustomTask = function(taskTitle) {
+    var dateKey = window.planState.currentDate;
+    if (!window.planState.customTasks[dateKey]) {
+        window.planState.customTasks[dateKey] = [];
+    }
+    
+    var taskId = 'custom_' + dateKey + '_' + Date.now();
+    window.planState.customTasks[dateKey].push({
+        id: taskId,
+        title: taskTitle,
+        type: 'custom',
+        createdAt: new Date().toISOString()
+    });
+    
+    window.savePlanState();
+    var container = document.getElementById('app-container');
+    if (container) {
+        window.renderPlan(container);
+    }
+    alert('自定义任务添加成功！');
+};
+
+// 删除自定义任务
+window.deleteCustomTask = function(taskId) {
+    if (!confirm('确定要删除这个自定义任务吗？')) {
+        return;
+    }
+    
+    var dateKey = window.planState.currentDate;
+    if (window.planState.customTasks[dateKey]) {
+        window.planState.customTasks[dateKey] = window.planState.customTasks[dateKey].filter(function(task) {
+            return task.id !== taskId;
+        });
+        
+        // 同时删除完成状态
+        delete window.planState.completedTasks[taskId];
+        
+        window.savePlanState();
+        var container = document.getElementById('app-container');
+        if (container) {
+            window.renderPlan(container);
+        }
+    }
+};
+
+console.log('[V350] 学习计划模块加载完成 - 支持自定义任务');
