@@ -212,6 +212,7 @@ window.saveCozeConfig = function() {
 
 // 批量同步Week1-Week10学习计划
 window.syncAllWeeksFromCoze = function() {
+    alert("syncAll函数已调用！");
     // 检查配置状态
     if (!window.CozeSync || !window.CozeSync.isConfigured()) {
         alert('⚠️ 请先在上方配置Access Token和Bot ID');
@@ -245,6 +246,7 @@ window.syncAllWeeksFromCoze = function() {
 
 // 同步学习计划
 window.syncPlanFromCoze = function() {
+    alert("syncPlan函数已调用！");
     if (!window.CozeSync || !window.CozeSync.isConfigured()) {
         alert('⚠️ 请先配置Access Token和Bot ID');
         return;
@@ -277,6 +279,7 @@ window.syncPlanFromCoze = function() {
 
 // 同步思维导图
 window.syncMindMapFromCoze = function() {
+    alert("syncMindMap函数已调用！");
     if (!window.CozeSync || !window.CozeSync.isConfigured()) {
         alert('⚠️ 请先配置Access Token和Bot ID');
         return;
@@ -352,6 +355,7 @@ window.uploadMindMapToCoze = function() {
 
 // 生成练习题
 window.generateQuestions = function() {
+    alert("generateQuestions函数已调用！");
     if (!window.CozeSync || !window.CozeSync.isConfigured()) {
         alert('⚠️ 请先配置Access Token和Bot ID');
         return;
