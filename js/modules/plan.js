@@ -1,5 +1,5 @@
 // ============================================================
-// V349 学习计划模块 - 调试切换问题
+// V351 学习计划模块 - 恢复原布局，增加多个自定义按钮
 // ============================================================
 
 // 训练开始日期：2026年5月20日
@@ -29,6 +29,7 @@ window.savePlanState = function() {
     var saved = window.DataSync.get('plan') || {};
     saved.currentDate = window.planState.currentDate;
     saved.completedTasks = window.planState.completedTasks;
+    saved.customTasks = window.planState.customTasks;
     window.DataSync.set('plan', saved);
     console.log('[Plan] savePlanState:', window.planState.currentDate);
 };
@@ -116,34 +117,14 @@ window.renderPlan = function(container) {
     html += '<button onclick="changeDate(1)" style="padding:8px 16px;background:#f0f0f0;border:none;border-radius:8px;font-size:14px;cursor:pointer;">后一天 ▶</button>';
     html += '</div>';
     
-    html += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">';
+    // 保持原有布局，在周切换按钮后面增加多个自定义按钮
+    html += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap;">';
     html += '<button onclick="changeDate(-7)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">上周</button>';
     html += '<button onclick="goToToday()" style="padding:6px 12px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">今天</button>';
     html += '<button onclick="changeDate(7)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">下周</button>';
-    // 自定义任务区域
-    html += '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-    html += '<h4 style="margin:0;font-size:15px;color:#333;">✏️ 自定义任务</h4>';
     html += '<button onclick="showAddCustomTask()" style="padding:6px 12px;background:#ff9800;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">+ 添加任务</button>';
-    html += '</div>';
-    
-    var dateKey = window.planState.currentDate;
-    var dayCustomTasks = window.planState.customTasks[dateKey] || [];
-    
-    if (dayCustomTasks.length === 0) {
-        html += '<div style="text-align:center;padding:20px;color:#999;font-size:13px;">暂无自定义任务，点击上方按钮添加</div>';
-    } else {
-        for (var k = 0; k < dayCustomTasks.length; k++) {
-            var customTask = dayCustomTasks[k];
-            var customDone = window.planState.completedTasks[customTask.id];
-            html += '<div style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (customDone ? '#fff3e0' : '#fafafa') + ';border:2px solid ' + (customDone ? '#ffb74d' : '#eee') + ';">';
-            html += '<span style="font-size:18px;margin-right:10px;">✏️</span>';
-            html += '<div style="flex:1;cursor:pointer;" onclick="toggleTaskComplete(\'' + customTask.id + '\')">';
-            html += '<div style="font-size:13px;color:#333;text-decoration:' + (customDone ? 'line-through' : 'none') + ';opacity:' + (customDone ? '0.6' : '1') + ';">' + customTask.title + '</div></div>';
-            html += '<button onclick="deleteCustomTask(\'' + customTask.id + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;margin-left:8px;">删除</button>';
-            html += '</div>';
-        }
-    }
+    html += '<button onclick="showAllCustomTasks()" style="padding:6px 12px;background:#9c27b0;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📋 全部自定义</button>';
+    html += '<button onclick="clearCompletedCustom()" style="padding:6px 12px;background:#f44336;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🧹 清理已完成</button>';
     html += '</div>';
     
     if (isInTraining) {
@@ -166,6 +147,7 @@ window.renderPlan = function(container) {
                 html += '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
                 html += '<h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">🎯 ' + currentDayData.title + '</h4>';
                 
+                // 原有训练任务
                 if (currentDayData.tasks && currentDayData.tasks.length > 0) {
                     for (var j = 0; j < currentDayData.tasks.length; j++) {
                         var task = currentDayData.tasks[j];
@@ -178,6 +160,21 @@ window.renderPlan = function(container) {
                         html += '</div>';
                     }
                 }
+                
+                // 自定义任务（跟在原有任务后面，同一个卡片内）
+                var dateKey = window.planState.currentDate;
+                var dayCustomTasks = window.planState.customTasks[dateKey] || [];
+                for (var k = 0; k < dayCustomTasks.length; k++) {
+                    var customTask = dayCustomTasks[k];
+                    var customDone = window.planState.completedTasks[customTask.id];
+                    html += '<div style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (customDone ? '#fff3e0' : '#fafafa') + ';border:2px solid ' + (customDone ? '#ffb74d' : '#eee') + ';">';
+                    html += '<span style="font-size:18px;margin-right:10px;cursor:pointer;" onclick="toggleTaskComplete(\'' + customTask.id + '\')">✏️</span>';
+                    html += '<div style="flex:1;cursor:pointer;" onclick="toggleTaskComplete(\'' + customTask.id + '\')">';
+                    html += '<div style="font-size:13px;color:#333;text-decoration:' + (customDone ? 'line-through' : 'none') + ';opacity:' + (customDone ? '0.6' : '1') + ';">' + customTask.title + '</div></div>';
+                    html += '<button onclick="deleteCustomTask(\'' + customTask.id + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">删除</button>';
+                    html += '</div>';
+                }
+                
                 html += '</div>';
             }
         }
@@ -190,7 +187,7 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V350 - 支持自定义任务</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V351 - 多个自定义按钮（保持原布局）</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
@@ -286,4 +283,56 @@ window.deleteCustomTask = function(taskId) {
     }
 };
 
-console.log('[V350] 学习计划模块加载完成 - 支持自定义任务');
+// 显示所有自定义任务
+window.showAllCustomTasks = function() {
+    var allTasks = [];
+    var dates = Object.keys(window.planState.customTasks);
+    
+    if (dates.length === 0) {
+        alert('还没有任何自定义任务');
+        return;
+    }
+    
+    dates.sort();
+    for (var i = 0; i < dates.length; i++) {
+        var tasks = window.planState.customTasks[dates[i]];
+        for (var j = 0; j < tasks.length; j++) {
+            var done = window.planState.completedTasks[tasks[j].id] ? '✅' : '⬜';
+            allTasks.push(dates[i] + ' ' + done + ' ' + tasks[j].title);
+        }
+    }
+    
+    alert('所有自定义任务：\n\n' + allTasks.join('\n'));
+};
+
+// 清理已完成的自定义任务
+window.clearCompletedCustom = function() {
+    if (!confirm('确定要清理所有已完成的自定义任务吗？')) {
+        return;
+    }
+    
+    var dates = Object.keys(window.planState.customTasks);
+    for (var i = 0; i < dates.length; i++) {
+        window.planState.customTasks[dates[i]] = window.planState.customTasks[dates[i]].filter(function(task) {
+            var isDone = window.planState.completedTasks[task.id];
+            if (isDone) {
+                delete window.planState.completedTasks[task.id];
+            }
+            return !isDone;
+        });
+        
+        // 如果当天没有任务了，删除这个日期
+        if (window.planState.customTasks[dates[i]].length === 0) {
+            delete window.planState.customTasks[dates[i]];
+        }
+    }
+    
+    window.savePlanState();
+    var container = document.getElementById('app-container');
+    if (container) {
+        window.renderPlan(container);
+    }
+    alert('已清理完成的自定义任务！');
+};
+
+console.log('[V351] 学习计划模块加载完成 - 保持原布局，增加多个自定义按钮');
