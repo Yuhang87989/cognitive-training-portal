@@ -218,7 +218,6 @@ window.syncAllWeeksFromCoze = function() {
         return;
     }
     
-    alert("配置检查: token=" + (window.CozeSync.config.accessToken ? "有" : "无") + ", botId=" + window.CozeSync.config.botId);
     window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
     
     window.CozeSync.syncAllWeeksFromCoze()
