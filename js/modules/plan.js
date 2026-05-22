@@ -2,11 +2,34 @@
 // V297 学习计划模块 - 完善日期切换、数据保存、任务管理
 // ============================================================
 
+// ============================================================
+// V324 学习计划模块 - 添加周视图，支持Week1-Week10
+// ============================================================
+
 window.planState = {
-    currentDate: new Date().toISOString().split('T')[0]
+    currentDate: new Date().toISOString().split('T')[0],
+    viewMode: 'day', // 'day' 或 'week'
+    currentWeek: 'week1'
 };
 
-// 获取任务数据
+// 切换视图模式
+window.switchPlanViewMode = function(mode) {
+    window.planState.viewMode = mode;
+    const container = document.getElementById('app-container');
+    if (container) {
+        window.renderPlan(container);
+    }
+};
+
+// 切换周
+window.switchWeek = function(weekId) {
+    window.planState.currentWeek = weekId;
+    const container = document.getElementById('app-container');
+    if (container) {
+        window.renderPlan(container);
+    }
+};
+
 window.getPlanTasks = function() {
     const savedData = window.DataSync.get('plan');
     return savedData && savedData.tasks ? savedData.tasks : [];
@@ -45,6 +68,14 @@ window.renderPlan = function(container) {
                 <div style="width:60px;"></div>
             </div>
             
+            
+            <!-- 视图切换 -->
+            <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;">
+                <button onclick="window.switchPlanViewMode('day')" id="view-day-btn" style="padding:8px 16px;background:white;color:#666;border:1px solid #ddd;border-radius:8px;font-size:14px;cursor:pointer;">日视图</button>
+                <button onclick="window.switchPlanViewMode('week')" id="view-week-btn" style="padding:8px 16px;background:white;color:#666;border:1px solid #ddd;border-radius:8px;font-size:14px;cursor:pointer;">周视图</button>
+            </div>
+
+            <div id="day-view-container">
             <!-- 日期选择 -->
             <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;">
                 <button onclick="window.changePlanDate(-1)" style="padding:10px 14px;background:white;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.05);font-size:16px;">◀</button>
@@ -109,10 +140,48 @@ window.renderPlan = function(container) {
             <div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">
                 <div style="font-size:12px;color:#1976d2;text-align:center;">✅ V297 - 学习计划完整功能版 | 数据已同步</div>
             </div>
+            </div>
+            
+            <!-- 周视图容器 -->
+            <div id="week-view-container" style="display:none;"></div>
         </div>
     `;
     
     console.log('[V297] 学习计划渲染完成，当前日期:', window.planState.currentDate, '任务数:', todayTasks.length);
+    
+    // 设置视图按钮样式
+    setTimeout(function() {
+        const dayBtn = document.getElementById("view-day-btn");
+        const weekBtn = document.getElementById("view-week-btn");
+        if (dayBtn && weekBtn) {
+            if (window.planState.viewMode === "day") {
+                dayBtn.style.background = "#667eea";
+                dayBtn.style.color = "white";
+                weekBtn.style.background = "white";
+                weekBtn.style.color = "#666";
+            } else {
+                dayBtn.style.background = "white";
+                dayBtn.style.color = "#666";
+                weekBtn.style.background = "#667eea";
+                weekBtn.style.color = "white";
+            }
+        }
+        
+        // 显示/隐藏视图
+        const dayContainer = document.getElementById("day-view-container");
+        const weekContainer = document.getElementById("week-view-container");
+        if (dayContainer && weekContainer) {
+            if (window.planState.viewMode === "day") {
+                dayContainer.style.display = "block";
+                weekContainer.style.display = "none";
+            } else {
+                dayContainer.style.display = "none";
+                weekContainer.style.display = "block";
+                // 渲染周视图
+                window.renderWeekView(weekContainer);
+            }
+        }
+    }, 10);
 };
 
 // 切换任务完成状态
@@ -234,5 +303,58 @@ window.importWeekPlanFromCoze = function() {
         alert('请从头像菜单进入扣子数据同步页面');
     }
 };
+// 渲染周视图
+window.renderWeekView = function(container) {
+    // 检查周计划数据
+    if (typeof weekPlans === "undefined" || !weekPlans) {
+        container.innerHTML = "<div style="padding:40px;text-align:center;color:#666;">周计划数据加载中...</div>";
+        return;
+    }
+    
+    const weekKeys = Object.keys(weekPlans).sort();
+    const currentWeekData = weekPlans[window.planState.currentWeek];
+    
+    if (!currentWeekData) {
+        container.innerHTML = "<div style="padding:40px;text-align:center;color:#666;">未找到该周数据</div>";
+        return;
+    }
+    
+    let weekButtonsHtml = weekKeys.map(function(weekKey) {
+        const weekInfo = weekPlans[weekKey];
+        const isActive = weekKey === window.planState.currentWeek;
+        return `<button onclick="window.switchWeek()" style="padding:8px 14px;background:${isActive ? #667eea : #fff};color:${isActive ? white : #666};border:1px solid #ddd;border-radius:8px;font-size:13px;cursor:pointer;margin:4px;">${weekInfo.weekTitle.split(：)[0]}</button>`;
+    }).join();
+    
+    let daysHtml = "";
+    if (currentWeekData.days && Array.isArray(currentWeekData.days)) {
+        daysHtml = currentWeekData.days.map(function(day) {
+            let tasksHtml = day.tasks.map(function(task) {
+                return `<div style="padding:10px 14px;background:#f8f9fa;border-radius:8px;margin-bottom:8px;font-size:13px;border-left:3px solid #667eea;">
+                    <div style="font-weight:bold;color:#333;">${task.title}</div>
+                    <div style="font-size:11px;color:#666;margin-top:4px;">类型: ${task.type} | 时长: ${task.duration}分钟</div>
+                </div>`;
+            }).join();
+            
+            return `<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">Day ${day.day}：${day.title}</h4>
+                ${tasksHtml}
+            </div>`;
+        }).join();
+    }
+    
+    container.innerHTML = `
+        <div style="margin-bottom:20px;">
+            <div style="font-size:16px;font-weight:bold;color:#333;margin-bottom:8px;">${currentWeekData.weekTitle}</div>
+            <div style="font-size:13px;color:#666;">${currentWeekData.weekDesc}</div>
+        </div>
+        
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+            ${weekButtonsHtml}
+        </div>
+        
+        ${daysHtml}
+    `;
+};
+
 
 console.log('[V305] 学习计划模块加载完成，window.renderPlan:', typeof window.renderPlan);
