@@ -167,11 +167,13 @@ window.renderPlan = function(container) {
                 for (var k = 0; k < dayCustomTasks.length; k++) {
                     var customTask = dayCustomTasks[k];
                     var customDone = window.planState.completedTasks[customTask.id];
+                    var timeDisplay = customTask.time ? '<span style="font-size:11px;color:#999;margin-right:8px;">[' + customTask.time + ']</span>' : '';
                     html += '<div style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (customDone ? '#fff3e0' : '#fafafa') + ';border:2px solid ' + (customDone ? '#ffb74d' : '#eee') + ';">';
                     html += '<span style="font-size:18px;margin-right:10px;cursor:pointer;" onclick="toggleTaskComplete(\'' + customTask.id + '\')">✏️</span>';
                     html += '<div style="flex:1;cursor:pointer;" onclick="toggleTaskComplete(\'' + customTask.id + '\')">';
-                    html += '<div style="font-size:13px;color:#333;text-decoration:' + (customDone ? 'line-through' : 'none') + ';opacity:' + (customDone ? '0.6' : '1') + ';">' + customTask.title + '</div></div>';
-                    html += '<button onclick="deleteCustomTask(\'' + customTask.id + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">删除</button>';
+                    html += '<div style="font-size:13px;color:#333;text-decoration:' + (customDone ? 'line-through' : 'none') + ';opacity:' + (customDone ? '0.6' : '1') + ';">' + timeDisplay + customTask.title + '</div></div>';
+                    html += '<button onclick="event.stopPropagation();showEditCustomTask(\'' + customTask.id + '\')" style="padding:4px 8px;background:#2196f3;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;margin-right:4px;">编辑</button>';
+                    html += '<button onclick="event.stopPropagation();deleteCustomTask(\'' + customTask.id + '\')" style="padding:4px 8px;background:#f44336;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">删除</button>';
                     html += '</div>';
                 }
                 
@@ -187,7 +189,7 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V351 - 多个自定义按钮（保持原布局）</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V352 - 自定义任务支持时间设置和编辑功能</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
@@ -232,13 +234,52 @@ window.toggleTaskComplete = function(taskId) {
 // 显示添加自定义任务弹窗
 window.showAddCustomTask = function() {
     var taskTitle = prompt('请输入自定义任务名称：');
-    if (taskTitle && taskTitle.trim()) {
-        window.addCustomTask(taskTitle.trim());
+    if (!taskTitle || !taskTitle.trim()) {
+        return;
     }
+    
+    var taskTime = prompt('请输入任务时间（可选，如：09:00）：', '');
+    window.addCustomTask(taskTitle.trim(), taskTime && taskTime.trim() ? taskTime.trim() : '');
+};
+
+// 显示编辑自定义任务弹窗
+window.showEditCustomTask = function(taskId) {
+    var dateKey = window.planState.currentDate;
+    var tasks = window.planState.customTasks[dateKey] || [];
+    var task = null;
+    
+    for (var i = 0; i < tasks.length; i++) {
+        if (tasks[i].id === taskId) {
+            task = tasks[i];
+            break;
+        }
+    }
+    
+    if (!task) {
+        alert('找不到该任务');
+        return;
+    }
+    
+    var newTitle = prompt('请修改任务名称：', task.title);
+    if (newTitle === null || !newTitle.trim()) {
+        return;
+    }
+    
+    var newTime = prompt('请修改任务时间：', task.time || '');
+    
+    task.title = newTitle.trim();
+    task.time = newTime && newTime.trim() ? newTime.trim() : '';
+    
+    window.savePlanState();
+    var container = document.getElementById('app-container');
+    if (container) {
+        window.renderPlan(container);
+    }
+    alert('任务修改成功！');
 };
 
 // 添加自定义任务
-window.addCustomTask = function(taskTitle) {
+window.addCustomTask = function(taskTitle, taskTime) {
     var dateKey = window.planState.currentDate;
     if (!window.planState.customTasks[dateKey]) {
         window.planState.customTasks[dateKey] = [];
@@ -248,8 +289,17 @@ window.addCustomTask = function(taskTitle) {
     window.planState.customTasks[dateKey].push({
         id: taskId,
         title: taskTitle,
+        time: taskTime || '',
         type: 'custom',
         createdAt: new Date().toISOString()
+    });
+    
+    // 按时间排序
+    window.planState.customTasks[dateKey].sort(function(a, b) {
+        if (!a.time && !b.time) return 0;
+        if (!a.time) return 1;
+        if (!b.time) return -1;
+        return a.time.localeCompare(b.time);
     });
     
     window.savePlanState();
