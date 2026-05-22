@@ -26,7 +26,7 @@ window.renderPlan = function(container) {
     // 顶部栏
     var html = '<div style="padding:20px;background:#f8f9fa;min-height:100vh;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
-    html += '<button onclick="history.back()" style="padding:10px 16px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回</button>';
+    html += '<button onclick="history.back()' style="padding:10px 16px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回</button>';
     html += '<h2 style="margin:0;font-size:18px;color:#333;">📅 学习计划</h2>';
     html += '<div style="width:60px;"></div></div>';
     
@@ -88,7 +88,7 @@ window.renderPlan = function(container) {
         var isActive = w === window.planState.currentWeek;
         var bgColor = isActive ? '#667eea' : (hasData ? '#ffffff' : '#f0f0f0');
         var textColor = isActive ? '#ffffff' : (hasData ? '#666666' : '#ccc');
-        html += '<button onclick="window.switchPlanWeek(' + w + ')" style="padding:6px 12px;background:' + bgColor + ';color:' + textColor + ';border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;margin:2px;">Week' + w + '</button>';
+        html += '<button onclick='window.switchPlanWeek(' + w + ')' style="padding:6px 12px;background:' + bgColor + ';color:' + textColor + ';border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;margin:2px;">Week' + w + '</button>';
     }
     html += '</div>';
     
@@ -112,7 +112,7 @@ window.renderPlan = function(container) {
                     var done = completedTasks[task.id];
                     var icon = typeIcons[task.type] || '📌';
                     
-                    html += '<div onclick="window.togglePlanTaskComplete(\'' + task.id + '\')" style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (done ? '#e8f5e9' : '#fafafa') + ';cursor:pointer;border:2px solid ' + (done ? '#81c784' : '#eee') + ';">';
+                    html += '<div onclick='window.togglePlanTaskComplete(\'' + task.id + '\')' style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (done ? '#e8f5e9' : '#fafafa') + ';cursor:pointer;border:2px solid ' + (done ? '#81c784' : '#eee') + ';">';
                     html += '<span style="font-size:18px;margin-right:10px;">' + icon + '</span>';
                     html += '<div style="flex:1;"><div style="font-size:13px;color:#333;text-decoration:' + (done ? 'line-through' : 'none') + ';opacity:' + (done ? '0.6' : '1') + ';">' + task.title + '</div></div>';
                     html += '<span style="font-size:16px;">' + (done ? '✅' : '⬜') + '</span>';
