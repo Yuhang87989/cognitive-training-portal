@@ -1,5 +1,5 @@
 // ============================================================
-// V346 学习计划模块 - 真实日历视图，不刷新页面
+// V347 学习计划模块 - 修复切换后不重新渲染问题
 // ============================================================
 
 // 训练开始日期：2026年5月20日
@@ -10,7 +10,8 @@ window.planState = {
     completedTasks: {}
 };
 
-window.initPlanState = function() {
+// 从本地存储读取状态
+window.loadPlanState = function() {
     var saved = window.DataSync.get('plan');
     if (!saved) {
         window.planState.currentDate = new Date().toISOString().split('T')[0];
@@ -21,6 +22,7 @@ window.initPlanState = function() {
     }
 };
 
+// 保存状态到本地存储
 window.savePlanState = function() {
     var saved = window.DataSync.get('plan') || {};
     saved.currentDate = window.planState.currentDate;
@@ -36,11 +38,17 @@ window.getWeekDayFromDate = function(dateStr) {
     var totalDays = diffDays + 1;
     var weekNum = Math.ceil(totalDays / 7);
     var dayInWeek = ((totalDays - 1) % 7) + 1;
-    return { week: weekNum, day: dayInWeek, totalDays: totalDays };
+    return { week: weekNum, day: dayInWeek };
 };
 
-window.renderPlan = function(container) {
-    window.initPlanState();
+window.renderPlan = function() {
+    window.loadPlanState();
+    
+    var container = document.getElementById('app-container');
+    if (!container) {
+        console.log('[Plan] 找不到app-container');
+        return;
+    }
     
     var currentDate = new Date(window.planState.currentDate);
     var weekDay = window.getWeekDayFromDate(window.planState.currentDate);
@@ -100,7 +108,7 @@ window.renderPlan = function(container) {
         html += '<div style="margin-top:4px;font-size:11px;opacity:0.7;">' + (currentWeekData.weekDesc || '') + '</div>';
     } else {
         html += '<div style="font-size:12px;opacity:0.9;">该日期不在训练周期内</div>';
-        html += '<div style="font-size:11px;opacity:0.7;margin-top:4px;">训练周期：2026年5月20日 - 2026年7月28日（Week1-Week10）</div>';
+        html += '<div style="font-size:11px;opacity:0.7;margin-top:4px;">训练周期：2026年5月20日 - 2026年7月28日</div>';
     }
     html += '</div>';
     
@@ -160,39 +168,34 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V346 - 真实日历视图</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V347 - 修复切换后不重新渲染问题</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
+    console.log('[V347] 渲染完成，当前日期:', window.planState.currentDate);
 };
 
 window.changeDate = function(days) {
+    window.loadPlanState();
     var currentDate = new Date(window.planState.currentDate);
     currentDate.setDate(currentDate.getDate() + days);
     window.planState.currentDate = currentDate.toISOString().split('T')[0];
     window.savePlanState();
-    var container = document.getElementById('app-container');
-    if (container) {
-        window.renderPlan(container);
-    }
+    window.renderPlan();
 };
 
 window.goToToday = function() {
+    window.loadPlanState();
     window.planState.currentDate = new Date().toISOString().split('T')[0];
     window.savePlanState();
-    var container = document.getElementById('app-container');
-    if (container) {
-        window.renderPlan(container);
-    }
+    window.renderPlan();
 };
 
 window.toggleTaskComplete = function(taskId) {
+    window.loadPlanState();
     window.planState.completedTasks[taskId] = !window.planState.completedTasks[taskId];
     window.savePlanState();
-    var container = document.getElementById('app-container');
-    if (container) {
-        window.renderPlan(container);
-    }
+    window.renderPlan();
 };
 
-console.log('[V346] 学习计划模块加载完成');
+console.log('[V347] 学习计划模块加载完成');
