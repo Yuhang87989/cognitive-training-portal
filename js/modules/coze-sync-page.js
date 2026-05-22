@@ -205,7 +205,7 @@ window.saveCozeConfig = function() {
     setTimeout(function() {
         const container = document.getElementById('app-container');
         if (container) {
-            window.renderCozeSyncPage(container);
+            window.location.reload();
         }
     }, 500);
 };
@@ -229,7 +229,7 @@ window.syncAllWeeksFromCoze = function() {
             setTimeout(function() {
                 const container = document.getElementById('app-container');
                 if (container) {
-                    window.renderCozeSyncPage(container);
+                    window.location.reload();
                 }
             }, 500);
         } else {
@@ -261,7 +261,7 @@ window.syncPlanFromCoze = function() {
             setTimeout(function() {
                 const container = document.getElementById('app-container');
                 if (container) {
-                    window.renderCozeSyncPage(container);
+                    window.location.reload();
                 }
             }, 500);
         } else {
