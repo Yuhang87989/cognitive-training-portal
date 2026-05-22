@@ -74,8 +74,6 @@ window.CozeSync = {
                 data.conversation_id = options.conversationId;
             }
             
-            console.log("开始调用API:", url);
-            
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -85,7 +83,6 @@ window.CozeSync = {
                 body: JSON.stringify(data)
             })
             .then(function(response) {
-                console.log("API响应:", response);
                 if (!response.ok) {
                     throw new Error('API请求失败: ' + response.status);
                 }
@@ -96,7 +93,6 @@ window.CozeSync = {
                 resolve(result);
             })
             .catch(function(error) {
-                console.error("API错误:", error);
                 console.error('[CozeSync] 对话失败:', error);
                 reject(error);
             });
