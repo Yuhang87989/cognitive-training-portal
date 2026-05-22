@@ -125,7 +125,6 @@ const week1Plan = {
         ]}
     ]
 };
-CTM.registerPlan('week1', week1Plan);
 
 // ===== Week2训练计划 =====
 const week2Plan = {
@@ -169,7 +168,6 @@ const week2Plan = {
         ]}
     ]
 };
-CTM.registerPlan('week2', week2Plan);
 
 // ===== Week3训练计划 =====
 const week3Plan = {
@@ -213,7 +211,6 @@ const week3Plan = {
         ]}
     ]
 };
-CTM.registerPlan('week3', week3Plan);
 
 // ===== Week4训练计划 =====
 const week4Plan = {
@@ -257,7 +254,6 @@ const week4Plan = {
         ]}
     ]
 };
-CTM.registerPlan('week4', week4Plan);
 
 // ===== Week7训练计划 =====
 const week7Plan = {
