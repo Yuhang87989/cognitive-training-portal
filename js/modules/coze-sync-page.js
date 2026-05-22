@@ -218,6 +218,7 @@ window.syncAllWeeksFromCoze = function() {
         return;
     }
     
+    alert("配置检查通过，开始同步");
     window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
     
     window.CozeSync.syncAllWeeksFromCoze()
@@ -250,6 +251,7 @@ window.syncPlanFromCoze = function() {
         return;
     }
     
+    alert("配置检查通过，开始同步学习计划");
     window.addCozeLog('🔄 正在从扣子同步学习计划...', 'info');
     
     window.CozeSync.syncPlanFromCoze()
@@ -282,6 +284,7 @@ window.syncMindMapFromCoze = function() {
         return;
     }
     
+    alert("配置检查通过，开始生成思维导图");
     window.addCozeLog('🔄 正在请求AI生成思维导图...', 'info');
     
     window.CozeSync.syncMindMapFromCoze()
