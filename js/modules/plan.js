@@ -1,24 +1,30 @@
 // ============================================================
-// V342 学习计划模块 - 完整Week1-Week10训练数据
+// V344 学习计划模块 - 按周/日切换显示
 // ============================================================
 
-window.planState = {
-    currentWeek: 1
+window.getPlanState = function() {
+    var saved = window.DataSync.get('plan');
+    if (!saved) {
+        return { currentWeek: 1, currentDay: 1, completedTasks: {} };
+    }
+    return {
+        currentWeek: saved.currentWeek || 1,
+        currentDay: saved.currentDay || 1,
+        completedTasks: saved.completedTasks || {}
+    };
 };
 
-window.getUserPlanTasks = function() {
-    var savedData = window.DataSync.get('plan');
-    return savedData && savedData.completedTasks ? savedData.completedTasks : {};
-};
-
-window.saveUserPlanTasks = function(completedTasks) {
-    window.DataSync.set('plan', { 
-        completedTasks: completedTasks,
-        version: 2 
-    });
+window.savePlanState = function(state) {
+    var saved = window.DataSync.get('plan') || {};
+    saved.currentWeek = state.currentWeek;
+    saved.currentDay = state.currentDay;
+    saved.completedTasks = state.completedTasks;
+    window.DataSync.set('plan', saved);
 };
 
 window.renderPlan = function(container) {
+    var state = window.getPlanState();
+    
     var html = '<div style="padding:20px;background:#f8f9fa;min-height:100vh;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
     html += '<button onclick="history.back()" style="padding:10px 16px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">← 返回</button>';
@@ -33,18 +39,17 @@ window.renderPlan = function(container) {
         return;
     }
     
-    var weekKey = 'week' + window.planState.currentWeek;
+    var weekKey = 'week' + state.currentWeek;
     var currentWeekData = window.weekPlans[weekKey];
     
     if (!currentWeekData) {
         html += '<div style="text-align:center;padding:40px;color:#666;">';
         html += '<div style="font-size:32px;margin-bottom:12px;">❌</div>';
-        html += '<div>未找到Week' + window.planState.currentWeek + '数据</div></div></div>';
+        html += '<div>未找到Week' + state.currentWeek + '数据</div></div></div>';
         container.innerHTML = html;
         return;
     }
     
-    var completedTasks = window.getUserPlanTasks();
     var completedCount = 0;
     var totalCount = 0;
     if (currentWeekData.days && currentWeekData.days.length > 0) {
@@ -53,7 +58,7 @@ window.renderPlan = function(container) {
             if (day.tasks && day.tasks.length > 0) {
                 for (var j = 0; j < day.tasks.length; j++) {
                     totalCount++;
-                    if (completedTasks[day.tasks[j].id]) {
+                    if (state.completedTasks[day.tasks[j].id]) {
                         completedCount++;
                     }
                 }
@@ -71,14 +76,26 @@ window.renderPlan = function(container) {
     html += '<div style="margin-top:8px;font-size:12px;opacity:0.9;">已完成 ' + completedCount + ' / ' + totalCount + ' 个任务</div>';
     html += '<div style="margin-top:4px;font-size:11px;opacity:0.7;">' + (currentWeekData.weekDesc || '') + '</div></div>';
     
-    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
+    html += '<div style="width:100%;font-size:13px;font-weight:bold;color:#666;margin-bottom:8px;">选择周</div>';
     for (var w = 1; w <= 10; w++) {
         var wk = 'week' + w;
         var hasData = window.weekPlans[wk] ? true : false;
-        var isActive = w === window.planState.currentWeek;
+        var isActive = w === state.currentWeek;
         var bgColor = isActive ? '#667eea' : (hasData ? '#ffffff' : '#f0f0f0');
         var textColor = isActive ? '#ffffff' : (hasData ? '#666666' : '#ccc');
         html += '<button onclick="switchWeek(' + w + ')" style="padding:6px 12px;background:' + bgColor + ';color:' + textColor + ';border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;margin:2px;">Week' + w + '</button>';
+    }
+    html += '</div>';
+    
+    var dayCount = currentWeekData.days ? currentWeekData.days.length : 7;
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
+    html += '<div style="width:100%;font-size:13px;font-weight:bold;color:#666;margin-bottom:8px;">选择日</div>';
+    for (var d = 1; d <= dayCount; d++) {
+        var isDayActive = d === state.currentDay;
+        var dayBgColor = isDayActive ? '#f093fb' : '#ffffff';
+        var dayTextColor = isDayActive ? '#ffffff' : '#666666';
+        html += '<button onclick="switchDay(' + d + ')" style="padding:6px 12px;background:' + dayBgColor + ';color:' + dayTextColor + ';border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;margin:2px;">Day' + d + '</button>';
     }
     html += '</div>';
     
@@ -89,15 +106,22 @@ window.renderPlan = function(container) {
     };
     
     if (currentWeekData.days && currentWeekData.days.length > 0) {
+        var currentDayData = null;
         for (var i = 0; i < currentWeekData.days.length; i++) {
-            var day = currentWeekData.days[i];
+            if (currentWeekData.days[i].day === state.currentDay) {
+                currentDayData = currentWeekData.days[i];
+                break;
+            }
+        }
+        
+        if (currentDayData) {
             html += '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
-            html += '<h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">Day ' + day.day + '：' + day.title + '</h4>';
+            html += '<h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">Day ' + currentDayData.day + '：' + currentDayData.title + '</h4>';
             
-            if (day.tasks && day.tasks.length > 0) {
-                for (var j = 0; j < day.tasks.length; j++) {
-                    var task = day.tasks[j];
-                    var done = completedTasks[task.id];
+            if (currentDayData.tasks && currentDayData.tasks.length > 0) {
+                for (var j = 0; j < currentDayData.tasks.length; j++) {
+                    var task = currentDayData.tasks[j];
+                    var done = state.completedTasks[task.id];
                     var icon = typeIcons[task.type] || '📌';
                     html += '<div onclick="toggleTaskComplete(\'' + task.id + '\')" style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (done ? '#e8f5e9' : '#fafafa') + ';cursor:pointer;border:2px solid ' + (done ? '#81c784' : '#eee') + ';">';
                     html += '<span style="font-size:18px;margin-right:10px;">' + icon + '</span>';
@@ -111,7 +135,7 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V342 - 学习计划完整Week1-Week10训练数据</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V344 - 按周/日切换显示</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
@@ -119,16 +143,26 @@ window.renderPlan = function(container) {
 
 window.switchWeek = function(weekNum) {
     if (weekNum >= 1 && weekNum <= 10) {
-        window.planState.currentWeek = weekNum;
+        var state = window.getPlanState();
+        state.currentWeek = weekNum;
+        state.currentDay = 1;
+        window.savePlanState(state);
         location.reload();
     }
 };
 
-window.toggleTaskComplete = function(taskId) {
-    var completedTasks = window.getUserPlanTasks();
-    completedTasks[taskId] = !completedTasks[taskId];
-    window.saveUserPlanTasks(completedTasks);
+window.switchDay = function(dayNum) {
+    var state = window.getPlanState();
+    state.currentDay = dayNum;
+    window.savePlanState(state);
     location.reload();
 };
 
-console.log('[V342] 学习计划模块加载完成');
+window.toggleTaskComplete = function(taskId) {
+    var state = window.getPlanState();
+    state.completedTasks[taskId] = !state.completedTasks[taskId];
+    window.savePlanState(state);
+    location.reload();
+};
+
+console.log('[V344] 学习计划模块加载完成');
