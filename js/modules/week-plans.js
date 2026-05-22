@@ -1,6 +1,6 @@
-// 版本: V140
+// 版本: V152
 
-const week5Plan = {
+window.week5Plan = {
     weekId:'week5',weekTitle:'Week5：系统性思维与守恒思维综合周',
     weekDesc:'本周围绕系统性思维和守恒思维进行深度训练',
     days:[
@@ -42,7 +42,7 @@ const week5Plan = {
     ]
 };
 
-const week6Plan = {
+window.week6Plan = {
     weekId:'week6',weekTitle:'Week6：学科深度整合与自主学习能力培养',
     weekDesc:'本周围绕学科整合和自主学习能力进行系统训练',
     days:[
@@ -84,7 +84,7 @@ const week6Plan = {
     ]
 };
 
-const week1Plan = {
+window.week1Plan = {
     weekId:'week1',weekTitle:'Week1：注意力与记忆力基础训练周',
     weekDesc:'建立每日训练习惯，掌握基础注意力与记忆力训练方法，学习记忆宫殿、费曼技巧等科学方法',
     days:[
@@ -127,7 +127,7 @@ const week1Plan = {
 };
 
 // ===== Week2训练计划 =====
-const week2Plan = {
+window.week2Plan = {
     weekId:'week2',weekTitle:'Week2：学霸方法与听课习惯培养周',
     weekDesc:'深化注意力与记忆力训练，引入学霸学习方法专题和听课习惯培养',
     days:[
@@ -170,7 +170,7 @@ const week2Plan = {
 };
 
 // ===== Week3训练计划 =====
-const week3Plan = {
+window.week3Plan = {
     weekId:'week3',weekTitle:'Week3：数学物理思维系统化整合入门周',
     weekDesc:'完成从基础认知训练向学科思维训练的过渡，系统化引入数学物理思维双轨训练',
     days:[
@@ -213,7 +213,7 @@ const week3Plan = {
 };
 
 // ===== Week4训练计划 =====
-const week4Plan = {
+window.week4Plan = {
     weekId:'week4',weekTitle:'Week4：解题策略与实验思维深化周',
     weekDesc:'系统深化解题策略与实验思维能力，培养科学探究习惯与逆向思维进阶应用',
     days:[
@@ -256,7 +256,7 @@ const week4Plan = {
 };
 
 // ===== Week7训练计划 =====
-const week7Plan = {
+window.week7Plan = {
     weekId:'week7',weekTitle:'Week7：元认知深化与综合能力迁移周',
     weekDesc:'元认知深化+习惯固化+能力迁移三轨并行，实现从"知道方法"到"自动化运用"的跨越',
     days:[
@@ -299,20 +299,155 @@ const week7Plan = {
 };
 
 
+// ===== Week8训练计划 =====
+window.week8Plan = {
+    weekId:'week8',weekTitle:'Week8：元认知高阶应用与学业实战整合周',
+    weekDesc:'元认知高阶应用+学业实战整合+效率优化三轨并行，实现从"监控调控"到"预测预防"的升级',
+    days:[
+        {day:1,title:'元认知高阶应用 - 预测性监控与预防性调节',tasks:[
+            {id:'w8d1t1',title:'预测性监控训练 - 规律识别与预警指标',type:'practice',duration:10,completed:false},
+            {id:'w8d1t2',title:'预防性调节策略库应用',type:'strategy',duration:10,completed:false},
+            {id:'w8d1t3',title:'学习状态预测表制定',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:2,title:'期末复习策略系统准备 - 为学业评估做规划',tasks:[
+            {id:'w8d2t1',title:'复习目标拆解训练',type:'strategy',duration:10,completed:false},
+            {id:'w8d2t2',title:'复习时间规划与分配',type:'planning',duration:10,completed:false},
+            {id:'w8d2t3',title:'复习优先级矩阵应用',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:3,title:'学业实战整合深化 - 真题思维与综合应用',tasks:[
+            {id:'w8d3t1',title:'真题思维四步法训练',type:'practice',duration:15,completed:false},
+            {id:'w8d3t2',title:'综合问题拆解练习',type:'practice',duration:10,completed:false},
+            {id:'w8d3t3',title:'数学物理综合思维应用',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:4,title:'自主学习效率优化 - 流程简化与工具升级',tasks:[
+            {id:'w8d4t1',title:'学习流程效率审计',type:'practice',duration:10,completed:false},
+            {id:'w8d4t2',title:'学习工具升级与优化',type:'strategy',duration:10,completed:false},
+            {id:'w8d4t3',title:'时间块管理实战',type:'practice',duration:10,completed:false}
+        ]},
+        {day:5,title:'个性化学习体系建立 - 形成自己的学习系统',tasks:[
+            {id:'w8d5t1',title:'Week1-8能力盘点',type:'review',duration:10,completed:false},
+            {id:'w8d5t2',title:'个性化学习体系设计',type:'creative',duration:15,completed:false},
+            {id:'w8d5t3',title:'个人学习工具包构建',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:6,title:'周度复盘与自我评估 - 学业实战的阶段总结',tasks:[
+            {id:'w8d6t1',title:'Week8成长记录与评估',type:'review',duration:10,completed:false},
+            {id:'w8d6t2',title:'学业实战阶段评估',type:'writing',duration:10,completed:false},
+            {id:'w8d6t3',title:'效率优化总结与改进',type:'writing',duration:10,completed:false}
+        ]},
+        {day:7,title:'Week8复盘报告与Week9展望',tasks:[
+            {id:'w8d7t1',title:'Week8复盘报告生成',type:'writing',duration:15,completed:false},
+            {id:'w8d7t2',title:'个人学习体系评估',type:'review',duration:10,completed:false},
+            {id:'w8d7t3',title:'制定Week9进阶目标',type:'strategy',duration:5,completed:false}
+        ]}
+    ]
+};
+
+window.week9Plan = {
+    weekId:'week9',weekTitle:'Week9：元认知自动化与学业冲刺深化周',
+    weekDesc:'在Week8基础上实现元认知自动化运行+期末冲刺实战深化+个性化体系完善+长期学习规划的四维升级',
+    days:[
+        {day:1,title:'元认知自动化 - 预测预防的常态化运行',tasks:[
+            {id:'w9d1t1',title:'自动化触发条件设置 - 学习场景自动检查点',type:'practice',duration:15,completed:false},
+            {id:'w9d1t2',title:'预警阈值校准 - 根据个人特点调整敏感度',type:'planning',duration:15,completed:false},
+            {id:'w9d1t3',title:'条件反射建立 - 问题→预警→调节自动化',type:'writing',duration:10,completed:false}
+        ]},
+        {day:2,title:'期末冲刺策略深化 - 高效复习与提分技巧',tasks:[
+            {id:'w9d2t1',title:'提分目标精准化 - 确定重点提分科目知识点',type:'planning',duration:15,completed:false},
+            {id:'w9d2t2',title:'高效复习方法 - 重点突破与知识网络化',type:'practice',duration:20,completed:false},
+            {id:'w9d2t3',title:'错题利用最大化 - 分类重做与规律提炼',type:'review',duration:15,completed:false}
+        ]},
+        {day:3,title:'学业冲刺实战深化 - 真题模拟与应试策略',tasks:[
+            {id:'w9d3t1',title:'真题模拟训练 - 严格模拟真实考试场景',type:'practice',duration:30,completed:false},
+            {id:'w9d3t2',title:'应试策略优化 - 时间分配与答题顺序',type:'planning',duration:15,completed:false},
+            {id:'w9d3t3',title:'考试状态管理 - 考前考中状态调控',type:'relax',duration:15,completed:false}
+        ]},
+        {day:4,title:'个性化学习体系优化 - 持续改进与精准调整',tasks:[
+            {id:'w9d4t1',title:'体系运行评估 - 六大系统效果评估',type:'review',duration:20,completed:false},
+            {id:'w9d4t2',title:'瓶颈问题识别 - 根因分析与影响评估',type:'practice',duration:20,completed:false},
+            {id:'w9d4t3',title:'精准优化调整 - 短期中期长期优化方案',type:'creative',duration:15,completed:false}
+        ]},
+        {day:5,title:'长期学习规划能力 - 学期目标与假期规划',tasks:[
+            {id:'w9d5t1',title:'学期目标制定 - SMART原则应用',type:'planning',duration:20,completed:false},
+            {id:'w9d5t2',title:'目标分解方法 - 金字塔分解与月周里程碑',type:'practice',duration:15,completed:false},
+            {id:'w9d5t3',title:'假期学习规划 - 三三制与劳逸结合',type:'creative',duration:15,completed:false}
+        ]},
+        {day:6,title:'冲刺阶段学习方法应用',tasks:[
+            {id:'w9d6t1',title:'数学物理冲刺思维 - 题型归类与快速破题',type:'practice',duration:25,completed:false},
+            {id:'w9d6t2',title:'考试时间管理 - 如何做到既快又准',type:'planning',duration:15,completed:false},
+            {id:'w9d6t3',title:'难题抢分技巧 - 不会做也能拿步骤分',type:'review',duration:10,completed:false}
+        ]},
+        {day:7,title:'Week9总结与未来展望',tasks:[
+            {id:'w9d7t1',title:'Week9复盘报告生成',type:'writing',duration:15,completed:false},
+            {id:'w9d7t2',title:'9周训练成果总结与能力评估',type:'review',duration:15,completed:false},
+            {id:'w9d7t3',title:'制定下阶段深度学习目标',type:'planning',duration:10,completed:false}
+        ]}
+    ]
+};
+
+window.week10Plan = {
+    weekId:'week10',weekTitle:'Week10：认知能力整合与终身学习体系构建周',
+    weekDesc:'整合9周训练成果，构建可持续的终身学习体系，实现认知能力自动化运行与持续自我进化',
+    days:[
+        {day:1,title:'9周训练成果全面复盘与能力评估',tasks:[
+            {id:'w10d1t1',title:'全周期能力成长曲线分析',type:'review',duration:20,completed:false},
+            {id:'w10d1t2',title:'核心认知能力量化评估',type:'quiz',duration:25,completed:false},
+            {id:'w10d1t3',title:'个人成长里程碑总结',type:'writing',duration:15,completed:false}
+        ]},
+        {day:2,title:'认知能力系统整合与自动化运行',tasks:[
+            {id:'w10d2t1',title:'注意力记忆法系统整合',type:'practice',duration:20,completed:false},
+            {id:'w10d2t2',title:'思维方法工具箱完善',type:'creative',duration:20,completed:false},
+            {id:'w10d2t3',title:'自动化触发机制建立',type:'planning',duration:10,completed:false}
+        ]},
+        {day:3,title:'个人学习哲学与方法论提炼',tasks:[
+            {id:'w10d3t1',title:'总结最适合自己的学习方法',type:'writing',duration:20,completed:false},
+            {id:'w10d3t2',title:'建立个人学习原则体系',type:'creative',duration:20,completed:false},
+            {id:'w10d3t3',title:'学习风格与环境匹配优化',type:'practice',duration:10,completed:false}
+        ]},
+        {day:4,title:'终身学习体系与知识管理',tasks:[
+            {id:'w10d4t1',title:'个人知识管理系统建立',type:'creative',duration:25,completed:false},
+            {id:'w10d4t2',title:'持续学习资源库建设',type:'planning',duration:15,completed:false},
+            {id:'w10d4t3',title:'学习社交圈与互助机制',type:'social',duration:10,completed:false}
+        ]},
+        {day:5,title:'目标管理与长期规划能力',tasks:[
+            {id:'w10d5t1',title:'年度目标与3年愿景制定',type:'planning',duration:20,completed:false},
+            {id:'w10d5t2',title:'目标分解与里程碑设置',type:'practice',duration:20,completed:false},
+            {id:'w10d5t3',title:'复盘机制与动态调整',type:'review',duration:10,completed:false}
+        ]},
+        {day:6,title:'学习迁移与跨学科应用能力',tasks:[
+            {id:'w10d6t1',title:'已掌握方法的学科迁移实践',type:'practice',duration:25,completed:false},
+            {id:'w10d6t2',title:'新领域快速入门方法论',type:'strategy',duration:20,completed:false},
+            {id:'w10d6t3',title:'知识输出与分享能力训练',type:'social',duration:15,completed:false}
+        ]},
+        {day:7,title:'Week10总结与新的起点',tasks:[
+            {id:'w10d7t1',title:'10周完整训练成果报告',type:'writing',duration:20,completed:false},
+            {id:'w10d7t2',title:'下阶段进阶方向选择',type:'planning',duration:15,completed:false},
+            {id:'w10d7t3',title:'开启终身学习新旅程',type:'strategy',duration:5,completed:false}
+        ]}
+    ]
+};
+
+
 // ===== Week Plans 映射 =====
-const weekPlans = {
+window.weekPlans = {
     week1: week1Plan,
     week2: week2Plan,
     week3: week3Plan,
     week4: week4Plan,
     week5: week5Plan,
     week6: week6Plan,
-    week7: week7Plan
+    week7: week7Plan,
+    week8: week8Plan,
+    week9: week9Plan,
+    week10: week10Plan
 };
 
 
 // ============================================================
 // Topics - 训练主题数据
+
 // ============================================================
-// 挂载到window
+// ES6 Module 导出
+// ============================================================
+// 数据已挂载到window对象，无需ES6导出
+
 window.weekPlans = weekPlans;
