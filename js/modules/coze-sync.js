@@ -74,6 +74,9 @@ window.CozeSync = {
                 data.conversation_id = options.conversationId;
             }
             
+            console.log("开始调用API:", url);
+            alert("开始调用扣子API: " + url);
+            
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -83,6 +86,8 @@ window.CozeSync = {
                 body: JSON.stringify(data)
             })
             .then(function(response) {
+                alert("API响应状态: " + response.status);
+                console.log("API响应:", response);
                 if (!response.ok) {
                     throw new Error('API请求失败: ' + response.status);
                 }
@@ -93,6 +98,8 @@ window.CozeSync = {
                 resolve(result);
             })
             .catch(function(error) {
+                alert("API调用错误: " + error.message);
+                console.error("API错误:", error);
                 console.error('[CozeSync] 对话失败:', error);
                 reject(error);
             });
