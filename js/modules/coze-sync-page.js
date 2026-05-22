@@ -158,13 +158,24 @@ window.renderCozeSyncPage = function(container) {
 
 // 保存配置
 window.saveCozeConfig = function() {
+    alert("1. 函数开始");
+    
     if (!window.CozeSync) {
         alert('❌ CozeSync模块未加载');
         return;
     }
     
-    const token = document.getElementById('coze-token').value;
-    const botId = document.getElementById('coze-bot-id').value;
+    alert("2. CozeSync存在");
+    
+    const tokenEl = document.getElementById('coze-token');
+    const botIdEl = document.getElementById('coze-bot-id');
+    
+    alert("3. 元素获取: " + (tokenEl ? "tokenEl存在" : "tokenEl不存在") + ", " + (botIdEl ? "botIdEl存在" : "botIdEl不存在"));
+    
+    const token = tokenEl ? tokenEl.value : '';
+    const botId = botIdEl ? botIdEl.value : '';
+    
+    alert("4. 值: token长度=" + token.length + ", botId=" + botId);
     
     if (!token || token.length < 10) {
         alert('⚠️ 请输入有效的Access Token');
@@ -176,14 +187,30 @@ window.saveCozeConfig = function() {
         return;
     }
     
+    alert("5. 验证通过");
+    
     window.CozeSync.config.accessToken = token;
     window.CozeSync.config.botId = botId;
-    window.CozeSync.saveConfig();
     
-    window.addCozeLog('✅ 配置已保存', 'success');
+    alert("6. 配置已设置");
+    
+    try {
+        window.CozeSync.saveConfig();
+        alert("7. saveConfig成功");
+    } catch(e) {
+        alert("saveConfig错误: " + e.message);
+        return;
+    }
+    
+    try {
+        window.addCozeLog('✅ 配置已保存', 'success');
+        alert("8. addCozeLog成功");
+    } catch(e) {
+        alert("addCozeLog错误: " + e.message);
+    }
+    
     alert('✅ 配置已保存！');
     
-    // 重新渲染以更新状态
     setTimeout(function() {
         const container = document.getElementById('app-container');
         if (container) {
