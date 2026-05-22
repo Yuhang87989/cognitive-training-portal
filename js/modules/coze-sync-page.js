@@ -31,7 +31,7 @@ window.renderCozeSyncPage = function(container) {
                         <input type="text" id="coze-bot-id" placeholder="734286681234567890" value="${window.CozeSync ? window.CozeSync.config.botId : ''}" style="width:100%;padding:12px 16px;border:2px solid #eee;border-radius:10px;font-size:14px;box-sizing:border-box;" />
                     </div>
                     
-                    <button onclick="alert('test');window.saveCozeConfig()" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">
+                    <button onclick="window.saveCozeConfig()" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;width:100%;">
                         💾 保存配置
                     </button>
                 </div>
@@ -73,27 +73,27 @@ window.renderCozeSyncPage = function(container) {
                 <h3 style="margin:0 0 16px 0;font-size:16px;color:#333;">🔄 同步操作</h3>
                 
                 <div style="display:flex;flex-direction:column;gap:12px;">
-                    <button onclick="alert('syncAll测试');window.syncAllWeeksFromCoze()" style="padding:14px;background:#e91e63;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold;">
+                    <button onclick="window.syncAllWeeksFromCoze()" style="padding:14px;background:#e91e63;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold;">
                         <span style="font-size:18px;">📚</span>
                         批量同步Week1-Week10学习计划
                     </button>
                     
-                    <button onclick="alert('syncPlan测试');window.syncPlanFromCoze()" style="padding:14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button onclick="window.syncPlanFromCoze()" style="padding:14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">📋</span>
                         从扣子同步学习计划
                     </button>
                     
-                    <button onclick="alert('syncMindMap测试');window.syncMindMapFromCoze()" style="padding:14px;background:#9c27b0;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button onclick="window.syncMindMapFromCoze()" style="padding:14px;background:#9c27b0;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">🗺️</span>
                         AI生成并导入思维导图
                     </button>
                     
-                    <button onclick="alert('uploadPlan测试');window.uploadPlanToCoze()" style="padding:14px;background:#2196f3;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button onclick="window.uploadPlanToCoze()" style="padding:14px;background:#2196f3;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">⬆️</span>
                         上传学习计划到扣子
                     </button>
                     
-                    <button onclick="alert('uploadMindMap测试');window.uploadMindMapToCoze()" style="padding:14px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button onclick="window.uploadMindMapToCoze()" style="padding:14px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
                         <span style="font-size:18px;">⬆️</span>
                         上传思维导图到扣子
                     </button>
@@ -158,24 +158,21 @@ window.renderCozeSyncPage = function(container) {
 
 // 保存配置
 window.saveCozeConfig = function() {
-    alert("1. 函数开始");
-    
     if (!window.CozeSync) {
         alert('❌ CozeSync模块未加载');
         return;
     }
     
-    alert("2. CozeSync存在");
-    
     const tokenEl = document.getElementById('coze-token');
     const botIdEl = document.getElementById('coze-bot-id');
     
-    alert("3. 元素获取: " + (tokenEl ? "tokenEl存在" : "tokenEl不存在") + ", " + (botIdEl ? "botIdEl存在" : "botIdEl不存在"));
+    if (!tokenEl || !botIdEl) {
+        alert('❌ 找不到配置输入框');
+        return;
+    }
     
-    const token = tokenEl ? tokenEl.value : '';
-    const botId = botIdEl ? botIdEl.value : '';
-    
-    alert("4. 值: token长度=" + token.length + ", botId=" + botId);
+    const token = tokenEl.value;
+    const botId = botIdEl.value;
     
     if (!token || token.length < 10) {
         alert('⚠️ 请输入有效的Access Token');
@@ -187,26 +184,20 @@ window.saveCozeConfig = function() {
         return;
     }
     
-    alert("5. 验证通过");
-    
     window.CozeSync.config.accessToken = token;
     window.CozeSync.config.botId = botId;
     
-    alert("6. 配置已设置");
-    
     try {
         window.CozeSync.saveConfig();
-        alert("7. saveConfig成功");
     } catch(e) {
-        alert("saveConfig错误: " + e.message);
+        alert('保存配置错误: ' + e.message);
         return;
     }
     
     try {
         window.addCozeLog('✅ 配置已保存', 'success');
-        alert("8. addCozeLog成功");
     } catch(e) {
-        alert("addCozeLog错误: " + e.message);
+        console.log('addCozeLog错误:', e);
     }
     
     alert('✅ 配置已保存！');
