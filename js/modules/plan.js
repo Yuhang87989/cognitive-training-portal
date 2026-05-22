@@ -304,57 +304,121 @@ window.importWeekPlanFromCoze = function() {
     }
 };
 // 渲染周视图
-window.renderWeekView = function(container) {
-    // 检查周计划数据
-    if (typeof weekPlans === "undefined" || !weekPlans) {
-        container.innerHTML = "<div style="padding:40px;text-align:center;color:#666;">周计划数据加载中...</div>";
-        return;
-    }
-    
-    const weekKeys = Object.keys(weekPlans).sort();
-    const currentWeekData = weekPlans[window.planState.currentWeek];
-    
-    if (!currentWeekData) {
-        container.innerHTML = "<div style="padding:40px;text-align:center;color:#666;">未找到该周数据</div>";
-        return;
-    }
-    
-    let weekButtonsHtml = weekKeys.map(function(weekKey) {
-        const weekInfo = weekPlans[weekKey];
-        const isActive = weekKey === window.planState.currentWeek;
-        return `<button onclick="window.switchWeek()" style="padding:8px 14px;background:${isActive ? #667eea : #fff};color:${isActive ? white : #666};border:1px solid #ddd;border-radius:8px;font-size:13px;cursor:pointer;margin:4px;">${weekInfo.weekTitle.split(：)[0]}</button>`;
-    }).join();
-    
-    let daysHtml = "";
-    if (currentWeekData.days && Array.isArray(currentWeekData.days)) {
-        daysHtml = currentWeekData.days.map(function(day) {
-            let tasksHtml = day.tasks.map(function(task) {
-                return `<div style="padding:10px 14px;background:#f8f9fa;border-radius:8px;margin-bottom:8px;font-size:13px;border-left:3px solid #667eea;">
-                    <div style="font-weight:bold;color:#333;">${task.title}</div>
-                    <div style="font-size:11px;color:#666;margin-top:4px;">类型: ${task.type} | 时长: ${task.duration}分钟</div>
-                </div>`;
-            }).join();
-            
-            return `<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                <h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">Day ${day.day}：${day.title}</h4>
-                ${tasksHtml}
-            </div>`;
-        }).join();
-    }
-    
-    container.innerHTML = `
-        <div style="margin-bottom:20px;">
-            <div style="font-size:16px;font-weight:bold;color:#333;margin-bottom:8px;">${currentWeekData.weekTitle}</div>
-            <div style="font-size:13px;color:#666;">${currentWeekData.weekDesc}</div>
-        </div>
-        
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-            ${weekButtonsHtml}
-        </div>
-        
-        ${daysHtml}
-    `;
-};
 
+// 渲染周视图
+window.renderWeekView = function(container) {
+    // 简化版：直接显示周数据（数据直接写在这个函数里）
+    const weekData = {
+        week1: {
+            weekTitle: 'Week1：注意力与记忆力基础训练周',
+            weekDesc: '本周专注于注意力和记忆力的基础训练',
+            days: [
+                {day: 1, title: '注意力入门', tasks: [
+                    {title: '舒尔特方格训练5分钟', type: 'practice', duration: 5},
+                    {title: '数字记忆训练', type: 'memory', duration: 10}
+                ]},
+                {day: 2, title: '听觉注意力', tasks: [
+                    {title: '听音频并复述要点', type: 'listening', duration: 15},
+                    {title: '声音记忆练习', type: 'memory', duration: 10}
+                ]},
+                {day: 3, title: '视觉注意力', tasks: [
+                    {title: '找不同游戏', type: 'visual', duration: 15},
+                    {title: '图片记忆', type: 'memory', duration: 10}
+                ]},
+                {day: 4, title: '综合注意力', tasks: [
+                    {title: '多任务协调练习', type: 'practice', duration: 20},
+                    {title: '复习本周内容', type: 'review', duration: 15}
+                ]},
+                {day: 5, title: '周总结', tasks: [
+                    {title: '完成周测评', type: 'test', duration: 20},
+                    {title: '制定下周计划', type: 'plan', duration: 10}
+                ]}
+            ]
+        },
+        week2: {
+            weekTitle: 'Week2：学霸方法与听课习惯培养周',
+            weekDesc: '本周学习高效的学习方法和听课技巧',
+            days: [
+                {day: 1, title: '笔记方法', tasks: [
+                    {title: '学习康奈尔笔记法', type: 'video', duration: 15},
+                    {title: '练习笔记技巧', type: 'practice', duration: 15}
+                ]},
+                {day: 2, title: '课堂专注', tasks: [
+                    {title: '课堂注意力训练', type: 'practice', duration: 20},
+                    {title: '快速记录要点', type: 'practice', duration: 15}
+                ]},
+                {day: 3, title: '时间管理', tasks: [
+                    {title: '学习番茄工作法', type: 'video', duration: 10},
+                    {title: '制定学习时间表', type: 'plan', duration: 15}
+                ]},
+                {day: 4, title: '记忆技巧', tasks: [
+                    {title: '联想记忆法', type: 'video', duration: 15},
+                    {title: '记忆宫殿练习', type: 'practice', duration: 20}
+                ]},
+                {day: 5, title: '周总结', tasks: [
+                    {title: '完成周测评', type: 'test', duration: 20},
+                    {title: '整理方法笔记', type: 'review', duration: 15}
+                ]}
+            ]
+        },
+        week3: {
+            weekTitle: 'Week3：数学物理思维系统化整合入门周',
+            weekDesc: '本周系统学习数学和物理的思维方法',
+            days: [
+                {day: 1, title: '逻辑思维基础', tasks: [
+                    {title: '命题与推理', type: 'video', duration: 15},
+                    {title: '逻辑练习10题', type: 'practice', duration: 20}
+                ]},
+                {day: 2, title: '抽象思维', tasks: [
+                    {title: '概念抽象训练', type: 'video', duration: 15},
+                    {title: '数学建模入门', type: 'practice', duration: 20}
+                ]},
+                {day: 3, title: '物理直觉', tasks: [
+                    {title: '物理现象分析', type: 'video', duration: 15},
+                    {title: '实验设计思维', type: 'practice', duration: 20}
+                ]},
+                {day: 4, title: '解题策略', tasks: [
+                    {title: '解题方法论', type: 'video', duration: 15},
+                    {title: '错题分析', type: 'practice', duration: 20}
+                ]},
+                {day: 5, title: '周总结', tasks: [
+                    {title: '完成周测评', type: 'test', duration: 20},
+                    {title: '整理思维方法', type: 'review', duration: 15}
+                ]}
+            ]
+        }
+    };
+
+    const weekKeys = Object.keys(weekData).sort();
+    const currentWeek = window.planState.currentWeek;
+    const currentWeekData = weekData[currentWeek] || weekData.week1;
+
+    // 生成周选择按钮
+    let weekButtonsHtml = '';
+    for (let i = 0; i < weekKeys.length; i++) {
+        const weekKey = weekKeys[i];
+        const weekInfo = weekData[weekKey];
+        const isActive = weekKey === currentWeek;
+        const bgColor = isActive ? '#667eea' : '#ffffff';
+        const textColor = isActive ? '#ffffff' : '#666666';
+        weekButtonsHtml += '<button onclick="window.switchWeek(\'' + weekKey + '\')" style="padding:8px 14px;background:' + bgColor + ';color:' + textColor + ';border:1px solid #ddd;border-radius:8px;font-size:13px;cursor:pointer;margin:4px;">' + weekInfo.weekTitle.split('：')[0] + '</button>';
+    }
+
+    // 生成每日任务HTML
+    let daysHtml = '';
+    if (currentWeekData.days && currentWeekData.days.length > 0) {
+        for (let i = 0; i < currentWeekData.days.length; i++) {
+            const day = currentWeekData.days[i];
+            let tasksHtml = '';
+            for (let j = 0; j < day.tasks.length; j++) {
+                const task = day.tasks[j];
+                tasksHtml += '<div style="padding:10px 14px;background:#f8f9fa;border-radius:8px;margin-bottom:8px;font-size:13px;border-left:3px solid #667eea;"><div style="font-weight:bold;color:#333;">' + task.title + '</div><div style="font-size:11px;color:#666;margin-top:4px;">类型: ' + task.type + ' | 时长: ' + task.duration + '分钟</div></div>';
+            }
+            daysHtml += '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);"><h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">Day ' + day.day + '：' + day.title + '</h4>' + tasksHtml + '</div>';
+        }
+    }
+
+    container.innerHTML = '<div style="margin-bottom:20px;"><div style="font-size:16px;font-weight:bold;color:#333;margin-bottom:8px;">' + currentWeekData.weekTitle + '</div><div style="font-size:13px;color:#666;">' + currentWeekData.weekDesc + '</div></div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">' + weekButtonsHtml + '</div>' + daysHtml;
+};
 
 console.log('[V305] 学习计划模块加载完成，window.renderPlan:', typeof window.renderPlan);
