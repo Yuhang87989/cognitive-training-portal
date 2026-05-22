@@ -1,29 +1,43 @@
 // ============================================================
-// V344 学习计划模块 - 按周/日切换显示
+// V345 学习计划模块 - 真实日历视图
 // ============================================================
+
+// 训练开始日期：2026年5月20日
+var TRAINING_START_DATE = new Date('2026-05-20');
 
 window.getPlanState = function() {
     var saved = window.DataSync.get('plan');
     if (!saved) {
-        return { currentWeek: 1, currentDay: 1, completedTasks: {} };
+        return { currentDate: new Date().toISOString().split('T')[0], completedTasks: {} };
     }
     return {
-        currentWeek: saved.currentWeek || 1,
-        currentDay: saved.currentDay || 1,
+        currentDate: saved.currentDate || new Date().toISOString().split('T')[0],
         completedTasks: saved.completedTasks || {}
     };
 };
 
 window.savePlanState = function(state) {
     var saved = window.DataSync.get('plan') || {};
-    saved.currentWeek = state.currentWeek;
-    saved.currentDay = state.currentDay;
+    saved.currentDate = state.currentDate;
     saved.completedTasks = state.completedTasks;
     window.DataSync.set('plan', saved);
 };
 
+// 根据日期计算对应的Week和Day
+window.getWeekDayFromDate = function(dateStr) {
+    var targetDate = new Date(dateStr);
+    var diffTime = targetDate.getTime() - TRAINING_START_DATE.getTime();
+    var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    var totalDays = diffDays + 1;
+    var weekNum = Math.ceil(totalDays / 7);
+    var dayInWeek = ((totalDays - 1) % 7) + 1;
+    return { week: weekNum, day: dayInWeek };
+};
+
 window.renderPlan = function(container) {
     var state = window.getPlanState();
+    var currentDate = new Date(state.currentDate);
+    var weekDay = window.getWeekDayFromDate(state.currentDate);
     
     var html = '<div style="padding:20px;background:#f8f9fa;min-height:100vh;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">';
@@ -39,13 +53,14 @@ window.renderPlan = function(container) {
         return;
     }
     
-    var weekKey = 'week' + state.currentWeek;
+    var weekKey = 'week' + weekDay.week;
     var currentWeekData = window.weekPlans[weekKey];
     
-    if (!currentWeekData) {
+    if (weekDay.week < 1 || weekDay.week > 10 || !currentWeekData) {
         html += '<div style="text-align:center;padding:40px;color:#666;">';
-        html += '<div style="font-size:32px;margin-bottom:12px;">❌</div>';
-        html += '<div>未找到Week' + state.currentWeek + '数据</div></div></div>';
+        html += '<div style="font-size:32px;margin-bottom:12px;">📌</div>';
+        html += '<div>该日期不在训练周期内</div>';
+        html += '<div style="font-size:12px;margin-top:8px;color:#999;">训练周期：2026年5月20日 - 2026年7月28日</div></div></div>';
         container.innerHTML = html;
         return;
     }
@@ -67,36 +82,28 @@ window.renderPlan = function(container) {
     }
     var progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
     
+    var weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    var dateDisplay = currentDate.getFullYear() + '年' + (currentDate.getMonth() + 1) + '月' + currentDate.getDate() + '日 ' + weekdays[currentDate.getDay()];
+    
     html += '<div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px;color:white;margin-bottom:20px;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-    html += '<span style="font-size:16px;font-weight:bold;">' + (currentWeekData.weekTitle || weekKey) + '</span>';
-    html += '<span style="font-size:24px;font-weight:bold;">' + progress + '%</span></div>';
+    html += '<span style="font-size:16px;font-weight:bold;">' + dateDisplay + '</span>';
+    html += '<span style="font-size:14px;">Week' + weekDay.week + ' Day' + weekDay.day + '</span></div>';
     html += '<div style="background:rgba(255,255,255,0.3);height:8px;border-radius:4px;overflow:hidden;">';
     html += '<div style="background:white;height:100%;width:' + progress + '%;border-radius:4px;"></div></div>';
-    html += '<div style="margin-top:8px;font-size:12px;opacity:0.9;">已完成 ' + completedCount + ' / ' + totalCount + ' 个任务</div>';
+    html += '<div style="margin-top:8px;font-size:12px;opacity:0.9;">本周已完成 ' + completedCount + ' / ' + totalCount + ' 个任务</div>';
     html += '<div style="margin-top:4px;font-size:11px;opacity:0.7;">' + (currentWeekData.weekDesc || '') + '</div></div>';
     
-    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
-    html += '<div style="width:100%;font-size:13px;font-weight:bold;color:#666;margin-bottom:8px;">选择周</div>';
-    for (var w = 1; w <= 10; w++) {
-        var wk = 'week' + w;
-        var hasData = window.weekPlans[wk] ? true : false;
-        var isActive = w === state.currentWeek;
-        var bgColor = isActive ? '#667eea' : (hasData ? '#ffffff' : '#f0f0f0');
-        var textColor = isActive ? '#ffffff' : (hasData ? '#666666' : '#ccc');
-        html += '<button onclick="switchWeek(' + w + ')" style="padding:6px 12px;background:' + bgColor + ';color:' + textColor + ';border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;margin:2px;">Week' + w + '</button>';
-    }
+    html += '<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
+    html += '<button onclick="changeDate(-1)" style="padding:8px 16px;background:#f0f0f0;border:none;border-radius:8px;font-size:14px;cursor:pointer;">◀ 前一天</button>';
+    html += '<div style="text-align:center;"><div style="font-size:15px;font-weight:bold;color:#333;">' + dateDisplay + '</div></div>';
+    html += '<button onclick="changeDate(1)" style="padding:8px 16px;background:#f0f0f0;border:none;border-radius:8px;font-size:14px;cursor:pointer;">后一天 ▶</button>';
     html += '</div>';
     
-    var dayCount = currentWeekData.days ? currentWeekData.days.length : 7;
-    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;padding:12px;background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
-    html += '<div style="width:100%;font-size:13px;font-weight:bold;color:#666;margin-bottom:8px;">选择日</div>';
-    for (var d = 1; d <= dayCount; d++) {
-        var isDayActive = d === state.currentDay;
-        var dayBgColor = isDayActive ? '#f093fb' : '#ffffff';
-        var dayTextColor = isDayActive ? '#ffffff' : '#666666';
-        html += '<button onclick="switchDay(' + d + ')" style="padding:6px 12px;background:' + dayBgColor + ';color:' + dayTextColor + ';border:1px solid #ddd;border-radius:6px;font-size:13px;cursor:pointer;margin:2px;">Day' + d + '</button>';
-    }
+    html += '<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">';
+    html += '<button onclick="changeDate(-7)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">上周</button>';
+    html += '<button onclick="goToToday()" style="padding:6px 12px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">今天</button>';
+    html += '<button onclick="changeDate(7)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">下周</button>';
     html += '</div>';
     
     var typeIcons = {
@@ -108,7 +115,7 @@ window.renderPlan = function(container) {
     if (currentWeekData.days && currentWeekData.days.length > 0) {
         var currentDayData = null;
         for (var i = 0; i < currentWeekData.days.length; i++) {
-            if (currentWeekData.days[i].day === state.currentDay) {
+            if (currentWeekData.days[i].day === weekDay.day) {
                 currentDayData = currentWeekData.days[i];
                 break;
             }
@@ -116,7 +123,7 @@ window.renderPlan = function(container) {
         
         if (currentDayData) {
             html += '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">';
-            html += '<h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">Day ' + currentDayData.day + '：' + currentDayData.title + '</h4>';
+            html += '<h4 style="margin:0 0 12px 0;font-size:15px;color:#333;">🎯 ' + currentDayData.title + '</h4>';
             
             if (currentDayData.tasks && currentDayData.tasks.length > 0) {
                 for (var j = 0; j < currentDayData.tasks.length; j++) {
@@ -135,25 +142,25 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V344 - 按周/日切换显示</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V345 - 真实日历视图</div>';
+    html += '<div style="font-size:11px;color:#666;text-align:center;margin-top:4px;">训练周期：2026年5月20日 - 2026年7月28日（Week1-Week10）</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
 };
 
-window.switchWeek = function(weekNum) {
-    if (weekNum >= 1 && weekNum <= 10) {
-        var state = window.getPlanState();
-        state.currentWeek = weekNum;
-        state.currentDay = 1;
-        window.savePlanState(state);
-        location.reload();
-    }
+window.changeDate = function(days) {
+    var state = window.getPlanState();
+    var currentDate = new Date(state.currentDate);
+    currentDate.setDate(currentDate.getDate() + days);
+    state.currentDate = currentDate.toISOString().split('T')[0];
+    window.savePlanState(state);
+    location.reload();
 };
 
-window.switchDay = function(dayNum) {
+window.goToToday = function() {
     var state = window.getPlanState();
-    state.currentDay = dayNum;
+    state.currentDate = new Date().toISOString().split('T')[0];
     window.savePlanState(state);
     location.reload();
 };
@@ -165,4 +172,4 @@ window.toggleTaskComplete = function(taskId) {
     location.reload();
 };
 
-console.log('[V344] 学习计划模块加载完成');
+console.log('[V345] 学习计划模块加载完成');
