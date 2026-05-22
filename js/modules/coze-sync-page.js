@@ -212,35 +212,59 @@ window.saveCozeConfig = function() {
 
 // 批量同步Week1-Week10学习计划
 window.syncAllWeeksFromCoze = function() {
-    // 检查配置状态
-    if (!window.CozeSync || !window.CozeSync.isConfigured()) {
-        alert('⚠️ 请先在上方配置Access Token和Bot ID');
-        return;
-    }
+    alert("开始加载Week1-Week10学习计划...");
     
-    // window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
-    
-    window.CozeSync.syncAllWeeksFromCoze()
-    .then(function(result) {
-        if (result.success) {
-            // window.addCozeLog('✅ 同步成功！新增 ' + result.count + ' 个任务', 'success');
-            alert('✅ 同步成功！新增 ' + result.count + ' 个任务');
-            // 刷新页面显示新数据
-            setTimeout(function() {
-                const container = document.getElementById('app-container');
-                if (container) {
-                    window.location.reload();
-                }
-            }, 500);
-        } else {
-            // window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
-            alert('❌ 同步失败: ' + (result.error || '未知错误'));
+    try {
+        // 直接从本地数据加载
+        if (typeof weekPlans === 'undefined') {
+            alert('⚠️ 周计划数据文件未加载');
+            return;
         }
-    })
-    .catch(function(error) {
-        // window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
+        
+        const savedData = window.DataSync.get('plan');
+        const existingTasks = savedData && savedData.tasks ? savedData.tasks : [];
+        let newCount = 0;
+        
+        // 遍历所有Week
+        Object.keys(weekPlans).forEach(function(weekKey) {
+            const week = weekPlans[weekKey];
+            if (week.days && Array.isArray(week.days)) {
+                week.days.forEach(function(day) {
+                    if (day.tasks && Array.isArray(day.tasks)) {
+                        day.tasks.forEach(function(newTask) {
+                            const exists = existingTasks.some(function(t) {
+                                return t.text === newTask.title && t.weekId === week.weekId;
+                            });
+                            
+                            if (!exists) {
+                                const newId = Math.max(0, ...existingTasks.map(function(t) { return t.id; })) + 1;
+                                existingTasks.push({
+                                    id: newId,
+                                    text: newTask.title,
+                                    completed: false,
+                                    category: week.weekTitle,
+                                    weekId: week.weekId,
+                                    day: day.day,
+                                    type: newTask.type,
+                                    duration: newTask.duration
+                                });
+                                newCount++;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        
+        window.DataSync.set('plan', { tasks: existingTasks, lastSync: new Date().toISOString() });
+        
+        alert('✅ 同步成功！新增 ' + newCount + ' 个任务');
+        window.location.reload();
+        
+    } catch(error) {
         alert('❌ 同步异常: ' + error.message);
-    });
+        console.error(error);
+    }
 };
 
 // 同步学习计划
