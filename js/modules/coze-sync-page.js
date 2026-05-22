@@ -305,6 +305,7 @@ window.syncMindMapFromCoze = function() {
 
 // 上传学习计划
 window.uploadPlanToCoze = function() {
+    alert("uploadPlan函数已调用！");
     if (!window.CozeSync || !window.CozeSync.isConfigured()) {
         alert('⚠️ 请先配置Access Token和Bot ID');
         return;
@@ -330,6 +331,7 @@ window.uploadPlanToCoze = function() {
 
 // 上传思维导图
 window.uploadMindMapToCoze = function() {
+    alert("uploadMindMap函数已调用！");
     if (!window.CozeSync || !window.CozeSync.isConfigured()) {
         alert('⚠️ 请先配置Access Token和Bot ID');
         return;
