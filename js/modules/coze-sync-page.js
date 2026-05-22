@@ -195,7 +195,7 @@ window.saveCozeConfig = function() {
     }
     
     try {
-        window.addCozeLog('✅ 配置已保存', 'success');
+        // window.addCozeLog('✅ 配置已保存', 'success');
     } catch(e) {
         console.log('addCozeLog错误:', e);
     }
@@ -218,13 +218,12 @@ window.syncAllWeeksFromCoze = function() {
         return;
     }
     
-    alert("配置检查通过，开始同步");
-    window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
+    // window.addCozeLog('🔄 正在批量同步Week1-Week10学习计划...', 'info');
     
     window.CozeSync.syncAllWeeksFromCoze()
     .then(function(result) {
         if (result.success) {
-            window.addCozeLog('✅ 同步成功！新增 ' + result.count + ' 个任务', 'success');
+            // window.addCozeLog('✅ 同步成功！新增 ' + result.count + ' 个任务', 'success');
             alert('✅ 同步成功！新增 ' + result.count + ' 个任务');
             // 刷新页面显示新数据
             setTimeout(function() {
@@ -234,12 +233,12 @@ window.syncAllWeeksFromCoze = function() {
                 }
             }, 500);
         } else {
-            window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
+            // window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
             alert('❌ 同步失败: ' + (result.error || '未知错误'));
         }
     })
     .catch(function(error) {
-        window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
+        // window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
         alert('❌ 同步异常: ' + error.message);
     });
 };
@@ -251,13 +250,12 @@ window.syncPlanFromCoze = function() {
         return;
     }
     
-    alert("配置检查通过，开始同步学习计划");
-    window.addCozeLog('🔄 正在从扣子同步学习计划...', 'info');
+    // window.addCozeLog('🔄 正在从扣子同步学习计划...', 'info');
     
     window.CozeSync.syncPlanFromCoze()
     .then(function(result) {
         if (result.success) {
-            window.addCozeLog('✅ 同步成功！导入 ' + result.count + ' 个任务', 'success');
+            // window.addCozeLog('✅ 同步成功！导入 ' + result.count + ' 个任务', 'success');
             alert('✅ 同步成功！导入 ' + result.count + ' 个任务');
             // 刷新页面显示新数据
             setTimeout(function() {
@@ -267,12 +265,12 @@ window.syncPlanFromCoze = function() {
                 }
             }, 500);
         } else {
-            window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
+            // window.addCozeLog('❌ 同步失败: ' + (result.error || '未知错误'), 'error');
             alert('❌ 同步失败: ' + (result.error || '未知错误'));
         }
     })
     .catch(function(error) {
-        window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
+        // window.addCozeLog('❌ 同步异常: ' + error.message, 'error');
         alert('❌ 同步异常: ' + error.message);
     });
 };
@@ -284,21 +282,20 @@ window.syncMindMapFromCoze = function() {
         return;
     }
     
-    alert("配置检查通过，开始生成思维导图");
-    window.addCozeLog('🔄 正在请求AI生成思维导图...', 'info');
+    // window.addCozeLog('🔄 正在请求AI生成思维导图...', 'info');
     
     window.CozeSync.syncMindMapFromCoze()
     .then(function(result) {
         if (result.success) {
-            window.addCozeLog('✅ 生成成功！导图ID: ' + result.mapId, 'success');
+            // window.addCozeLog('✅ 生成成功！导图ID: ' + result.mapId, 'success');
             alert('✅ 思维导图生成成功！');
         } else {
-            window.addCozeLog('❌ 生成失败', 'error');
+            // window.addCozeLog('❌ 生成失败', 'error');
             alert('❌ 生成失败');
         }
     })
     .catch(function(error) {
-        window.addCozeLog('❌ 生成异常: ' + error.message, 'error');
+        // window.addCozeLog('❌ 生成异常: ' + error.message, 'error');
         alert('❌ 生成异常: ' + error.message);
     });
 };
@@ -310,20 +307,20 @@ window.uploadPlanToCoze = function() {
         return;
     }
     
-    window.addCozeLog('⬆️ 正在上传学习计划到扣子...', 'info');
+    // window.addCozeLog('⬆️ 正在上传学习计划到扣子...', 'info');
     
     window.CozeSync.uploadDataToCoze('plan')
     .then(function(result) {
         if (result.success) {
-            window.addCozeLog('✅ 上传成功！', 'success');
+            // window.addCozeLog('✅ 上传成功！', 'success');
             alert('✅ 学习计划上传成功！');
         } else {
-            window.addCozeLog('❌ 上传失败', 'error');
+            // window.addCozeLog('❌ 上传失败', 'error');
             alert('❌ 上传失败');
         }
     })
     .catch(function(error) {
-        window.addCozeLog('❌ 上传异常: ' + error.message, 'error');
+        // window.addCozeLog('❌ 上传异常: ' + error.message, 'error');
         alert('❌ 上传异常: ' + error.message);
     });
 };
@@ -335,20 +332,20 @@ window.uploadMindMapToCoze = function() {
         return;
     }
     
-    window.addCozeLog('⬆️ 正在上传思维导图到扣子...', 'info');
+    // window.addCozeLog('⬆️ 正在上传思维导图到扣子...', 'info');
     
     window.CozeSync.uploadDataToCoze('mindmap')
     .then(function(result) {
         if (result.success) {
-            window.addCozeLog('✅ 上传成功！', 'success');
+            // window.addCozeLog('✅ 上传成功！', 'success');
             alert('✅ 思维导图上传成功！');
         } else {
-            window.addCozeLog('❌ 上传失败', 'error');
+            // window.addCozeLog('❌ 上传失败', 'error');
             alert('❌ 上传失败');
         }
     })
     .catch(function(error) {
-        window.addCozeLog('❌ 上传异常: ' + error.message, 'error');
+        // window.addCozeLog('❌ 上传异常: ' + error.message, 'error');
         alert('❌ 上传异常: ' + error.message);
     });
 };
@@ -364,22 +361,22 @@ window.generateQuestions = function() {
     const difficulty = document.getElementById('ai-difficulty').value;
     const count = document.getElementById('ai-count').value;
     
-    window.addCozeLog('🤖 正在生成' + subject + '练习题（' + difficulty + '，' + count + '道）...', 'info');
+    // window.addCozeLog('🤖 正在生成' + subject + '练习题（' + difficulty + '，' + count + '道）...', 'info');
     
     window.CozeSync.generateQuestions(subject, difficulty, count)
     .then(function(result) {
-        window.addCozeLog('✅ 生成完成！', 'success');
+        // window.addCozeLog('✅ 生成完成！', 'success');
         alert('✅ ' + subject + '练习题生成完成！');
         console.log('生成结果:', result);
     })
     .catch(function(error) {
-        window.addCozeLog('❌ 生成异常: ' + error.message, 'error');
+        // window.addCozeLog('❌ 生成异常: ' + error.message, 'error');
         alert('❌ 生成异常: ' + error.message);
     });
 };
 
 // 添加日志
-window.addCozeLog = function(message, type) {
+// window.addCozeLog = function(message, type) {
     const logDiv = document.getElementById('coze-log');
     if (!logDiv) return;
     
