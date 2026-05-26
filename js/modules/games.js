@@ -1771,6 +1771,19 @@ function endGame() {
         syncUserData(user);
         syncTodayStats();
     }
+
+    // V353: 自动标记学习计划中对应的任务为完成
+    if (window._pendingPlanTaskId && (Date.now() - window._pendingPlanTaskTime) < 600000) {
+        var taskId = window._pendingPlanTaskId;
+        if (typeof window.planState !== "undefined" && window.planState && !window.planState.completedTasks[taskId]) {
+            window.planState.completedTasks[taskId] = true;
+            if (typeof window.savePlanState === "function") window.savePlanState();
+            console.log("[Games] V353: 自动标记计划任务完成:", taskId);
+            setTimeout(function() { alert("✅ 学习计划任务已自动标记完成！"); }, 500);
+        }
+        window._pendingPlanTaskId = null;
+        window._pendingPlanTaskTime = null;
+    }
 }
 
 function exitGame() {
@@ -3448,6 +3461,19 @@ function endGame() {
         
         syncUserData(user);
         syncTodayStats();
+
+    // V353: 自动标记学习计划任务完成
+    if (window._pendingPlanTaskId && (Date.now() - window._pendingPlanTaskTime) < 600000) {
+        var taskId = window._pendingPlanTaskId;
+        if (typeof window.planState !== "undefined" && window.planState && !window.planState.completedTasks[taskId]) {
+            window.planState.completedTasks[taskId] = true;
+            if (typeof window.savePlanState === "function") window.savePlanState();
+            console.log("[Games] V353: 自动标记计划任务完成:", taskId);
+            setTimeout(function() { alert("✅ 学习计划任务已自动标记完成！"); }, 500);
+        }
+        window._pendingPlanTaskId = null;
+        window._pendingPlanTaskTime = null;
+    }
     }
 }
 

@@ -1,9 +1,124 @@
 // ============================================================
-// V351 学习计划模块 - 恢复原布局，增加多个自定义按钮
+// V353 学习计划模块 - 增加游戏跳转和自动同步
 // ============================================================
 
 // 训练开始日期：2026年5月20日
 var TRAINING_START_DATE = new Date('2026-05-20');
+
+// V353: 任务类型→游戏/模块映射
+var TASK_ACTION_MAP = {
+    // 注意力类 → 游戏ID
+    'attention_schulte': 'schulte',       // 舒尔特方格
+    'attention_visual': 'visual',         // 视觉搜索
+    'attention_tap': 'tap',               // 快速点击
+    'attention_color': 'color',           // 色彩识别
+    'attention_diff': 'diff',             // 找不同
+    'attention_tracking': 'attention',    // 注意力追踪
+    'attention_stroop': 'stroop',         // Stroop冲突
+    // 记忆力类
+    'memory_digit': 'digit',              // 数字记忆
+    'memory_text': 'text',               // 文字记忆
+    'memory_palace': 'palace',            // 记忆宫殿
+    'memory_flipcard': 'flipcard',        // 翻牌记忆
+    // 思维类
+    'thinking_pattern': 'pattern',        // 图案匹配
+    'thinking_reason': 'reason',          // 逻辑推理
+    'thinking_shape': 'shape',            // 图形推理
+    'thinking_classify': 'classify',      // 分类归纳
+    'thinking_network': 'network',        // 知识网络
+    'thinking_reverse': 'reverse',        // 逆向推理
+    'thinking_experiment': 'experiment',   // 实验设计
+    // 数理类
+    'math_calc': 'math',                  // 数学速算
+    'math_numshape': 'numshape',          // 数形结合
+    'math_conserve': 'conserve',          // 守恒推理
+    'math_space': 'space',               // 空间旋转
+    // 其他
+    'audio_position': 'audio',            // 听音辨位
+    'word_assoc': 'word',                // 词汇联想
+    // 娱乐游戏
+    'game_snake': 'snake',
+    'game_tetris': 'tetris',
+    'game_2048': 'g2048',
+    'game_whack': 'whack',
+    'game_linkup': 'linkup',
+    'game_slide': 'slide',
+    'game_eliminate': 'eliminate'
+};
+
+// V353: 根据任务类型和标题智能匹配游戏
+window.getTaskAction = function(task) {
+    // 1. 如果任务有gameId字段，直接用
+    if (task.gameId) return { type: 'game', id: task.gameId };
+    
+    var title = (task.title || '').toLowerCase();
+    var type = task.type || '';
+    
+    // 2. type=game 的任务，根据标题关键词匹配
+    if (type === 'game') {
+        if (title.indexOf('舒尔特') >= 0) return { type: 'game', id: 'schulte' };
+        if (title.indexOf('视觉') >= 0 || title.indexOf('搜索') >= 0) return { type: 'game', id: 'visual' };
+        if (title.indexOf('数字记忆') >= 0) return { type: 'game', id: 'digit' };
+        if (title.indexOf('图案') >= 0 || title.indexOf('匹配') >= 0) return { type: 'game', id: 'pattern' };
+        if (title.indexOf('逻辑') >= 0 || title.indexOf('推理') >= 0) return { type: 'game', id: 'reason' };
+        if (title.indexOf('文字记忆') >= 0) return { type: 'game', id: 'text' };
+        if (title.indexOf('图形推理') >= 0) return { type: 'game', id: 'shape' };
+        if (title.indexOf('速算') >= 0 || title.indexOf('计算') >= 0) return { type: 'game', id: 'math' };
+        if (title.indexOf('空间') >= 0) return { type: 'game', id: 'space' };
+        if (title.indexOf('听音') >= 0) return { type: 'game', id: 'audio' };
+        if (title.indexOf('词汇') >= 0) return { type: 'game', id: 'word' };
+        if (title.indexOf('分类') >= 0 || title.indexOf('归纳') >= 0) return { type: 'game', id: 'classify' };
+        if (title.indexOf('注意') >= 0 || title.indexOf('追踪') >= 0) return { type: 'game', id: 'attention' };
+        if (title.indexOf('记忆宫殿') >= 0) return { type: 'game', id: 'palace' };
+        if (title.indexOf('stroop') >= 0 || title.indexOf('冲突') >= 0) return { type: 'game', id: 'stroop' };
+        if (title.indexOf('数形') >= 0) return { type: 'game', id: 'numshape' };
+        if (title.indexOf('守恒') >= 0) return { type: 'game', id: 'conserve' };
+        if (title.indexOf('知识网络') >= 0) return { type: 'game', id: 'network' };
+        if (title.indexOf('逆向') >= 0) return { type: 'game', id: 'reverse' };
+        if (title.indexOf('实验') >= 0) return { type: 'game', id: 'experiment' };
+        if (title.indexOf('色彩') >= 0 || title.indexOf('辨色') >= 0) return { type: 'game', id: 'color' };
+        if (title.indexOf('找不同') >= 0) return { type: 'game', id: 'diff' };
+        if (title.indexOf('快速') >= 0 || title.indexOf('反应') >= 0) return { type: 'game', id: 'tap' };
+        if (title.indexOf('翻牌') >= 0) return { type: 'game', id: 'flipcard' };
+        return { type: 'game', id: null }; // 游戏类但匹配不到具体游戏
+    }
+    
+    // 3. 按type映射默认游戏
+    if (type === 'attention') return { type: 'game', id: 'schulte' };
+    if (type === 'memory') return { type: 'game', id: 'digit' };
+    if (type === 'practice') return { type: 'game', id: null };
+    
+    // 4. 其他模块跳转
+    if (type === 'video') return { type: 'module', id: 'video' };
+    if (type === 'podcast') return { type: 'module', id: 'podcast' };
+    if (type === 'strategy' || type === 'method') return { type: 'module', id: 'method' };
+    if (type === 'creative') return { type: 'module', id: 'thinking' };
+    if (type === 'review' || type === 'quiz' || type === 'test') return { type: 'module', id: 'exam' };
+    if (type === 'writing') return { type: 'module', id: 'notepad' };
+    
+    return { type: null, id: null };
+};
+
+// V353: 从学习计划跳转到游戏/模块
+window.goToTraining = function(taskId, gameId, moduleType) {
+    if (moduleType === 'game' && gameId) {
+        // 记录当前要完成的任务ID，游戏结束后自动标记
+        window._pendingPlanTaskId = taskId;
+        window._pendingPlanTaskTime = Date.now();
+        console.log('[Plan] 跳转到游戏:', gameId, '待完成任务:', taskId);
+        // 直接启动游戏
+        if (typeof startGame === 'function') {
+            startGame(gameId);
+        }
+    } else if (moduleType === 'module' && gameId) {
+        // 跳转到其他模块
+        window._pendingPlanTaskId = taskId;
+        window._pendingPlanTaskTime = Date.now();
+        if (typeof openFullscreenPage === 'function') {
+            openFullscreenPage(gameId);
+        }
+    }
+};
 
 window.planState = {
     currentDate: null,
@@ -153,9 +268,19 @@ window.renderPlan = function(container) {
                         var task = currentDayData.tasks[j];
                         var done = window.planState.completedTasks[task.id];
                         var icon = typeIcons[task.type] || '📌';
+                        
+                        // V353: 获取任务对应的训练动作
+                        var action = window.getTaskAction(task);
+                        var actionBtn = '';
+                        if (action.type && action.id) {
+                            var actionLabel = action.type === 'game' ? '🎮 去训练' : '📂 去学习';
+                            actionBtn = '<button onclick="event.stopPropagation();goToTraining(\'' + task.id + '\',\'' + action.id + '\',\'' + action.type + '\')" style="padding:3px 10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:11px;cursor:pointer;margin-right:6px;white-space:nowrap;">' + actionLabel + '</button>';
+                        }
+                        
                         html += '<div onclick="toggleTaskComplete(\'' + task.id + '\')" style="display:flex;align-items:center;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:' + (done ? '#e8f5e9' : '#fafafa') + ';cursor:pointer;border:2px solid ' + (done ? '#81c784' : '#eee') + ';">';
                         html += '<span style="font-size:18px;margin-right:10px;">' + icon + '</span>';
                         html += '<div style="flex:1;"><div style="font-size:13px;color:#333;text-decoration:' + (done ? 'line-through' : 'none') + ';opacity:' + (done ? '0.6' : '1') + ';">' + task.title + '</div></div>';
+                        html += actionBtn;
                         html += '<span style="font-size:16px;">' + (done ? '✅' : '⬜') + '</span>';
                         html += '</div>';
                     }
@@ -189,7 +314,7 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V352 - 自定义任务支持时间设置和编辑功能</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V353 - 学习计划可直接跳转训练游戏，游戏完成自动同步</div>';
     html += '</div></div>';
     
     container.innerHTML = html;

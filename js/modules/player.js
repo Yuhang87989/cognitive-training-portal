@@ -403,6 +403,7 @@ window.toggleVpPlay = toggleVpPlay;
 window.onEnhancedVideoError = onEnhancedVideoError;
 window.onEnhancedVideoWaiting = onEnhancedVideoWaiting;
 window.onEnhancedVideoCanPlay = onEnhancedVideoCanPlay;
+window.openEnhancedVideoPlayer = openEnhancedVideoPlayer;
 window.initEnhancedVideoPlayer = initEnhancedVideoPlayer;
         if (audioCtx.isPlaying) { stopPodcastTTS(); }
         else { audioCtx.isPlaying = true; updatePlayButtons(); speakNextCaption(); }
