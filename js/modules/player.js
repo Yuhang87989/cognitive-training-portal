@@ -130,7 +130,7 @@ function playVideoCourse(courseId) {
 
 function playLocalAudio(audioId) {
     const user = window.getCurrentUserData();
-    const audio = user?.localAudios?.find(a => a.id === audioId);
+    const audio = (user && user.localAudios) ? user.localAudios.find(a => a.id === audioId) : null;
     if (!audio) return;
 
     // 播放音频
@@ -141,7 +141,7 @@ function playLocalAudio(audioId) {
 
 function playLocalVideo(videoId) {
     const user = window.getCurrentUserData();
-    const video = user?.localVideos?.find(v => v.id === videoId);
+    const video = (user && user.localVideos) ? user.localVideos.find(v => v.id === videoId) : null;
     if (!video) {
         window.showToast('视频信息不存在');
         return;
@@ -1370,39 +1370,3 @@ window.deleteLocalVideo = deleteLocalVideo;
 
 // ============================================================
 // ES6 Module 导出
-// ============================================================
-
-// 视频播放器模块对象
-    name: 'player',
-    icon: '🎬',
-    render: null
-};
-
-// 导出主要函数
-    playVideo,
-    playPodcast,
-    closeVideoPlayer,
-    toggleVpPlay,
-    seekVideo,
-    toggleVolume,
-    togglePictureInPicture,
-    closeEnhancedVideoPlayer,
-    toggleEnhancedVideoPlay,
-    seekEnhancedVideo,
-    seekEnhancedVideoBackward,
-    seekEnhancedVideoForward,
-    toggleEnhancedMute,
-    toggleEnhancedFullscreen,
-    toggleEnhancedSpeedDropdown,
-    onEnhancedVideoError,
-    playLocalVideo,
-    handleVideoUpload,
-    compressVideo,
-    cacheVideo,
-    getCachedVideo,
-    deleteLocalVideo,
-    saveVideoWatchRecord,
-    updateVideoProgress
-};
-
-console.log('[ES6 Module] player.js 模块加载完成');

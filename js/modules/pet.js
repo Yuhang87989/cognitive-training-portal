@@ -7,12 +7,18 @@
     
     // 动漫宠物配置 - 每种宠物有不同的颜色和特征
     const PET_SKINS = [
-        { id: 'cat', name: '小橘猫', emoji: '🐱', color: '#ff9800', accent: '#e65100', eyeColor: '#2E7D32', earType: 'pointed', desc: '活泼可爱的小猫咪' },
-        { id: 'dog', name: '小柴犬', emoji: '🐕', color: '#8d6e63', accent: '#5d4037', eyeColor: '#3E2723', earType: 'floppy', desc: '忠诚友善的小狗狗' },
-        { id: 'rabbit', name: '小白兔', emoji: '🐰', color: '#f8bbd0', accent: '#ec407a', eyeColor: '#C62828', earType: 'long', desc: '软萌可爱的小兔子' },
-        { id: 'panda', name: '小熊猫', emoji: '🐼', color: '#fafafa', accent: '#333333', eyeColor: '#1B5E20', earType: 'round', desc: '国宝级的萌宠' },
-        { id: 'fox', name: '小狐狸', emoji: '🦊', color: '#ff6b35', accent: '#d84315', eyeColor: '#E65100', earType: 'pointed', desc: '聪明伶俐的小狐狸' },
-        { id: 'bear', name: '小熊熊', emoji: '🐻', color: '#a1887f', accent: '#6d4c41', eyeColor: '#3E2723', earType: 'round', desc: '憨厚可爱的小熊' }
+        { id: 'cat', name: '小橘猫', emoji: '🐱', color: '#ff9800', desc: '活泼可爱的小猫咪',
+          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' }},
+        { id: 'dog', name: '小柴犬', emoji: '🐕', color: '#8d6e63', desc: '忠诚友善的小狗狗',
+          img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog.jpg', sad: 'imgs/pets/pet-dog.jpg' }},
+        { id: 'rabbit', name: '小白兔', emoji: '🐰', color: '#f8bbd0', desc: '软萌可爱的小兔子',
+          img: { idle: 'imgs/pets/pet-rabbit.jpg', happy: 'imgs/pets/pet-rabbit.jpg', eating: 'imgs/pets/pet-rabbit.jpg', sleeping: 'imgs/pets/pet-rabbit.jpg', sad: 'imgs/pets/pet-rabbit.jpg' }},
+        { id: 'panda', name: '小熊猫', emoji: '🐼', color: '#fafafa', desc: '国宝级的萌宠',
+          img: { idle: 'imgs/pets/pet-panda.jpg', happy: 'imgs/pets/pet-panda.jpg', eating: 'imgs/pets/pet-panda.jpg', sleeping: 'imgs/pets/pet-panda.jpg', sad: 'imgs/pets/pet-panda.jpg' }},
+        { id: 'fox', name: '小狐狸', emoji: '🦊', color: '#ff6b35', desc: '聪明伶俐的小狐狸',
+          img: { idle: 'imgs/pets/pet-fox.jpg', happy: 'imgs/pets/pet-fox.jpg', eating: 'imgs/pets/pet-fox.jpg', sleeping: 'imgs/pets/pet-fox.jpg', sad: 'imgs/pets/pet-fox.jpg' }},
+        { id: 'bear', name: '小熊熊', emoji: '🐻', color: '#a1887f', desc: '憨厚可爱的小熊',
+          img: { idle: 'imgs/pets/pet-bear.jpg', happy: 'imgs/pets/pet-bear.jpg', eating: 'imgs/pets/pet-bear.jpg', sleeping: 'imgs/pets/pet-bear.jpg', sad: 'imgs/pets/pet-bear.jpg' }}
     ];
     
     const DEFAULT_PET = {
@@ -150,102 +156,24 @@
         } catch(e) {}
     }
     
-    // 生成动漫宠物SVG
-    function renderAnimePet(skinId, expression) {
+    // 获取宠物图片URL
+    function getPetImageUrl(skinId, expression) {
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
-        const c = skin.color;
-        const a = skin.accent;
-        const ec = skin.eyeColor;
-        
-        // 表情参数
-        let eyeL = '', eyeR = '', mouth = '', extras = '';
-        switch(expression) {
-            case 'happy':
-                eyeL = '<path d="M38,68 Q44,60 50,68" stroke="' + ec + '" stroke-width="2.5" fill="none"/>';
-                eyeR = '<path d="M62,68 Q68,60 74,68" stroke="' + ec + '" stroke-width="2.5" fill="none"/>';
-                mouth = '<path d="M42,82 Q56,96 70,82" stroke="#E57373" stroke-width="2" fill="#FFCDD2"/>';
-                extras = '<circle cx="28" cy="76" r="7" fill="rgba(255,120,120,0.35)"/><circle cx="84" cy="76" r="7" fill="rgba(255,120,120,0.35)"/>';
-                break;
-            case 'eating':
-                eyeL = '<ellipse cx="44" cy="66" rx="5" ry="4" fill="' + ec + '"/>';
-                eyeR = '<ellipse cx="68" cy="66" rx="5" ry="4" fill="' + ec + '"/>';
-                mouth = '<ellipse cx="56" cy="84" rx="6" ry="5" fill="#E57373"/>';
-                extras = '<circle cx="28" cy="76" r="7" fill="rgba(255,120,120,0.35)"/><circle cx="84" cy="76" r="7" fill="rgba(255,120,120,0.35)"/>';
-                break;
-            case 'sleeping':
-                eyeL = '<path d="M38,68 L50,68" stroke="' + ec + '" stroke-width="2.5" stroke-linecap="round"/>';
-                eyeR = '<path d="M62,68 L74,68" stroke="' + ec + '" stroke-width="2.5" stroke-linecap="round"/>';
-                mouth = '<path d="M50,82 Q56,86 62,82" stroke="#E57373" stroke-width="1.5" fill="none"/>';
-                extras = '<text x="82" y="48" font-size="14" fill="#90A4AE">z</text><text x="90" y="38" font-size="10" fill="#B0BEC5">z</text>';
-                break;
-            case 'sad':
-                eyeL = '<ellipse cx="44" cy="70" rx="4" ry="5" fill="' + ec + '"/><ellipse cx="45" cy="72" rx="1.5" ry="2" fill="white"/>';
-                eyeR = '<ellipse cx="68" cy="70" rx="4" ry="5" fill="' + ec + '"/><ellipse cx="69" cy="72" rx="1.5" ry="2" fill="white"/>';
-                mouth = '<path d="M46,88 Q56,80 66,88" stroke="#E57373" stroke-width="2" fill="none"/>';
-                extras = '<path d="M32,62 Q34,58 36,62" stroke="#90CAF9" stroke-width="1.5" fill="none"/>';
-                break;
-            default: // idle
-                eyeL = '<ellipse cx="44" cy="66" rx="5.5" ry="6.5" fill="' + ec + '"/><ellipse cx="45" cy="64" rx="2" ry="2.5" fill="white"/>';
-                eyeR = '<ellipse cx="68" cy="66" rx="5.5" ry="6.5" fill="' + ec + '"/><ellipse cx="69" cy="64" rx="2" ry="2.5" fill="white"/>';
-                mouth = '<path d="M48,82 Q56,88 64,82" stroke="#E57373" stroke-width="2" fill="none"/>';
-                extras = '<circle cx="28" cy="76" r="7" fill="rgba(255,120,120,0.3)"/><circle cx="84" cy="76" r="7" fill="rgba(255,120,120,0.3)"/>';
-        }
-        
-        // 耳朵
-        let ears = '';
-        switch(skin.earType) {
-            case 'pointed':
-                ears = '<path d="M26,40 L36,18 L44,42 Z" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-                       '<path d="M68,42 L76,18 L86,40 Z" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-                       '<path d="M30,38 L37,22 L42,40 Z" fill="#FFCDD2"/>' +
-                       '<path d="M70,40 L75,22 L82,38 Z" fill="#FFCDD2"/>';
-                break;
-            case 'floppy':
-                ears = '<ellipse cx="28" cy="52" rx="10" ry="16" fill="' + a + '" transform="rotate(-20,28,52)"/>' +
-                       '<ellipse cx="84" cy="52" rx="10" ry="16" fill="' + a + '" transform="rotate(20,84,52)"/>';
-                break;
-            case 'long':
-                ears = '<ellipse cx="34" cy="22" rx="8" ry="22" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-                       '<ellipse cx="78" cy="22" rx="8" ry="22" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-                       '<ellipse cx="34" cy="22" rx="4" ry="18" fill="#F8BBD0"/>' +
-                       '<ellipse cx="78" cy="22" rx="4" ry="18" fill="#F8BBD0"/>';
-                break;
-            case 'round':
-                ears = '<circle cx="30" cy="36" r="12" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-                       '<circle cx="82" cy="36" r="12" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-                       '<circle cx="30" cy="36" r="7" fill="' + (skinId === 'panda' ? '#333' : '#FFCDD2') + '"/>' +
-                       '<circle cx="82" cy="36" r="7" fill="' + (skinId === 'panda' ? '#333' : '#FFCDD2') + '"/>';
-                break;
-        }
-        
-        // 身体
-        const bodyY = 92;
-        const svg = '<svg viewBox="0 0 112 150" xmlns="http://www.w3.org/2000/svg" style="width:140px;height:180px;">' +
-            '<defs><radialGradient id="petGlow"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>' +
-            // 耳朵（在头后面）
-            ears +
-            // 头（大圆）
-            '<ellipse cx="56" cy="58" rx="38" ry="36" fill="' + c + '" stroke="' + a + '" stroke-width="1.5"/>' +
-            '<ellipse cx="56" cy="58" rx="38" ry="36" fill="url(#petGlow)"/>' +
-            // 眼睛
-            eyeL + eyeR +
-            // 嘴巴
-            mouth +
-            // 腮红
-            extras +
-            // 身体（小）
-            '<ellipse cx="56" cy="' + bodyY + '" rx="22" ry="18" fill="' + c + '" stroke="' + a + '" stroke-width="1"/>' +
-            // 小手
-            '<ellipse cx="32" cy="' + (bodyY + 2) + '" rx="8" ry="6" fill="' + c + '" stroke="' + a + '" stroke-width="1"/>' +
-            '<ellipse cx="80" cy="' + (bodyY + 2) + '" rx="8" ry="6" fill="' + c + '" stroke="' + a + '" stroke-width="1"/>' +
-            // 小脚
-            '<ellipse cx="44" cy="' + (bodyY + 16) + '" rx="9" ry="5" fill="' + a + '"/>' +
-            '<ellipse cx="68" cy="' + (bodyY + 16) + '" rx="9" ry="5" fill="' + a + '"/>' +
-        '</svg>';
-        
-        return svg;
+        if (skin.img && skin.img[expression]) return skin.img[expression];
+        if (skin.img && skin.img.idle) return skin.img.idle;
+        return '';
     }
     
+    // 生成宠物图片HTML
+    function renderAnimePet(skinId, expression) {
+        const url = getPetImageUrl(skinId, expression);
+        if (url) {
+            return '<img src="' + url + '" style="width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'<span style=\'font-size:80px\'>' + (PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0]).emoji + '</span>\'">';
+        }
+        // Fallback to emoji
+        const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
+        return '<span style="font-size:80px;">' + skin.emoji + '</span>';
+    }
     function getPetExpression(data) {
         if (data.mood < 20) return 'sad';
         if (data.hunger < 20) return 'eating';
