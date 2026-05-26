@@ -118,8 +118,23 @@ function filterVideoCourse(category, btn) {
 function playVideoFromList(id) {
     var course = window.videoCourses.find(function(v) { return v.id === id; });
     if (course) {
-        // 使用增强版视频播放器，传入videoId用于记录观看进度
-        openEnhancedVideoPlayer(course.title, course.url, course.id);
+        // 确保播放器已加载
+        if (typeof window.openEnhancedVideoPlayer === 'function') {
+            window.openEnhancedVideoPlayer(course.title, course.url, course.id);
+        } else {
+            // 播放器未加载，尝试初始化后播放
+            console.warn('[Video] 播放器未就绪，尝试初始化...');
+            if (typeof window.initEnhancedVideoPlayer === 'function') {
+                window.initEnhancedVideoPlayer();
+            }
+            setTimeout(function() {
+                if (typeof window.openEnhancedVideoPlayer === 'function') {
+                    window.openEnhancedVideoPlayer(course.title, course.url, course.id);
+                } else {
+                    window.showToast('视频播放器加载中，请稍后重试');
+                }
+            }, 500);
+        }
     }
 }
 
