@@ -13,6 +13,9 @@ var gameLevel = 1;
 var gameStartTime = 0;
 var elimTimer = typeof elimTimer !== 'undefined' ? elimTimer : null;
 var elimColors = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFD93D','#DDA0DD'];
+var attentionSequence = [];
+var attentionIndex = 0;
+var attentionAnimId = null;
 
 
 // startGame moved to end of file (with metacognitive prediction)
@@ -432,43 +435,195 @@ function startAttentionTrack() {
     const board = document.getElementById('game-board');
     board.style.display = 'block';
     board.style.textAlign = 'center';
-    const counts = [6, 9, 12, 16, 20];
+
+    const counts = [5, 7, 9, 12, 15];
     const numCount = counts[Math.min(gameLevel - 1, 4)];
-    const gridSize = Math.ceil(Math.sqrt(numCount));
-    const colors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#667eea', '#43E97B', '#FF9A9E'];
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#667eea', '#43E97B', '#FF9A9E', '#A78BFA', '#F472B6'];
+
     attentionSequence = [];
-    for (let i = 0; i < numCount; i++) attentionSequence.push({ color: colors[i % colors.length], number: i + 1 });
-    attentionSequence = attentionSequence.sort(() => Math.random() - 0.5);
+    for (let i = 0; i < numCount; i++) {
+        attentionSequence.push({
+            color: colors[i % colors.length],
+            number: i + 1,
+            x: 0, y: 0,
+            vx: (Math.random() - 0.5) * 2.5,
+            vy: (Math.random() - 0.5) * 2.5
+        });
+    }
     attentionIndex = 0;
-    board.innerHTML = '<div style="background:white;border-radius:16px;padding:24px;max-width:320px;"><div style="font-size:14px;color:#666;margin-bottom:16px;">记住数字顺序，然后按顺序点击：</div><div id="attention-grid" style="display:grid;grid-template-columns:repeat(' + gridSize + ',1fr);gap:8px;margin-bottom:16px;">' + attentionSequence.map((item, i) => '<div id="att-item-' + i + '" style="aspect-ratio:1;background:' + item.color + ';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;color:white;opacity:0;transition:opacity 0.3s;cursor:pointer;" onclick="clickAttention(' + i + ')"></div>').join('') + '</div><button onclick="startAttentionSeq()" style="width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">开始记忆</button></div>';
+    attentionAnimId = null;
+
+    board.innerHTML = '<div style="background:white;border-radius:16px;padding:16px;max-width:400px;margin:0 auto;">' +
+        '<div id="att-phase" style="font-size:14px;color:#667eea;font-weight:bold;margin-bottom:6px;">📋 记忆阶段：记住每个球的编号</div>' +
+        '<div id="att-countdown" style="font-size:13px;color:#999;margin-bottom:10px;"></div>' +
+        '<div id="att-arena" style="position:relative;width:100%;height:280px;background:linear-gradient(135deg,#f0f4ff,#e8eeff);border-radius:12px;overflow:hidden;margin-bottom:10px;"></div>' +
+        '<div id="att-next" style="font-size:15px;color:#667eea;font-weight:bold;min-height:22px;"></div>' +
+    '</div>';
+
+    var arena = document.getElementById('att-arena');
+    var arenaW = arena.offsetWidth || 360;
+    var arenaH = 280;
+    var ballSize = numCount <= 7 ? 48 : (numCount <= 12 ? 40 : 34);
+    var pad = ballSize;
+
+    // Place balls in non-overlapping random positions
+    var positions = [];
+    attentionSequence.forEach(function(item, i) {
+        var x, y, attempts = 0, valid;
+        do {
+            x = pad + Math.random() * (arenaW - 2 * pad);
+            y = pad + Math.random() * (arenaH - 2 * pad);
+            valid = positions.every(function(p) { return Math.hypot(p.x - x, p.y - y) > ballSize * 1.4; });
+            attempts++;
+        } while (!valid && attempts < 200);
+        positions.push({ x: x, y: y });
+        item.x = x;
+        item.y = y;
+
+        var ball = document.createElement('div');
+        ball.id = 'att-ball-' + i;
+        ball.style.cssText = 'position:absolute;left:' + (x - ballSize / 2) + 'px;top:' + (y - ballSize / 2) + 'px;width:' + ballSize + 'px;height:' + ballSize + 'px;background:' + item.color + ';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:' + (ballSize > 40 ? 18 : 14) + 'px;font-weight:bold;color:white;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.18);z-index:2;user-select:none;';
+        ball.textContent = item.number;
+        ball.onclick = function() { clickAttention(i); };
+        arena.appendChild(ball);
+    });
+
     gameScore = 0;
     document.getElementById('game-score').textContent = '0';
+
+    // Phase 1: Memorize - show all numbers for 3 seconds
+    var memTime = 3;
+    document.getElementById('att-countdown').textContent = '数字显示中... ' + memTime + ' 秒';
+    var memTimer = setInterval(function() {
+        memTime--;
+        if (memTime <= 0) {
+            clearInterval(memTimer);
+            document.getElementById('att-countdown').textContent = '';
+            _startAttentionMovement(arena, arenaW, arenaH, ballSize);
+        } else {
+            document.getElementById('att-countdown').textContent = '数字显示中... ' + memTime + ' 秒';
+        }
+    }, 1000);
+}
+
+function _startAttentionMovement(arena, arenaW, arenaH, ballSize) {
+    document.getElementById('att-phase').textContent = '👀 追踪阶段：盯住每个球的位置！';
+    document.getElementById('att-next').textContent = '';
+
+    // Hide numbers, show question marks
+    attentionSequence.forEach(function(_, i) {
+        var ball = document.getElementById('att-ball-' + i);
+        if (ball) {
+            ball.textContent = '?';
+            ball.style.fontSize = (ballSize > 40 ? 20 : 16) + 'px';
+        }
+    });
+
+    var moveDurations = [3500, 4500, 5500, 6500, 7500];
+    var moveDuration = moveDurations[Math.min(gameLevel - 1, 4)];
+    var speedMul = [0.8, 1.0, 1.2, 1.5, 1.8][Math.min(gameLevel - 1, 4)];
+    var startTime = Date.now();
+
+    function animate() {
+        var elapsed = Date.now() - startTime;
+        if (elapsed >= moveDuration) {
+            // Phase 3: Stop, start clicking
+            _startAttentionClickPhase(ballSize);
+            return;
+        }
+        var w = arena.offsetWidth || arenaW;
+        var h = arenaH;
+
+        attentionSequence.forEach(function(item, i) {
+            item.x += item.vx * speedMul;
+            item.y += item.vy * speedMul;
+
+            if (item.x < ballSize / 2) { item.vx = Math.abs(item.vx); item.x = ballSize / 2; }
+            if (item.x > w - ballSize / 2) { item.vx = -Math.abs(item.vx); item.x = w - ballSize / 2; }
+            if (item.y < ballSize / 2) { item.vy = Math.abs(item.vy); item.y = ballSize / 2; }
+            if (item.y > h - ballSize / 2) { item.vy = -Math.abs(item.vy); item.y = h - ballSize / 2; }
+
+            var ball = document.getElementById('att-ball-' + i);
+            if (ball) {
+                ball.style.left = (item.x - ballSize / 2) + 'px';
+                ball.style.top = (item.y - ballSize / 2) + 'px';
+            }
+        });
+
+        attentionAnimId = requestAnimationFrame(animate);
+    }
+
+    attentionAnimId = requestAnimationFrame(animate);
+}
+
+function _startAttentionClickPhase(ballSize) {
+    if (attentionAnimId) { cancelAnimationFrame(attentionAnimId); attentionAnimId = null; }
+    document.getElementById('att-phase').textContent = '👆 点击阶段：按编号顺序点击球';
+    document.getElementById('att-next').textContent = '请点击编号 1';
+    attentionIndex = 0;
+
+    attentionSequence.forEach(function(_, i) {
+        var ball = document.getElementById('att-ball-' + i);
+        if (ball) {
+            ball.textContent = '?';
+            ball.style.boxShadow = '0 0 0 3px rgba(102,126,234,0.5), 0 3px 10px rgba(0,0,0,0.18)';
+            ball.style.cursor = 'pointer';
+            ball.style.animation = 'att-pulse 1.5s infinite';
+        }
+    });
+
+    // Add pulse animation style if not exists
+    if (!document.getElementById('att-pulse-style')) {
+        var style = document.createElement('style');
+        style.id = 'att-pulse-style';
+        style.textContent = '@keyframes att-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }';
+        document.head.appendChild(style);
+    }
+}
+
+function clickAttention(index) {
+    if (attentionIndex >= attentionSequence.length) return;
+    var expectedNum = attentionIndex + 1;
+    var clickedNum = attentionSequence[index].number;
+    var ball = document.getElementById('att-ball-' + index);
+
+    if (clickedNum === expectedNum) {
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore;
+        if (ball) {
+            ball.textContent = clickedNum;
+            ball.style.background = '#43E97B';
+            ball.style.animation = '';
+            ball.style.boxShadow = '0 3px 10px rgba(67,233,123,0.4)';
+        }
+        SoundEffects.playCorrect();
+        attentionIndex++;
+        if (attentionIndex < attentionSequence.length) {
+            document.getElementById('att-next').textContent = '请点击编号 ' + (attentionIndex + 1);
+        } else {
+            document.getElementById('att-phase').textContent = '🎉 完美！全部正确！';
+            document.getElementById('att-next').textContent = '';
+            setTimeout(function() {
+                if (gameLevel < 5) { gameLevel++; updateGameLevelBadge(); }
+                startAttentionTrack();
+            }, 1500);
+        }
+    } else {
+        if (ball) {
+            var origBg = ball.style.background;
+            ball.style.background = '#FF6B6B';
+            ball.style.animation = '';
+            setTimeout(function() { ball.style.background = origBg; ball.style.animation = 'att-pulse 1.5s infinite'; }, 400);
+        }
+        SoundEffects.playWrong();
+        // Restart on wrong click
+        setTimeout(function() { startAttentionTrack(); }, 1000);
+    }
 }
 
 function startAttentionSeq() {
-    const sequence = attentionSequence.map((_, i) => i);
-    let i = 0;
-    const interval = setInterval(() => {
-        if (i > 0) {
-            const prevEl = document.getElementById('att-item-' + sequence[i-1]);
-            if (prevEl) prevEl.textContent = '';
-        }
-        if (i < sequence.length) {
-            const el = document.getElementById('att-item-' + sequence[i]);
-            if (el) { el.textContent = attentionSequence[sequence[i]].number; el.style.opacity = '1'; }
-            playAudioTone3(400 + i * 50);
-            i++;
-        } else {
-            clearInterval(interval);
-            setTimeout(() => {
-                attentionSequence.forEach((_, idx) => {
-                    const el = document.getElementById('att-item-' + idx);
-                    if (el) { el.textContent = ''; el.style.opacity = '1'; }
-                });
-                attentionIndex = 0;
-            }, 500);
-        }
-    }, 600);
+    // Legacy stub - game now uses movement-based tracking
+    startAttentionTrack();
 }
 
 function startFlipCard() {
@@ -2603,23 +2758,6 @@ function processMatches(matches) {
     },300);
 }
 
-function clickAttention(index) {
-    const expectedIndex = attentionSequence[attentionIndex].number - 1;
-    const el = document.getElementById('att-item-' + index);
-    if (index === expectedIndex) {
-        gameScore++;
-        document.getElementById('game-score').textContent = gameScore;
-        if (el) { el.textContent = attentionSequence[index].number; el.style.background = '#43E97B'; }
-        SoundEffects.playCorrect();
-        attentionIndex++;
-        if (attentionIndex >= attentionSequence.length) setTimeout(() => { if (gameLevel < 5) { gameLevel++; updateGameLevelBadge(); } startAttentionTrack(); }, 1000);
-    } else {
-        if (el) el.style.background = '#FF6B6B';
-        SoundEffects.playWrong();
-        setTimeout(() => { startAttentionTrack(); }, 1000);
-    }
-}
-
 function clickElim(idx) {
     const el = document.getElementById('elim-'+idx);
     if(!el||elimBoard[idx]<0) return;
@@ -3182,23 +3320,6 @@ function classifyItem(el, item) {
     } else {
         classifyBox1.push(item);
         document.getElementById('classify-box-1').innerHTML += '<div onclick="unclassifyItem(this, \'' + item + '\', 1)" style="display:inline-block;padding:6px 10px;background:#FF6B6B;color:white;border-radius:6px;font-size:12px;margin:4px;cursor:pointer;">' + item + '</div>';
-    }
-}
-
-function clickAttention(index) {
-    const expectedIndex = attentionSequence[attentionIndex].number - 1;
-    const el = document.getElementById('att-item-' + index);
-    if (index === expectedIndex) {
-        gameScore++;
-        document.getElementById('game-score').textContent = gameScore;
-        if (el) { el.textContent = attentionSequence[index].number; el.style.background = '#43E97B'; }
-        SoundEffects.playCorrect();
-        attentionIndex++;
-        if (attentionIndex >= attentionSequence.length) setTimeout(() => { if (gameLevel < 5) { gameLevel++; updateGameLevelBadge(); } startAttentionTrack(); }, 1000);
-    } else {
-        if (el) el.style.background = '#FF6B6B';
-        SoundEffects.playWrong();
-        setTimeout(() => { startAttentionTrack(); }, 1000);
     }
 }
 
@@ -4442,50 +4563,6 @@ function start2048() {
         else if(e.key==='ArrowLeft') move2048(4);
         else if(e.key==='ArrowRight') move2048(2);
     });
-}
-
-function startAttentionSeq() {
-    const sequence = attentionSequence.map((_, i) => i);
-    let i = 0;
-    const interval = setInterval(() => {
-        if (i > 0) {
-            const prevEl = document.getElementById('att-item-' + sequence[i-1]);
-            if (prevEl) prevEl.textContent = '';
-        }
-        if (i < sequence.length) {
-            const el = document.getElementById('att-item-' + sequence[i]);
-            if (el) { el.textContent = attentionSequence[sequence[i]].number; el.style.opacity = '1'; }
-            playAudioTone3(400 + i * 50);
-            i++;
-        } else {
-            clearInterval(interval);
-            setTimeout(() => {
-                attentionSequence.forEach((_, idx) => {
-                    const el = document.getElementById('att-item-' + idx);
-                    if (el) { el.textContent = ''; el.style.opacity = '1'; }
-                });
-                attentionIndex = 0;
-            }, 500);
-        }
-    }, 600);
-}
-
-function startAttentionTrack() {
-    document.getElementById('game-title').textContent = '🎯 注意力追踪';
-    const board = document.getElementById('game-board');
-    board.style.display = 'block';
-    board.style.textAlign = 'center';
-    const counts = [6, 9, 12, 16, 20];
-    const numCount = counts[Math.min(gameLevel - 1, 4)];
-    const gridSize = Math.ceil(Math.sqrt(numCount));
-    const colors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#667eea', '#43E97B', '#FF9A9E'];
-    attentionSequence = [];
-    for (let i = 0; i < numCount; i++) attentionSequence.push({ color: colors[i % colors.length], number: i + 1 });
-    attentionSequence = attentionSequence.sort(() => Math.random() - 0.5);
-    attentionIndex = 0;
-    board.innerHTML = '<div style="background:white;border-radius:16px;padding:24px;max-width:320px;"><div style="font-size:14px;color:#666;margin-bottom:16px;">记住数字顺序，然后按顺序点击：</div><div id="attention-grid" style="display:grid;grid-template-columns:repeat(' + gridSize + ',1fr);gap:8px;margin-bottom:16px;">' + attentionSequence.map((item, i) => '<div id="att-item-' + i + '" style="aspect-ratio:1;background:' + item.color + ';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;color:white;opacity:0;transition:opacity 0.3s;cursor:pointer;" onclick="clickAttention(' + i + ')"></div>').join('') + '</div><button onclick="startAttentionSeq()" style="width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">开始记忆</button></div>';
-    gameScore = 0;
-    document.getElementById('game-score').textContent = '0';
 }
 
 async function startAudioSeq() {
