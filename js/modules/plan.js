@@ -86,7 +86,7 @@ window.getTaskAction = function(task) {
     if (title.indexOf('反思') >= 0 || title.indexOf('评估') >= 0 || title.indexOf('总结') >= 0 || title.indexOf('记录') >= 0 || title.indexOf('撰写') >= 0) return { type: 'module', id: 'notepad' };
     
     // 3. 按type映射默认游戏（标题匹配失败后的兜底）
-    if (type === 'attention') return { type: 'game', id: 'schulte' };
+    if (type === 'attention') return { type: 'game', id: 'attention' };
     if (type === 'memory') return { type: 'game', id: 'digit' };
     if (type === 'practice') return { type: 'game', id: null };
     
