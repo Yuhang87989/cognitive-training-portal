@@ -1,11 +1,243 @@
-// 版本: V226 - ES6 Module
+// 版本: V359 - DeepSeek网页版风格重构 + IndexedDB存储
 // AI对话模块 - DeepSeek
+// 重构：界面改为DeepSeek网页版风格，历史记录改用IndexedDB存储
 
-// V152修复: 图片识别功能改用视觉API，不再依赖Tesseract.js
-// V152修复: 支持DeepSeek视觉（如果可用）或硅基流动Qwen3-VL
-// V151-fix: callVisionAPI添加详细日志、图片格式处理、错误处理
-// V148-fix: toggleDeepSeekVoice添加微信浏览器检测
-// V147修复: 添加escapeHtml到window导出，确保全局可用
+// ============================================================
+// IndexedDB 数据库初始化
+// ============================================================
+const DB_NAME = 'cognitive_training_db';
+const DB_VERSION = 1;
+const STORE_NAME = 'deepseek_chats';
+let dbInstance = null;
+
+function initDeepSeekDB() {
+    return new Promise((resolve, reject) => {
+        if (dbInstance) {
+            resolve(dbInstance);
+            return;
+        }
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = () => {
+            console.error('[IndexedDB] 数据库打开失败');
+            reject(request.error);
+        };
+        
+        request.onsuccess = () => {
+            dbInstance = request.result;
+            console.log('[IndexedDB] 数据库连接成功');
+            resolve(dbInstance);
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                store.createIndex('title', 'title', { unique: false });
+                store.createIndex('createdAt', 'createdAt', { unique: false });
+                console.log('[IndexedDB] 对象存储创建成功');
+            }
+        };
+    });
+}
+
+// 保存一条聊天记录
+function saveChatToDB(chat) {
+    return new Promise((resolve, reject) => {
+        initDeepSeekDB().then(db => {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.put(chat);
+            
+            request.onsuccess = () => {
+                console.log('[IndexedDB] 保存聊天记录成功:', chat.id);
+                resolve();
+            };
+            request.onerror = () => {
+                console.error('[IndexedDB] 保存聊天记录失败');
+                reject(request.error);
+            };
+        }).catch(reject);
+    });
+}
+
+// 获取所有聊天列表（不含messages，只返回摘要）
+function getChatsFromDB() {
+    return new Promise((resolve, reject) => {
+        initDeepSeekDB().then(db => {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+            
+            request.onsuccess = () => {
+                const chats = (request.result || []).map(chat => ({
+                    id: chat.id,
+                    title: chat.title,
+                    time: chat.time,
+                    createdAt: chat.createdAt,
+                    messageCount: chat.messages ? chat.messages.length : 0
+                })).sort((a, b) => b.createdAt - a.createdAt);
+                resolve(chats);
+            };
+            request.onerror = () => {
+                console.error('[IndexedDB] 获取聊天列表失败');
+                reject(request.error);
+            };
+        }).catch(reject);
+    });
+}
+
+// 获取完整聊天记录（含messages）
+function getChatFromDB(id) {
+    return new Promise((resolve, reject) => {
+        initDeepSeekDB().then(db => {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.get(id);
+            
+            request.onsuccess = () => {
+                resolve(request.result);
+            };
+            request.onerror = () => {
+                console.error('[IndexedDB] 获取聊天记录失败');
+                reject(request.error);
+            };
+        }).catch(reject);
+    });
+}
+
+// 删除一条记录
+function deleteChatFromDB(id) {
+    return new Promise((resolve, reject) => {
+        initDeepSeekDB().then(db => {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.delete(id);
+            
+            request.onsuccess = () => {
+                console.log('[IndexedDB] 删除聊天记录成功:', id);
+                resolve();
+            };
+            request.onerror = () => {
+                console.error('[IndexedDB] 删除聊天记录失败');
+                reject(request.error);
+            };
+        }).catch(reject);
+    });
+}
+
+// 清空所有记录
+function clearAllChatsFromDB() {
+    return new Promise((resolve, reject) => {
+        initDeepSeekDB().then(db => {
+            const transaction = db.transaction([STORE_NAME], 'readwrite');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.clear();
+            
+            request.onsuccess = () => {
+                console.log('[IndexedDB] 清空所有聊天记录成功');
+                resolve();
+            };
+            request.onerror = () => {
+                console.error('[IndexedDB] 清空聊天记录失败');
+                reject(request.error);
+            };
+        }).catch(reject);
+    });
+}
+
+// 按标题搜索
+function searchChatsFromDB(keyword) {
+    return new Promise((resolve, reject) => {
+        if (!keyword) {
+            getChatsFromDB().then(resolve).catch(reject);
+            return;
+        }
+        initDeepSeekDB().then(db => {
+            const transaction = db.transaction([STORE_NAME], 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+            
+            request.onsuccess = () => {
+                const keywordLower = keyword.toLowerCase();
+                const results = (request.result || [])
+                    .filter(chat => (chat.title || '').toLowerCase().includes(keywordLower))
+                    .map(chat => ({
+                        id: chat.id,
+                        title: chat.title,
+                        time: chat.time,
+                        createdAt: chat.createdAt,
+                        messageCount: chat.messages ? chat.messages.length : 0
+                    }))
+                    .sort((a, b) => b.createdAt - a.createdAt);
+                resolve(results);
+            };
+            request.onerror = () => {
+                console.error('[IndexedDB] 搜索聊天记录失败');
+                reject(request.error);
+            };
+        }).catch(reject);
+    });
+}
+
+// 迁移localStorage中的数据到IndexedDB
+async function migrateLocalStorageToIndexedDB() {
+    try {
+        const localData = localStorage.getItem('ds_saved_chats');
+        if (!localData) {
+            console.log('[迁移] 无需迁移，无localStorage数据');
+            return;
+        }
+        
+        const chats = JSON.parse(localData);
+        if (!Array.isArray(chats) || chats.length === 0) {
+            console.log('[迁移] 无需迁移，数据为空');
+            return;
+        }
+        
+        console.log('[迁移] 开始迁移', chats.length, '条记录到IndexedDB');
+        
+        await initDeepSeekDB();
+        
+        for (const chat of chats) {
+            const chatData = {
+                id: chat._sessionId || ('legacy_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)),
+                title: chat.title || '迁移的对话',
+                time: chat.time || '',
+                createdAt: chat.createdAt || Date.now(),
+                messages: chat.messages || []
+            };
+            await saveChatToDB(chatData);
+        }
+        
+        // 迁移成功后清空localStorage
+        localStorage.removeItem('ds_saved_chats');
+        console.log('[迁移] 迁移完成，localStorage已清空');
+        window.showToast('历史记录已迁移到IndexedDB');
+    } catch (e) {
+        console.error('[迁移] 迁移失败:', e);
+    }
+}
+
+// 初始化时检测并迁移
+let migrationChecked = false;
+function checkAndMigrate() {
+    if (migrationChecked) return;
+    migrationChecked = true;
+    const localData = localStorage.getItem('ds_saved_chats');
+    if (localData) {
+        try {
+            const chats = JSON.parse(localData);
+            if (chats && chats.length > 0) {
+                migrateLocalStorageToIndexedDB();
+            }
+        } catch (e) {}
+    }
+}
+
+// ============================================================
+// 核心函数
+// ============================================================
 
 function escapeHtml(text) {
     if (typeof text !== 'string') return text;
@@ -19,18 +251,55 @@ var currentDeepSeekImage = null;
 function clearDeepSeekImage() { currentDeepSeekImage = null; }
 window.clearDeepSeekImage = clearDeepSeekImage;
 
-// === 缺失函数定义 ===
+// 增强版formatAIResponse - 代码块加复制按钮
 function formatAIResponse(text) {
     if (!text) return '';
     var html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    html = html.replace(/```([\s\S]*?)```/g, '<pre style="background:#f5f5f5;padding:8px;border-radius:4px;overflow-x:auto;font-size:12px;">$1</pre>');
-    html = html.replace(/`([^`]+)`/g, '<code style="background:#f0f0f0;padding:1px 4px;border-radius:3px;font-size:12px;">$1</code>');
+    
+    // 代码块处理（添加复制按钮）
+    html = html.replace(/```(\w*)?\n?([\s\S]*?)```/g, function(match, lang, code) {
+        const codeId = 'code_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        const escapedCode = code.replace(/`/g, '&#96;');
+        return '<div class="code-block-wrapper"><pre class="code-block" id="' + codeId + '"><code class="code-content">' + escapedCode + '</code></pre><button class="copy-code-btn" onclick="copyCodeBlock(\'' + codeId + '\')">复制</button></div>';
+    });
+    
+    // 行内代码
+    html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+    
+    // 粗体
     html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    
+    // 斜体
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    
+    // 数学公式（保持原样，不处理）
+    html = html.replace(/\$\$([\s\S]*?)\$\$/g, '<div class="math-block">$$$1$$</div>');
+    html = html.replace(/\$([^$]+)\$/g, '<span class="math-inline">$$$1$</span>');
+    
+    // 换行
     html = html.replace(/\n/g, '<br>');
+    
     return html;
 }
-window.formatAIResponse = formatAIResponse;
 
+// 复制代码块函数
+function copyCodeBlock(codeId) {
+    const pre = document.getElementById(codeId);
+    if (!pre) return;
+    const code = pre.querySelector('.code-content');
+    if (!code) return;
+    const text = code.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        window.showToast('已复制到剪贴板');
+    }).catch(() => {
+        window.showToast('复制失败');
+    });
+}
+
+window.formatAIResponse = formatAIResponse;
+window.copyCodeBlock = copyCodeBlock;
+
+// 使用统计
 function recordDeepSeekCall(tokens) {
     try {
         var today = new Date().toISOString().split('T')[0];
@@ -43,37 +312,23 @@ function recordDeepSeekCall(tokens) {
 }
 window.recordDeepSeekCall = recordDeepSeekCall;
 
-// 记录详细的DeepSeek使用统计
 function recordDetailedUsage(inputTokens, outputTokens, questionSummary, model) {
     if (window.UsageStatsModule) {
         window.UsageStatsModule.recordUsage(inputTokens, outputTokens, questionSummary, model);
     }
-    // 同时保持原有统计
     recordDeepSeekCall((inputTokens || 0) + (outputTokens || 0));
 }
 window.recordDetailedUsage = recordDetailedUsage;
 
-
-var deepseekConversationHistory = (function() {
-    try {
-        var saved = localStorage.getItem('cognitive_training_ds_conversation');
-        return saved ? JSON.parse(saved) : [];
-    } catch(e) { return []; }
-})();
+// ============================================================
+// 会话状态管理
+// ============================================================
+var deepseekConversationHistory = [];
+var currentChatId = null;
 
 function saveDeepSeekConversation() {
-    try {
-        var toSave = deepseekConversationHistory;
-        if (toSave.length > 40) { toSave = toSave.slice(toSave.length - 40); deepseekConversationHistory = toSave; }
-        localStorage.setItem('cognitive_training_ds_conversation', JSON.stringify(toSave));
-        // 自动保存到历史列表
-        autoSaveDeepSeekHistory();
-    } catch(e) { console.error('Save conversation error:', e); }
-}
-
-function autoSaveDeepSeekHistory() {
-    if (!deepseekConversationHistory || deepseekConversationHistory.length < 2) return;
-    var saved = getSavedDeepSeekChats();
+    if (!currentChatId || deepseekConversationHistory.length === 0) return;
+    
     var title = '';
     for (var i = 0; i < deepseekConversationHistory.length; i++) {
         if (deepseekConversationHistory[i].role === 'user') {
@@ -82,29 +337,19 @@ function autoSaveDeepSeekHistory() {
             break;
         }
     }
+    
     var now = new Date();
     var timeStr = (now.getMonth()+1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
-    // 更新最后一条或新建
-    var lastSaved = saved.length > 0 ? saved[saved.length - 1] : null;
-    if (lastSaved && lastSaved._sessionId === window._dsSessionId) {
-        // 更新当前会话
-        lastSaved.title = title.substring(0, 30);
-        lastSaved.time = timeStr;
-        lastSaved.count = deepseekConversationHistory.length;
-        lastSaved.messages = deepseekConversationHistory.slice();
-    } else {
-        // 新建会话
-        if (!window._dsSessionId) window._dsSessionId = Date.now().toString();
-        saved.push({
-            title: title.substring(0, 30),
-            time: timeStr,
-            count: deepseekConversationHistory.length,
-            messages: deepseekConversationHistory.slice(),
-            _sessionId: window._dsSessionId
-        });
-    }
-    if (saved.length > 1000) saved = saved.slice(saved.length - 1000);
-    try { localStorage.setItem('ds_saved_chats', JSON.stringify(saved)); } catch(e) {}
+    
+    var chatData = {
+        id: currentChatId,
+        title: title.substring(0, 50) || '新对话',
+        time: timeStr,
+        createdAt: Date.now(),
+        messages: deepseekConversationHistory.slice()
+    };
+    
+    saveChatToDB(chatData).catch(e => console.error('[保存] 保存失败:', e));
 }
 
 function clearDeepSeekConversation() {
@@ -122,7 +367,7 @@ function supportsSpeechRecognition() {
 }
 
 // ============================================================
-// 视觉API调用函数 - V152核心修改
+// 视觉API调用函数（保持不变）
 // ============================================================
 
 async function callSiliconFlowVisionAPI(imageDataUrl, question) {
@@ -193,602 +438,833 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
                 return {success: false, content: '', message: 'unsupported', unsupported: true};
             }
             if (response.status === 402) {
-                return {success: false, type: 'balance', message: 'API账户余额不足或请求失败'};
+                return {success: false, type: 'balance', message: '余额不足'};
             }
-            throw new Error(errorData.error && errorData.error.message || 'API调用失败');
+            var errMsg = errorData.error ? errorData.error.message : 'API请求失败';
+            return {success: false, content: '', message: errMsg};
         }
         var data = await response.json();
-        var content = data.choices[0].message.content;
-        if (data.usage) {
-            // 提取问题摘要
-            var questionSummary = '';
-            if (messages && messages.length > 0) {
-                var lastUserMsg = messages.filter(function(m) { return m.role === 'user'; }).pop();
-                if (lastUserMsg) {
-                    if (typeof lastUserMsg.content === 'string') {
-                        questionSummary = lastUserMsg.content;
-                    } else if (Array.isArray(lastUserMsg.content)) {
-                        var textPart = lastUserMsg.content.find(function(p) { return p.type === 'text'; });
-                        if (textPart) questionSummary = textPart.text;
-                    }
-                }
-            }
-            recordDetailedUsage(
-                data.usage.prompt_tokens || data.usage.input_tokens || 0,
-                data.usage.completion_tokens || data.usage.output_tokens || 0,
-                questionSummary,
-                DEEPSEEK_MODEL
-            );
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+            var usage = data.usage || {};
+            recordDetailedUsage(usage.prompt_tokens || 0, usage.completion_tokens || 0, '', model);
+            return {success: true, content: data.choices[0].message.content || ''};
         }
-        return {success: true, content: content};
-    } catch (error) {
-        if (error.message === 'unsupported') {
-            return {success: false, content: '', message: 'unsupported', unsupported: true};
-        }
-        return {success: false, content: '', message: error.message};
+        return {success: false, content: '', message: '响应格式异常'};
+    } catch(e) {
+        return {success: false, content: '', message: e.message};
     }
 }
 
 async function callVisionAPI(imageDataUrl, question) {
-    console.log('[VisionAPI] 开始处理图片请求');
-    if (!imageDataUrl) return {success: false, content: '', message: '图片数据为空'};
-    if (!imageDataUrl.startsWith('data:')) return {success: false, content: '', message: '图片格式不正确'};
-    
-    if (VISION_SILICONFLOW_KEY || DEEPSEEK_API_KEY) {
-        var result = await callSiliconFlowVisionAPI(imageDataUrl, question);
-        if (result.success) { window.CURRENT_VISION_API = 'siliconflow'; return result; }
-        if (result.unsupported) console.log('[VisionAPI] 硅基流动不支持视觉，降级到DeepSeek');
+    var r1 = await callDeepSeekVisionAPI(imageDataUrl, question);
+    if (r1.success) return r1;
+    if (r1.unsupported) {
+        var r2 = await callSiliconFlowVisionAPI(imageDataUrl, question);
+        if (r2.success) return r2;
+        if (r2.unsupported) return {success: false, message: '当前API均不支持图片识别'};
     }
-    
-    if (VISION_DEEPSEEK_ENABLED) {
-        var deepseekResult = await callDeepSeekVisionAPI(imageDataUrl, question);
-        if (deepseekResult.success) { window.CURRENT_VISION_API = 'deepseek'; return deepseekResult; }
-    }
-    
-    return {success: false, content: '', message: '图片识别服务暂不可用，请手动输入文字描述'};
+    return r1;
 }
 
 async function ocrExtractText(imageDataUrl, progressCallback) {
-    if (progressCallback) progressCallback('正在用AI识别图片文字...', 30);
-    var messages = [
-        { role: 'system', content: '你是一个专业的OCR文字识别助手。请精准提取图片中的所有文字内容，保持原始格式和排版。' },
-        { role: 'user', content: [
-            { type: 'image_url', image_url: { url: imageDataUrl } },
-            { type: 'text', text: '请提取这张图片中的所有文字内容。' }
-        ]}
-    ];
-    if (progressCallback) progressCallback('AI正在识别文字...', 60);
-    
-    if (VISION_SILICONFLOW_KEY || DEEPSEEK_API_KEY) {
+    console.log('[OCR] 使用视觉API提取文字');
+    try {
+        var messages = [{ role: 'user', content: [
+            { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
+            { type: 'text', text: '请识别图片中的所有文字，完整输出。' }
+        ]}];
+        
         var result = await callVisionAPIEndpoint(messages, 0.1, 'siliconflow');
-        if (result.success) { if (progressCallback) progressCallback('识别完成', 100); return result.content; }
+        if (result.success) {
+            return result.content;
+        }
+        return '[图片文字识别失败]';
+    } catch(e) {
+        return '[图片处理异常]';
     }
-    if (VISION_DEEPSEEK_ENABLED) {
-        var result = await callVisionAPIEndpoint(messages, 0.1, 'deepseek');
-        if (result.success) { if (progressCallback) progressCallback('识别完成', 100); return result.content; }
-    }
-    if (progressCallback) progressCallback('识别失败', 0);
-    return null;
 }
+
+// ============================================================
+// DeepSeek API 调用
+// ============================================================
 
 async function callDeepSeekAPI(messages, temperature) {
-    try {
-        var response = await fetch(DEEPSEEK_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
-            body: JSON.stringify({ model: DEEPSEEK_MODEL, messages: messages, temperature: temperature || 0.7, max_tokens: 2000 })
-        });
-        if (!response.ok) {
-            var errorData = await response.json().catch(function() { return {}; });
-            if (response.status === 402) {
-                return { error: true, type: 'balance', message: 'DeepSeek账户余额不足，请先充值后再使用AI功能。前往: https://platform.deepseek.com' };
-            }
-            throw new Error(errorData.error && errorData.error.message || 'API调用失败');
-        }
-        var data = await response.json();
-        var content = data.choices[0].message.content;
-        if (data.usage) {
-            // 提取问题摘要
-            var questionSummary = '';
-            if (messages && messages.length > 0) {
-                var lastUserMsg = messages.filter(function(m) { return m.role === 'user'; }).pop();
-                if (lastUserMsg) {
-                    if (typeof lastUserMsg.content === 'string') {
-                        questionSummary = lastUserMsg.content;
-                    } else if (Array.isArray(lastUserMsg.content)) {
-                        var textPart = lastUserMsg.content.find(function(p) { return p.type === 'text'; });
-                        if (textPart) questionSummary = textPart.text;
-                    }
-                }
-            }
-            recordDetailedUsage(
-                data.usage.prompt_tokens || data.usage.input_tokens || 0,
-                data.usage.completion_tokens || data.usage.output_tokens || 0,
-                questionSummary,
-                DEEPSEEK_MODEL
-            );
-        }
-        return {success: true, content: content};
-    } catch (error) {
-        return {error: true, type: 'network', message: error.message};
+    var apiKey = (typeof DEEPSEEK_API_KEY !== 'undefined' && DEEPSEEK_API_KEY) ? DEEPSEEK_API_KEY : 
+                 localStorage.getItem('deepseek_api_key') || '';
+    if (!apiKey) {
+        var user = window.getCurrentUserData();
+        apiKey = user && user.deepseekApiKey ? user.deepseekApiKey : '';
     }
-}
-
-async function callVisionDeepSeekAPI(messages, temperature) {
-    var hasVisionMessage = messages.some(function(m) { return Array.isArray(m.content); });
-    if (hasVisionMessage) {
-        // 尝试硅基流动
-        if (VISION_SILICONFLOW_KEY) {
-            try {
-                var sfResult = await callSiliconFlowAPI(messages, temperature);
-                if (sfResult.success) { window.CURRENT_VISION_API = 'siliconflow'; return sfResult; }
-                if (sfResult.type === 'balance') {
-                    // 余额不足，尝试DeepSeek
-                } else if (!sfResult.unsupported) {
-                    return sfResult;
-                }
-            } catch(e) { console.log('SiliconFlow error:', e); }
-        }
-        // 尝试DeepSeek视觉
-        if (VISION_DEEPSEEK_ENABLED) {
-            try {
-                var dsResult = await callDeepSeekVisionEndpoint(messages, temperature);
-                if (dsResult.success) { window.CURRENT_VISION_API = 'deepseek'; return dsResult; }
-            } catch(e) { console.log('DeepSeek vision error:', e); }
-        }
-        // 所有视觉API都失败 - 用文字模式回复
-        return {success: true, content: '⚠️ 图片识别服务暂不可用（硅基流动余额不足）。\n\n目前支持的功能：\n✅ 文字对话\n✅ 语音输入\n❌ 图片识别（需充值硅基流动）\n\n如需使用图片功能，请点击上方"充值"按钮。'};
+    if (!apiKey) return {success: false, message: '请先配置DeepSeek API Key'};
+    
+    var apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
+                 'https://api.deepseek.com/chat/completions';
+    var model = (typeof DEEPSEEK_MODEL !== 'undefined' && DEEPSEEK_MODEL) ? DEEPSEEK_MODEL : 
+                'deepseek-chat';
+    
+    var systemPrompt = '';
+    if (typeof window.deepseekMode !== 'undefined') {
+        systemPrompt = window.deepseekMode === 'deepthink' ? 
+            '你是一个深度思考助手。请先进行详细分析推理，再给出最终答案。用&lt;think&gt;标签包裹思考过程。' : 
+            '你是一个友好的AI助手，请简洁明了地回答问题。';
     }
-    return await callDeepSeekAPI(messages, temperature);
-}
-
-async function callSiliconFlowAPI(messages, temperature) {
-    var apiKey = VISION_SILICONFLOW_KEY;
-    var apiUrl = VISION_SILICONFLOW_URL || 'https://api.siliconflow.cn/v1/chat/completions';
-    var model = VISION_SILICONFLOW_MODEL || 'Qwen/Qwen3-VL-30B-A3B-Instruct';
-    if (!apiKey) return {success: false, error: true, message: '未配置API Key'};
+    
+    var fullMessages = [];
+    if (systemPrompt) fullMessages.push({ role: 'system', content: systemPrompt });
+    fullMessages = fullMessages.concat(messages);
+    
     try {
         var response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
-            body: JSON.stringify({ model: model, messages: messages, temperature: temperature || 0.7, max_tokens: 2000 })
+            body: JSON.stringify({ model: model, messages: fullMessages, temperature: temperature || 0.7, max_tokens: 4096 })
         });
+        
         if (!response.ok) {
-            var errorData = await response.json().catch(function() { return {}; });
-            if (errorData.error && errorData.error.message) {
-                if (errorData.error.message.includes('balance') || errorData.error.message.includes('insufficient')) {
-                    return {success: false, error: true, type: 'balance', message: '硅基流动余额不足'};
-                }
-                if (errorData.error.message.includes('image_url') || errorData.error.message.includes('unsupported') || errorData.error.message.includes('model')) {
-                    return {success: false, unsupported: true, message: errorData.error.message};
-                }
+            if (response.status === 402) {
+                return {success: false, type: 'balance', message: '余额不足，请前往充值'};
             }
-            throw new Error(errorData.error && errorData.error.message || 'API调用失败');
+            var errorData = await response.json().catch(function() { return {}; });
+            var errMsg = errorData.error ? errorData.error.message : '请求失败(' + response.status + ')';
+            return {success: false, message: errMsg};
         }
+        
         var data = await response.json();
-        return {success: true, content: data.choices[0].message.content};
-    } catch (error) {
-        if (error.message.includes('unsupported') || error.message.includes('model')) {
-            return {success: false, unsupported: true, message: error.message};
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+            var usage = data.usage || {};
+            recordDetailedUsage(usage.prompt_tokens || 0, usage.completion_tokens || 0, messages[messages.length-1]?.content?.substring(0,50) || '', model);
+            return {success: true, content: data.choices[0].message.content || ''};
         }
-        return {success: false, error: true, message: error.message};
+        return {success: false, message: '响应格式异常'};
+    } catch(e) {
+        return {success: false, message: e.message};
+    }
+}
+
+async function callVisionDeepSeekAPI(messages, temperature) {
+    return callDeepSeekAPI(messages, temperature);
+}
+
+async function callSiliconFlowAPI(messages, temperature) {
+    var apiKey = (typeof SILICONFLOW_API_KEY !== 'undefined' && SILICONFLOW_API_KEY) ? SILICONFLOW_API_KEY :
+                 localStorage.getItem('siliconflow_api_key') || '';
+    if (!apiKey) return {success: false, message: '请先配置SiliconFlow API Key'};
+    
+    var apiUrl = (typeof SILICONFLOW_API_URL !== 'undefined' && SILICONFLOW_API_URL) ? SILICONFLOW_API_URL :
+                 'https://api.siliconflow.cn/v1/chat/completions';
+    var model = (typeof SILICONFLOW_MODEL !== 'undefined' && SILICONFLOW_MODEL) ? SILICONFLOW_MODEL :
+                 'deepseek-ai/DeepSeek-V3';
+    
+    try {
+        var response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+            body: JSON.stringify({ model: model, messages: messages, temperature: temperature || 0.7 })
+        });
+        
+        if (!response.ok) {
+            if (response.status === 402) {
+                return {success: false, type: 'balance', message: '余额不足'};
+            }
+            var errorData = await response.json().catch(function() { return {}; });
+            return {success: false, message: errorData.error?.message || '请求失败'};
+        }
+        
+        var data = await response.json();
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+            return {success: true, content: data.choices[0].message.content || ''};
+        }
+        return {success: false, message: '响应格式异常'};
+    } catch(e) {
+        return {success: false, message: e.message};
     }
 }
 
 async function callDeepSeekVisionEndpoint(messages, temperature) {
-    try {
-        var response = await fetch(DEEPSEEK_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
-            body: JSON.stringify({ model: DEEPSEEK_MODEL, messages: messages, temperature: temperature || 0.7, max_tokens: 2000 })
-        });
-        if (!response.ok) {
-            var errorData = await response.json().catch(function() { return {}; });
-            if (errorData.error && errorData.error.message && 
-                (errorData.error.message.includes('image_url') || errorData.error.message.includes('unknown variant'))) {
-                return {success: false, unsupported: true, message: errorData.error.message};
-            }
-            throw new Error(errorData.error && errorData.error.message || 'API调用失败');
-        }
-        var data = await response.json();
-        return {success: true, content: data.choices[0].message.content};
-    } catch (error) {
-        if (error.message.includes('image_url') || error.message.includes('unknown variant')) {
-            return {success: false, unsupported: true, message: error.message};
-        }
-        return {success: false, error: true, message: error.message};
-    }
+    return callDeepSeekAPI(messages, temperature);
 }
 
+// 语音输入提示
 function tipKeyboardVoice() {
-    var input = document.getElementById('deepseek-input');
-    if (input) { input.focus(); input.setAttribute('placeholder', '点击输入框后，用键盘🎤语音输入...'); }
-    window.showToast('🎤 请点击输入框，使用键盘上的语音按钮说话', 4000);
+    if (isWeChatBrowser()) {
+        window.showToast('请使用键盘输入');
+        return;
+    }
+    if (!supportsSpeechRecognition()) {
+        window.showToast('当前浏览器不支持语音输入');
+        return;
+    }
+    startDeepSeekVoice();
 }
-window.tipKeyboardVoice = tipKeyboardVoice;
 
+// 触发图片上传
 function triggerDeepSeekImage() {
     var input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = function(e) {
+    input.onchange = async function(e) {
         var file = e.target.files[0];
         if (!file) return;
         var reader = new FileReader();
-        reader.onload = function(ev) {
-            var base64 = ev.target.result;
-            var messagesEl = document.getElementById('deepseek-messages');
-            if (messagesEl) {
-                messagesEl.innerHTML += '<div class="chat-msg user"><div class="chat-avatar">👤</div><div class="chat-bubble"><img src="' + base64 + '" style="max-width:150px;max-height:100px;border-radius:8px;margin-bottom:4px;display:block;"/><div style="font-size:11px;color:#999;">🔍 正在识别图片文字...</div></div></div>';
-                messagesEl.scrollTop = messagesEl.scrollHeight;
+        reader.onload = async function(evt) {
+            var base64 = evt.target.result;
+            var ocrText = await ocrExtractText(base64);
+            var inputEl = document.getElementById('ds-input');
+            if (inputEl && ocrText && ocrText.length > 10 && ocrText.length < 5000) {
+                inputEl.value = ocrText;
+                inputEl.focus();
+            } else {
+                window.showToast('已选择图片，可输入问题后发送');
             }
-            // 用Tesseract.js本地OCR识别文字
-            ocrImageAndSend(base64);
+            currentDeepSeekImage = base64;
+            showImagePreview(base64);
         };
         reader.readAsDataURL(file);
     };
     input.click();
 }
-window.triggerDeepSeekImage = triggerDeepSeekImage;
 
+function showImagePreview(base64) {
+    var preview = document.getElementById('ds-image-preview');
+    if (preview) {
+        preview.innerHTML = '<img src="' + base64 + '" style="max-width:80px;max-height:80px;border-radius:8px;">';
+    }
+}
+
+// 图片识别发送
 async function ocrImageAndSend(base64) {
-    var messagesEl = document.getElementById('deepseek-messages');
-    var sendBtn = document.getElementById('deepseek-send-btn');
-    
-    try {
-        var ocrText = '';
-        // V224: 按需加载Tesseract.js
-        await new Promise(function(resolve) {
-            if (typeof loadTesseract === 'function') {
-                loadTesseract(resolve);
-            } else {
-                resolve();
-            }
-        });
-        
-        // 尝试用Tesseract.js识别
-        if (typeof Tesseract !== 'undefined') {
-            var result = await Tesseract.recognize(base64, 'chi_sim+eng', {
-                logger: function(m) { if(m.status === 'recognizing text') { /* 进度 */ } }
-            });
-            ocrText = result.data.text.trim();
-        }
-        
-        if (!ocrText) {
-            // OCR没识别到文字，直接把图片发给AI描述
-            if (messagesEl) {
-                // 更新用户消息
-                var lastBubble = messagesEl.querySelectorAll('.chat-bubble');
-                if (lastBubble.length > 0) {
-                    var last = lastBubble[lastBubble.length - 1];
-                    var imgEl = last.querySelector('img');
-                    last.innerHTML = (imgEl ? '<img src="' + imgEl.src + '" style="max-width:150px;max-height:100px;border-radius:8px;margin-bottom:4px;display:block;"/>' : '') + '<div style="font-size:11px;color:#f90;">⚠️ 未识别到文字，图片可能是纯图像</div>';
-                }
-            }
-            return;
-        }
-        
-        // OCR成功 - 更新用户消息显示识别结果
-        if (messagesEl) {
-            var lastBubble = messagesEl.querySelectorAll('.chat-bubble');
-            if (lastBubble.length > 0) {
-                var last = lastBubble[lastBubble.length - 1];
-                var imgEl = last.querySelector('img');
-                last.innerHTML = (imgEl ? '<img src="' + imgEl.src + '" style="max-width:150px;max-height:100px;border-radius:8px;margin-bottom:4px;display:block;"/>' : '') + '<div style="font-size:11px;color:#43a047;">✅ 识别到文字，正在分析...</div><div style="font-size:12px;color:#333;margin-top:4px;max-height:80px;overflow-y:auto;">' + ocrText.substring(0, 500) + '</div>';
-            }
-        }
-        
-        // 把识别的文字发给DeepSeek分析（只发纯文字消息，过滤掉历史中的图片消息）
-        deepseekConversationHistory.push({role: 'user', content: '我上传了一张图片，识别到的文字内容如下：\n' + ocrText + '\n请帮我分析这些内容。'});
+    window.showToast('正在识别图片...');
+    var question = document.getElementById('ds-input')?.value || '请分析这张图片';
+    var result = await callVisionAPI(base64, question);
+    if (result.success) {
+        deepseekConversationHistory.push({ role: 'user', content: [
+            { type: 'image_url', image_url: { url: base64 } },
+            { type: 'text', text: question }
+        ]});
+        deepseekConversationHistory.push({ role: 'assistant', content: result.content });
+        renderMessages();
         saveDeepSeekConversation();
-        
-        // 添加AI思考中
-        messagesEl.innerHTML += '<div class="chat-msg"><div class="chat-avatar">🤖</div><div class="chat-bubble ai-loading">思考中<span class="loading-dots"><span></span><span></span><span></span></span></div></div>';
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-        
-        // 过滤历史消息，只保留纯文字（DeepSeek chat不支持图片格式）
-        var textOnlyHistory = deepseekConversationHistory.map(function(m) {
-            if (Array.isArray(m.content)) {
-                var textParts = m.content.filter(function(c) { return c.type === 'text'; });
-                if (textParts.length > 0) {
-                    return {role: m.role, content: textParts.map(function(c) { return c.text; }).join('\n')};
-                }
-                return {role: m.role, content: '[图片]'};
-            }
-            return m;
-        });
-        var dsResult = await callDeepSeekAPI(textOnlyHistory);
-        
-        var bubbles = messagesEl.querySelectorAll('.chat-bubble');
-        if (dsResult.error) {
-            if (bubbles.length > 0) {
-                bubbles[bubbles.length-1].classList.remove('ai-loading');
-                bubbles[bubbles.length-1].innerHTML = '❌ ' + (dsResult.message || '分析失败');
-            }
-        } else {
-            if (bubbles.length > 0) {
-                bubbles[bubbles.length-1].classList.remove('ai-loading');
-                bubbles[bubbles.length-1].innerHTML = formatAIResponse(dsResult.content) + '<button onclick="window.speakText(this.parentElement.textContent)" style="margin-top:8px;padding:4px 8px;background:#f0f0f0;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button>';
-            }
-            deepseekConversationHistory.push({role: 'assistant', content: dsResult.content});
-            saveDeepSeekConversation();
-            recordDeepSeekCall(Math.ceil(dsResult.content.length / 4));
-            speakText(dsResult.content);
-        }
-    } catch(e) {
-        console.error('OCR error:', e);
-        if (messagesEl) {
-            var lastBubble = messagesEl.querySelectorAll('.chat-bubble');
-            if (lastBubble.length > 0) {
-                lastBubble[lastBubble.length-1].innerHTML += '<div style="font-size:11px;color:#ff6b6b;">识别失败: ' + e.message + '</div>';
-            }
-        }
-    }
-}
-window.ocrImageAndSend = ocrImageAndSend;
-
-
-
-// V195: 对话模式切换
-window.deepseekMode = localStorage.getItem('deepseek_mode') || 'fast'; // 'fast' | 'expert'
-
-window.toggleDeepseekMode = function(mode) {
-    window.deepseekMode = mode;
-    localStorage.setItem('deepseek_mode', mode);
-    document.querySelectorAll('.ds-mode-btn').forEach(btn => {
-        btn.style.background = btn.dataset.mode === mode ? '#667eea' : '#f5f5f5';
-        btn.style.color = btn.dataset.mode === mode ? 'white' : '#666';
-    });
-    window.showToast(mode === 'fast' ? '🚀 快速模式：省token、响应快' : '💎 专家模式：完整上下文、回答详细');
-};
-
-function getContextForMode() {
-    const history = deepseekConversationHistory || [];
-    if (window.deepseekMode === 'fast') {
-        // 快速模式：只带最近5条 + 简短提示
-        return history.slice(-5);
     } else {
-        // 专家模式：带最近20条
-        return history.slice(-20);
+        window.showToast(result.message || '图片识别失败');
     }
+    clearDeepSeekImage();
+    document.getElementById('ds-image-preview').innerHTML = '';
 }
+
+// 模式选择
+function getContextForMode() {
+    return '';
+}
+
+// ============================================================
+// 核心：发送消息到DeepSeek
+// ============================================================
 
 async function sendToDeepSeek() {
-    const input = document.getElementById('deepseek-input');
-    if (!input) { return; }
-    const msg = input.value.trim();
-    if (!msg && !currentDeepSeekImage) { window.showToast('请输入问题或上传图片'); return; }
-    const messagesEl = document.getElementById('deepseek-messages');
-    if (!messagesEl) return;
-    stopTTSSpeech();
-    const sendBtn = document.querySelector('.chat-send') || document.querySelector('#deepseek-send-btn');
-    if (input) input.disabled = true;
-    if (sendBtn) { sendBtn.disabled = true; sendBtn.style.opacity = '0.6'; sendBtn.style.cursor = 'not-allowed'; }
+    var inputEl = document.getElementById('ds-input');
+    if (!inputEl) return;
     
-    let userMsgHtml = '<div class="chat-msg user"><div class="chat-avatar">👤</div><div class="chat-bubble">';
-    if (currentDeepSeekImage) userMsgHtml += '<img src="' + currentDeepSeekImage + '" style="max-width:150px;max-height:100px;border-radius:8px;margin-bottom:8px;display:block;"/>';
-    if (msg) userMsgHtml += escapeHtml(msg);
-    userMsgHtml += '</div></div>';
-    messagesEl.innerHTML += userMsgHtml;
-    input.value = '';
-    messagesEl.innerHTML += '<div class="chat-msg"><div class="chat-avatar">🤖</div><div class="chat-bubble ai-loading">思考中<span class="loading-dots"><span></span><span></span><span></span></span></div></div>';
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+    var userMessage = inputEl.value.trim();
+    var hasImage = currentDeepSeekImage !== null;
     
-    const hasImage = !!currentDeepSeekImage;
-    const imageDataUrl = currentDeepSeekImage;
-    
-    if (hasImage) {
-        var userContent = [{ type: 'image_url', image_url: { url: imageDataUrl } }];
-        if (msg) { userContent.push({ type: 'text', text: msg }); }
-        else { userContent.push({ type: 'text', text: '请分析这张图片' }); }
-        deepseekConversationHistory.push({role: 'user', content: userContent});
-    } else {
-        deepseekConversationHistory.push({role: 'user', content: msg});
+    if (!userMessage && !hasImage) {
+        window.showToast('请输入内容');
+        return;
     }
     
+    // 首次对话创建新会话
+    if (!currentChatId) {
+        currentChatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // 构建用户消息
+    var userContent;
+    if (hasImage) {
+        userContent = [
+            { type: 'text', text: userMessage || '请分析这张图片' }
+        ];
+        if (currentDeepSeekImage) {
+            userContent.unshift({ type: 'image_url', image_url: { url: currentDeepSeekImage } });
+        }
+    } else {
+        userContent = userMessage;
+    }
+    
+    // 添加用户消息
+    deepseekConversationHistory.push({ role: 'user', content: userContent });
+    
+    // 清空输入
+    inputEl.value = '';
     clearDeepSeekImage();
+    document.getElementById('ds-image-preview').innerHTML = '';
+    
+    // 渲染用户消息
+    renderMessages();
+    
+    // 显示AI思考状态
+    showThinkingIndicator();
+    
+    // 构建API消息
+    var apiMessages = deepseekConversationHistory.map(function(m) {
+        return { role: m.role, content: m.content };
+    });
     
     try {
-        const contextToSend = getContextForMode();
-        const result = await callVisionDeepSeekAPI(contextToSend);
-        const bubbles = messagesEl.querySelectorAll('.chat-bubble');
-        if (input) { input.disabled = false; input.focus(); }
-        if (sendBtn) { sendBtn.disabled = false; sendBtn.style.opacity = '1'; sendBtn.style.cursor = 'pointer'; }
+        var result;
+        if (hasImage && currentDeepSeekImage) {
+            result = await callVisionAPI(currentDeepSeekImage, userMessage || '请分析这张图片');
+        } else {
+            result = await callDeepSeekAPI(apiMessages, 0.7);
+        }
         
-        if (result.error) {
-            if (bubbles.length > 0) {
-                if (result.type === 'vision') {
-                    bubbles[bubbles.length - 1].innerHTML = '⚠️ ' + result.message + '<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:6px;cursor:pointer;">💳 充值硅基流动</button>';
-                } else if (result.type === 'balance') {
-                    bubbles[bubbles.length - 1].innerHTML = '⚠️ ' + result.message + '<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:6px;cursor:pointer;">💳 充值</button>';
-                } else {
-                    bubbles[bubbles.length - 1].innerHTML = '❌ 抱歉，' + result.message;
-                }
+        hideThinkingIndicator();
+        
+        if (result.success) {
+            // 处理思考标签
+            var content = result.content;
+            var thinkMatch = content.match(/<think>([\s\S]*?)<\/think>/);
+            var thinking = thinkMatch ? thinkMatch[1].trim() : '';
+            var finalContent = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+            
+            // 添加AI响应
+            deepseekConversationHistory.push({ role: 'assistant', content: finalContent });
+            
+            // 渲染消息
+            renderMessages();
+            
+            // 显示思考过程
+            if (thinking && window.deepseekMode === 'deepthink') {
+                showThinkingContent(thinking);
             }
         } else {
-            const responseContent = result.content;
-            if (bubbles.length > 0) {
-                bubbles[bubbles.length - 1].innerHTML = formatAIResponse(responseContent) + 
-                    '<button onclick="window.speakText(this.parentElement.querySelector(\'.ai-text\').textContent || this.parentElement.textContent)" style="margin-top:8px;padding:4px 8px;background:#f0f0f0;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button>';
+            if (result.type === 'balance') {
+                deepseekConversationHistory.push({ role: 'assistant', content: '⚠️ ' + result.message });
+                renderMessages();
+                setTimeout(function() { showAPIRechargeModal(); }, 1000);
+            } else {
+                deepseekConversationHistory.push({ role: 'assistant', content: '❌ ' + (result.message || '请求失败') });
+                renderMessages();
             }
-            deepseekConversationHistory.push({role: 'assistant', content: responseContent});
-            saveDeepSeekConversation();
-            recordDeepSeekCall(Math.ceil(responseContent.length / 4));
-            const dsUser = window.getCurrentUserData();
-            if (dsUser) { dsUser.aiChatCount = (dsUser.aiChatCount || 0) + 1; saveUserData(dsUser); }
-            speakText(responseContent);
         }
-    } catch (error) {
-        if (input) { input.disabled = false; input.focus(); }
-        if (sendBtn) { sendBtn.disabled = false; sendBtn.style.opacity = '1'; sendBtn.style.cursor = 'pointer'; }
-        const bubbles = messagesEl.querySelectorAll('.chat-bubble');
-        if (bubbles.length > 0) bubbles[bubbles.length - 1].innerHTML = '❌ 发生错误：' + escapeHtml(error.message);
-    } finally {
-        var finalInput = document.getElementById('deepseek-input');
-        var finalSendBtn = document.querySelector('.chat-send') || document.querySelector('#deepseek-send-btn');
-        if (finalInput) finalInput.disabled = false;
-        if (finalSendBtn) { finalSendBtn.disabled = false; finalSendBtn.style.opacity = '1'; finalSendBtn.style.cursor = 'pointer'; }
+    } catch(e) {
+        hideThinkingIndicator();
+        deepseekConversationHistory.push({ role: 'assistant', content: '❌ 发生错误: ' + e.message });
+        renderMessages();
     }
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    // 保存会话
+    saveDeepSeekConversation();
+    
+    // 滚动到底部
+    scrollToBottom();
 }
 window.sendToDeepSeek = sendToDeepSeek;
-async function analyzeTopicWithAI(topicId) {
-    // 占位函数 - 话题AI分析
-    window.showToast('AI分析功能开发中');
-}
 
-// ====== 充值入口 ======
-
-// DeepSeek充值（打开DeepSeek平台充值页面）
-function openDeepSeekRecharge() {
-    window.open('https://platform.deepseek.com/usage', '_blank');
-}
-
-// 硅基流动充值（打开硅基流动平台充值页面）  
-function openSiliconFlowRecharge() {
-    window.open('https://cloud.siliconflow.cn/account/charge', '_blank');
-}
-
-// 显示API余额/充值弹窗
-function showAPIRechargeModal() {
-    var modal = document.getElementById('detail-modal');
-    var content = document.getElementById('detail-content');
-    if (!modal || !content) return;
-    modal.classList.add('show');
+// 渲染所有消息
+function renderMessages() {
+    var container = document.getElementById('ds-messages');
+    if (!container) return;
     
-    content.innerHTML = '<div class="modal-title" style="margin-bottom:12px;">💳 充值</div>' +
-        '<div style="padding:12px;margin-bottom:8px;background:#f5f7ff;border-radius:10px;">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div>' +
-                    '<div style="font-size:14px;font-weight:600;color:#333;">DeepSeek</div>' +
-                    '<div style="font-size:11px;color:#999;">AI对话</div>' +
-                '</div>' +
-                '<button onclick="window.openDeepSeekRecharge()" style="padding:6px 14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">充值</button>' +
-            '</div>' +
-        '</div>' +
-        '<div style="padding:12px;margin-bottom:8px;background:#f0fff4;border-radius:10px;">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div>' +
-                    '<div style="font-size:14px;font-weight:600;color:#333;">硅基流动</div>' +
-                    '<div style="font-size:11px;color:#999;">图片识别 🎁送14元</div>' +
-                '</div>' +
-                '<button onclick="window.openSiliconFlowRecharge()" style="padding:6px 14px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">充值</button>' +
-            '</div>' +
-        '</div>' +
-        '<button onclick="window.closeModal()" style="width:100%;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">关闭</button>';
-}
-
-window.openDeepSeekRecharge = openDeepSeekRecharge;
-window.openSiliconFlowRecharge = openSiliconFlowRecharge;
-window.showAPIRechargeModal = showAPIRechargeModal;
-
-// Restore DeepSeek chat history to UI
-function restoreDeepSeekChatHistory() {
-    var messagesEl = document.getElementById('deepseek-messages');
-    if (!messagesEl) return;
-    messagesEl.innerHTML = '';
+    var html = '';
     for (var i = 0; i < deepseekConversationHistory.length; i++) {
         var msg = deepseekConversationHistory[i];
         if (msg.role === 'user') {
-            var content = msg.content;
-            if (typeof content === 'string') {
-                messagesEl.innerHTML += '<div class="chat-msg user"><div class="chat-avatar">👤</div><div class="chat-bubble">' + escapeHtml(content) + '</div></div>';
-            } else if (Array.isArray(content)) {
-                var html = '<div class="chat-msg user"><div class="chat-avatar">👤</div><div class="chat-bubble">';
-                for (var j = 0; j < content.length; j++) {
-                    if (content[j].type === 'image_url') {
-                        var imgUrl = content[j].image_url && content[j].image_url.url ? content[j].image_url.url : '';
-                        if (imgUrl && imgUrl.startsWith('data:')) {
-                            // Skip base64 images in history (too large), show placeholder
-                            html += '<div style="color:#999;font-size:12px;">[图片]</div>';
-                        } else if (imgUrl) {
-                            html += '<img src="' + imgUrl + '" style="max-width:150px;max-height:100px;border-radius:8px;margin-bottom:8px;"/>';
-                        }
-                    } else if (content[j].type === 'text') {
-                        html += escapeHtml(content[j].text);
-                    }
-                }
-                html += '</div></div>';
-                messagesEl.innerHTML += html;
-            }
-        } else if (msg.role === 'assistant') {
-            messagesEl.innerHTML += '<div class="chat-msg"><div class="chat-avatar">🤖</div><div class="chat-bubble">' + formatAIResponse(msg.content) + '</div></div>';
+            html += renderUserMessage(msg.content);
+        } else {
+            html += renderAssistantMessage(msg.content);
         }
     }
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+    container.innerHTML = html;
 }
-window.restoreDeepSeekChatHistory = restoreDeepSeekChatHistory;
 
-// DeepSeek页面渲染函数
-function renderDeepseek(contentEl) {
-    if (!contentEl) return;
-    // 获取余额
-    var balance = localStorage.getItem('deepseek_balance') || '0.00';
-    
-    contentEl.innerHTML = '<div style="display:flex;flex-direction:column;height:100%;max-width:100%;margin:0 auto;">' +
-        // 顶部信息卡
-        '<div style="padding:10px 12px;background:white;border-bottom:1px solid #f0f0f0;flex-shrink:0;">' +
-            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-                '<div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="window.toggleDeepSeekHistory()" title="点击查看聊天历史">' +
-                    '<div style="width:32px;height:32px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(102,126,234,0.3);">🤖</div>' +
-                    '<div><div style="font-size:13px;font-weight:600;color:#333;">DeepSeek AI 助手</div><div style="font-size:10px;color:#999;">智能学习助手 · 点击看历史</div></div>' +
-                '</div>' +
-                '<div style="display:flex;align-items:center;gap:8px;">' +
-                    '<div style="font-size:10px;color:#999;">余额 <span id="ds-balance" style="color:#43a047;font-weight:600;">¥' + balance + '</span></div>' +
-        '<button onclick="window.openApiConfigModal(\'deepseek\')" style="padding:4px 8px;background:#f0f0f0;color:#666;border:none;border-radius:6px;font-size:11px;cursor:pointer;">配置</button>' +
-        '<button onclick="window.showAPIRechargeModal()" style="padding:4px 8px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">充值</button>' +
-                '</div>' +
-            '</div>' +
-        '</div>' +
-        // 聊天区
-        '<div id="deepseek-messages" style="flex:1;overflow-y:auto;padding:10px;font-size:13px;"></div>' +
-        // 模式切换按钮
-        '<div style="padding:6px 10px;background:#f9f9f9;border-top:1px solid #eee;display:flex;gap:8px;flex-shrink:0;">' +
-        '  <button class="ds-mode-btn" data-mode="fast" onclick="window.toggleDeepseekMode(\'fast\')" style="flex:1;padding:6px 12px;border:none;border-radius:16px;font-size:11px;cursor:pointer;background:#667eea;color:white;transition:all 0.2s;">' +
-        '    🚀 快速模式' +
-        '  </button>' +
-        '  <button class="ds-mode-btn" data-mode="expert" onclick="window.toggleDeepseekMode(\'expert\')" style="flex:1;padding:6px 12px;border:none;border-radius:16px;font-size:11px;cursor:pointer;background:#f5f5f5;color:#666;transition:all 0.2s;">' +
-        '    💎 专家模式' +
-        '  </button>' +
-        '</div>' +
-        // 输入区
-        '<div style="padding:6px 8px;border-top:1px solid #eee;display:flex;gap:4px;align-items:center;background:white;flex-shrink:0;">' +
-            '<button onclick="triggerDeepSeekImage()" style="width:28px;height:28px;border:none;background:#667eea;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">📷</button>' +
-            '<input type="text" id="deepseek-input" placeholder="输入问题..." style="flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-size:12px;min-width:0;" onkeypress="if(event.key===\'Enter\')sendToDeepSeek()"/>' +
-            '<button id="deepseek-send-btn" class="chat-send" onclick="sendToDeepSeek()" style="width:28px;height:28px;border:none;background:#667eea;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">➤</button>' +
-            '<button onclick="toggleDeepSeekVoice()" style="width:28px;height:28px;border:none;background:#f093fb;color:white;border-radius:6px;font-size:12px;cursor:pointer;flex-shrink:0;">🎤</button>' +
-        '</div>' +
-    '</div>';
-    // 恢复聊天历史
-    restoreDeepSeekChatHistory();
-    
-    // 如果没有历史，显示欢迎消息
-    var msgsEl = document.getElementById('deepseek-messages');
-    var hasHistory = deepseekConversationHistory && deepseekConversationHistory.length > 0;
-    if (msgsEl && !hasHistory) {
-        msgsEl.innerHTML = '<div style="margin-bottom:8px;">' +
-            '<div style="display:flex;align-items:flex-start;gap:6px;">' +
-                '<div style="width:24px;height:24px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>' +
-                '<div style="background:white;border-radius:10px;padding:8px 10px;font-size:12px;color:#333;box-shadow:0 1px 3px rgba(0,0,0,0.1);max-width:85%;">你好！我是DeepSeek AI助手，有什么学习问题可以问我~ 支持文字、语音和图片提问 📸</div>' +
-            '</div>' +
-        '</div>';
+function renderUserMessage(content) {
+    var text = typeof content === 'string' ? content : '';
+    var imageUrl = '';
+    if (Array.isArray(content)) {
+        for (var i = 0; i < content.length; i++) {
+            if (content[i].type === 'text') text = content[i].text;
+            if (content[i].type === 'image_url') imageUrl = content[i].image_url?.url || '';
+        }
     }
     
-    // 查询余额
+    var html = '<div class="ds-msg ds-msg-user">' +
+        '<div class="ds-msg-content">' +
+        (imageUrl ? '<img src="' + imageUrl + '" class="ds-msg-image">' : '') +
+        '<div class="ds-bubble ds-bubble-user">' + escapeHtml(text) + '</div>' +
+        '</div>' +
+        '<div class="ds-avatar ds-avatar-user">我</div>' +
+        '</div>';
+    return html;
+}
+
+function renderAssistantMessage(content) {
+    var formatted = formatAIResponse(content);
+    var html = '<div class="ds-msg ds-msg-assistant">' +
+        '<div class="ds-avatar ds-avatar-assistant">' +
+        '<svg viewBox="0 0 24 24" width="20" height="20"><rect width="24" height="24" rx="6" fill="#4d6bfe"/><text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">D</text></svg>' +
+        '</div>' +
+        '<div class="ds-msg-content">' +
+        '<div class="ds-bubble ds-bubble-assistant">' + formatted + '</div>' +
+        '<div class="ds-msg-actions">' +
+        '<button class="ds-action-btn" onclick="copyMessage(this)" title="复制">复制</button>' +
+        '<button class="ds-action-btn" onclick="speakMessage(this)" title="朗读">朗读</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    return html;
+}
+
+// 复制消息内容
+function copyMessage(btn) {
+    var bubble = btn.closest('.ds-msg-content').querySelector('.ds-bubble');
+    if (!bubble) return;
+    var text = bubble.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        window.showToast('已复制');
+    }).catch(() => {
+        window.showToast('复制失败');
+    });
+}
+
+// 朗读消息
+function speakMessage(btn) {
+    var bubble = btn.closest('.ds-msg-content').querySelector('.ds-bubble');
+    if (!bubble) return;
+    var text = bubble.textContent;
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        var utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'zh-CN';
+        utter.rate = 1.1;
+        window.speechSynthesis.speak(utter);
+        window.showToast('正在朗读...');
+    } else {
+        window.showToast('浏览器不支持朗读');
+    }
+}
+
+// 显示思考内容
+function showThinkingContent(thinking) {
+    var container = document.getElementById('ds-messages');
+    if (!container) return;
+    var html = '<div class="ds-thinking-block">' +
+        '<div class="ds-thinking-header">DeepSeek 正在思考...</div>' +
+        '<div class="ds-thinking-content">' + escapeHtml(thinking) + '</div>' +
+        '</div>';
+    container.insertAdjacentHTML('beforeend', html);
+}
+
+// 显示思考指示器
+function showThinkingIndicator() {
+    var indicator = document.getElementById('ds-thinking-indicator');
+    if (indicator) {
+        indicator.style.display = 'flex';
+    }
+}
+
+function hideThinkingIndicator() {
+    var indicator = document.getElementById('ds-thinking-indicator');
+    if (indicator) {
+        indicator.style.display = 'none';
+    }
+}
+
+// 滚动到底部
+function scrollToBottom() {
+    var container = document.getElementById('ds-messages');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+    }
+}
+
+// ============================================================
+// 语音输入
+// ============================================================
+
+function startDeepSeekVoice() {
+    if (!supportsSpeechRecognition()) {
+        window.showToast('浏览器不支持语音输入');
+        return;
+    }
+    
+    var recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    
+    recognition.onresult = function(event) {
+        var result = '';
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            result += event.results[i][0].transcript;
+        }
+        var inputEl = document.getElementById('ds-input');
+        if (inputEl) inputEl.value = result;
+    };
+    
+    recognition.onerror = function(event) {
+        if (event.error !== 'no-speech') {
+            window.showToast('语音识别出错');
+        }
+    };
+    
+    recognition.onend = function() {
+        var inputEl = document.getElementById('ds-input');
+        if (inputEl && inputEl.value.trim()) {
+            sendToDeepSeek();
+        }
+    };
+    
+    recognition.start();
+    window.showToast('请说话...');
+}
+
+// ============================================================
+// 主题分析
+// ============================================================
+
+async function analyzeTopicWithAI(topicId) {
+    if (typeof TopicData !== 'undefined' && TopicData.getTopic) {
+        var topic = TopicData.getTopic(topicId);
+        if (topic) {
+            deepseekConversationHistory = [];
+            currentChatId = 'topic_' + topicId + '_' + Date.now();
+            deepseekConversationHistory.push({
+                role: 'assistant',
+                content: '正在分析题目，请稍候...'
+            });
+            renderMessages();
+            
+            var prompt = '请分析这道题目并给出解题思路：\n题目：' + (topic.question || topic.title || '') + 
+                        '\n选项：' + (topic.options ? topic.options.join('、') : '') +
+                        '\n答案：' + (topic.answer || '未知');
+            
+            var result = await callDeepSeekAPI([{ role: 'user', content: prompt }], 0.5);
+            if (result.success) {
+                deepseekConversationHistory.push({ role: 'assistant', content: result.content });
+            } else {
+                deepseekConversationHistory.push({ role: 'assistant', content: '分析失败：' + result.message });
+            }
+            renderMessages();
+            saveDeepSeekConversation();
+        }
+    }
+}
+window.analyzeTopicWithAI = analyzeTopicWithAI;
+
+// ============================================================
+// 充值相关
+// ============================================================
+
+function openDeepSeekRecharge() {
+    window.open('https://platform.deepseek.com/top-up', '_blank');
+}
+
+function openSiliconFlowRecharge() {
+    window.open('https://cloud.siliconflow.cn/', '_blank');
+}
+
+function showAPIRechargeModal() {
+    var modal = document.createElement('div');
+    modal.className = 'ds-modal-overlay';
+    modal.innerHTML = '<div class="ds-modal">' +
+        '<div class="ds-modal-header">API余额不足</div>' +
+        '<div class="ds-modal-body">' +
+        '<p>您的DeepSeek API余额已用完，请及时充值。</p>' +
+        '<div class="ds-modal-btns">' +
+        '<button onclick="openDeepSeekRecharge();closeDSModal();">前往DeepSeek充值</button>' +
+        '<button onclick="openSiliconFlowRecharge();closeDSModal();">使用SiliconFlow</button>' +
+        '<button onclick="closeDSModal()">关闭</button>' +
+        '</div></div></div>';
+    document.body.appendChild(modal);
+}
+window.showAPIRechargeModal = showAPIRechargeModal;
+
+function closeDSModal() {
+    var modal = document.querySelector('.ds-modal-overlay');
+    if (modal) modal.remove();
+}
+
+// ============================================================
+// 历史记录管理（使用IndexedDB）
+// ============================================================
+
+function restoreDeepSeekChatHistory() {
+    // 空实现，由renderDeepseek中加载
+}
+
+// 获取历史列表
+async function getSavedDeepSeekChats() {
+    return await getChatsFromDB();
+}
+
+// 保存当前对话
+async function saveCurrentDeepSeekChat() {
+    if (!currentChatId || deepseekConversationHistory.length === 0) {
+        window.showToast('当前没有对话可保存');
+        return;
+    }
+    saveDeepSeekConversation();
+    window.showToast('对话已保存');
+}
+window.saveCurrentDeepSeekChat = saveCurrentDeepSeekChat;
+
+// 加载历史对话
+async function loadSavedDeepSeekChat(chatId) {
+    try {
+        var chat = await getChatFromDB(chatId);
+        if (chat) {
+            currentChatId = chat.id;
+            deepseekConversationHistory = chat.messages || [];
+            renderMessages();
+            scrollToBottom();
+            window.showToast('已加载: ' + chat.title);
+        }
+    } catch(e) {
+        console.error('加载对话失败:', e);
+    }
+}
+window.loadSavedDeepSeekChat = loadSavedDeepSeekChat;
+
+// 删除历史对话
+async function deleteSavedDeepSeekChat(chatId) {
+    try {
+        await deleteChatFromDB(chatId);
+        window.showToast('已删除');
+    } catch(e) {
+        console.error('删除失败:', e);
+    }
+}
+window.deleteSavedDeepSeekChat = deleteSavedDeepSeekChat;
+
+// 开始新对话
+function startNewDeepSeekChat() {
+    // 保存当前对话
+    if (currentChatId && deepseekConversationHistory.length > 0) {
+        saveDeepSeekConversation();
+    }
+    
+    currentChatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    deepseekConversationHistory = [];
+    localStorage.removeItem('cognitive_training_ds_conversation');
+    
+    var msgs = document.getElementById('ds-messages');
+    if (msgs) msgs.innerHTML = '';
+    
+    window.showToast('新对话已开始');
+}
+window.startNewDeepSeekChat = startNewDeepSeekChat;
+
+// 切换模式
+function switchDeepSeekMode(mode) {
+    window.deepseekMode = mode;
+    localStorage.setItem('deepseek_mode', mode);
+    
+    document.querySelectorAll('.ds-mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    
+    window.showToast(mode === 'deepthink' ? '已切换到深度思考模式' : '已切换到快速回答模式');
+}
+window.switchDeepSeekMode = switchDeepSeekMode;
+
+// ============================================================
+// DeepSeek主界面渲染
+// ============================================================
+
+function renderDeepseek(contentEl) {
+    if (!contentEl) contentEl = document.getElementById('fullscreen-content') || document.body;
+    
+    // 初始化IndexedDB和迁移
+    checkAndMigrate();
+    
+    // 加载保存的模式
+    var savedMode = localStorage.getItem('deepseek_mode');
+    if (savedMode) window.deepseekMode = savedMode;
+    else window.deepseekMode = 'fast';
+    
+    var currentMode = window.deepseekMode || 'fast';
+    
+    var html = '<div class="ds-container">' +
+        // 左侧边栏
+        '<div class="ds-sidebar" id="ds-sidebar">' +
+        '<div class="ds-sidebar-header">' +
+        '<button class="ds-new-chat-btn" onclick="startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'));">' +
+        '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4v16m8-8H4"/></svg>' +
+        '新对话</button>' +
+        '</div>' +
+        '<div class="ds-sidebar-search">' +
+        '<input type="text" id="ds-sidebar-search-input" placeholder="搜索历史..." oninput="searchHistory(this.value)">' +
+        '</div>' +
+        '<div class="ds-chat-list" id="ds-chat-list">' +
+        // 历史列表将通过JS加载
+        '</div>' +
+        '<div class="ds-sidebar-footer">' +
+        '<div class="ds-balance-info" onclick="openApiConfigModalBridge()">' +
+        '<span>余额：</span><span id="ds-balance">加载中...</span>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        
+        // 移动端侧边栏遮罩
+        '<div class="ds-sidebar-mask" id="ds-sidebar-mask" onclick="toggleSidebar()"></div>' +
+        
+        // 主聊天区
+        '<div class="ds-main">' +
+        // 顶部栏
+        '<div class="ds-header">' +
+        '<button class="ds-menu-btn" onclick="toggleSidebar()">☰</button>' +
+        '<div class="ds-title">DeepSeek AI</div>' +
+        '<div class="ds-mode-switch">' +
+        '<button class="ds-mode-btn ' + (currentMode === 'fast' ? 'active' : '') + '" data-mode="fast" onclick="switchDeepSeekMode(\'fast\')">快速</button>' +
+        '<button class="ds-mode-btn ' + (currentMode === 'deepthink' ? 'active' : '') + '" data-mode="deepthink" onclick="switchDeepSeekMode(\'deepthink\')">深度思考</button>' +
+        '</div>' +
+        '</div>' +
+        
+        // 消息区域
+        '<div class="ds-messages" id="ds-messages">' +
+        '</div>' +
+        
+        // 思考指示器
+        '<div class="ds-thinking-indicator" id="ds-thinking-indicator" style="display:none;">' +
+        '<div class="ds-spinner"></div>' +
+        '<span>DeepSeek正在思考...</span>' +
+        '</div>' +
+        
+        // 输入区域
+        '<div class="ds-input-area">' +
+        '<div class="ds-input-row">' +
+        '<button class="ds-tool-btn" onclick="triggerDeepSeekImage()" title="上传图片">📷</button>' +
+        '<div class="ds-image-preview" id="ds-image-preview"></div>' +
+        '</div>' +
+        '<div class="ds-input-box">' +
+        '<textarea id="ds-input" placeholder="输入消息..." rows="1" onkeydown="handleInputKeydown(event)"></textarea>' +
+        '<button class="ds-send-btn" onclick="sendToDeepSeek()">➤</button>' +
+        '</div>' +
+        '<div class="ds-voice-row">' +
+        '<button class="ds-voice-btn" onclick="tipKeyboardVoice()">🎤 语音输入</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    
+    contentEl.innerHTML = html;
+    
+    // 自动调整textarea高度
+    var inputEl = document.getElementById('ds-input');
+    if (inputEl) {
+        inputEl.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    }
+    
+    // 加载历史列表
+    loadChatList();
+    
+    // 更新余额
     updateDeepSeekBalance();
     
-    // 初始化模式按钮状态
-    setTimeout(function() {
-        if (typeof window.deepseekMode !== 'undefined') {
-            document.querySelectorAll('.ds-mode-btn').forEach(btn => {
-                btn.style.background = btn.dataset.mode === window.deepseekMode ? '#667eea' : '#f5f5f5';
-                btn.style.color = btn.dataset.mode === window.deepseekMode ? 'white' : '#666';
-            });
+    // 如果没有历史，显示欢迎消息
+    if (deepseekConversationHistory.length === 0) {
+        var msgsEl = document.getElementById('ds-messages');
+        if (msgsEl) {
+            msgsEl.innerHTML = '<div class="ds-welcome">' +
+                '<div class="ds-welcome-icon">' +
+                '<svg viewBox="0 0 24 24" width="48" height="48"><rect width="24" height="24" rx="6" fill="#4d6bfe"/><text x="12" y="17" text-anchor="middle" fill="white" font-size="14" font-weight="bold">D</text></svg>' +
+                '</div>' +
+                '<div class="ds-welcome-title">我是DeepSeek AI助手</div>' +
+                '<div class="ds-welcome-desc">有什么可以帮你的吗？支持文字、语音和图片提问</div>' +
+                '</div>';
         }
-    }, 50);
+    } else {
+        renderMessages();
+    }
+    
+    // 响应式：默认隐藏侧边栏
+    if (window.innerWidth < 768) {
+        document.getElementById('ds-sidebar').classList.add('hidden');
+    }
 }
 window.renderDeepseek = renderDeepseek;
 
+// 切换侧边栏
+function toggleSidebar() {
+    var sidebar = document.getElementById('ds-sidebar');
+    var mask = document.getElementById('ds-sidebar-mask');
+    if (sidebar && mask) {
+        sidebar.classList.toggle('hidden');
+        mask.classList.toggle('active');
+    }
+}
+window.toggleSidebar = toggleSidebar;
+
+// 加载历史列表
+async function loadChatList() {
+    try {
+        var chats = await getChatsFromDB();
+        var listEl = document.getElementById('ds-chat-list');
+        if (!listEl) return;
+        
+        if (chats.length === 0) {
+            listEl.innerHTML = '<div class="ds-empty-list">暂无历史记录</div>';
+            return;
+        }
+        
+        var html = '';
+        for (var i = 0; i < chats.length; i++) {
+            var chat = chats[i];
+            var isActive = chat.id === currentChatId ? 'active' : '';
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')">' +
+                '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
+                '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
+                '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();">✕</button>' +
+                '</div>';
+        }
+        listEl.innerHTML = html;
+    } catch(e) {
+        console.error('加载历史列表失败:', e);
+    }
+}
+window.loadChatList = loadChatList;
+
+// 搜索历史
+async function searchHistory(keyword) {
+    try {
+        var chats = await searchChatsFromDB(keyword);
+        var listEl = document.getElementById('ds-chat-list');
+        if (!listEl) return;
+        
+        if (chats.length === 0) {
+            listEl.innerHTML = '<div class="ds-empty-list">' + (keyword ? '没有找到匹配的历史' : '暂无历史记录') + '</div>';
+            return;
+        }
+        
+        var html = '';
+        for (var i = 0; i < chats.length; i++) {
+            var chat = chats[i];
+            var isActive = chat.id === currentChatId ? 'active' : '';
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')">' +
+                '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
+                '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
+                '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');searchHistory(\'' + keyword + '\');">✕</button>' +
+                '</div>';
+        }
+        listEl.innerHTML = html;
+    } catch(e) {
+        console.error('搜索历史失败:', e);
+    }
+}
+window.searchHistory = searchHistory;
+
+// 处理输入框回车
+function handleInputKeydown(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendToDeepSeek();
+    }
+}
+
+// 更新余额显示
 function updateDeepSeekBalance() {
     var apiKey = (typeof DEEPSEEK_API_KEY !== 'undefined' && DEEPSEEK_API_KEY) ? DEEPSEEK_API_KEY : 
                  localStorage.getItem('deepseek_api_key') || '';
@@ -801,6 +1277,7 @@ function updateDeepSeekBalance() {
         if (el) el.textContent = '未配置';
         return;
     }
+    
     fetch('https://api.deepseek.com/user/balance', {
         headers: { 'Authorization': 'Bearer ' + apiKey }
     }).then(function(r) { return r.json(); }).then(function(data) {
@@ -820,90 +1297,7 @@ function updateDeepSeekBalance() {
 }
 window.updateDeepSeekBalance = updateDeepSeekBalance;
 
-
-function toggleDeepSeekHistory() {
-    var container = document.getElementById('fullscreen-content');
-    if (!container) return;
-    
-    var saved = getSavedDeepSeekChats();
-    
-    var html = '<div style="display:flex;flex-direction:column;height:100%;background:#f5f5f5;">' +
-        // 顶部栏
-        '<div style="padding:12px 16px;background:white;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
-            '<button onclick="renderDeepseek(document.getElementById(\'fullscreen-content\'))" style="background:none;border:none;font-size:14px;color:#667eea;cursor:pointer;">← 返回对话</button>' +
-            '<span style="font-size:15px;font-weight:600;color:#333;">📋 历史记录</span>' +
-            '<span style="font-size:12px;color:#999;">' + saved.length + ' 条</span>' +
-        '</div>' +
-        // 搜索栏
-        '<div style="padding:8px 12px;background:white;flex-shrink:0;">' +
-            '<input id="ds-history-search" type="text" placeholder="🔍 搜索历史记录..." oninput="filterDeepSeekHistory()" style="width:100%;padding:8px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:13px;box-sizing:border-box;outline:none;" />' +
-        '</div>' +
-        // 操作栏
-        '<div style="padding:6px 12px;background:white;display:flex;gap:8px;flex-shrink:0;border-bottom:1px solid #eee;">' +
-            '<button onclick="startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'))" style="flex:1;padding:8px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📝 新对话</button>' +
-            '<button onclick="if(confirm(\'确定清空所有历史？\')){clearAllDeepSeekHistory();toggleDeepSeekHistory();}" style="padding:8px 12px;background:#fff0f0;color:#ff6b6b;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🗑 清空</button>' +
-        '</div>' +
-        // 列表
-        '<div id="ds-history-list" style="flex:1;overflow-y:auto;padding:8px 0;">';
-    
-    if (saved.length === 0) {
-        html += '<div style="padding:40px;text-align:center;color:#999;font-size:14px;">暂无历史记录</div>';
-    } else {
-        for (var i = saved.length - 1; i >= 0; i--) {
-            var chat = saved[i];
-            var title = chat.title || '对话';
-            var time = chat.time || '';
-            var count = chat.count || 0;
-            var preview = '';
-            for (var j = 0; j < (chat.messages || []).length; j++) {
-                if (chat.messages[j].role === 'assistant') {
-                    preview = (chat.messages[j].content || '').substring(0, 60);
-                    break;
-                }
-            }
-            html += '<div class="ds-history-item" data-title="' + title.toLowerCase() + '" data-preview="' + preview.toLowerCase() + '" onclick="loadSavedDeepSeekChat(' + i + ')" style="margin:0 12px 8px;padding:12px;background:white;border-radius:10px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:transform 0.15s;">' +
-                '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-                    '<div style="font-size:14px;font-weight:500;color:#333;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;margin-right:8px;">' + title + '</div>' +
-                    '<button onclick="event.stopPropagation();deleteSavedDeepSeekChat(' + i + ');toggleDeepSeekHistory();" style="background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:4px;">✕</button>' +
-                '</div>' +
-                '<div style="font-size:12px;color:#999;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (preview || '...') + '</div>' +
-                '<div style="display:flex;justify-content:space-between;margin-top:6px;">' +
-                    '<span style="font-size:10px;color:#bbb;">🕐 ' + time + '</span>' +
-                    '<span style="font-size:10px;color:#bbb;">' + count + '条消息</span>' +
-                '</div>' +
-            '</div>';
-        }
-    }
-    
-    html += '</div></div>';
-    container.innerHTML = html;
-}
-window.toggleDeepSeekHistory = toggleDeepSeekHistory;
-
-function filterDeepSeekHistory() {
-    var keyword = (document.getElementById('ds-history-search') || {}).value || '';
-    keyword = keyword.toLowerCase();
-    var items = document.querySelectorAll('.ds-history-item');
-    items.forEach(function(item) {
-        var title = item.getAttribute('data-title') || '';
-        var preview = item.getAttribute('data-preview') || '';
-        if (!keyword || title.includes(keyword) || preview.includes(keyword)) {
-            item.style.display = '';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-window.filterDeepSeekHistory = filterDeepSeekHistory;
-
-function clearAllDeepSeekHistory() {
-    localStorage.removeItem('ds_saved_chats');
-    localStorage.removeItem('cognitive_training_ds_conversation');
-    deepseekConversationHistory = [];
-    window.showToast('历史已清空');
-}
-window.clearAllDeepSeekHistory = clearAllDeepSeekHistory;
-
+// API配置
 function openApiConfigModalBridge(type) {
     if (typeof openApiConfigModal === 'function') { openApiConfigModal(type); return; }
     var key = prompt('请输入 DeepSeek API Key:');
@@ -916,78 +1310,27 @@ function openApiConfigModalBridge(type) {
 }
 window.openApiConfigModal = window.openApiConfigModal || openApiConfigModalBridge;
 
-function getSavedDeepSeekChats() {
-    try { return JSON.parse(localStorage.getItem('ds_saved_chats') || '[]'); }
-    catch(e) { return []; }
-}
-
-function saveCurrentDeepSeekChat() {
-    if (!deepseekConversationHistory || deepseekConversationHistory.length === 0) {
-        window.showToast('当前没有对话可保存'); return;
+// 清空所有历史
+async function clearAllDeepSeekHistory() {
+    try {
+        await clearAllChatsFromDB();
+        deepseekConversationHistory = [];
+        localStorage.removeItem('cognitive_training_ds_conversation');
+        currentChatId = null;
+        window.showToast('历史已清空');
+        loadChatList();
+    } catch(e) {
+        console.error('清空历史失败:', e);
     }
-    var title = '';
-    for (var i = 0; i < deepseekConversationHistory.length; i++) {
-        if (deepseekConversationHistory[i].role === 'user') {
-            var c = deepseekConversationHistory[i].content;
-            title = typeof c === 'string' ? c : (c.find(function(x){return x.type==='text';}) || {}).text || '图片对话';
-            break;
-        }
-    }
-    var now = new Date();
-    var timeStr = (now.getMonth()+1) + '/' + now.getDate() + ' ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
-    var saved = getSavedDeepSeekChats();
-    saved.push({
-        title: title.substring(0, 30),
-        time: timeStr,
-        count: deepseekConversationHistory.length,
-        messages: deepseekConversationHistory.slice()
-    });
-    // 最多保存20条
-    if (saved.length > 1000) saved = saved.slice(saved.length - 1000);
-    try { localStorage.setItem('ds_saved_chats', JSON.stringify(saved)); } catch(e) {}
-    window.showToast('对话已保存');
 }
-window.saveCurrentDeepSeekChat = saveCurrentDeepSeekChat;
+window.clearAllDeepSeekHistory = clearAllDeepSeekHistory;
 
-function loadSavedDeepSeekChat(index) {
-    var saved = getSavedDeepSeekChats();
-    if (!saved[index]) return;
-    deepseekConversationHistory = saved[index].messages || [];
-    saveDeepSeekConversation();
-    restoreDeepSeekChatHistory();
-    toggleDeepSeekHistory();
-    window.showToast('已加载: ' + saved[index].title);
-}
-window.loadSavedDeepSeekChat = loadSavedDeepSeekChat;
-
-function deleteSavedDeepSeekChat(index) {
-    var saved = getSavedDeepSeekChats();
-    saved.splice(index, 1);
-    try { localStorage.setItem('ds_saved_chats', JSON.stringify(saved)); } catch(e) {}
-}
-window.deleteSavedDeepSeekChat = deleteSavedDeepSeekChat;
-
-function startNewDeepSeekChat() {
-    window._dsSessionId = Date.now().toString(); // 新会话ID
-    deepseekConversationHistory = [];
-    saveDeepSeekConversation();
-    var msgs = document.getElementById('deepseek-messages');
-    if (msgs) msgs.innerHTML = '';
-    toggleDeepSeekHistory();
-    renderDeepseek(document.getElementById('fullscreen-content'));
-    window.showToast('新对话已开始');
-}
-window.startNewDeepSeekChat = startNewDeepSeekChat;
-
+// 滚动到消息
 function scrollToDeepSeekMessage(groupIndex) {
-    // 关闭下拉
-    var dd = document.getElementById('ds-history-dropdown');
-    if (dd) dd.style.display = 'none';
-    // 滚动到对应消息
-    var msgs = document.getElementById('deepseek-messages');
+    var msgs = document.getElementById('ds-messages');
     if (msgs) {
-        var allMsgs = msgs.querySelectorAll('.chat-msg');
-        var targetIndex = groupIndex * 2; // user+assistant
+        var allMsgs = msgs.querySelectorAll('.ds-msg');
+        var targetIndex = groupIndex * 2;
         if (allMsgs[targetIndex]) {
             allMsgs[targetIndex].scrollIntoView({behavior: 'smooth'});
         }
@@ -996,16 +1339,13 @@ function scrollToDeepSeekMessage(groupIndex) {
 window.scrollToDeepSeekMessage = scrollToDeepSeekMessage;
 
 // ============================================================
-// ES6 Module 导出
+// 模块导出
 // ============================================================
 
-// DeepSeek模块对象
 const deepseekModule = {
     name: 'deepseek',
     icon: '🤖',
     render: typeof renderDeepseek !== 'undefined' ? renderDeepseek : null
 };
 
-// 导出主要函数
-
-console.log('[ES6 Module] deepseek.js 模块加载完成');
+console.log('[Module] deepseek.js V359 加载完成 - DeepSeek网页版风格 + IndexedDB');
