@@ -387,24 +387,6 @@ function closeEnhancedVideoPlayer() {
 function toggleAudioPlay() {
     // 如果正在TTS朗读，控制TTS
     if (window._currentPodcastCaptions && !currentAudio.src) {
-window.closeEnhancedVideoPlayer = closeEnhancedVideoPlayer;
-window.closeVideoPlayer = closeVideoPlayer;
-window.seekEnhancedVideo = seekEnhancedVideo;
-window.seekEnhancedVideoBackward = seekEnhancedVideoBackward;
-window.seekEnhancedVideoForward = seekEnhancedVideoForward;
-window.seekVideo = seekVideo;
-window.toggleEnhancedFullscreen = toggleEnhancedFullscreen;
-window.toggleEnhancedMute = toggleEnhancedMute;
-window.toggleEnhancedSpeedDropdown = toggleEnhancedSpeedDropdown;
-window.toggleEnhancedVideoPlay = toggleEnhancedVideoPlay;
-window.togglePictureInPicture = togglePictureInPicture;
-window.toggleVolume = toggleVolume;
-window.toggleVpPlay = toggleVpPlay;
-window.onEnhancedVideoError = onEnhancedVideoError;
-window.onEnhancedVideoWaiting = onEnhancedVideoWaiting;
-window.onEnhancedVideoCanPlay = onEnhancedVideoCanPlay;
-window.openEnhancedVideoPlayer = openEnhancedVideoPlayer;
-window.initEnhancedVideoPlayer = initEnhancedVideoPlayer;
         if (audioCtx.isPlaying) { stopPodcastTTS(); }
         else { audioCtx.isPlaying = true; updatePlayButtons(); speakNextCaption(); }
         return;
@@ -1357,6 +1339,26 @@ function updateVideoProgress() {
         saveVideoWatchRecord(videoId, progress, videoEl.duration);
     } catch (e) {}
 }
+
+// ========== 视频播放器核心函数导出 ==========
+window.closeEnhancedVideoPlayer = closeEnhancedVideoPlayer;
+window.closeVideoPlayer = closeVideoPlayer;
+window.openEnhancedVideoPlayer = openEnhancedVideoPlayer;
+window.initEnhancedVideoPlayer = initEnhancedVideoPlayer;
+window.seekEnhancedVideo = seekEnhancedVideo;
+window.seekEnhancedVideoBackward = seekEnhancedVideoBackward;
+window.seekEnhancedVideoForward = seekEnhancedVideoForward;
+window.seekVideo = seekVideo;
+window.toggleEnhancedFullscreen = toggleEnhancedFullscreen;
+window.toggleEnhancedMute = toggleEnhancedMute;
+window.toggleEnhancedSpeedDropdown = toggleEnhancedSpeedDropdown;
+window.toggleEnhancedVideoPlay = toggleEnhancedVideoPlay;
+window.togglePictureInPicture = togglePictureInPicture;
+window.toggleVolume = toggleVolume;
+window.toggleVpPlay = toggleVpPlay;
+window.onEnhancedVideoError = onEnhancedVideoError;
+window.onEnhancedVideoWaiting = onEnhancedVideoWaiting;
+window.onEnhancedVideoCanPlay = onEnhancedVideoCanPlay;
 
 // ========== 本地视频相关函数导出 ==========
 window.playLocalVideo = playLocalVideo;

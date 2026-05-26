@@ -1,5 +1,5 @@
 // ============================================================
-// V353 学习计划模块 - 增加游戏跳转和自动同步
+// V354 学习计划模块 - 增加游戏跳转和自动同步
 // ============================================================
 
 // 训练开始日期：2026年5月20日
@@ -46,7 +46,7 @@ var TASK_ACTION_MAP = {
     'game_eliminate': 'eliminate'
 };
 
-// V353: 根据任务类型和标题智能匹配游戏
+// V354: 根据任务标题智能匹配游戏（所有类型都先按标题匹配）
 window.getTaskAction = function(task) {
     // 1. 如果任务有gameId字段，直接用
     if (task.gameId) return { type: 'game', id: task.gameId };
@@ -54,47 +54,46 @@ window.getTaskAction = function(task) {
     var title = (task.title || '').toLowerCase();
     var type = task.type || '';
     
-    // 2. type=game 的任务，根据标题关键词匹配
-    if (type === 'game') {
-        if (title.indexOf('舒尔特') >= 0) return { type: 'game', id: 'schulte' };
-        if (title.indexOf('视觉') >= 0 || title.indexOf('搜索') >= 0) return { type: 'game', id: 'visual' };
-        if (title.indexOf('数字记忆') >= 0) return { type: 'game', id: 'digit' };
-        if (title.indexOf('图案') >= 0 || title.indexOf('匹配') >= 0) return { type: 'game', id: 'pattern' };
-        if (title.indexOf('逻辑') >= 0 || title.indexOf('推理') >= 0) return { type: 'game', id: 'reason' };
-        if (title.indexOf('文字记忆') >= 0) return { type: 'game', id: 'text' };
-        if (title.indexOf('图形推理') >= 0) return { type: 'game', id: 'shape' };
-        if (title.indexOf('速算') >= 0 || title.indexOf('计算') >= 0) return { type: 'game', id: 'math' };
-        if (title.indexOf('空间') >= 0) return { type: 'game', id: 'space' };
-        if (title.indexOf('听音') >= 0) return { type: 'game', id: 'audio' };
-        if (title.indexOf('词汇') >= 0) return { type: 'game', id: 'word' };
-        if (title.indexOf('分类') >= 0 || title.indexOf('归纳') >= 0) return { type: 'game', id: 'classify' };
-        if (title.indexOf('注意') >= 0 || title.indexOf('追踪') >= 0) return { type: 'game', id: 'attention' };
-        if (title.indexOf('记忆宫殿') >= 0) return { type: 'game', id: 'palace' };
-        if (title.indexOf('stroop') >= 0 || title.indexOf('冲突') >= 0) return { type: 'game', id: 'stroop' };
-        if (title.indexOf('数形') >= 0) return { type: 'game', id: 'numshape' };
-        if (title.indexOf('守恒') >= 0) return { type: 'game', id: 'conserve' };
-        if (title.indexOf('知识网络') >= 0) return { type: 'game', id: 'network' };
-        if (title.indexOf('逆向') >= 0) return { type: 'game', id: 'reverse' };
-        if (title.indexOf('实验') >= 0) return { type: 'game', id: 'experiment' };
-        if (title.indexOf('色彩') >= 0 || title.indexOf('辨色') >= 0) return { type: 'game', id: 'color' };
-        if (title.indexOf('找不同') >= 0) return { type: 'game', id: 'diff' };
-        if (title.indexOf('快速') >= 0 || title.indexOf('反应') >= 0) return { type: 'game', id: 'tap' };
-        if (title.indexOf('翻牌') >= 0) return { type: 'game', id: 'flipcard' };
-        return { type: 'game', id: null }; // 游戏类但匹配不到具体游戏
-    }
+    // 2. 所有类型统一按标题关键词匹配游戏（优先级最高）
+    if (title.indexOf('舒尔特') >= 0) return { type: 'game', id: 'schulte' };
+    if (title.indexOf('视觉') >= 0 && title.indexOf('追踪') >= 0) return { type: 'game', id: 'attention' };
+    if (title.indexOf('视觉') >= 0 || title.indexOf('搜索') >= 0) return { type: 'game', id: 'visual' };
+    if (title.indexOf('听觉') >= 0 || title.indexOf('声音') >= 0 || title.indexOf('听音') >= 0) return { type: 'game', id: 'audio' };
+    if (title.indexOf('数字记忆') >= 0) return { type: 'game', id: 'digit' };
+    if (title.indexOf('文字记忆') >= 0 || title.indexOf('词语链') >= 0 || title.indexOf('词语') >= 0) return { type: 'game', id: 'text' };
+    if (title.indexOf('图片记忆') >= 0 || title.indexOf('位置记忆') >= 0) return { type: 'game', id: 'flipcard' };
+    if (title.indexOf('记忆宫殿') >= 0) return { type: 'game', id: 'palace' };
+    if (title.indexOf('图案') >= 0 || title.indexOf('匹配') >= 0 || title.indexOf('配对') >= 0) return { type: 'game', id: 'pattern' };
+    if (title.indexOf('逻辑') >= 0 || title.indexOf('推理') >= 0) return { type: 'game', id: 'reason' };
+    if (title.indexOf('图形推理') >= 0) return { type: 'game', id: 'shape' };
+    if (title.indexOf('速算') >= 0 || title.indexOf('计算') >= 0 || title.indexOf('数学') >= 0) return { type: 'game', id: 'math' };
+    if (title.indexOf('空间') >= 0 || title.indexOf('旋转') >= 0) return { type: 'game', id: 'space' };
+    if (title.indexOf('词汇') >= 0 || title.indexOf('联想') >= 0) return { type: 'game', id: 'word' };
+    if (title.indexOf('分类') >= 0 || title.indexOf('归纳') >= 0) return { type: 'game', id: 'classify' };
+    if (title.indexOf('注意') >= 0 || title.indexOf('追踪') >= 0 || title.indexOf('警觉') >= 0) return { type: 'game', id: 'attention' };
+    if (title.indexOf('stroop') >= 0 || title.indexOf('冲突') >= 0 || title.indexOf('干扰') >= 0) return { type: 'game', id: 'stroop' };
+    if (title.indexOf('数形') >= 0) return { type: 'game', id: 'numshape' };
+    if (title.indexOf('守恒') >= 0) return { type: 'game', id: 'conserve' };
+    if (title.indexOf('知识网络') >= 0 || title.indexOf('概念图') >= 0 || title.indexOf('思维导图') >= 0) return { type: 'game', id: 'network' };
+    if (title.indexOf('逆向') >= 0) return { type: 'game', id: 'reverse' };
+    if (title.indexOf('实验') >= 0) return { type: 'game', id: 'experiment' };
+    if (title.indexOf('色彩') >= 0 || title.indexOf('辨色') >= 0 || title.indexOf('颜色') >= 0) return { type: 'game', id: 'color' };
+    if (title.indexOf('找不同') >= 0 || title.indexOf('对比') >= 0) return { type: 'game', id: 'diff' };
+    if (title.indexOf('快速') >= 0 || title.indexOf('反应') >= 0 || title.indexOf('点击') >= 0) return { type: 'game', id: 'tap' };
+    if (title.indexOf('翻牌') >= 0) return { type: 'game', id: 'flipcard' };
+    if (title.indexOf('故事') >= 0 && title.indexOf('记忆') >= 0) return { type: 'game', id: 'text' };
+    if (title.indexOf('策略') >= 0 || title.indexOf('方法') >= 0 || title.indexOf('技巧') >= 0) return { type: 'game', id: 'reason' };
+    if (title.indexOf('反思') >= 0 || title.indexOf('评估') >= 0 || title.indexOf('总结') >= 0 || title.indexOf('记录') >= 0 || title.indexOf('撰写') >= 0) return { type: 'module', id: 'notepad' };
     
-    // 3. 按type映射默认游戏
+    // 3. 按type映射默认游戏（标题匹配失败后的兜底）
     if (type === 'attention') return { type: 'game', id: 'schulte' };
     if (type === 'memory') return { type: 'game', id: 'digit' };
     if (type === 'practice') return { type: 'game', id: null };
     
-    // 4. 其他模块跳转
+    // 4. 只有确实不是游戏训练的type才走模块
     if (type === 'video') return { type: 'module', id: 'video' };
     if (type === 'podcast') return { type: 'module', id: 'podcast' };
-    if (type === 'strategy' || type === 'method') return { type: 'module', id: 'method' };
-    if (type === 'creative') return { type: 'module', id: 'thinking' };
-    if (type === 'review' || type === 'quiz' || type === 'test') return { type: 'module', id: 'exam' };
-    if (type === 'writing') return { type: 'module', id: 'notepad' };
+    if (type === 'rest' || type === 'social' || type === 'planning') return { type: null, id: null };
     
     return { type: null, id: null };
 };
@@ -314,7 +313,7 @@ window.renderPlan = function(container) {
     }
     
     html += '<div style="margin-top:20px;padding:12px;background:#e3f2fd;border-radius:12px;">';
-    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V353 - 学习计划可直接跳转训练游戏，游戏完成自动同步</div>';
+    html += '<div style="font-size:12px;color:#1976d2;text-align:center;">✅ V354 - 学习计划智能跳转训练游戏，游戏完成自动同步</div>';
     html += '</div></div>';
     
     container.innerHTML = html;
