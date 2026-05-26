@@ -677,15 +677,16 @@ async function sendToDeepSeek() {
         currentChatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
     
+    // 保存图片引用（清空前）
+    var savedImage = currentDeepSeekImage;
+    
     // 构建用户消息
     var userContent;
-    if (hasImage) {
+    if (hasImage && savedImage) {
         userContent = [
+            { type: 'image_url', image_url: { url: savedImage } },
             { type: 'text', text: userMessage || '请分析这张图片' }
         ];
-        if (currentDeepSeekImage) {
-            userContent.unshift({ type: 'image_url', image_url: { url: currentDeepSeekImage } });
-        }
     } else {
         userContent = userMessage;
     }
@@ -695,8 +696,10 @@ async function sendToDeepSeek() {
     
     // 清空输入
     inputEl.value = '';
+    inputEl.style.height = 'auto';
     clearDeepSeekImage();
-    document.getElementById('ds-image-preview').innerHTML = '';
+    var previewEl = document.getElementById('ds-image-preview');
+    if (previewEl) previewEl.innerHTML = '';
     
     // 渲染用户消息
     renderMessages();
@@ -711,8 +714,8 @@ async function sendToDeepSeek() {
     
     try {
         var result;
-        if (hasImage && currentDeepSeekImage) {
-            result = await callVisionAPI(currentDeepSeekImage, userMessage || '请分析这张图片');
+        if (hasImage && savedImage) {
+            result = await callVisionAPI(savedImage, userMessage || '请分析这张图片');
         } else {
             result = await callDeepSeekAPI(apiMessages, 0.7);
         }
@@ -731,6 +734,25 @@ async function sendToDeepSeek() {
             
             // 渲染消息
             renderMessages();
+            
+            // 自动语音播报
+            if (window.speechSynthesis && finalContent) {
+                window.speechSynthesis.cancel();
+                var utter = new SpeechSynthesisUtterance(finalContent.substring(0, 500));
+                utter.lang = 'zh-CN';
+                utter.rate = 1.1;
+                window.speechSynthesis.speak(utter);
+            }
+            
+            // 语音播报
+            if (window.speechSynthesis && finalContent) {
+                window.speechSynthesis.cancel();
+                var utter = new SpeechSynthesisUtterance(finalContent.substring(0, 500));
+                utter.lang = 'zh-CN';
+                utter.rate = 1.1;
+                utter.pitch = 1.0;
+                window.speechSynthesis.speak(utter);
+            }
             
             // 显示思考过程
             if (thinking && window.deepseekMode === 'deepthink') {
@@ -1099,8 +1121,14 @@ function renderDeepseek(contentEl) {
         // 历史列表将通过JS加载
         '</div>' +
         '<div class="ds-sidebar-footer">' +
+        '<div class="ds-footer-row">' +
         '<div class="ds-balance-info" onclick="openApiConfigModalBridge()">' +
-        '<span>余额：</span><span id="ds-balance">加载中...</span>' +
+        '<span style="font-size:11px;color:#999;">余额</span> <span id="ds-balance" style="color:#43a047;font-weight:600;">加载中...</span>' +
+        '</div>' +
+        '<div class="ds-footer-btns">' +
+        '<button class="ds-footer-btn" onclick="openApiConfigModalBridge()" style="background:rgba(255,255,255,0.08);color:#aaa;">⚙️ 配置</button>' +
+        '<button class="ds-footer-btn" onclick="showAPIRechargeModal()" style="background:linear-gradient(135deg,#4d6bfe,#764ba2);color:white;">💳 充值</button>' +
+        '</div>' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -1132,16 +1160,12 @@ function renderDeepseek(contentEl) {
         
         // 输入区域
         '<div class="ds-input-area">' +
-        '<div class="ds-input-row">' +
-        '<button class="ds-tool-btn" onclick="triggerDeepSeekImage()" title="上传图片">📷</button>' +
         '<div class="ds-image-preview" id="ds-image-preview"></div>' +
-        '</div>' +
         '<div class="ds-input-box">' +
-        '<textarea id="ds-input" placeholder="输入消息..." rows="1" onkeydown="handleInputKeydown(event)"></textarea>' +
-        '<button class="ds-send-btn" onclick="sendToDeepSeek()">➤</button>' +
-        '</div>' +
-        '<div class="ds-voice-row">' +
-        '<button class="ds-voice-btn" onclick="tipKeyboardVoice()">🎤 语音输入</button>' +
+        '<button class="ds-tool-btn" onclick="triggerDeepSeekImage()" title="上传图片">📷</button>' +
+        '<button class="ds-tool-btn" onclick="startDeepSeekVoice()" title="语音输入">🎤</button>' +
+        '<textarea id="ds-input" placeholder="给 DeepSeek 发送消息..." rows="1" onkeydown="handleInputKeydown(event)"></textarea>' +
+        '<button class="ds-send-btn" id="ds-send-btn" onclick="sendToDeepSeek()">➤</button>' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -1266,15 +1290,15 @@ function handleInputKeydown(event) {
 
 // 更新余额显示
 function updateDeepSeekBalance() {
-    var apiKey = (typeof DEEPSEEK_API_KEY !== 'undefined' && DEEPSEEK_API_KEY) ? DEEPSEEK_API_KEY : 
-                 localStorage.getItem('deepseek_api_key') || '';
-    if (!apiKey) {
-        var user = window.getCurrentUserData();
-        apiKey = user && user.deepseekApiKey ? user.deepseekApiKey : '';
-    }
+    var apiKey = '';
+    // Try multiple sources for API key
+    try { var cfg = JSON.parse(localStorage.getItem('api_config') || '{}'); if (cfg.deepseek) apiKey = cfg.deepseek; } catch(e) {}
+    if (!apiKey) apiKey = localStorage.getItem('deepseek_api_key') || '';
+    if (!apiKey && typeof DEEPSEEK_API_KEY !== 'undefined') apiKey = DEEPSEEK_API_KEY;
+    if (!apiKey) { try { var user = window.getCurrentUserData(); if (user && user.deepseekApiKey) apiKey = user.deepseekApiKey; } catch(e) {} }
     if (!apiKey) {
         var el = document.getElementById('ds-balance');
-        if (el) el.textContent = '未配置';
+        if (el) el.textContent = '未配置Key';
         return;
     }
     
