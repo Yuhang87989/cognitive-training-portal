@@ -8,10 +8,10 @@
     var moduleScriptMap = {
         'plan': ['js/modules/week-plans.js', 'js/modules/plan.js'],
         'pet': ['js/modules/pet.js'],
-        'practice': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/practice.js'],
-        'ai': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/practice.js'],
+        'practice': ['js/modules/data-sync.js', 'js/modules/practice.js'],
+        'ai': ['js/modules/data-sync.js', 'js/modules/practice.js'],
         'topics': ['js/data/topics.js', 'js/modules/topics.js'],
-        'deepseek': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/coze-sync-page.js', 'js/modules/deepseek.js'],
+        'deepseek': ['js/modules/data-sync.js', 'js/modules/deepseek.js'],
         'wrongbook': ['js/modules/wrongbook.js'],
         'games': ['js/modules/games.js'],
         'podcast': ['js/modules/podcast.js'],
@@ -26,7 +26,6 @@
         'exam': ['js/modules/exam.js'],
         'mindmap': ['js/modules/mindmap.js'],
         'calculator': ['js/modules/calculator.js'],
-        'coze-sync': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/coze-sync-page.js']
     };
     
     window.loadModuleScripts = function(module, callback) {
