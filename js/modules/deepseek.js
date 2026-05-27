@@ -415,13 +415,13 @@ async function callDeepSeekVisionAPI(imageDataUrl, question) {
 async function callVisionAPIEndpoint(messages, temperature, apiType) {
     var apiKey, apiUrl, model;
     if (apiType === 'siliconflow') {
-        apiKey = VISION_SILICONFLOW_KEY || DEEPSEEK_API_KEY;
-        apiUrl = VISION_SILICONFLOW_URL || 'https://api.siliconflow.cn/v1/chat/completions';
-        model = VISION_SILICONFLOW_MODEL || 'Qwen/Qwen3-VL-30B-A3B-Instruct';
+        apiKey = localStorage.getItem('siliconflow_api_key') || (typeof VISION_SILICONFLOW_KEY !== 'undefined' ? VISION_SILICONFLOW_KEY : '') || '';
+        apiUrl = (typeof VISION_SILICONFLOW_URL !== 'undefined' ? VISION_SILICONFLOW_URL : '') || 'https://api.siliconflow.cn/v1/chat/completions';
+        model = (typeof VISION_SILICONFLOW_MODEL !== 'undefined' ? VISION_SILICONFLOW_MODEL : '') || 'Qwen/Qwen3-VL-30B-A3B-Instruct';
     } else {
-        apiKey = DEEPSEEK_API_KEY;
-        apiUrl = DEEPSEEK_API_URL;
-        model = DEEPSEEK_MODEL;
+        apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '') || '';
+        apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' ? DEEPSEEK_API_URL : '') || 'https://api.deepseek.com/v1/chat/completions';
+        model = (typeof DEEPSEEK_MODEL !== 'undefined' ? DEEPSEEK_MODEL : '') || 'deepseek-chat';
     }
     if (!apiKey) return {success: false, content: '', message: '未配置API Key'};
     try {
@@ -715,7 +715,12 @@ async function sendToDeepSeek() {
     try {
         var result;
         if (hasImage && savedImage) {
-            result = await callVisionAPI(savedImage, userMessage || '请分析这张图片');
+            // 先尝试OCR提取文字，再发送给视觉API
+            try {
+                result = await callVisionAPI(savedImage, userMessage || '请分析这张图片');
+            } catch(visionErr) {
+                result = {success: false, message: '图片识别失败: ' + visionErr.message};
+            }
         } else {
             result = await callDeepSeekAPI(apiMessages, 0.7);
         }
@@ -1112,7 +1117,7 @@ function renderDeepseek(contentEl) {
         // 左侧边栏
         '<div class="ds-sidebar" id="ds-sidebar">' +
         '<div class="ds-sidebar-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid #2d2d30">' +
-        '<button class="ds-new-chat-btn" onclick="startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'));">' +
+        '<button class="ds-new-chat-btn" onclick="startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'));" style="width:100%;padding:10px;background:#4d6bfe;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;"' +
         '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4v16m8-8H4"/></svg>' +
         '新对话</button>' +
         '<button onclick="toggleSidebar()" style="background:none;border:none;color:#888;font-size:20px;cursor:pointer;padding:4px 8px">✕</button>' +
@@ -1120,12 +1125,12 @@ function renderDeepseek(contentEl) {
         '<div class="ds-sidebar-search">' +
         '<input type="text" id="ds-sidebar-search-input" placeholder="搜索历史..." oninput="searchHistory(this.value)">' +
         '</div>' +
-        '<div class="ds-chat-list" id="ds-chat-list">' +
+        '<div class="ds-chat-list" id="ds-chat-list" style="flex:1;overflow-y:auto;padding:0 12px;">' +
         // 历史列表将通过JS加载
         '</div>' +
-        '<div class="ds-sidebar-footer">' +
+        '<div class="ds-sidebar-footer" style="padding:12px;border-top:1px solid #2d2d30;margin-top:auto;">' +
         '<div class="ds-footer-row">' +
-        '<div class="ds-balance-info" onclick="openApiConfigModalBridge()">' +
+        '<div class="ds-balance-info" onclick="openApiConfigModalBridge()" style="padding:8px 0;cursor:pointer;"' +
         '<span style="font-size:11px;color:#999;">💰 余额</span> <span id="ds-balance" style="color:#43a047;font-weight:600;">加载中...</span>' +
         '</div>' +
         '<div class="ds-footer-btns">' +
@@ -1255,10 +1260,10 @@ async function loadChatList() {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')">' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 12px;border-bottom:1px solid #2d2d30;cursor:pointer;color:#ececf1;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
-                '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();">✕</button>' +
+                '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();" style="color:#888;background:none;border:none;font-size:14px;cursor:pointer;padding:4px 8px;">✕</button>' +
                 '</div>';
         }
         listEl.innerHTML = html;
@@ -1284,7 +1289,7 @@ async function searchHistory(keyword) {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')">' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 12px;border-bottom:1px solid #2d2d30;cursor:pointer;color:#ececf1;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
                 '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');searchHistory(\'' + keyword + '\');">✕</button>' +

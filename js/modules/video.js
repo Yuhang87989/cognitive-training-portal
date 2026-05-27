@@ -56,6 +56,13 @@ function renderVideo(container) {
     
     // 渲染本地视频列表
     renderLocalVideoList();
+    
+    // 确保视频播放器已初始化
+    setTimeout(function() {
+        if (typeof window.initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
+            window.initEnhancedVideoPlayer();
+        }
+    }, 300);
 }
 
 function renderLocalVideoList() {

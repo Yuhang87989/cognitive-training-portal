@@ -413,7 +413,7 @@ function openFullscreenPage(module) {
     
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
-        case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
+        case 'practice': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
         case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
         case 'plan': 
