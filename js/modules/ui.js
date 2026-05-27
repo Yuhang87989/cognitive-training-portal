@@ -1,3 +1,82 @@
+
+// V386: 按需加载模块脚本
+(function() {
+    var _loadedScripts = {};
+    var _loadingScripts = {};
+    
+    // 模块到脚本文件的映射
+    var moduleScriptMap = {
+        'plan': ['js/modules/week-plans.js', 'js/modules/plan.js'],
+        'pet': ['js/modules/pet.js'],
+        'practice': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/practice.js'],
+        'ai': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/practice.js'],
+        'topics': ['js/data/topics.js', 'js/modules/topics.js'],
+        'deepseek': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/coze-sync-page.js', 'js/modules/deepseek.js'],
+        'wrongbook': ['js/modules/wrongbook.js'],
+        'games': ['js/modules/games.js'],
+        'podcast': ['js/modules/podcast.js'],
+        'video': ['js/modules/video.js', 'js/modules/player.js'],
+        'thinking': ['js/modules/thinking.js'],
+        'method': ['js/modules/method.js'],
+        'map': ['js/modules/map.js'],
+        'my': ['js/modules/my-page.js'],
+        'pomodoro': ['js/modules/pomodoro.js'],
+        'library': ['js/modules/library.js'],
+        'notepad': ['js/modules/notepad.js'],
+        'exam': ['js/modules/exam.js'],
+        'mindmap': ['js/modules/mindmap.js'],
+        'calculator': ['js/modules/calculator.js'],
+        'coze-sync': ['js/modules/data-sync.js', 'js/modules/coze-sync.js', 'js/modules/coze-sync-page.js']
+    };
+    
+    window.loadModuleScripts = function(module, callback) {
+        var scripts = moduleScriptMap[module];
+        if (!scripts || scripts.length === 0) {
+            if (callback) callback();
+            return;
+        }
+        
+        // 过滤已加载的
+        var toLoad = scripts.filter(function(s) { return !_loadedScripts[s]; });
+        if (toLoad.length === 0) {
+            if (callback) callback();
+            return;
+        }
+        
+        var loaded = 0;
+        var v = typeof SITE_VERSION !== 'undefined' ? SITE_VERSION : '386';
+        
+        toLoad.forEach(function(src) {
+            if (_loadingScripts[src]) {
+                // 正在加载中，等待
+                var checkTimer = setInterval(function() {
+                    if (_loadedScripts[src]) {
+                        clearInterval(checkTimer);
+                        loaded++;
+                        if (loaded === toLoad.length && callback) callback();
+                    }
+                }, 50);
+                return;
+            }
+            
+            _loadingScripts[src] = true;
+            var script = document.createElement('script');
+            script.src = src + '?v=' + v;
+            script.onload = function() {
+                _loadedScripts[src] = true;
+                delete _loadingScripts[src];
+                loaded++;
+                if (loaded === toLoad.length && callback) callback();
+            };
+            script.onerror = function() {
+                delete _loadingScripts[src];
+                loaded++;
+                if (loaded === toLoad.length && callback) callback();
+            };
+            document.head.appendChild(script);
+        });
+    };
+})();
 // ============================================================
 // Config - 全局配置
 // ============================================================
@@ -410,11 +489,25 @@ function openFullscreenPage(module) {
     titleEl.textContent = moduleTitles[module] || module;
     
     // 清空上一个模块的内容和样式，防止残留
-    contentEl.innerHTML = '';
+    contentEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><div>模块加载中...</div></div></div>';
     contentEl.style.cssText = '';
     contentEl.className = 'fp-content';
     
-    console.log('[V377] 打开模块:', module);
+    // V386: 先加载模块脚本，再渲染
+    if (typeof window.loadModuleScripts === 'function') {
+        window.loadModuleScripts(module, function() {
+            renderModuleContent(module, contentEl);
+        });
+    } else {
+        renderModuleContent(module, contentEl);
+    }
+}
+
+function renderModuleContent(module, contentEl) {
+    contentEl.innerHTML = '';
+    contentEl.className = 'fp-content';
+    
+    console.log('[V386] 渲染模块:', module);
     
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
