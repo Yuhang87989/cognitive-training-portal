@@ -982,7 +982,10 @@ function openSiliconFlowRecharge() {
 }
 
 function showAPIRechargeModal() {
+    closeDSModal();
     var modal = document.createElement('div');
+    modal.id = 'ds-modal-overlay';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;';
     modal.className = 'ds-modal-overlay';
     modal.innerHTML = '<div class="ds-modal">' +
         '<div class="ds-modal-header">API余额不足</div>' +
@@ -998,8 +1001,14 @@ function showAPIRechargeModal() {
 window.showAPIRechargeModal = showAPIRechargeModal;
 
 function closeDSModal() {
-    var modal = document.querySelector('.ds-modal-overlay');
-    if (modal) modal.remove();
+    var m1 = document.getElementById('ds-modal-overlay');
+    var m2 = document.querySelector('.ds-modal-overlay');
+    if(m1) m1.style.display='none';
+    if(m2) m2.style.display='none';
+    setTimeout(function(){
+        if(m1 && m1.parentNode) m1.parentNode.removeChild(m1);
+        if(m2 && m2.parentNode) m2.parentNode.removeChild(m2);
+    },100);
 }
 
 // ============================================================
@@ -1172,7 +1181,7 @@ function renderDeepseek(contentEl) {
         '<div class="ds-input-box">' +
         '<button class="ds-tool-btn" onclick="triggerDeepSeekImage()" title="上传图片">📷</button>' +
         '<button class="ds-tool-btn" onclick="startDeepSeekVoice()" title="语音输入">🎤</button>' +
-        '<textarea id="ds-input" placeholder="给 DeepSeek 发送消息..." rows="1" onkeydown="handleInputKeydown(event)"></textarea>' +
+        '<textarea id="ds-input"  rows="1" onkeydown="handleInputKeydown(event)"></textarea>' +
         '<button class="ds-send-btn" id="ds-send-btn" onclick="sendToDeepSeek()">➤</button>' +
         '</div>' +
         '</div>' +
@@ -1260,7 +1269,7 @@ async function loadChatList() {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:6px 0;border:1px solid #3a3a3c;border-radius:12px;cursor:pointer;color:#ececf1;background:rgba(255,255,255,0.05);transition:background 0.2s;"' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:4px 0;border-radius:12px;cursor:pointer;color:#ececf1;background:#2d2d30;transition:background 0.2s;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
                 '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();" style="color:#888;background:none;border:none;font-size:14px;cursor:pointer;padding:4px 8px;">✕</button>' +
@@ -1289,7 +1298,7 @@ async function searchHistory(keyword) {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:6px 0;border:1px solid #3a3a3c;border-radius:12px;cursor:pointer;color:#ececf1;background:rgba(255,255,255,0.05);transition:background 0.2s;"' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:4px 0;border-radius:12px;cursor:pointer;color:#ececf1;background:#2d2d30;transition:background 0.2s;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
                 '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');searchHistory(\'' + keyword + '\');">✕</button>' +
@@ -1345,15 +1354,62 @@ window.updateDeepSeekBalance = updateDeepSeekBalance;
 
 // API配置
 function openApiConfigModalBridge(type) {
-    if (typeof openApiConfigModal === 'function') { openApiConfigModal(type); return; }
-    var key = prompt('请输入 DeepSeek API Key:');
-    if (key && key.trim()) {
-        try { var c = JSON.parse(localStorage.getItem('api_config') || '{}'); c.deepseek = key.trim(); localStorage.setItem('api_config', JSON.stringify(c)); } catch(e) {}
+    var oldM = document.getElementById('ds-modal-overlay');
+    if(oldM && oldM.parentNode) oldM.parentNode.removeChild(oldM);
+    
+    var dk = localStorage.getItem('deepseek_api_key') || '';
+    var sf = localStorage.getItem('siliconflow_api_key') || '';
+    var mk = dk ? dk.substring(0,8)+'...' : '未设置';
+    var ms = sf ? sf.substring(0,8)+'...' : '未设置';
+    
+    var overlay = document.createElement('div');
+    overlay.id = 'ds-modal-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:white;border-radius:16px;padding:24px;width:90%;max-width:360px;max-height:80vh;overflow-y:auto;';
+    modal.innerHTML = '<div style="font-size:18px;font-weight:600;margin-bottom:16px;">⚙️ API配置</div>' +
+        '<div style="margin-bottom:16px;"><div style="font-size:14px;font-weight:600;margin-bottom:8px;">🤖 DeepSeek API</div>' +
+        '<div style="font-size:12px;color:#999;margin-bottom:8px;">当前: '+mk+'</div>' +
+        '<input id="ds-cfg-key" type="password" placeholder="输入DeepSeek API Key" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box;">' +
+        '<button onclick="saveDsApiKey()" style="width:100%;margin-top:8px;padding:10px;background:#4d6bfe;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;">保存</button></div>' +
+        '<div style="margin-bottom:16px;"><div style="font-size:14px;font-weight:600;margin-bottom:8px;">🔥 SiliconFlow API</div>' +
+        '<div style="font-size:12px;color:#999;margin-bottom:8px;">当前: '+ms+'</div>' +
+        '<input id="sf-cfg-key" type="password" placeholder="输入SiliconFlow API Key" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box;">' +
+        '<button onclick="saveSfApiKey()" style="width:100%;margin-top:8px;padding:10px;background:#ff6b35;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;">保存</button></div>' +
+        '<button onclick="closeDSModal()" style="width:100%;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;cursor:pointer;font-size:14px;">关闭</button>';
+    
+    overlay.appendChild(modal);
+    overlay.onclick = function(e){ if(e.target===overlay) closeDSModal(); };
+    document.body.appendChild(overlay);
+}
+
+function saveDsApiKey() {
+    var key = document.getElementById('ds-cfg-key').value;
+    if(key && key.trim()){
         localStorage.setItem('deepseek_api_key', key.trim());
-        updateDeepSeekBalance();
-        window.showToast('API Key 已保存');
+        try{ var c=JSON.parse(localStorage.getItem('api_config')||'{}'); c.deepseek=key.trim(); localStorage.setItem('api_config',JSON.stringify(c)); }catch(e){}
+        window.showToast('DeepSeek API Key 已保存');
+        closeDSModal();
+        if(typeof updateDeepSeekBalance==='function') updateDeepSeekBalance();
+    } else {
+        window.showToast('请输入API Key');
     }
 }
+window.saveDsApiKey = saveDsApiKey;
+
+function saveSfApiKey() {
+    var key = document.getElementById('sf-cfg-key').value;
+    if(key && key.trim()){
+        localStorage.setItem('siliconflow_api_key', key.trim());
+        window.showToast('SiliconFlow API Key 已保存');
+        closeDSModal();
+    } else {
+        window.showToast('请输入API Key');
+    }
+}
+window.saveSfApiKey = saveSfApiKey;
+
 window.openApiConfigModal = window.openApiConfigModal || openApiConfigModalBridge;
 
 // 清空所有历史
