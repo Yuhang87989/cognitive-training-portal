@@ -773,9 +773,15 @@ async function sendToDeepSeek() {
     // 显示AI思考状态
     showThinkingIndicator();
     
-    // 构建API消息
+    // 构建API消息 - 确保content是字符串，过滤掉旧的image_url格式
     var apiMessages = deepseekConversationHistory.map(function(m) {
-        return { role: m.role, content: m.content };
+        var content = m.content;
+        // 如果content是数组（旧的image_url格式），提取文字部分
+        if (Array.isArray(content)) {
+            var textParts = content.filter(function(c) { return c.type === 'text'; });
+            content = textParts.length > 0 ? textParts.map(function(c) { return c.text; }).join(' ') : '[图片]';
+        }
+        return { role: m.role, content: content };
     });
     
     try {
