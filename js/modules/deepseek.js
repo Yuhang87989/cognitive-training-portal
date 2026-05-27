@@ -1260,7 +1260,7 @@ async function loadChatList() {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 12px;border-bottom:1px solid #2d2d30;cursor:pointer;color:#ececf1;"' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:6px 0;border:1px solid #3a3a3c;border-radius:12px;cursor:pointer;color:#ececf1;background:rgba(255,255,255,0.05);transition:background 0.2s;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
                 '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();" style="color:#888;background:none;border:none;font-size:14px;cursor:pointer;padding:4px 8px;">✕</button>' +
@@ -1289,7 +1289,7 @@ async function searchHistory(keyword) {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 12px;border-bottom:1px solid #2d2d30;cursor:pointer;color:#ececf1;"' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:6px 0;border:1px solid #3a3a3c;border-radius:12px;cursor:pointer;color:#ececf1;background:rgba(255,255,255,0.05);transition:background 0.2s;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
                 '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');searchHistory(\'' + keyword + '\');">✕</button>' +
