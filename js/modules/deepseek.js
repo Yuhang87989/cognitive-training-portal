@@ -972,40 +972,53 @@ function scrollToBottom() {
 // ============================================================
 
 function startDeepSeekVoice() {
+    // 微信浏览器不支持语音识别
+    if (isWeChatBrowser()) {
+        window.showToast('微信内不支持语音，请用键盘输入');
+        return;
+    }
     if (!supportsSpeechRecognition()) {
-        window.showToast('浏览器不支持语音输入');
+        window.showToast('当前浏览器不支持语音，请用键盘输入');
         return;
     }
     
-    var recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
-    recognition.lang = 'zh-CN';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    
-    recognition.onresult = function(event) {
-        var result = '';
-        for (var i = event.resultIndex; i < event.results.length; i++) {
-            result += event.results[i][0].transcript;
-        }
-        var inputEl = document.getElementById('ds-input');
-        if (inputEl) inputEl.value = result;
-    };
-    
-    recognition.onerror = function(event) {
-        if (event.error !== 'no-speech') {
-            window.showToast('语音识别出错');
-        }
-    };
-    
-    recognition.onend = function() {
-        var inputEl = document.getElementById('ds-input');
-        if (inputEl && inputEl.value.trim()) {
-            sendToDeepSeek();
-        }
-    };
-    
-    recognition.start();
-    window.showToast('请说话...');
+    try {
+        var recognition = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
+        recognition.lang = 'zh-CN';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        
+        recognition.onresult = function(event) {
+            var result = '';
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+                result += event.results[i][0].transcript;
+            }
+            var inputEl = document.getElementById('ds-input');
+            if (inputEl) inputEl.value = result;
+        };
+        
+        recognition.onerror = function(event) {
+            var msg = '语音识别出错';
+            if (event.error === 'not-allowed') msg = '请允许麦克风权限';
+            else if (event.error === 'network') msg = '网络错误，请检查连接';
+            else if (event.error === 'no-speech') return; // 没说话不提示
+            else if (event.error === 'aborted') return;
+            else msg = '语音识别失败：' + event.error;
+            window.showToast(msg);
+        };
+        
+        recognition.onend = function() {
+            var inputEl = document.getElementById('ds-input');
+            if (inputEl && inputEl.value.trim()) {
+                sendToDeepSeek();
+            }
+        };
+        
+        recognition.start();
+        window.showToast('🎤 请说话...');
+    } catch(e) {
+        window.showToast('语音启动失败，请用键盘输入');
+    }
 }
 
 // ============================================================
