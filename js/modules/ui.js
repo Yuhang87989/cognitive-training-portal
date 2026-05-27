@@ -409,7 +409,12 @@ function openFullscreenPage(module) {
     };
     titleEl.textContent = moduleTitles[module] || module;
     
-    console.log('[V370] 打开模块:', module);
+    // 清空上一个模块的内容和样式，防止残留
+    contentEl.innerHTML = '';
+    contentEl.style.cssText = '';
+    contentEl.className = 'fp-content';
+    
+    console.log('[V377] 打开模块:', module);
     
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
