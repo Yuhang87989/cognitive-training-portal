@@ -2,22 +2,34 @@
 <html lang="zh-CN">
 <head>
 <script>
-// V361: 强制版本刷新 - 解决SW缓存问题
+// V364: 安全版本更新 - 只在版本变更时刷新一次，保护本地数据
 (function(){
   var VER = '364';
-  // 如果URL没有版本参数，强制带参数刷新（绕过SW缓存）
-  if(location.search.indexOf('v='+VER) === -1){
+  var STORED_VER = localStorage.getItem('_site_ver') || '';
+  
+  // 只在版本变更时才刷新（不是每次访问都刷新，保护IndexedDB/localStorage数据）
+  if(STORED_VER !== VER){
+    localStorage.setItem('_site_ver', VER);
+    // 注销旧SW
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(r){
+        r.forEach(function(x){ x.unregister(); });
+      });
+    }
+    // 清空HTTP缓存（不影响IndexedDB/localStorage）
+    if(typeof caches !== 'undefined'){
+      caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); });
+    }
+    // 带版本参数刷新一次，绕过SW缓存的旧资源
     location.replace(location.pathname + '?v=' + VER);
-    return; // 不再执行后续代码，等刷新后重新加载
+    return;
   }
-  // 已是最新版本，注销所有SW + 清空所有缓存
+  
+  // 版本未变，正常加载，确保SW已注销
   if('serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations().then(function(r){
       r.forEach(function(x){ x.unregister(); });
     });
-  }
-  if(typeof caches !== 'undefined'){
-    caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); });
   }
 })();
 
