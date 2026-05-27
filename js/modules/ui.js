@@ -411,23 +411,48 @@ function openFullscreenPage(module) {
     
     console.log('[V292] 打开模块:', module, 'renderPlan类型:', typeof window.renderPlan, 'renderMindMap类型:', typeof window.renderMindMap);
     
+    // 模块渲染函数映射表
+    var moduleRenders = {
+        'ai': 'renderPractice',
+        'practice': 'renderTopics',
+        'topics': 'renderTopics',
+        'map': 'renderMap',
+        'plan': 'renderPlan',
+        'method': 'renderMethod',
+        'thinking': 'renderThinking',
+        'podcast': 'renderPodcast',
+        'video': 'renderVideo',
+        'games': 'renderGames',
+        'deepseek': 'renderDeepseek',
+        'wrongbook': 'renderWrongbook',
+        'pomodoro': 'renderPomodoro'
+    };
+    
+    var renderFn = moduleRenders[module];
+    if (renderFn && typeof window[renderFn] === 'function') {
+        window[renderFn](contentEl);
+    } else if (renderFn) {
+        // 模块还在异步加载中，显示加载提示并等待
+        contentEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><div>模块加载中...</div></div></div>';
+        var waitCount = 0;
+        var waitTimer = setInterval(function() {
+            waitCount++;
+            if (typeof window[renderFn] === 'function') {
+                clearInterval(waitTimer);
+                window[renderFn](contentEl);
+            } else if (waitCount > 50) {
+                clearInterval(waitTimer);
+                contentEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ff6b6b;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">❌</div><div>模块加载失败，请刷新重试</div></div></div>';
+            }
+        }, 100);
+    }
+    
+    // plan模块特殊处理
+    if (module === 'plan' && typeof window.renderPlan === 'function') {
+        console.log('[V368] 渲染学习计划');
+    }
+    
     switch (module) {
-        case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
-        case 'practice': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
-        case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
-        case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
-        case 'plan': 
-            console.log('[V292] 渲染学习计划');
-            window.renderPlan(contentEl); 
-            break;
-        case 'method': if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
-        case 'thinking': if (typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
-        case 'podcast': if (typeof window.renderPodcast === 'function') window.renderPodcast(contentEl); break;
-        case 'video': if (typeof window.renderVideo === 'function') window.renderVideo(contentEl); break;
-        case 'games': if (typeof window.renderGames === 'function') window.renderGames(contentEl); break;
-        case 'deepseek': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
-        case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
-        case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
         case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
         case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
         case 'exam': if (typeof window.renderExam === 'function') window.renderExam(contentEl); break;

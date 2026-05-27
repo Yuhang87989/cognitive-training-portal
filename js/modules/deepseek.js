@@ -392,24 +392,9 @@ async function callSiliconFlowVisionAPI(imageDataUrl, question) {
 }
 
 async function callDeepSeekVisionAPI(imageDataUrl, question) {
-    console.log('[VisionAPI] 尝试使用DeepSeek视觉API');
-    if (!imageDataUrl || !imageDataUrl.startsWith('data:')) {
-        return {success: false, content: '', message: '图片格式不正确'};
-    }
-    try {
-        window.showToast('正在识别图片...');
-        var messages = [
-            { role: 'user', content: [
-                { type: 'image_url', image_url: { url: imageDataUrl } },
-                { type: 'text', text: question || '请分析这张图片的内容，识别其中的文字和关键信息。' }
-            ]}
-        ];
-        var result = await callVisionAPIEndpoint(messages, 0.3, 'deepseek');
-        return result;
-    } catch(e) {
-        console.warn('[VisionAPI] DeepSeek视觉识别异常:', e.message);
-        return {success: false, content: '', message: e.message};
-    }
+    console.log('[VisionAPI] DeepSeek deepseek-chat不支持图片，直接返回unsupported');
+    // deepseek-chat模型不支持vision，直接返回unsupported让调用方走SiliconFlow
+    return {success: false, content: '', message: 'unsupported', unsupported: true};
 }
 
 async function callVisionAPIEndpoint(messages, temperature, apiType) {
@@ -456,14 +441,16 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
 }
 
 async function callVisionAPI(imageDataUrl, question) {
-    var r1 = await callDeepSeekVisionAPI(imageDataUrl, question);
-    if (r1.success) return r1;
-    if (r1.unsupported) {
-        var r2 = await callSiliconFlowVisionAPI(imageDataUrl, question);
+    // 直接用SiliconFlow视觉API（支持图片），DeepSeek deepseek-chat不支持图片
+    var r = await callSiliconFlowVisionAPI(imageDataUrl, question);
+    if (r.success) return r;
+    // 如果SiliconFlow也不行，尝试DeepSeek
+    if (r.unsupported || r.message === 'unsupported') {
+        var r2 = await callDeepSeekVisionAPI(imageDataUrl, question);
         if (r2.success) return r2;
-        if (r2.unsupported) return {success: false, message: '当前API均不支持图片识别'};
+        return {success: false, message: '图片识别失败，请检查API配置和余额'};
     }
-    return r1;
+    return r;
 }
 
 async function ocrExtractText(imageDataUrl, progressCallback) {
@@ -1269,10 +1256,10 @@ async function loadChatList() {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:4px 0;border-radius:12px;cursor:pointer;color:#ececf1;background:#2d2d30;transition:background 0.2s;"' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 14px;margin:4px 0;border-radius:10px;cursor:pointer;color:#1a1a2e;background:#f0f0f0;transition:background 0.2s;font-size:13px;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
-                '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();" style="color:#888;background:none;border:none;font-size:14px;cursor:pointer;padding:4px 8px;">✕</button>' +
+                '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');loadChatList();" style="color:#999;background:none;border:none;font-size:12px;cursor:pointer;padding:2px 6px;">✕</button>' +
                 '</div>';
         }
         listEl.innerHTML = html;
@@ -1298,7 +1285,7 @@ async function searchHistory(keyword) {
         for (var i = 0; i < chats.length; i++) {
             var chat = chats[i];
             var isActive = chat.id === currentChatId ? 'active' : '';
-            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 16px;margin:4px 0;border-radius:12px;cursor:pointer;color:#ececf1;background:#2d2d30;transition:background 0.2s;"' +
+            html += '<div class="ds-chat-item ' + isActive + '" onclick="loadSavedDeepSeekChat(\'' + chat.id + '\')" style="padding:10px 14px;margin:4px 0;border-radius:10px;cursor:pointer;color:#1a1a2e;background:#f0f0f0;transition:background 0.2s;font-size:13px;"' +
                 '<div class="ds-chat-item-title">' + escapeHtml(chat.title || '新对话') + '</div>' +
                 '<div class="ds-chat-item-time">' + (chat.time || '') + '</div>' +
                 '<button class="ds-chat-item-delete" onclick="event.stopPropagation();deleteSavedDeepSeekChat(\'' + chat.id + '\');searchHistory(\'' + keyword + '\');">✕</button>' +
