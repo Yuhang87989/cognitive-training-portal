@@ -1888,77 +1888,64 @@
     
     // 从书籍生成思维导图
     function generateMindMapFromBook(bookId) {
-        const data = getLibraryData();
-        const book = data.books.find(b => b.id === bookId);
+        var data = getLibraryData();
+        var book = data.books.find(function(b) { return b.id === bookId; });
         
         if (!book) {
             window.showToast('❌ 未找到书籍');
             return;
         }
         
-        // 显示加载提示
         window.showToast('🧠 正在生成思维导图...');
         
-        // 构建思维导图节点数据
-        // 根节点是书籍标题
-        // 子节点是各章节标题
-        // 孙子节点是章节内容摘要（前20个字）
+        var mapId = 'book_' + bookId + '_' + Date.now();
+        var colors = ['#f093fb', '#4facfe', '#43e97b', '#fa709a', '#a855f7', '#6366f1', '#ff6b6b', '#ffa502'];
         
-        const mindMapData = {
-            id: 'map_from_book_' + bookId + '_' + Date.now(),
-            name: book.title,
-            nodes: [
-                // 根节点
-                { id: 1, text: book.title, x: 50, y: 50, color: '#667eea', isRoot: true }
-            ]
-        };
+        // 构建思维导图数据（与mindmap模块格式一致）
+        var nodes = [
+            { id: 1, text: book.title, x: 3000, y: 2000, color: '#667eea', isRoot: true, parent: null }
+        ];
         
-        // 添加章节作为子节点
-        book.chapters.forEach((chapter, index) => {
-            const nodeId = index + 2;
-            const colors = ['#f093fb', '#4facfe', '#43e97b', '#fa709a', '#a855f7', '#6366f1', '#ff6b6b', '#ffa502'];
-            
-            // 计算位置 - 围绕根节点分布
-            const angle = (index / book.chapters.length) * 2 * Math.PI;
-            const radius = 30;
-            const x = 50 + Math.cos(angle) * radius;
-            const y = 50 + Math.sin(angle) * radius;
-            
-            mindMapData.nodes.push({
+        // 章节作为子节点
+        book.chapters.forEach(function(chapter, index) {
+            var nodeId = index + 2;
+            nodes.push({
                 id: nodeId,
                 text: chapter.title,
-                x: Math.max(10, Math.min(90, x)),
-                y: Math.max(10, Math.min(90, y)),
+                x: 3000 + (index % 2 === 0 ? 400 : -400),
+                y: 2000 + (index - Math.floor(book.chapters.length / 2)) * 100,
                 color: colors[index % colors.length],
                 parent: 1
             });
         });
         
-        // 保存到思维导图模块（如果存在的话）
-        if (window.MindMap && window.MindMap.saveMap) {
-            window.MindMap.saveMap(mindMapData);
+        var newMap = {
+            id: mapId,
+            name: book.title,
+            nodes: nodes
+        };
+        
+        // 直接写入mindmap模块的数据结构
+        if (window.mindmapState) {
+            window.mindmapState.maps[mapId] = newMap;
+            window.mindmapState.currentMapId = mapId;
+            if (window.saveMindMapData) window.saveMindMapData();
         } else {
-            // 保存到localStorage备用
-            localStorage.setItem('mindmap_from_book_' + mindMapData.id, JSON.stringify(mindMapData));
+            // mindmap模块还没加载，先存localStorage
+            var saved = JSON.parse(localStorage.getItem('ctm_mindmap') || '{}');
+            if (!saved.maps) saved.maps = {};
+            saved.maps[mapId] = newMap;
+            saved.currentMapId = mapId;
+            localStorage.setItem('ctm_mindmap', JSON.stringify(saved));
         }
         
-        // 提示成功并询问是否打开思维导图模块
-        setTimeout(() => {
-            if (confirm(`✅ 思维导图已生成！\n📖 《${book.title}》\n共 ${book.chapters.length} 个章节节点\n\n是否立即跳转到思维导图模块查看？`)) {
-                // 关闭阅读页面
-                const content = document.getElementById('fullscreen-content');
-                if (content) content.innerHTML = '';
-                
-                // 打开思维导图模块
-                if (window.openFullscreenPage) {
-                    window.openFullscreenPage('mindmap');
-                } else if (window.renderMindMap) {
-                    // 如果有直接渲染函数
-                    const container = document.getElementById('fullscreen-content');
-                    if (container) window.renderMindMap(container);
-                }
+        setTimeout(function() {
+            window.showToast('✅ 思维导图已生成！');
+            // 直接跳转思维导图模块
+            if (window.openFullscreenPage) {
+                window.openFullscreenPage('mindmap');
             }
-        }, 500);
+        }, 300);
     }
     
     // 导出到window
