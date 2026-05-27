@@ -297,7 +297,7 @@ function showConserveQuestion() {
 function showMethodDetail(id) {
     const m = window.methodDetails[id];
     if (!m) return;
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     content.innerHTML = `
         <div style="text-align:center;margin-bottom:16px;">
             <div style="font-size:48px;margin-bottom:8px;">${m.title.split(' ')[0]}</div>
@@ -343,7 +343,7 @@ function showThinkingType(type) {
     const questions = thinkingQuestions[type];
     
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     modal.classList.add('show');
     
     content.innerHTML = `
@@ -364,7 +364,7 @@ function submitMethodAnswers(methodId, page) {
     // 播放提交音效
     SoundEffects.playSubmit();
     
-    const questions = window.methodTrainingQuestions[methodId];
+    var questions = window.methodTrainingQuestions[methodId];
     const startIndex = page * QUESTIONS_PER_PAGE;
     const pageQuestions = questions.slice(startIndex, startIndex + QUESTIONS_PER_PAGE);
     
@@ -396,7 +396,7 @@ function submitMethodAnswers(methodId, page) {
     const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
     
     // 显示答案对比
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     content.innerHTML = `
         <div class="modal-title">📝 ${methodNames[methodId]} - 答案对比</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">
@@ -449,7 +449,7 @@ function submitThinkingAnswers(type, page) {
     
     const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
     
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     content.innerHTML = `
         <div class="modal-title">📝 ${typeNames[type]} - 答案对比</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">第 ${page + 1} / ${totalPages} 页</div>
@@ -518,58 +518,66 @@ function renderMethod(container) {
             <!-- 学习方法分类 -->
             <div class="subject-tab" style="flex-wrap:wrap;margin-bottom:16px;">
                 <button class="subject-tab-btn active" onclick="filterMethod('all', this)">全部</button>
-                <button class="subject-tab-btn" onclick="filterMethod('费曼学习法', this)">费曼学习</button>
-                <button class="subject-tab-btn" onclick="filterMethod('番茄工作法', this)">番茄工作</button>
-                <button class="subject-tab-btn" onclick="filterMethod('艾宾浩斯', this)">遗忘曲线</button>
-                <button class="subject-tab-btn" onclick="filterMethod('思维导图', this)">思维导图</button>
-                <button class="subject-tab-btn" onclick="filterMethod('康奈尔', this)">康奈尔</button>
-                <button class="subject-tab-btn" onclick="filterMethod('SQ3R', this)">SQ3R</button>
-                <button class="subject-tab-btn" onclick="filterMethod('时间管理', this)">时间管理</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('feyman')">费曼学习</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('pomodoro')">番茄工作</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('ebbinghaus')">遗忘曲线</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('mindmap')">思维导图</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('cornell')">康奈尔</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('sq3r')">SQ3R</button>
+                <button class="subject-tab-btn" onclick="openMethodQuestions('timeManagement')">时间管理</button>
             </div>
         </div>
         
-        <!-- 🚀 升级规划 -->
-        <div class="card" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;margin-bottom:16px;">
-            <h3 style="margin-bottom:12px;font-size:16px;">🚀 V195 升级规划</h3>
-            <p style="font-size:13px;opacity:0.9;margin-bottom:16px;">9-10周，零成本升级，系统评分从72分→85分</p>
-            
-            <!-- 第一梯队功能 -->
-            <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:14px;margin-bottom:12px;">
-                <div style="font-weight:600;margin-bottom:10px;font-size:14px;">📊 第一梯队（P0必做，第1-4周）</div>
-                
-                <!-- 能力雷达图 -->
-                <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px;margin-bottom:10px;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                        <span style="font-size:20px;">🎯</span>
-                        <span style="font-weight:600;">能力雷达图</span>
-                        <span style="background:#FFD93D;color:#333;padding:2px 8px;border-radius:4px;font-size:11px;">1周</span>
-                    </div>
-                    <p style="font-size:12px;opacity:0.9;margin:0;">5个能力维度：专注力、记忆力、思维力、反应力、坚持力</p>
-                </div>
-                
-                <!-- 成长曲线 -->
-                <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px;margin-bottom:10px;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                        <span style="font-size:20px;">📈</span>
-                        <span style="font-weight:600;">成长曲线</span>
-                        <span style="background:#FFD93D;color:#333;padding:2px 8px;border-radius:4px;font-size:11px;">1周</span>
-                    </div>
-                    <p style="font-size:12px;opacity:0.9;margin:0;">日/周/月三个维度，里程碑自动解锁</p>
-                </div>
-                
-                <!-- AI辅导嵌入 -->
-                <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px;">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                        <span style="font-size:20px;">🤖</span>
-                        <span style="font-weight:600;">训练中嵌入AI辅导</span>
-                        <span style="background:#FFD93D;color:#333;padding:2px 8px;border-radius:4px;font-size:11px;">1周</span>
-                    </div>
-                    <p style="font-size:12px;opacity:0.9;margin:0;">卡壳时一键求助，智能提示不直接给答案</p>
+        <!-- 7种学习方法卡片 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+            <div onclick="openMethodQuestions('feyman')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <img src="imgs/methods/feynman.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">费曼学习法</div>
+                    <div style="font-size:11px;color:#999;">教会别人=自己学会</div>
                 </div>
             </div>
-            
-            <div style="text-align:center;font-size:12px;opacity:0.8;">
-                💡 更多功能规划中，敬请期待！
+            <div onclick="openMethodQuestions('pomodoro')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <img src="imgs/methods/pomodoro.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">番茄工作法</div>
+                    <div style="font-size:11px;color:#999;">25分钟专注+5分钟休息</div>
+                </div>
+            </div>
+            <div onclick="openMethodQuestions('ebbinghaus')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <img src="imgs/methods/ebbinghaus.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">遗忘曲线</div>
+                    <div style="font-size:11px;color:#999;">科学复习抗遗忘</div>
+                </div>
+            </div>
+            <div onclick="openMethodQuestions('mindmap')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <img src="imgs/methods/mindmap.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">思维导图</div>
+                    <div style="font-size:11px;color:#999;">发散思维理清结构</div>
+                </div>
+            </div>
+            <div onclick="openMethodQuestions('cornell')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <img src="imgs/methods/cornell.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">康奈尔笔记法</div>
+                    <div style="font-size:11px;color:#999;">三栏笔记高效复习</div>
+                </div>
+            </div>
+            <div onclick="openMethodQuestions('sq3r')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                <img src="imgs/methods/sq3r.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">SQ3R阅读法</div>
+                    <div style="font-size:11px;color:#999;">五步精读吃透课本</div>
+                </div>
+            </div>
+            <div onclick="openMethodQuestions('timeManagement')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);grid-column:span 2;">
+                <img src="imgs/methods/timemanage.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <div style="padding:8px 10px;">
+                    <div style="font-size:13px;font-weight:600;">时间管理术</div>
+                    <div style="font-size:11px;color:#999;">合理规划高效利用</div>
+                </div>
             </div>
         </div>
         
@@ -605,9 +613,6 @@ function renderMethod(container) {
         <div id="method-questions-container">
             ${renderMethodQuestions()}
         </div>
-        
-        <!-- 返回按钮 -->
-        <button onclick="history.back()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
     `;
     
     // 更新统计数据
@@ -620,9 +625,11 @@ function renderMethod(container) {
 // 当前选中的方法
 let currentMethodId = null;
 
+var currentMethodFilter = null;
+
 function renderMethodQuestions() {
     // 如果选中了某个方法，显示详细教程
-    if (currentMethodId && LEARNING_METHODS[currentMethodId]) {
+    if (currentMethodId && typeof LEARNING_METHODS !== 'undefined' && LEARNING_METHODS[currentMethodId]) {
         const method = LEARNING_METHODS[currentMethodId];
         return `
             <div style="margin-bottom:20px;">
@@ -670,14 +677,8 @@ function renderMethodQuestions() {
 }
 
 function openMethodQuestions(methodId) {
-    // 如果有详细教程，先显示教程
-    if (LEARNING_METHODS[methodId]) {
-        currentMethodId = methodId;
-        document.getElementById('method-questions-container').innerHTML = renderMethodQuestions();
-        return;
-    }
-    
-    const methodNames = {
+    // 直接显示练习题弹窗
+    var methodNames = {
         feyman: '费曼学习法',
         pomodoro: '番茄工作法',
         ebbinghaus: '艾宾浩斯遗忘曲线',
@@ -689,19 +690,20 @@ function openMethodQuestions(methodId) {
         testStrategy: '考试技巧'
     };
     
-    const methodIcons = {
+    var methodIcons = {
         feyman: '📚', pomodoro: '🍅', ebbinghaus: '🧠',
         mindmap: '🗺️', cornell: '📋', sq3r: '📖',
         timeManagement: '⏰', noteTaking: '📝', testStrategy: '✍️'
     };
+
     
-    const questions = window.methodTrainingQuestions[methodId];
+    var questions = window.methodTrainingQuestions[methodId];
     if (!questions || questions.length === 0) {
         window.showToast('该学习方法暂无练习题');
         return;
     }
     
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     content.innerHTML = `
         <div class="modal-title">${methodIcons[methodId] || '📖'} ${methodNames[methodId] || methodId}</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">
@@ -774,10 +776,13 @@ function updateMethodStats() {
 
 function filterMethod(category, btn) {
     document.querySelectorAll('.subject-tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn && btn.classList) btn.classList.add('active');
+    // 设置当前筛选分类
+    currentMethodFilter = (category === 'all') ? null : category;
     // 重新渲染题目列表
     const container = document.getElementById('method-questions-container');
     if (container) {
+        currentMethodId = null; // 重置教程详情
         container.innerHTML = renderMethodQuestions();
     }
 }
@@ -828,7 +833,7 @@ function renderMethodNotes() {
 }
 
 function showMethodNote(image) {
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     content.innerHTML = `
         <div class="modal-title">📷 笔记预览</div>
         <img src="${image}" style="width:100%;border-radius:12px;"/>
@@ -853,7 +858,7 @@ window.showMethodNote = showMethodNote;
 // ============================================================
 
 function startMethodQuiz(methodId, page = 0) {
-    const questions = window.methodTrainingQuestions[methodId];
+    var questions = window.methodTrainingQuestions[methodId];
     if (!questions || questions.length === 0) {
         window.showToast('暂无练习题');
         return;
@@ -879,7 +884,7 @@ function startMethodQuiz(methodId, page = 0) {
     };
     
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
+    var content = document.getElementById('detail-content');
     modal.classList.add('show');
     
     content.innerHTML = `
@@ -930,7 +935,7 @@ function rateMethodAnswer(methodId, isCorrect, questionIndex) {
     
     // 如果答错，自动加入错题本
     if (!isCorrect) {
-        const questions = window.methodTrainingQuestions[methodId];
+        var questions = window.methodTrainingQuestions[methodId];
         const question = questions[questionIndex];
         if (question) {
             const wrongKey = 'method-' + methodId + '-' + questionIndex;
@@ -966,7 +971,7 @@ async function analyzeMethodWithAI(methodId, questionIndex) {
     
     resultDiv.innerHTML = '<div style="padding:12px;text-align:center;color:#666;">🤖 AI分析中...</div>';
     
-    const questions = window.methodTrainingQuestions[methodId];
+    var questions = window.methodTrainingQuestions[methodId];
     if (!questions || !questions[questionIndex]) {
         resultDiv.innerHTML = '<div style="padding:12px;color:#ff6b6b;">题目不存在</div>';
         return;

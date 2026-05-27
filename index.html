@@ -22,6 +22,12 @@ if('serviceWorker' in navigator){
   });
 }
 
+// V361: 注销旧Service Worker缓存
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});
+  if(typeof caches!=='undefined')caches.keys().then(function(n){n.forEach(function(k){caches.delete(k)})});
+}
+
 // V232: 占位函数 - 确保ES6 Module加载完成前点击有响应
 window._openFullscreenPagePlaceholder = function(module) {
     console.log('[占位函数被调用，模块正在加载中...');
@@ -88,7 +94,7 @@ window.__loaded_modules = [];
 <script src="js/modules/video.js?v=354"></script>
     <script src="js/modules/player.js?v=354"></script>
 <script src="js/modules/thinking.js?v=270"></script>
-<script src="js/modules/method.js?v=270"></script>
+<script src="js/modules/method.js?v=361"></script>
 <script src="js/modules/map.js?v=270"></script>
 <script src="js/modules/my-page.js?v=270"></script>
 <script src="js/modules/pomodoro.js?v=270"></script>
@@ -321,7 +327,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-desc">自主学习</div>
             </button>
             <button class="module-btn gradient-purple" onclick="openFullscreenPage('pet')">
-                <span class="module-tag">开发中</span>
+                
                 <div class="module-icon">🐱</div>
                 <div class="module-name">虚拟宠物</div>
                 <div class="module-desc">陪伴成长</div>

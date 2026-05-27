@@ -5,6 +5,12 @@
 function renderPetPage(container) {
     const pet = window.petModule;
     if (!pet) {
+        // pet.js有自己的renderPet，直接调用它
+        if (typeof window._renderPetOriginal === 'function') {
+            window._renderPetOriginal(container);
+            return;
+        }
+        // 最后回退
         container.innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">🐾 宠物模块加载中...</div>';
         return;
     }
@@ -144,6 +150,9 @@ function showRenameDialog() {
     }
 }
 
-// 挂载到window
+// 挂载到window - 先保存pet.js原始renderPet
+if (typeof window.renderPet === 'function') {
+    window._renderPetOriginal = window.renderPet;
+}
 window.renderPet = renderPetPage;
 window.renderPetPage = renderPetPage;
