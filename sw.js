@@ -1,7 +1,7 @@
 // Service Worker for 认知训练门户 V370
 // 缓存策略: Network First (确保最新代码) + 离线回退
 
-var CACHE_NAME = 'ct-v384';
+var CACHE_NAME = 'ct-v385';
 var OFFLINE_URL = './index.html';
 
 self.addEventListener('install', function(event) {

@@ -1179,23 +1179,34 @@ function calculateCognitiveData() {
 
 
 // ====== 1. 专注力计算 ======
-// 来源：舒尔特方格、视觉搜索、快速点击
+// 来源：舒尔特方格、视觉搜索、快速点击、母题训练
     let attentionScore = 50; // 基础分
     const attentionGames = ['schulte', 'visual', 'tap'];
     attentionGames.forEach(g => {
         if (gameScores[g]) attentionScore += Math.min(gameScores[g] / 10, 12);
         if (gameCounts[g]) attentionScore += Math.min(gameCounts[g] * 2, 6);
     });
+    // 母题训练贡献专注力
+    const topicStats = user.topicStats || {};
+    const topicCount = Object.keys(topicStats).length;
+    const topicCorrect = Object.values(topicStats).filter(t => t.correct).length;
+    attentionScore += Math.min(topicCount * 1.5, 10);
+    attentionScore += Math.min(topicCorrect * 2, 8);
 
 
 // ====== 2. 记忆力计算 ======
-// 来源：数字记忆、图形记忆、学霸方法记忆训练
+// 来源：数字记忆、图形记忆、学霸方法记忆训练、母题训练
     let memoryScore = 50;
     const memoryGames = ['digit', 'pattern'];
     memoryGames.forEach(g => {
         if (gameScores[g]) memoryScore += Math.min(gameScores[g] / 8, 15);
         if (gameCounts[g]) memoryScore += Math.min(gameCounts[g] * 3, 8);
     });
+    // 母题训练正确率贡献记忆力
+    if (topicCount > 0) {
+        const topicAccuracy = topicCorrect / topicCount;
+        memoryScore += Math.min(Math.round(topicAccuracy * 15), 15);
+    }
     // 学霸方法 - 记忆法训练 (methodId: memory)
     if (methodStats['memory']) {
         const stats = methodStats['memory'];
@@ -1236,7 +1247,7 @@ function calculateCognitiveData() {
 
 
 // ====== 5. 坚持力计算 ======
-// 来源：学习连续性、总训练量、连续打卡天数
+// 来源：学习连续性、总训练量、连续打卡天数、虚拟宠物互动
     let persistenceScore = 50;
     // 连续学习天数
     const streakDays = calculateStreakDays(user);
@@ -1246,10 +1257,15 @@ function calculateCognitiveData() {
     // 总训练量（游戏完成总数）
     const totalGamesPlayed = Object.values(gameCounts).reduce((sum, count) => sum + count, 0);
     persistenceScore += Math.min(totalGamesPlayed * 2, 15);
+    // 虚拟宠物互动（从独立存储读取）
+    try {
+        var petData = JSON.parse(localStorage.getItem('virtual_pet_data') || '{}');
+        if (petData.level) persistenceScore += Math.min(petData.level * 2, 10);
+    } catch(e) {}
 
 
 // ====== 6. 元认知计算 ======
-// 来源：学霸方法训练总数、思维训练总数、AI问答次数
+// 来源：学霸方法训练总数、思维训练总数、AI问答次数、图书馆阅读
     let metacognitionScore = 50;
     // 学霸方法总训练量
     const methodTotal = Object.values(methodStats).reduce((sum, s) => sum + (s.completed || 0), 0);
@@ -1259,6 +1275,12 @@ function calculateCognitiveData() {
     metacognitionScore += Math.min(thinkingTotal * 2, 15);
     // AI问答次数
     if (user.aiChatCount) metacognitionScore += Math.min(user.aiChatCount, 10);
+    // 图书馆阅读进度
+    try {
+        var libData = JSON.parse(localStorage.getItem('learning_library_data') || '{}');
+        var readCount = libData.readingProgress ? Object.keys(libData.readingProgress).length : 0;
+        metacognitionScore += Math.min(readCount * 2, 10);
+    } catch(e) {}
     
     // 限制在 20-100 范围
     return {
