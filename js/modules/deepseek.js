@@ -1096,6 +1096,10 @@ window.switchDeepSeekMode = switchDeepSeekMode;
 function renderDeepseek(contentEl) {
     if (!contentEl) contentEl = document.getElementById('fullscreen-content') || document.body;
     
+    // 设置容器动态高度（修复移动端100vh问题）
+    contentEl.style.padding = '0';
+    contentEl.style.overflow = 'hidden';
+    
     // 初始化IndexedDB和迁移
     checkAndMigrate();
     

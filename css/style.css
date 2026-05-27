@@ -605,7 +605,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 /* 整体容器 */
 .ds-container {
     display: flex;
-    height: 100vh;
+    height: 100%;
     width: 100%;
     background: #f7f7f8;
 }
@@ -613,12 +613,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 /* 左侧边栏 */
 .ds-sidebar {
     width: 260px;
-    background: #f7f7f8;
-    border-right: 1px solid #e5e5e5;
+    background: #202123;
+    border-right: 1px solid #2d2d30;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     transition: transform 0.3s ease;
+    color: #ececf1;
 }
 
 .ds-sidebar.hidden {
@@ -1266,6 +1267,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         height: 100%;
         z-index: 100;
         box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        transform: translateX(-100%);
+    }
+    .ds-sidebar.open {
+        transform: translateX(0);
+    }
+    .ds-sidebar.hidden {
+        transform: translateX(-100%);
     }
     
     .ds-menu-btn {
