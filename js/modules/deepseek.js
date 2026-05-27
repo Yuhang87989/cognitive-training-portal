@@ -387,6 +387,9 @@ async function callSiliconFlowVisionAPI(imageDataUrl, question) {
         return result;
     } catch(e) {
         console.warn('[VisionAPI] 硅基流动视觉识别异常:', e.message);
+        if (e.message && (e.message.indexOf('identity verification') !== -1 || e.message.indexOf('Failed to fetch') !== -1)) {
+            return {success: false, content: '', message: '图片识别需要SiliconFlow实名认证，请在电脑上登录 siliconflow.cn 完成', unsupported: true};
+        }
         return {success: false, content: '', message: e.message};
     }
 }
@@ -425,7 +428,12 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
             if (response.status === 402) {
                 return {success: false, type: 'balance', message: '余额不足'};
             }
-            var errMsg = errorData.error ? errorData.error.message : 'API请求失败';
+            // 识别实名认证错误
+            var apiMsg = (errorData.error && errorData.error.message) || '';
+            if (apiMsg.indexOf('identity verification') !== -1 || apiMsg.indexOf('实名') !== -1) {
+                return {success: false, content: '', message: 'SiliconFlow需要实名认证后才能使用图片识别，请在电脑上登录 siliconflow.cn 完成认证'};
+            }
+            var errMsg = apiMsg || 'API请求失败';
             return {success: false, content: '', message: errMsg};
         }
         var data = await response.json();
