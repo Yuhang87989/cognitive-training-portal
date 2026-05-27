@@ -1,5 +1,5 @@
 // V368: 简单缓存SW - 缓存优先+版本控制
-var CACHE_NAME = 'ct-v369';
+var CACHE_NAME = 'ct-v370';
 var CACHE_URLS = [
   './',
   './index.html',

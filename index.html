@@ -4,7 +4,7 @@
 <script>
 // V368: 轻量版本检测 - 仅在版本变更时更新缓存
 (function(){
-  var VER = '369';
+  var VER = '370';
   var STORED_VER = localStorage.getItem('_site_ver') || '';
   if(STORED_VER !== VER){
     localStorage.setItem('_site_ver', VER);
@@ -40,7 +40,7 @@ console.log('[V263] 占位函数已初始化');
 console.log('[V263] 开始用传统方式加载所有业务模块...');
 window.__loaded_modules = [];
 </script>
-<script src="js/modules/week-plans.js?v=350" async></script>
+<script src="js/modules/week-plans.js?v=350" ></script>
 <script src="js/modules/ui.js?v=365"></script>
 <script>window.__loaded_modules.push('ui'); console.log('[V286] UI模块加载完成');</script>
 <script src="js/config.js?v=369"></script>
@@ -55,11 +55,11 @@ window.__loaded_modules = [];
 <script>window.__loaded_modules.push('utils');</script>
 <script src="js/user.js?v=270"></script>
 <script>window.__loaded_modules.push('user');</script>
-<script src="js/audio.js?v=270" async></script>
+<script src="js/audio.js?v=270" ></script>
 <script>window.__loaded_modules.push('audio');</script>
-<script src="js/modules/pet.js?v=292" async></script>
+<script src="js/modules/pet.js?v=292" ></script>
 <script>window.__loaded_modules.push('pet');</script>
-<script src="js/ui-pet.js?v=292" async></script>
+<script src="js/ui-pet.js?v=292" ></script>
 <script>window.__loaded_modules.push('ui-pet');</script>
 
 <!-- 数据模块 -->
@@ -68,28 +68,28 @@ window.__loaded_modules = [];
 <script src="js/data/videos.js?v=270"></script>
 <script src="js/data/games-config.js?v=369"></script>
 <script src="js/modules/data-sync.js?v=323"></script>
-<script src="js/modules/coze-sync.js?v=310" async></script>
-<script src="js/modules/coze-sync-page.js?v=310" async></script>
+<script src="js/modules/coze-sync.js?v=310" ></script>
+<script src="js/modules/coze-sync-page.js?v=310" ></script>
 
 <!-- 业务模块 - 全部用传统方式加载，确保可用 -->
-<script src="js/modules/practice.js?v=270" async></script>
-<script src="js/modules/deepseek.js?v=365" async></script>
-<script src="js/modules/wrongbook.js?v=270" async></script>
-<script src="js/modules/games.js?v=270" async></script>
-<script src="js/modules/podcast.js?v=270" async></script>
-<script src="js/modules/video.js?v=365" async></script>
-    <script src="js/modules/player.js?v=365" async></script>
-<script src="js/modules/thinking.js?v=270" async></script>
-<script src="js/modules/method.js?v=361" async></script>
-<script src="js/modules/map.js?v=270" async></script>
-<script src="js/modules/my-page.js?v=270" async></script>
-<script src="js/modules/pomodoro.js?v=270" async></script>
-        <script src="js/modules/library.js?v=323" async></script>
-<script src="js/modules/notepad.js?v=270" async></script>
-        <script src="js/modules/exam.js?v=285" async></script>
-<script src="js/modules/mindmap.js?v=355" async></script>
-<script src="js/modules/calculator.js?v=270" async></script>
-<script src="js/modules/plan.js?v=354" async></script>
+<script src="js/modules/practice.js?v=270" ></script>
+<script src="js/modules/deepseek.js?v=365" ></script>
+<script src="js/modules/wrongbook.js?v=270" ></script>
+<script src="js/modules/games.js?v=270" ></script>
+<script src="js/modules/podcast.js?v=270" ></script>
+<script src="js/modules/video.js?v=365" ></script>
+    <script src="js/modules/player.js?v=365" ></script>
+<script src="js/modules/thinking.js?v=270" ></script>
+<script src="js/modules/method.js?v=361" ></script>
+<script src="js/modules/map.js?v=270" ></script>
+<script src="js/modules/my-page.js?v=270" ></script>
+<script src="js/modules/pomodoro.js?v=270" ></script>
+        <script src="js/modules/library.js?v=323" ></script>
+<script src="js/modules/notepad.js?v=270" ></script>
+        <script src="js/modules/exam.js?v=285" ></script>
+<script src="js/modules/mindmap.js?v=355" ></script>
+<script src="js/modules/calculator.js?v=270" ></script>
+<script src="js/modules/plan.js?v=354" ></script>
 
 <script>
 console.log('[V305] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
