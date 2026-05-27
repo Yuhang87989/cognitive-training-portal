@@ -4,7 +4,7 @@
 <script>
 // V361: 强制版本刷新 - 解决SW缓存问题
 (function(){
-  var VER = '363';
+  var VER = '364';
   // 如果URL没有版本参数，强制带参数刷新（绕过SW缓存）
   if(location.search.indexOf('v='+VER) === -1){
     location.replace(location.pathname + '?v=' + VER);
@@ -79,7 +79,7 @@ window.__loaded_modules = [];
 
 <!-- 业务模块 - 全部用传统方式加载，确保可用 -->
 <script src="js/modules/practice.js?v=270"></script>
-<script src="js/modules/deepseek.js?v=363"></script>
+<script src="js/modules/deepseek.js?v=364"></script>
 <script src="js/modules/wrongbook.js?v=270"></script>
 <script src="js/modules/games.js?v=270"></script>
 <script src="js/modules/podcast.js?v=270"></script>

@@ -1111,10 +1111,11 @@ function renderDeepseek(contentEl) {
     var html = '<div class="ds-container">' +
         // 左侧边栏
         '<div class="ds-sidebar" id="ds-sidebar">' +
-        '<div class="ds-sidebar-header">' +
+        '<div class="ds-sidebar-header" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid #2d2d30">' +
         '<button class="ds-new-chat-btn" onclick="startNewDeepSeekChat();renderDeepseek(document.getElementById(\'fullscreen-content\'));">' +
         '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4v16m8-8H4"/></svg>' +
         '新对话</button>' +
+        '<button onclick="toggleSidebar()" style="background:none;border:none;color:#888;font-size:20px;cursor:pointer;padding:4px 8px">✕</button>' +
         '</div>' +
         '<div class="ds-sidebar-search">' +
         '<input type="text" id="ds-sidebar-search-input" placeholder="搜索历史..." oninput="searchHistory(this.value)">' +
@@ -1125,7 +1126,7 @@ function renderDeepseek(contentEl) {
         '<div class="ds-sidebar-footer">' +
         '<div class="ds-footer-row">' +
         '<div class="ds-balance-info" onclick="openApiConfigModalBridge()">' +
-        '<span style="font-size:11px;color:#999;">余额</span> <span id="ds-balance" style="color:#43a047;font-weight:600;">加载中...</span>' +
+        '<span style="font-size:11px;color:#999;">💰 余额</span> <span id="ds-balance" style="color:#43a047;font-weight:600;">加载中...</span>' +
         '</div>' +
         '<div class="ds-footer-btns">' +
         '<button class="ds-footer-btn" onclick="openApiConfigModalBridge()" style="background:rgba(255,255,255,0.08);color:#aaa;">⚙️ 配置</button>' +
