@@ -1344,7 +1344,7 @@
                     <div style="display:flex;gap:8px;">
                         <button onclick="window.showImportBookModal()" style="padding:8px 14px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📤 导入</button>
                         <div style="position:relative;">
-                            <button onclick="window.toggleDownloadMenu()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:4px;">📥 下载 <span style="font-size:10px;">▼</span></button>
+                            <button onclick="window.toggleDownloadMenu()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:4px;">📄 导出TXT <span style="font-size:10px;">▼</span></button>
                             <div id="download-dropdown" style="display:none;position:absolute;top:100%;right:0;background:white;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:100;min-width:160px;margin-top:4px;">
                                 <div onclick="window.downloadAllLibraryBooks();window.toggleDownloadMenu()" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:14px;color:#333;" onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background='white'">📚 全部下载</div>
                                 ${data.books.map(book => `
@@ -1413,7 +1413,7 @@
                                     <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
                                     <div style="font-size:11px;color:#999;">${book.author}</div>
                                 </div>
-                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📄 导出</button>
                             </div>
                         `).join('')}
                     </div>
@@ -1435,7 +1435,7 @@
                                     <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
                                     <div style="font-size:11px;color:#999;">${book.author}</div>
                                 </div>
-                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📄 导出</button>
                             </div>
                         `).join('')}
                     </div>
@@ -1457,7 +1457,7 @@
                                     <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
                                     <div style="font-size:11px;color:#999;">${book.author}</div>
                                 </div>
-                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📄 导出</button>
                             </div>
                         `).join('')}
                     </div>
@@ -1479,7 +1479,7 @@
                                     <div style="font-size:14px;font-weight:500;color:#333;margin-bottom:2px;">${book.title}</div>
                                     <div style="font-size:11px;color:#999;">${book.author}</div>
                                 </div>
-                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📥 下载</button>
+                                <button onclick="event.stopPropagation();window.downloadBookByUrl('${book.downloadUrl}', '${book.title}')" style="padding:6px 12px;background:#4caf50;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📄 导出</button>
                             </div>
                         `).join('')}
                     </div>
@@ -1558,7 +1558,7 @@
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         <button onclick="window.generateMindMapFromBook('${book.id}')" style="padding:8px 14px;background:linear-gradient(135deg,#9c27b0,#e91e63);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-weight:500;">🧠 生成思维导图</button>
                         <button id="tts-play-btn" onclick="window.toggleTTS('${chapter.content.replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${chapter.title}')" style="padding:8px 14px;background:#667eea;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">🔊 听书</button>
-                        <button onclick="window.downloadCurrentBook()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📥 下载</button>
+                        <button onclick="window.downloadCurrentBook()" style="padding:8px 14px;background:#4caf50;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📄 导出TXT</button>
                     </div>
                 </div>
                 
@@ -1836,20 +1836,20 @@
     
     // 通过URL下载书籍
     function downloadBookByUrl(url, title) {
-        if (!url || url === 'undefined') {
-            window.showToast('⚠️ 该书籍暂无下载链接');
+        // 改为导出书籍内容为TXT文件
+        var data = getLibraryData();
+        var book = data.books.find(function(b) { return b.title === title; });
+        if (!book) {
+            window.showToast('⚠️ 书籍不存在');
             return;
         }
-        
-        // 打开新窗口下载
-        window.open(url, '_blank');
-        window.showToast(`📥 正在下载：${title}`);
+        downloadBook(book);
     }
     
     // 批量下载所有精选书籍
     function downloadAllCollegeBooks() {
-        const data = getLibraryData();
-        const collegeBooks = data.books.filter(b => b.category && b.category !== '学霸方法');
+        var data = getLibraryData();
+        var collegeBooks = data.books.filter(function(b) { return b.category && b.category !== '学霸方法'; });
         
         if (collegeBooks.length === 0) {
             window.showToast('暂无可下载的书籍');
