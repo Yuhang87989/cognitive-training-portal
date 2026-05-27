@@ -5,7 +5,10 @@
 // DeepSeek API配置
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
-const DEEPSEEK_MODEL = 'deepseek-chat';
+// DeepSeek V4 Flash - 高性价比快速模型
+const DEEPSEEK_MODEL = 'deepseek-v4-flash';
+// DeepSeek V4 Pro - 高质量深度模型
+const DEEPSEEK_PRO_MODEL = 'deepseek-v4-pro';
 
 // 存储键名
 const STORAGE_KEY = 'cognitive_training_v137';
