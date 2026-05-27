@@ -516,21 +516,43 @@ async function callVisionAPI(imageDataUrl, question) {
 }
 
 async function ocrExtractText(imageDataUrl, progressCallback) {
-    console.log('[OCR] 使用视觉API提取文字');
+    console.log('[OCR] 使用Tesseract.js提取文字');
+    
+    // 加载Tesseract.js
+    if (typeof Tesseract === 'undefined' && typeof loadTesseract === 'function') {
+        await new Promise(function(resolve) {
+            loadTesseract(resolve);
+        });
+    }
+    
+    if (typeof Tesseract !== 'undefined') {
+        try {
+            window.showToast('正在识别文字...');
+            var result = await Tesseract.recognize(imageDataUrl, 'chi_sim+eng', {});
+            var text = result.data.text.trim();
+            if (text && text.length > 2) {
+                console.log('[OCR] Tesseract识别成功，文字长度:', text.length);
+                return text;
+            }
+            console.warn('[OCR] Tesseract识别结果太短:', text);
+        } catch(e) {
+            console.warn('[OCR] Tesseract识别失败:', e.message);
+        }
+    } else {
+        console.warn('[OCR] Tesseract.js未加载');
+    }
+    
+    // Tesseract失败，尝试SiliconFlow视觉API作为备选
     try {
         var messages = [{ role: 'user', content: [
             { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
             { type: 'text', text: '请识别图片中的所有文字，完整输出。' }
         ]}];
-        
         var result = await callVisionAPIEndpoint(messages, 0.1, 'siliconflow');
-        if (result.success) {
-            return result.content;
-        }
-        return '[图片文字识别失败]';
-    } catch(e) {
-        return '[图片处理异常]';
-    }
+        if (result.success) return result.content;
+    } catch(e) {}
+    
+    return null;
 }
 
 // ============================================================
