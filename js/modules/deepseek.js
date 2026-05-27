@@ -708,10 +708,8 @@ async function ocrImageAndSend(base64) {
     var question = document.getElementById('ds-input')?.value || '请分析这张图片';
     var result = await callVisionAPI(base64, question);
     if (result.success) {
-        deepseekConversationHistory.push({ role: 'user', content: [
-            { type: 'image_url', image_url: { url: base64 } },
-            { type: 'text', text: question }
-        ]});
+        // DeepSeek不支持image_url，只发OCR文字
+        deepseekConversationHistory.push({ role: 'user', content: '📷 [图片] ' + question });
         deepseekConversationHistory.push({ role: 'assistant', content: result.content });
         renderMessages();
         saveDeepSeekConversation();
@@ -751,13 +749,10 @@ async function sendToDeepSeek() {
     // 保存图片引用（清空前）
     var savedImage = currentDeepSeekImage;
     
-    // 构建用户消息
+    // 构建用户消息 - DeepSeek不支持image_url，图片消息用纯文字
     var userContent;
     if (hasImage && savedImage) {
-        userContent = [
-            { type: 'image_url', image_url: { url: savedImage } },
-            { type: 'text', text: userMessage || '请分析这张图片' }
-        ];
+        userContent = '📷 [图片] ' + (userMessage || '请分析这张图片');
     } else {
         userContent = userMessage;
     }
