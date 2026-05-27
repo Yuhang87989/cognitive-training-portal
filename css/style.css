@@ -792,6 +792,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     flex-direction: column;
     background: white;
     min-width: 0;
+    overflow: hidden;
 }
 
 /* 顶部栏 */
