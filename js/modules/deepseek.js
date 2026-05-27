@@ -449,16 +449,70 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
 }
 
 async function callVisionAPI(imageDataUrl, question) {
-    // 直接用SiliconFlow视觉API（支持图片），DeepSeek deepseek-chat不支持图片
-    var r = await callSiliconFlowVisionAPI(imageDataUrl, question);
-    if (r.success) return r;
-    // 如果SiliconFlow也不行，尝试DeepSeek
-    if (r.unsupported || r.message === 'unsupported') {
-        var r2 = await callDeepSeekVisionAPI(imageDataUrl, question);
-        if (r2.success) return r2;
-        return {success: false, message: '图片识别失败，请检查API配置和余额'};
+    // 方案：Tesseract.js OCR提取文字 + DeepSeek文本分析
+    // 不依赖SiliconFlow，纯前端OCR+DeepSeek文字理解
+    
+    if (!imageDataUrl || !imageDataUrl.startsWith('data:')) {
+        return {success: false, content: '', message: '图片格式不正确'};
     }
-    return r;
+    
+    var ocrText = null;
+    
+    // 步骤1：Tesseract.js OCR提取文字
+    if (typeof Tesseract !== 'undefined' || typeof loadTesseract === 'function') {
+        try {
+            window.showToast('正在识别图片文字...');
+            ocrText = await ocrExtractText(imageDataUrl);
+            if (ocrText && ocrText.length > 3) {
+                console.log('[VisionAPI] OCR成功，文字长度:', ocrText.length);
+            } else {
+                console.warn('[VisionAPI] OCR结果太短');
+                ocrText = null;
+            }
+        } catch(e) {
+            console.warn('[VisionAPI] OCR失败:', e.message);
+            ocrText = null;
+        }
+    }
+    
+    // 步骤2：用DeepSeek分析OCR文字
+    if (ocrText) {
+        try {
+            window.showToast('正在分析图片内容...');
+            var messages = [
+                {role: 'system', content: '你是一个专业的图片内容分析助手。用户发送了图片的OCR识别文字，请你分析图片内容并回答问题。如果OCR文字有误请根据上下文修正。'},
+                {role: 'user', content: '图片中的文字内容：\n' + ocrText + '\n\n问题：' + (question || '请分析这张图片的内容')}
+            ];
+            var result = await callDeepSeekAPI(messages, 0.3);
+            if (result && result.content) {
+                return {success: true, content: result.content};
+            }
+        } catch(e) {
+            console.warn('[VisionAPI] DeepSeek分析失败:', e.message);
+        }
+    }
+    
+    // 步骤3：OCR失败，尝试SiliconFlow视觉API
+    try {
+        var sfResult = await callSiliconFlowVisionAPI(imageDataUrl, question);
+        if (sfResult.success) return sfResult;
+    } catch(e) {}
+    
+    // 步骤4：都失败了，让DeepSeek根据用户描述回答
+    if (question) {
+        try {
+            var fbMessages = [
+                {role: 'system', content: '用户上传了图片但识别失败，请根据用户描述尽量帮助解答。'},
+                {role: 'user', content: question}
+            ];
+            var fbResult = await callDeepSeekAPI(fbMessages, 0.5);
+            if (fbResult && fbResult.content) {
+                return {success: true, content: fbResult.content + '\n\n⚠️ 图片识别失败，以上回答仅基于文字描述'};
+            }
+        } catch(e) {}
+    }
+    
+    return {success: false, message: '图片识别失败，请检查网络或稍后重试'};
 }
 
 async function ocrExtractText(imageDataUrl, progressCallback) {
