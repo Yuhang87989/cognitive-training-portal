@@ -2,31 +2,24 @@
 <html lang="zh-CN">
 <head>
 <script>
-// V151: 强制清除旧Service Worker缓存
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(reg){
-      if(reg.active && reg.active.scriptURL.indexOf('v143')>-1){
-        reg.unregister();
-        console.log('[V151] 已注销旧SW');
-      }
+// V361: 强制版本刷新 - 解决SW缓存问题
+(function(){
+  var VER = '361';
+  // 如果URL没有版本参数，强制带参数刷新（绕过SW缓存）
+  if(location.search.indexOf('v='+VER) === -1){
+    location.replace(location.pathname + '?v=' + VER);
+    return; // 不再执行后续代码，等刷新后重新加载
+  }
+  // 已是最新版本，注销所有SW + 清空所有缓存
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(r){
+      r.forEach(function(x){ x.unregister(); });
     });
-  });
-  caches.keys().then(function(names){
-    names.forEach(function(name){
-      if(name.indexOf('v143')>-1 || name.indexOf('v144')>-1 || name.indexOf('v145')>-1){
-        caches.delete(name);
-        console.log('[V151] 已删除旧缓存:',name);
-      }
-    });
-  });
-}
-
-// V361: 注销旧Service Worker缓存
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});
-  if(typeof caches!=='undefined')caches.keys().then(function(n){n.forEach(function(k){caches.delete(k)})});
-}
+  }
+  if(typeof caches !== 'undefined'){
+    caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); });
+  }
+})();
 
 // V232: 占位函数 - 确保ES6 Module加载完成前点击有响应
 window._openFullscreenPagePlaceholder = function(module) {
@@ -1095,7 +1088,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             console.log("[V229] 首页关键模块加载完成，已初始化");
             // Register Service Worker
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register("./sw.js").catch(function(err) {});
+                // Service Worker已移除，不再注册
             }
             // 开始加载非关键模块
             startLazyModules();
