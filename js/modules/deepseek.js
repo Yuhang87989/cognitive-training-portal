@@ -735,15 +735,6 @@ async function sendToDeepSeek() {
             // 渲染消息
             renderMessages();
             
-            // 自动语音播报
-            if (window.speechSynthesis && finalContent) {
-                window.speechSynthesis.cancel();
-                var utter = new SpeechSynthesisUtterance(finalContent.substring(0, 500));
-                utter.lang = 'zh-CN';
-                utter.rate = 1.1;
-                window.speechSynthesis.speak(utter);
-            }
-            
             // 语音播报
             if (window.speechSynthesis && finalContent) {
                 window.speechSynthesis.cancel();
@@ -1039,6 +1030,13 @@ async function loadSavedDeepSeekChat(chatId) {
             deepseekConversationHistory = chat.messages || [];
             renderMessages();
             scrollToBottom();
+            // 自动关闭侧边栏
+            var sidebar = document.getElementById('ds-sidebar');
+            var mask = document.getElementById('ds-sidebar-mask');
+            if (sidebar && window.innerWidth < 768) {
+                sidebar.classList.add('hidden');
+                if (mask) mask.classList.remove('active');
+            }
             window.showToast('已加载: ' + chat.title);
         }
     } catch(e) {
@@ -1208,9 +1206,10 @@ function renderDeepseek(contentEl) {
         renderMessages();
     }
     
-    // 响应式：默认隐藏侧边栏
-    if (window.innerWidth < 768) {
-        document.getElementById('ds-sidebar').classList.add('hidden');
+    // 手机端默认隐藏侧边栏
+    var dsSidebar = document.getElementById('ds-sidebar');
+    if (dsSidebar && window.innerWidth < 768) {
+        dsSidebar.classList.add('hidden');
     }
 }
 window.renderDeepseek = renderDeepseek;
@@ -1219,9 +1218,22 @@ window.renderDeepseek = renderDeepseek;
 function toggleSidebar() {
     var sidebar = document.getElementById('ds-sidebar');
     var mask = document.getElementById('ds-sidebar-mask');
-    if (sidebar && mask) {
+    if (!sidebar) return;
+    if (window.innerWidth < 768) {
+        // 手机端：用open/close切换
+        var isOpen = sidebar.classList.contains('open');
+        if (isOpen) {
+            sidebar.classList.remove('open');
+            sidebar.classList.add('hidden');
+            if (mask) { mask.classList.remove('active'); mask.style.display = 'none'; }
+        } else {
+            sidebar.classList.remove('hidden');
+            sidebar.classList.add('open');
+            if (mask) { mask.classList.add('active'); mask.style.display = 'block'; }
+        }
+    } else {
         sidebar.classList.toggle('hidden');
-        mask.classList.toggle('active');
+        if (mask) mask.classList.toggle('active');
     }
 }
 window.toggleSidebar = toggleSidebar;
