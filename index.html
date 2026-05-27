@@ -4,7 +4,7 @@
 <script>
 // V361: 强制版本刷新 - 解决SW缓存问题
 (function(){
-  var VER = '361';
+  var VER = '362';
   // 如果URL没有版本参数，强制带参数刷新（绕过SW缓存）
   if(location.search.indexOf('v='+VER) === -1){
     location.replace(location.pathname + '?v=' + VER);
@@ -46,8 +46,7 @@ console.log('[V263] 占位函数已初始化');
 console.log('[V263] 开始用传统方式加载所有业务模块...');
 window.__loaded_modules = [];
 </script>
-<script src="js/modules/data-sync.js?v=286"></script>
-    <script src="js/modules/week-plans.js?v=350"></script>
+<script src="js/modules/week-plans.js?v=350"></script>
 <script src="js/modules/ui.js?v=292"></script>
 <script>window.__loaded_modules.push('ui'); console.log('[V286] UI模块加载完成');</script>
 <script src="js/config.js?v=270"></script>
@@ -96,8 +95,6 @@ window.__loaded_modules = [];
         <script src="js/modules/exam.js?v=285"></script>
 <script src="js/modules/mindmap.js?v=355"></script>
 <script src="js/modules/calculator.js?v=270"></script>
-<script src="js/modules/coze-sync.js?v=310"></script>
-<script src="js/modules/coze-sync-page.js?v=310"></script>
 <script src="js/modules/plan.js?v=354"></script>
 
 <script>
@@ -993,26 +990,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     // V229: 业务模块全部改为动态懒加载（ES6 Module import()）
     // 传统降级模式下的延迟加载模块（仅当ES6 Module不可用时使用）
     const legacyLazyModules = [
-        'js/audio.js',
-        'js/modules/practice.js',
-        'js/modules/map.js',
-        'js/modules/plan.js',
-        'js/modules/topics.js',
-        'js/modules/method.js',
-        'js/modules/thinking.js',
-        'js/modules/podcast.js',
-        'js/modules/video.js',
-        // player.js moved to static loading
-        'js/modules/games.js',
-        'js/modules/ai.js',
+        // 所有模块已在静态<script>标签中加载，不再重复lazy加载
+        // 只保留确实需要延迟的轻量模块
         'js/modules/usage-stats.js',
-        'js/modules/deepseek.js',
-        'js/modules/wrongbook.js',
-        'js/modules/pomodoro.js',
-        'js/modules/calculator.js',
-        'js/modules/notepad.js',
         'js/modules/local-db.js',
-        'js/modules/my-page.js',
+        'js/modules/ai.js',
         'js/modules/fix_all_deepseek_buttons.js',
         'js/modules/self-drive.js',
         'js/modules/stats.js',
