@@ -33,9 +33,14 @@ function renderExam(container) {
                         <div style="font-size:13px;opacity:0.9;">15道题 · 20分钟</div>
                     </div>
                     
-                    <div onclick="startSubjectExam('english')" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;padding:20px;border-radius:12px;cursor:pointer;">
+                    <div onclick="startSubjectExam('english')" style="background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;padding:20px;border-radius:12px;margin-bottom:12px;cursor:pointer;">
                         <div style="font-size:18px;font-weight:bold;margin-bottom:4px;">🔤 英语专练</div>
                         <div style="font-size:13px;opacity:0.9;">15道题 · 20分钟</div>
+                    </div>
+                    
+                    <div onclick="window.renderPaperTool(document.getElementById('fullscreen-content'))" style="background:linear-gradient(135deg,#fa709a,#fee140);color:white;padding:20px;border-radius:12px;cursor:pointer;">
+                        <div style="font-size:18px;font-weight:bold;margin-bottom:4px;">📄 试卷工具</div>
+                        <div style="font-size:13px;opacity:0.9;">仿真手写 · 擦除笔迹 · 还原试卷</div>
                     </div>
                 </div>
                 
