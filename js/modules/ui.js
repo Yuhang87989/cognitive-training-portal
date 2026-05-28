@@ -1,87 +1,3 @@
-
-// V386: 按需加载模块脚本
-(function() {
-    var _loadedScripts = {};
-    var _loadingScripts = {};
-    
-    // 模块到脚本文件的映射
-    var moduleScriptMap = {
-        'plan': ['js/modules/week-plans.js', 'js/modules/plan.js'],
-        'pet': ['js/modules/pet.js'],
-        'practice': ['js/data/topics.js', 'js/modules/topics.js'],
-        'ai': ['js/modules/data-sync.js', 'js/modules/practice.js'],
-        'topics': ['js/data/topics.js', 'js/modules/topics.js'],
-        'deepseek': ['js/modules/data-sync.js', 'js/modules/deepseek.js'],
-        'wrongbook': ['js/modules/wrongbook.js'],
-        'games': ['js/modules/games.js'],
-        'podcast': ['js/modules/podcast.js'],
-        'video': ['js/modules/video.js', 'js/modules/player.js'],
-        'thinking': ['js/modules/thinking.js'],
-        'method': ['js/modules/method.js'],
-        'map': ['js/modules/map.js'],
-        'my': ['js/modules/my-page.js'],
-        'pomodoro': ['js/modules/pomodoro.js'],
-        'library': ['js/modules/library.js'],
-        'notepad': ['js/modules/notepad.js'],
-        'exam': ['js/modules/exam.js'],
-        'mindmap': ['js/modules/mindmap.js'],
-        'calculator': ['js/modules/calculator.js'],
-        'selfdrive': ['js/modules/self-drive.js', 'js/modules/method.js'],
-        'backup': ['js/modules/local-db.js'],
-        'weekly': ['js/modules/stats.js'],
-        'progress': ['js/modules/stats.js'],
-        'usage-stats': ['js/modules/stats.js'],
-        'settings': []
-    };
-    
-    window.loadModuleScripts = function(module, callback) {
-        var scripts = moduleScriptMap[module];
-        if (!scripts || scripts.length === 0) {
-            if (callback) callback();
-            return;
-        }
-        
-        // 过滤已加载的
-        var toLoad = scripts.filter(function(s) { return !_loadedScripts[s]; });
-        if (toLoad.length === 0) {
-            if (callback) callback();
-            return;
-        }
-        
-        var loaded = 0;
-        var v = typeof SITE_VERSION !== 'undefined' ? SITE_VERSION : '386';
-        
-        toLoad.forEach(function(src) {
-            if (_loadingScripts[src]) {
-                // 正在加载中，等待
-                var checkTimer = setInterval(function() {
-                    if (_loadedScripts[src]) {
-                        clearInterval(checkTimer);
-                        loaded++;
-                        if (loaded === toLoad.length && callback) callback();
-                    }
-                }, 50);
-                return;
-            }
-            
-            _loadingScripts[src] = true;
-            var script = document.createElement('script');
-            script.src = src + '?v=' + v;
-            script.onload = function() {
-                _loadedScripts[src] = true;
-                delete _loadingScripts[src];
-                loaded++;
-                if (loaded === toLoad.length && callback) callback();
-            };
-            script.onerror = function() {
-                delete _loadingScripts[src];
-                loaded++;
-                if (loaded === toLoad.length && callback) callback();
-            };
-            document.head.appendChild(script);
-        });
-    };
-})();
 // ============================================================
 // Config - 全局配置
 // ============================================================
@@ -456,14 +372,14 @@ window.addEventListener('popstate', function(event) {
 function openFullscreenPage(module) {
     window._fullscreenOpen = true;
     history.pushState({fullscreen: true, module: module}, "", "");
-    window.cleanupModuleState(); // 清理上一个模块的状态
+    window.cleanupModuleState();
     closeUserMenu();
-    const container = document.getElementById('fullscreen-container');
-    const titleEl = document.getElementById('fullscreen-title');
-    const contentEl = document.getElementById('fullscreen-content');
+    var container = document.getElementById('fullscreen-container');
+    var titleEl = document.getElementById('fullscreen-title');
+    var contentEl = document.getElementById('fullscreen-content');
     if (!container || !titleEl || !contentEl) return;
     
-    const moduleTitles = {
+    var moduleTitles = {
         'ai': '🎯 AI精准练',
         'practice': '📚 母题训练',
         'map': '🧠 认知地图',
@@ -493,29 +409,13 @@ function openFullscreenPage(module) {
     };
     titleEl.textContent = moduleTitles[module] || module;
     
-    // 清空上一个模块的内容和样式，防止残留
-    contentEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;"><div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">⏳</div><div>模块加载中...</div></div></div>';
+    contentEl.innerHTML = '';
     contentEl.style.cssText = '';
     contentEl.className = 'fp-content';
     
-    // 先显示fullscreen页面，再加载脚本
     container.classList.add('active');
     
-    // V388: 先加载模块脚本，再渲染
-    if (typeof window.loadModuleScripts === 'function') {
-        window.loadModuleScripts(module, function() {
-            renderModuleContent(module, contentEl);
-        });
-    } else {
-        renderModuleContent(module, contentEl);
-    }
-}
-
-function renderModuleContent(module, contentEl) {
-    contentEl.innerHTML = '';
-    contentEl.className = 'fp-content';
-    
-    console.log('[V388] 渲染模块:', module);
+    console.log('[V390] 打开模块:', module);
     
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
@@ -540,46 +440,16 @@ function renderModuleContent(module, contentEl) {
         case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
         case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
         case 'notepad': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
-        case 'mindmap': 
-            console.log('[V292] 渲染思维导图');
-            window.renderMindMap(contentEl); 
-            break;
-        case 'library': 
-            if (typeof window.renderLibrary === 'function') {
-                window.renderLibrary(contentEl);
-            }
-            break;
-        case 'selfdrive': 
-            // V269: 传统方式加载 - 调用完整的自驱力训练主页面
-            if (typeof window.renderSelfDrive === 'function') {
-                window.renderSelfDrive(contentEl);
-            }
-            break;
-        case 'pet': 
-            // V269: 传统方式加载 - 虚拟宠物模块
-            if (typeof window.renderPet === 'function') {
-                window.renderPet(contentEl);
-            }
-            break;
-        case 'growth': 
-            contentEl.innerHTML = `
-                <div style="padding:20px;">
-                    <h3 style="margin-bottom:20px;font-size:18px;">📈 成长轨迹</h3>
-                    <div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                        <p style="color:#666;text-align:center;">功能开发中...</p>
-                    </div>
-                </div>
-            `;
-            break;
+        case 'library': if (typeof window.renderLibrary === 'function') window.renderLibrary(contentEl); break;
+        case 'pet': if (typeof window.renderPet === 'function') window.renderPet(contentEl); break;
+        case 'mindmap': if (typeof window.renderMindMap === 'function') window.renderMindMap(contentEl); break;
+        case 'selfdrive': if (typeof window.renderSelfDrive === 'function') window.renderSelfDrive(contentEl); else if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
         default:
-            contentEl.innerHTML = `
-                <div style="padding:40px;text-align:center;color:#999;">
-                    <div style="font-size:48px;margin-bottom:16px;">🚧</div>
-                    <div>模块开发中...</div>
-                </div>
-            `;
+            contentEl.innerHTML = '<div style="padding:40px;text-align:center;color:#999;"><div style="font-size:48px;margin-bottom:16px;">🚧</div><div>' + module + ' 开发中...</div></div>';
     }
 }
+
+
 
 // 关闭全屏页面 - 使用历史记录返回
 function closeFullscreenPage() {
