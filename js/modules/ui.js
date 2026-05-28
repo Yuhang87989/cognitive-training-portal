@@ -26,6 +26,12 @@
         'exam': ['js/modules/exam.js'],
         'mindmap': ['js/modules/mindmap.js'],
         'calculator': ['js/modules/calculator.js'],
+        'selfdrive': ['js/modules/thinking.js', 'js/modules/method.js'],
+        'backup': [],
+        'weekly': [],
+        'progress': [],
+        'usage-stats': [],
+        'settings': []
     };
     
     window.loadModuleScripts = function(module, callback) {
@@ -492,7 +498,10 @@ function openFullscreenPage(module) {
     contentEl.style.cssText = '';
     contentEl.className = 'fp-content';
     
-    // V386: 先加载模块脚本，再渲染
+    // 先显示fullscreen页面，再加载脚本
+    container.classList.add('active');
+    
+    // V388: 先加载模块脚本，再渲染
     if (typeof window.loadModuleScripts === 'function') {
         window.loadModuleScripts(module, function() {
             renderModuleContent(module, contentEl);
@@ -506,7 +515,7 @@ function renderModuleContent(module, contentEl) {
     contentEl.innerHTML = '';
     contentEl.className = 'fp-content';
     
-    console.log('[V386] 渲染模块:', module);
+    console.log('[V388] 渲染模块:', module);
     
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
@@ -570,7 +579,6 @@ function renderModuleContent(module, contentEl) {
                 </div>
             `;
     }
-    container.classList.add('active');
 }
 
 // 关闭全屏页面 - 使用历史记录返回
