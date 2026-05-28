@@ -302,6 +302,7 @@ function submitExam() {
     });
     
     const score = Math.round((correct / currentExam.questions.length) * 100);
+    const wrongCount = currentExam.questions.length - correct;
     
     // 保存到历史记录
     const data = window.loadData();
@@ -316,29 +317,290 @@ function submitExam() {
     });
     window.saveData(data);
     
-    // 显示结果
+    // 显示详细结果
     const container = document.getElementById('examInterface');
     container.innerHTML = `
-        <div style="text-align:center;padding:40px 20px;">
-            <div style="font-size:64px;margin-bottom:16px;">${score >= 80 ? '🎉' : score >= 60 ? '👍' : '💪'}</div>
-            <h2 style="margin:0 0 8px 0;font-size:24px;">考试完成！</h2>
-            <div style="font-size:48px;font-weight:bold;color:${score >= 80 ? '#4caf50' : score >= 60 ? '#ff9800' : '#f44336'};margin:20px 0;">
-                ${score}分
-            </div>
-            <div style="font-size:16px;color:#666;margin-bottom:32px;">
-                共 ${currentExam.questions.length} 题，答对 ${correct} 题，答错 ${currentExam.questions.length - correct} 题
+        <div style="padding:20px;">
+            <div style="text-align:center;padding:20px 0;">
+                <div style="font-size:64px;margin-bottom:8px;">${score >= 80 ? '🎉' : score >= 60 ? '👍' : '💪'}</div>
+                <h2 style="margin:0 0 8px 0;font-size:22px;">考试完成！</h2>
+                <div style="font-size:48px;font-weight:bold;color:${score >= 80 ? '#4caf50' : score >= 60 ? '#ff9800' : '#f44336'};margin:16px 0;">
+                    ${score}分
+                </div>
+                <div style="font-size:14px;color:#666;">
+                    共 ${currentExam.questions.length} 题，答对 ${correct} 题，答错 ${wrongCount} 题
+                </div>
             </div>
             
-            <div style="display:grid;gap:12px;max-width:300px;margin:0 auto;">
-                <button onclick="renderExam(document.getElementById('fullscreen-content'))" style="padding:14px;background:#667eea;color:white;border:none;border-radius:12px;font-size:16px;cursor:pointer;font-weight:bold;">
+            <!-- AI批改按钮 -->
+            <div style="margin-bottom:16px;">
+                <button onclick="aiCheckExam()" id="aiCheckBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:bold;">
+                    🤖 AI智能批改解析
+                </button>
+                <div style="text-align:center;font-size:11px;color:#999;margin-top:6px;">AI逐题分析错因，给出解题思路和知识点讲解</div>
+            </div>
+            
+            <!-- 一键加入错题本 -->
+            ${wrongCount > 0 ? `
+            <div style="margin-bottom:16px;">
+                <button onclick="addAllWrongToWrongbook()" style="width:100%;padding:14px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:bold;">
+                    📒 全部错题加入错题本（${wrongCount}题）
+                </button>
+            </div>
+            ` : ''}
+            
+            <!-- 逐题详情 -->
+            <div style="background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">
+                <div style="padding:12px 16px;font-size:15px;font-weight:bold;border-bottom:1px solid #f0f0f0;">📋 逐题详情</div>
+                ${currentExam.questions.map((q, i) => {
+                    const isCorrect = currentExam.answers[i] === q.answer;
+                    const userAns = currentExam.answers[i] !== null ? String.fromCharCode(65 + currentExam.answers[i]) : '未作答';
+                    const correctAns = String.fromCharCode(65 + q.answer);
+                    return `
+                    <div style="padding:14px 16px;border-bottom:1px solid #f5f5f5;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <span style="font-size:13px;color:#999;">第${i+1}题</span>
+                            <span style="font-size:13px;font-weight:bold;color:${isCorrect ? '#4caf50' : '#f44336'};">${isCorrect ? '✅ 正确' : '❌ 错误'}</span>
+                        </div>
+                        <div style="font-size:14px;color:#333;margin-bottom:8px;line-height:1.5;">${q.q}</div>
+                        <div style="display:flex;gap:12px;font-size:13px;margin-bottom:8px;">
+                            <span style="color:${isCorrect ? '#4caf50' : '#f44336'};">你的答案：${userAns}${currentExam.answers[i] !== null ? '. ' + q.options[currentExam.answers[i]] : ''}</span>
+                            ${!isCorrect ? '<span style="color:#4caf50;">正确答案：' + correctAns + '. ' + q.options[q.answer] + '</span>' : ''}
+                        </div>
+                        ${!isCorrect ? `
+                        <div style="display:flex;gap:8px;">
+                            <button onclick="addSingleWrongToWrongbook(${i})" style="padding:6px 12px;background:#FF6B6B;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">📒 加入错题本</button>
+                            <button onclick="aiAnalyzeSingleQuestion(${i})" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">🤖 AI分析</button>
+                        </div>
+                        ` : ''}
+                        <div id="aiAnalysis_${i}" style="display:none;margin-top:10px;"></div>
+                    </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            <!-- 底部按钮 -->
+            <div style="display:grid;gap:12px;margin-top:20px;">
+                <button onclick="renderExam(document.getElementById('fullscreen-content'))" style="padding:14px;background:#667eea;color:white;border:none;border-radius:12px;font-size:15px;cursor:pointer;font-weight:bold;">
                     返回考试首页
                 </button>
-                <button onclick="history.back()" style="padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:16px;cursor:pointer;">
+                <button onclick="history.back()" style="padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:15px;cursor:pointer;">
                     返回首页
                 </button>
             </div>
         </div>
     `;
+}
+
+// ========== AI智能批改 ==========
+async function aiCheckExam() {
+    const btn = document.getElementById('aiCheckBtn');
+    if (btn) {
+        btn.textContent = '🤖 AI正在批改中...';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+    }
+    
+    // 收集错题信息
+    const wrongQuestions = [];
+    currentExam.questions.forEach((q, i) => {
+        if (currentExam.answers[i] !== q.answer) {
+            wrongQuestions.push({
+                index: i,
+                question: q.q,
+                options: q.options.map((opt, j) => String.fromCharCode(65 + j) + '. ' + opt).join('；'),
+                userAnswer: currentExam.answers[i] !== null ? String.fromCharCode(65 + currentExam.answers[i]) + '. ' + q.options[currentExam.answers[i]] : '未作答',
+                correctAnswer: String.fromCharCode(65 + q.answer) + '. ' + q.options[q.answer]
+            });
+        }
+    });
+    
+    if (wrongQuestions.length === 0) {
+        if (btn) { btn.textContent = '🎉 全部正确，无需批改！'; btn.style.background = '#4caf50'; }
+        return;
+    }
+    
+    const prompt = `请对以下考试错题进行逐题分析，帮助学生理解错因和掌握知识点：
+
+${wrongQuestions.map((wq, idx) => `
+第${idx+1}题（原试卷第${wq.index+1}题）：
+题目：${wq.question}
+选项：${wq.options}
+学生答案：${wq.userAnswer}
+正确答案：${wq.correctAnswer}
+`).join('\n')}
+
+请对每道错题分析：
+1. 错误原因（为什么选错了）
+2. 正确解法（应该怎么想）
+3. 涉及知识点
+4. 一句话提醒
+
+请用以下格式回复（每题一段）：
+【第X题】
+❌ 错因：...
+✅ 解法：...
+📚 知识点：...
+💡 提醒：...`;
+
+    const messages = [
+        { role: 'system', content: '你是一位专业、耐心的中小学老师，擅长分析学生的错题，给出简洁易懂的讲解。请用清晰结构回答。' },
+        { role: 'user', content: prompt }
+    ];
+    
+    try {
+        const result = await callDeepSeekAPI(messages, 0.7);
+        
+        if (result.success) {
+            // 解析AI返回结果，逐题填充
+            const analysisText = result.content;
+            const blocks = analysisText.split(/【第\d+题】/).filter(b => b.trim());
+            
+            wrongQuestions.forEach((wq, idx) => {
+                const el = document.getElementById('aiAnalysis_' + wq.index);
+                if (el) {
+                    const content = idx < blocks.length ? blocks[idx].trim() : '暂无分析';
+                    el.style.display = 'block';
+                    el.innerHTML = `
+                        <div style="background:#f5f7ff;border-radius:8px;padding:12px;font-size:13px;line-height:1.8;color:#333;">
+                            ${content.replace(/\n/g, '<br>')}
+                        </div>
+                    `;
+                }
+            });
+            
+            if (btn) { btn.textContent = '✅ AI批改完成'; btn.style.background = '#4caf50'; }
+            
+            // 记录DeepSeek使用
+            if (typeof recordDeepSeekCall === 'function') {
+                recordDeepSeekCall(Math.ceil(result.content.length / 4));
+            }
+        } else {
+            if (btn) { btn.textContent = '❌ AI批改失败：' + (result.message || '请检查API配置'); btn.style.background = '#f44336'; }
+        }
+    } catch(e) {
+        if (btn) { btn.textContent = '❌ AI批改出错，请重试'; btn.style.background = '#f44336'; }
+    }
+}
+
+// 单题AI分析
+async function aiAnalyzeSingleQuestion(questionIndex) {
+    const q = currentExam.questions[questionIndex];
+    const el = document.getElementById('aiAnalysis_' + questionIndex);
+    if (!el) return;
+    
+    el.style.display = 'block';
+    el.innerHTML = '<div style="background:#f5f7ff;border-radius:8px;padding:12px;font-size:13px;color:#667eea;">🤖 AI分析中...</div>';
+    
+    const userAns = currentExam.answers[questionIndex] !== null ? String.fromCharCode(65 + currentExam.answers[questionIndex]) + '. ' + q.options[currentExam.answers[questionIndex]] : '未作答';
+    const correctAns = String.fromCharCode(65 + q.answer) + '. ' + q.options[q.answer];
+    
+    const prompt = `请分析这道错题：
+题目：${q.q}
+选项：${q.options.map((opt, j) => String.fromCharCode(65 + j) + '. ' + opt).join('；')}
+学生答案：${userAns}
+正确答案：${correctAns}
+
+请简洁分析：1.为什么选错了 2.正确思路 3.知识点 4.一句话提醒`;
+
+    try {
+        const result = await callDeepSeekAPI([
+            { role: 'system', content: '你是专业中小学老师，简洁分析错题，200字以内。' },
+            { role: 'user', content: prompt }
+        ], 0.7);
+        
+        if (result.success) {
+            el.innerHTML = `
+                <div style="background:#f5f7ff;border-radius:8px;padding:12px;font-size:13px;line-height:1.8;color:#333;">
+                    ${result.content.replace(/\n/g, '<br>')}
+                </div>
+            `;
+            if (typeof recordDeepSeekCall === 'function') recordDeepSeekCall(Math.ceil(result.content.length / 4));
+        } else {
+            el.innerHTML = '<div style="background:#fff0f0;border-radius:8px;padding:12px;font-size:13px;color:#f44336;">AI分析失败：' + (result.message || '请检查API配置') + '</div>';
+        }
+    } catch(e) {
+        el.innerHTML = '<div style="background:#fff0f0;border-radius:8px;padding:12px;font-size:13px;color:#f44336;">分析出错，请重试</div>';
+    }
+}
+
+// ========== 错题转入错题本 ==========
+
+// 单题加入错题本
+function addSingleWrongToWrongbook(questionIndex) {
+    const q = currentExam.questions[questionIndex];
+    const user = window.getCurrentUserData();
+    if (!user) { window.showToast('请先登录'); return; }
+    
+    user.wrongNotes = user.wrongNotes || [];
+    
+    const wrongKey = 'exam-' + Date.now() + '-' + questionIndex;
+    // 防止重复添加
+    if (user.wrongNotes.some(n => n.question === q.q && n.source === 'exam')) {
+        window.showToast('该题已在错题本中');
+        return;
+    }
+    
+    const userAns = currentExam.answers[questionIndex] !== null ? String.fromCharCode(65 + currentExam.answers[questionIndex]) + '. ' + q.options[currentExam.answers[questionIndex]] : '未作答';
+    const correctAns = q.options[q.answer];
+    
+    user.wrongNotes.push({
+        wrongKey: wrongKey,
+        source: 'exam',
+        sourceName: '模拟考试',
+        topicId: null,
+        question: q.q,
+        type: 'choice',
+        options: q.options,
+        answer: correctAns,
+        correctIndex: q.answer,
+        explanation: '',
+        userAnswer: userAns,
+        time: Date.now(),
+        reviewed: false
+    });
+    
+    syncUserData(user);
+    window.showToast('✅ 已加入错题本');
+}
+
+// 全部错题加入错题本
+function addAllWrongToWrongbook() {
+    const user = window.getCurrentUserData();
+    if (!user) { window.showToast('请先登录'); return; }
+    
+    user.wrongNotes = user.wrongNotes || [];
+    let added = 0;
+    
+    currentExam.questions.forEach((q, i) => {
+        if (currentExam.answers[i] === q.answer) return; // 只加错题
+        
+        // 防止重复
+        if (user.wrongNotes.some(n => n.question === q.q && n.source === 'exam')) return;
+        
+        const userAns = currentExam.answers[i] !== null ? String.fromCharCode(65 + currentExam.answers[i]) + '. ' + q.options[currentExam.answers[i]] : '未作答';
+        const correctAns = q.options[q.answer];
+        
+        user.wrongNotes.push({
+            wrongKey: 'exam-' + Date.now() + '-' + i,
+            source: 'exam',
+            sourceName: '模拟考试',
+            topicId: null,
+            question: q.q,
+            type: 'choice',
+            options: q.options,
+            answer: correctAns,
+            correctIndex: q.answer,
+            explanation: '',
+            userAnswer: userAns,
+            time: Date.now(),
+            reviewed: false
+        });
+        added++;
+    });
+    
+    syncUserData(user);
+    window.showToast(added > 0 ? '✅ 已将' + added + '道错题加入错题本' : '所有错题已在错题本中');
 }
 
 // 挂载到window
@@ -350,6 +612,10 @@ window.prevQuestion = prevQuestion;
 window.nextQuestion = nextQuestion;
 window.jumpToQuestion = jumpToQuestion;
 window.submitExam = submitExam;
+window.aiCheckExam = aiCheckExam;
+window.aiAnalyzeSingleQuestion = aiAnalyzeSingleQuestion;
+window.addSingleWrongToWrongbook = addSingleWrongToWrongbook;
+window.addAllWrongToWrongbook = addAllWrongToWrongbook;
 
 // ========== 拍照上传 & 导入导出 ==========
 
