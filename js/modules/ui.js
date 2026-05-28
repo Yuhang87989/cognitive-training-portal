@@ -8,7 +8,7 @@
     var moduleScriptMap = {
         'plan': ['js/modules/week-plans.js', 'js/modules/plan.js'],
         'pet': ['js/modules/pet.js'],
-        'practice': ['js/modules/data-sync.js', 'js/modules/practice.js'],
+        'practice': ['js/data/topics.js', 'js/modules/topics.js'],
         'ai': ['js/modules/data-sync.js', 'js/modules/practice.js'],
         'topics': ['js/data/topics.js', 'js/modules/topics.js'],
         'deepseek': ['js/modules/data-sync.js', 'js/modules/deepseek.js'],
@@ -26,11 +26,11 @@
         'exam': ['js/modules/exam.js'],
         'mindmap': ['js/modules/mindmap.js'],
         'calculator': ['js/modules/calculator.js'],
-        'selfdrive': ['js/modules/thinking.js', 'js/modules/method.js'],
-        'backup': [],
-        'weekly': [],
-        'progress': [],
-        'usage-stats': [],
+        'selfdrive': ['js/modules/self-drive.js', 'js/modules/method.js'],
+        'backup': ['js/modules/local-db.js'],
+        'weekly': ['js/modules/stats.js'],
+        'progress': ['js/modules/stats.js'],
+        'usage-stats': ['js/modules/stats.js'],
         'settings': []
     };
     
