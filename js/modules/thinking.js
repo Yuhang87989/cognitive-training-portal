@@ -753,7 +753,7 @@ async function analyzeThinkingWithAI(type, questionIndex) {
     }
 }
 
-function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+function closeDetail() { var m = document.getElementById('detail-modal'); if (m) m.classList.remove('show'); }
 
 function closeModal(modalId) {
     if (!modalId) {
@@ -788,7 +788,7 @@ async function photoToQuestion(imageData) {
             '<img src="' + imageData + '" style="max-width:200px;max-height:150px;border-radius:8px;margin-bottom:12px;"/>' +
             '<div id="photo-ocr-status" style="font-size:13px;color:#666;">🔍 正在识别图片文字...</div>' +
         '</div>';
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     
     try {
         var ocrText = '';
