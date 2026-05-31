@@ -176,7 +176,7 @@ function onPodcastSelectChange(podcastId) {
 function playPodcastById(podcastId) {
     var i, podcast;
     for (i = 0; i < podcastCourses.length; i++) {
-        if (podcastCourses[i].id === podcastId) {
+        if (podcastCourses[i].id == podcastId) {
             podcast = podcastCourses[i];
             break;
         }
