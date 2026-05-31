@@ -1060,6 +1060,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         if (typeof window.initPortal === "function") {
             window.initPortal();
             console.log("[V396] 首页关键模块加载完成，已初始化");
+            // V396: 记录宠物登录进度
+            if (typeof window.recordPetProgress === 'function') window.recordPetProgress('login');
             // Register Service Worker
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register('./sw.js').catch(function(err) {});

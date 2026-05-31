@@ -6,19 +6,26 @@
     const PET_STORAGE_KEY = 'virtual_pet_data';
     
     // 动漫宠物配置 - 每种宠物有不同的颜色和特征
+    // V396: 宠物解锁任务系统 - 第一个免费选择，其他完成任务解锁
     const PET_SKINS = [
         { id: 'cat', name: '小橘猫', emoji: '🐱', color: '#ff9800', desc: '活泼可爱的小猫咪',
-          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' }},
+          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' },
+          unlock: { type: 'free', desc: '免费选择' } },
         { id: 'dog', name: '小柴犬', emoji: '🐕', color: '#8d6e63', desc: '忠诚友善的小狗狗',
-          img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog.jpg', sad: 'imgs/pets/pet-dog.jpg' }},
+          img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog.jpg', sad: 'imgs/pets/pet-dog.jpg' },
+          unlock: { type: 'quiz', target: 5, desc: '完成5道学霸方法练习题', progress: 0 } },
         { id: 'rabbit', name: '小白兔', emoji: '🐰', color: '#f8bbd0', desc: '软萌可爱的小兔子',
-          img: { idle: 'imgs/pets/pet-rabbit.jpg', happy: 'imgs/pets/pet-rabbit.jpg', eating: 'imgs/pets/pet-rabbit.jpg', sleeping: 'imgs/pets/pet-rabbit.jpg', sad: 'imgs/pets/pet-rabbit.jpg' }},
+          img: { idle: 'imgs/pets/pet-rabbit.jpg', happy: 'imgs/pets/pet-rabbit.jpg', eating: 'imgs/pets/pet-rabbit.jpg', sleeping: 'imgs/pets/pet-rabbit.jpg', sad: 'imgs/pets/pet-rabbit.jpg' },
+          unlock: { type: 'thinking', target: 5, desc: '完成5道思维训练练习题', progress: 0 } },
         { id: 'panda', name: '小熊猫', emoji: '🐼', color: '#fafafa', desc: '国宝级的萌宠',
-          img: { idle: 'imgs/pets/pet-panda.jpg', happy: 'imgs/pets/pet-panda.jpg', eating: 'imgs/pets/pet-panda.jpg', sleeping: 'imgs/pets/pet-panda.jpg', sad: 'imgs/pets/pet-panda.jpg' }},
+          img: { idle: 'imgs/pets/pet-panda.jpg', happy: 'imgs/pets/pet-panda.jpg', eating: 'imgs/pets/pet-panda.jpg', sleeping: 'imgs/pets/pet-panda.jpg', sad: 'imgs/pets/pet-panda.jpg' },
+          unlock: { type: 'level', target: 5, desc: '宠物达到Lv.5', progress: 0 } },
         { id: 'fox', name: '小狐狸', emoji: '🦊', color: '#ff6b35', desc: '聪明伶俐的小狐狸',
-          img: { idle: 'imgs/pets/pet-fox.jpg', happy: 'imgs/pets/pet-fox.jpg', eating: 'imgs/pets/pet-fox.jpg', sleeping: 'imgs/pets/pet-fox.jpg', sad: 'imgs/pets/pet-fox.jpg' }},
+          img: { idle: 'imgs/pets/pet-fox.jpg', happy: 'imgs/pets/pet-fox.jpg', eating: 'imgs/pets/pet-fox.jpg', sleeping: 'imgs/pets/pet-fox.jpg', sad: 'imgs/pets/pet-fox.jpg' },
+          unlock: { type: 'game', target: 3, desc: '玩3次训练游戏', progress: 0 } },
         { id: 'bear', name: '小熊熊', emoji: '🐻', color: '#a1887f', desc: '憨厚可爱的小熊',
-          img: { idle: 'imgs/pets/pet-bear.jpg', happy: 'imgs/pets/pet-bear.jpg', eating: 'imgs/pets/pet-bear.jpg', sleeping: 'imgs/pets/pet-bear.jpg', sad: 'imgs/pets/pet-bear.jpg' }}
+          img: { idle: 'imgs/pets/pet-bear.jpg', happy: 'imgs/pets/pet-bear.jpg', eating: 'imgs/pets/pet-bear.jpg', sleeping: 'imgs/pets/pet-bear.jpg', sad: 'imgs/pets/pet-bear.jpg' },
+          unlock: { type: 'days', target: 7, desc: '累计登录7天', progress: 0 } }
     ];
     
     const DEFAULT_PET = {
@@ -27,7 +34,8 @@
         skin: '🐱', skinId: 'cat', unlockedSkins: ['cat'],
         birthDate: Date.now(), totalInteractions: 0,
         lastFeed: null, lastPlay: null, lastPet: null,
-        coins: 0, animationState: 'idle', voiceEnabled: true
+        coins: 0, animationState: 'idle', voiceEnabled: true,
+        petChosen: false, loginDays: [], quizDone: 0, thinkingDone: 0, gamesPlayed: 0
     };
     
     let currentAnimationFrame = 0;
@@ -41,6 +49,11 @@
                 if (!data.skinId) data.skinId = 'cat';
                 if (!data.coins) data.coins = 0;
                 if (data.voiceEnabled === undefined) data.voiceEnabled = true;
+                if (data.petChosen === undefined) data.petChosen = !!saved; // 旧用户视为已选择
+                if (!data.loginDays) data.loginDays = [];
+                if (!data.quizDone) data.quizDone = 0;
+                if (!data.thinkingDone) data.thinkingDone = 0;
+                if (!data.gamesPlayed) data.gamesPlayed = 0;
                 return data;
             }
         } catch(e) {}
@@ -62,22 +75,81 @@
         return false;
     }
     
+    // V396: 检查解锁条件是否满足
+    function checkUnlockCondition(skinId) {
+        const data = getPetData();
+        const skin = PET_SKINS.find(s => s.id === skinId);
+        if (!skin || !skin.unlock) return false;
+        const u = skin.unlock;
+        switch(u.type) {
+            case 'free': return true;
+            case 'quiz': return data.quizDone >= u.target;
+            case 'thinking': return data.thinkingDone >= u.target;
+            case 'level': return data.level >= u.target;
+            case 'game': return data.gamesPlayed >= u.target;
+            case 'days': return (data.loginDays || []).length >= u.target;
+            default: return false;
+        }
+    }
+    
+    // V396: 获取解锁进度
+    function getUnlockProgress(skinId) {
+        const data = getPetData();
+        const skin = PET_SKINS.find(s => s.id === skinId);
+        if (!skin || !skin.unlock) return { current: 0, target: 0 };
+        const u = skin.unlock;
+        switch(u.type) {
+            case 'free': return { current: 1, target: 1 };
+            case 'quiz': return { current: Math.min(data.quizDone, u.target), target: u.target };
+            case 'thinking': return { current: Math.min(data.thinkingDone, u.target), target: u.target };
+            case 'level': return { current: Math.min(data.level, u.target), target: u.target };
+            case 'game': return { current: Math.min(data.gamesPlayed, u.target), target: u.target };
+            case 'days': return { current: Math.min((data.loginDays||[]).length, u.target), target: u.target };
+            default: return { current: 0, target: 0 };
+        }
+    }
+    
     function unlockPet(skinId) {
         const data = getPetData();
         const skin = PET_SKINS.find(s => s.id === skinId);
         if (skin && !data.unlockedSkins.includes(skinId)) {
-            const unlockLevel = PET_SKINS.findIndex(s => s.id === skinId) + 2;
-            if (data.level >= unlockLevel) {
+            if (checkUnlockCondition(skinId)) {
                 data.unlockedSkins.push(skinId); savePetData(data);
                 window.showToast('🎉 解锁了 ' + skin.name + '！');
                 petVoiceSay('太棒了！解锁了' + skin.name + '！');
                 return true;
             } else {
-                window.showToast('需要达到 Lv.' + unlockLevel + ' 才能解锁');
+                window.showToast('🔒 ' + skin.unlock.desc);
                 return false;
             }
         }
         return false;
+    }
+    
+    // V396: 记录任务进度
+    function recordPetProgress(type) {
+        const data = getPetData();
+        // 记录登录
+        if (type === 'login') {
+            const today = new Date().toISOString().split('T')[0];
+            if (!data.loginDays) data.loginDays = [];
+            if (!data.loginDays.includes(today)) {
+                data.loginDays.push(today);
+            }
+        }
+        if (type === 'quiz') data.quizDone = (data.quizDone || 0) + 1;
+        if (type === 'thinking') data.thinkingDone = (data.thinkingDone || 0) + 1;
+        if (type === 'game') data.gamesPlayed = (data.gamesPlayed || 0) + 1;
+        savePetData(data);
+        // 自动检查是否解锁了新宠物
+        PET_SKINS.forEach(skin => {
+            if (!data.unlockedSkins.includes(skin.id) && checkUnlockCondition(skin.id)) {
+                data.unlockedSkins.push(skin.id);
+                window.showToast('🎉 解锁了 ' + skin.name + '！');
+                petVoiceSay('太棒了！解锁了' + skin.name + '！');
+            }
+        });
+        savePetData(data);
     }
     
     function feedPet() {
@@ -119,15 +191,16 @@
         while (data.exp >= data.expToNext) {
             data.exp -= data.expToNext; data.level++;
             data.expToNext = Math.floor(data.expToNext * 1.2);
-            const nextLockedPet = PET_SKINS.find(s => !data.unlockedSkins.includes(s.id));
-            if (nextLockedPet && data.level >= PET_SKINS.findIndex(s => s.id === nextLockedPet.id) + 2) {
-                data.unlockedSkins.push(nextLockedPet.id);
-                window.showToast('🎉 升级到 Lv.' + data.level + '！解锁了 ' + nextLockedPet.name + '！');
-                petVoiceSay('升级啦！解锁了' + nextLockedPet.name);
-            } else {
-                window.showToast('🎉 恭喜！升到 Lv.' + data.level + ' 啦！');
-                petVoiceSay('升级啦！等级' + data.level);
-            }
+            window.showToast('🎉 恭喜！升到 Lv.' + data.level + ' 啦！');
+            petVoiceSay('升级啦！等级' + data.level);
+            // V396: 检查等级解锁的宠物
+            PET_SKINS.forEach(skin => {
+                if (!data.unlockedSkins.includes(skin.id) && skin.unlock.type === 'level' && data.level >= skin.unlock.target) {
+                    data.unlockedSkins.push(skin.id);
+                    window.showToast('🎉 解锁了 ' + skin.name + '！');
+                    petVoiceSay('升级啦！解锁了' + skin.name);
+                }
+            });
         }
         if (!existingData) savePetData(data);
         if (window.DataSync && window.DataSync.user) window.DataSync.user.addExp(Math.floor(amount / 2));
@@ -268,6 +341,11 @@
     
     function renderPet(container) {
         const pet = getPetData();
+        // V396: 首次进入显示宠物选择界面
+        if (!pet.petChosen) {
+            renderPetChooser(container);
+            return;
+        }
         const expression = getPetExpression(pet);
         container.innerHTML = '<style>' + PET_ANIMATION_CSS + '</style>' +
         '<div style="padding:16px;min-height:100vh;background:linear-gradient(135deg,#f3e5f5,#e1bee7,#bbdefb);">' +
@@ -411,11 +489,23 @@
         PET_SKINS.forEach(skin => {
             const unlocked = pet.unlockedSkins.includes(skin.id);
             const selected = pet.skinId === skin.id;
-            const unlockLevel = PET_SKINS.findIndex(s => s.id === skin.id) + 2;
+            const progress = getUnlockProgress(skin.id);
+            let statusHtml = '';
+            if (!unlocked) {
+                if (skin.unlock.type === 'free') {
+                    statusHtml = '<div style="font-size:10px;color:#4caf50;">免费</div>';
+                } else {
+                    const pct = Math.round(progress.current / progress.target * 100);
+                    statusHtml = '<div style="font-size:10px;color:#999;">' + skin.unlock.desc + '</div>' +
+                        '<div style="width:100%;height:4px;background:#e0e0e0;border-radius:2px;margin-top:4px;">' +
+                        '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:2px;"></div></div>' +
+                        '<div style="font-size:9px;color:#999;margin-top:2px;">' + progress.current + '/' + progress.target + '</div>';
+                }
+            }
             cardsHtml += '<div class="pet-card ' + (selected ? 'selected' : '') + ' ' + (!unlocked ? 'locked' : '') + '" onclick="' + (unlocked ? "window.selectPet('" + skin.id + "')" : "window.tryUnlockPet('" + skin.id + "')") + '">' +
                 '<div style="width:60px;height:70px;margin:0 auto 6px;">' + (unlocked ? renderAnimePet(skin.id, 'happy') : renderAnimePet(skin.id, 'idle')) + '</div>' +
                 '<div style="font-size:13px;font-weight:500;">' + skin.name + '</div>' +
-                (!unlocked ? '<div style="font-size:10px;color:#999;">Lv.' + unlockLevel + '解锁</div>' : '') +
+                statusHtml +
                 (selected ? '<div style="font-size:10px;color:#667eea;">当前使用</div>' : '') +
             '</div>';
         });
@@ -427,7 +517,7 @@
                     '<button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;">×</button>' +
                 '</div>' +
                 '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">' + cardsHtml + '</div>' +
-                '<div style="margin-top:20px;padding:12px;background:#f3e5f5;border-radius:12px;font-size:12px;color:#666;">💡 提示：提升等级可以解锁更多可爱的动漫宠物哦！</div>' +
+                '<div style="margin-top:20px;padding:12px;background:#f3e5f5;border-radius:12px;font-size:12px;color:#666;">💡 完成学习任务可以解锁更多可爱宠物！</div>' +
             '</div>' +
         '</div>';
         
@@ -453,6 +543,61 @@
         refreshPetDisplay();
     }
     
+    // V396: 首次宠物选择界面
+    function renderPetChooser(container) {
+        let cardsHtml = '';
+        PET_SKINS.forEach(skin => {
+            cardsHtml += '<div class="pet-card" onclick="window.chooseFirstPet(\'' + skin.id + '\')" style="background:white;border-radius:16px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;border:2px solid transparent;">' +
+                '<div style="width:80px;height:90px;margin:0 auto 8px;">' + renderAnimePet(skin.id, 'happy') + '</div>' +
+                '<div style="font-size:16px;font-weight:bold;color:#333;">' + skin.emoji + ' ' + skin.name + '</div>' +
+                '<div style="font-size:12px;color:#666;margin-top:4px;">' + skin.desc + '</div>' +
+            '</div>';
+        });
+        
+        container.innerHTML = '<style>' + PET_ANIMATION_CSS + '</style>' +
+        '<div style="padding:16px;min-height:100vh;background:linear-gradient(135deg,#f3e5f5,#e1bee7,#bbdefb);display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
+            '<div style="text-align:center;margin-bottom:24px;">' +
+                '<div style="font-size:48px;margin-bottom:8px;">🎉</div>' +
+                '<h2 style="margin:0;font-size:22px;color:#333;">选择你的第一只宠物</h2>' +
+                '<p style="margin:8px 0 0;color:#666;font-size:14px;">选一个小伙伴陪你一起学习吧！</p>' +
+            '</div>' +
+            '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;max-width:400px;">' + cardsHtml + '</div>' +
+            '<div style="margin-top:20px;padding:12px;background:rgba(255,255,255,0.7);border-radius:12px;font-size:12px;color:#666;text-align:center;">💡 其他宠物可以通过完成任务逐步解锁哦！</div>' +
+        '</div>';
+        
+        // 添加hover效果
+        container.querySelectorAll('.pet-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.borderColor = '#667eea';
+                this.style.transform = 'translateY(-4px)';
+                this.style.boxShadow = '0 6px 20px rgba(102,126,234,0.3)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.borderColor = 'transparent';
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    }
+    
+    function chooseFirstPet(skinId) {
+        const skin = PET_SKINS.find(s => s.id === skinId);
+        if (!skin) return;
+        const data = getPetData();
+        data.skinId = skinId;
+        data.skin = skin.emoji;
+        data.name = skin.name;
+        data.unlockedSkins = [skinId];
+        data.petChosen = true;
+        data.birthDate = Date.now();
+        savePetData(data);
+        // 记录今日登录
+        recordPetProgress('login');
+        window.showToast('🎉 你选择了' + skin.name + '！');
+        petVoiceSay('你好！我是' + skin.name + '，以后请多多关照！');
+        refreshPetDisplay();
+    }
+
     // 预加载语音列表
     if ('speechSynthesis' in window) {
         window.speechSynthesis.getVoices();
@@ -469,5 +614,8 @@
     window.selectPet = selectPet;
     window.tryUnlockPet = tryUnlockPet;
     window.togglePetVoice = togglePetVoice;
-    console.log('[V357] 虚拟宠物模块加载完成 - 动漫风格+语音回应版');
+    window.chooseFirstPet = chooseFirstPet;
+    window.recordPetProgress = recordPetProgress;
+    window.getPetData_internal = getPetData;
+    console.log('[V396] 虚拟宠物模块加载完成 - 任务解锁系统版');
 })();

@@ -6315,3 +6315,12 @@ window.showGameOver = showGameOver;
 
 
 window.renderGames = renderGames;
+
+// V396: 记录宠物游戏进度 - 覆盖保存成绩函数
+(function(){
+    var _origSaveScore = window.saveGameScore;
+    window.saveGameScore = function(gameId, score, accuracy) {
+        if (_origSaveScore) _origSaveScore(gameId, score, accuracy);
+        if (typeof window.recordPetProgress === 'function') window.recordPetProgress('game');
+    };
+})();
