@@ -4,7 +4,7 @@
 var currentPodcastId = null;
 
 // 播客课程数据 - 默认空数组，加载后自动填充
-var podcastCourses = [];
+var podcastCourses = window.podcastList || [];
 
 // 播放状态
 var podcastPlayerState = {

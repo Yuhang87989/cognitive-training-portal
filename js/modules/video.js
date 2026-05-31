@@ -2,11 +2,11 @@
 
 window.videoCourses = [
     {id:"video0",title:"🐻 小熊掉苹果",teacher:"测试视频",duration:"0:10",durationSec:10,category:"测试",gradient:"linear-gradient(135deg,#f5af19,#f12711)",icon:"🐻",url:"https://www.w3schools.com/html/mov_bbb.mp4",views:9999,isTest:true},
-    {id:"video1",title:"专注力训练",teacher:"认知训练",duration:"5:23",durationSec:323,category:"学习方法",gradient:"linear-gradient(135deg,#667eea,#764ba2)",icon:"🎯",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/专注力训练.mp4",views:5680},
-    {id:"video2",title:"学霸深度理解法",teacher:"认知训练",duration:"6:18",durationSec:378,category:"学习方法",gradient:"linear-gradient(135deg,#f093fb,#f5576c)",icon:"📚",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/学霸深度理解法_第1集.mp4",views:4320},
-    {id:"video3",title:"数学抽象推理",teacher:"认知训练",duration:"5:06",durationSec:306,category:"数学",gradient:"linear-gradient(135deg,#4facfe,#00f2fe)",icon:"🔢",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/数学抽象推理.mp4",views:3890},
-    {id:"video4",title:"物理因果守恒",teacher:"认知训练",duration:"5:41",durationSec:341,category:"物理",gradient:"linear-gradient(135deg,#43e97b,#38f9d7)",icon:"⚡",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/物理因果守恒_第1集.mp4",views:2950},
-    {id:"video5",title:"逆向思维训练",teacher:"认知训练",duration:"3:27",durationSec:207,category:"思维训练",gradient:"linear-gradient(135deg,#fa709a,#fee140)",icon:"🧩",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/逆向思维训练_第1集.mp4",views:2150}
+    {id:"video1",title:"专注力训练",teacher:"认知训练",duration:"5:23",durationSec:323,category:"学习方法",gradient:"linear-gradient(135deg,#667eea,#764ba2)",icon:"🎯",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/focus-training.mp4",views:5680},
+    {id:"video2",title:"学霸深度理解法",teacher:"认知训练",duration:"6:18",durationSec:378,category:"学习方法",gradient:"linear-gradient(135deg,#f093fb,#f5576c)",icon:"📚",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/deep-understanding-ep1.mp4",views:4320},
+    {id:"video3",title:"数学抽象推理",teacher:"认知训练",duration:"5:06",durationSec:306,category:"数学",gradient:"linear-gradient(135deg,#4facfe,#00f2fe)",icon:"🔢",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/math-abstract-reasoning.mp4",views:3890},
+    {id:"video4",title:"物理因果守恒",teacher:"认知训练",duration:"5:41",durationSec:341,category:"物理",gradient:"linear-gradient(135deg,#43e97b,#38f9d7)",icon:"⚡",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/physics-conservation-ep1.mp4",views:2950},
+    {id:"video5",title:"逆向思维训练",teacher:"认知训练",duration:"3:27",durationSec:207,category:"思维训练",gradient:"linear-gradient(135deg,#fa709a,#fee140)",icon:"🧩",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/reverse-thinking-ep1.mp4",views:2150}
 ];
 
 CTM.registerModule('video', {

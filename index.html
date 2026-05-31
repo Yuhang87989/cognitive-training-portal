@@ -3,7 +3,7 @@
 <head>
 <script>
 // V371: 自动版本号 - 基于发布日期，无需手动维护
-var SITE_VERSION = '391';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '394';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
@@ -33,26 +33,26 @@ window.initPortal = function() {
     console.log('[占位initPortal被调用，等待真实函数加载...');
 };
 
-console.log('[V263] 占位函数已初始化');
+console.log('[V394] 占位函数已初始化');
 </script>
 
 <!-- V263: 用传统script标签依次加载所有业务模块，更可靠，一个模块出错不影响其他 -->
 <script>
-console.log('[V263] 开始用传统方式加载所有业务模块...');
+console.log('[V394] 开始用传统方式加载所有业务模块...');
 window.__loaded_modules = [];
 </script>
-<script>window.__loaded_modules.push('ui'); console.log('[V286] UI模块加载完成');</script>
+<script>window.__loaded_modules.push('ui'); console.log('[V394] UI模块加载完成');</script>
 <script>window.__loaded_modules.push('config');</script>
 <script>window.__loaded_modules.push('ctm');</script>
 <script>window.__loaded_modules.push('db');</script>
 <script>window.__loaded_modules.push('storage');</script>
 <script>window.__loaded_modules.push('utils');</script>
 <script>window.__loaded_modules.push('user');</script>
-<script src="js/audio.js?v=391" ></script>
+<script src="js/audio.js?v=394" ></script>
 <script>window.__loaded_modules.push('audio');</script>
 
 <script>window.__loaded_modules.push('pet');</script>
-<script src="js/ui-pet.js?v=391" ></script>
+<script src="js/ui-pet.js?v=394" ></script>
 <script>window.__loaded_modules.push('ui-pet');</script>
 
 <!-- 数据模块 -->
@@ -81,11 +81,11 @@ window.__loaded_modules = [];
 
 
 <script>
-console.log('[V305] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
+console.log('[V394] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
 // 初始化数据同步系统
 if (window.DataSync && window.DataSync.init) {
     window.DataSync.init();
-    console.log('[V297] DataSync数据同步系统已启动');
+    console.log('[V394] DataSync数据同步系统已启动');
 }
 </script>
 
@@ -917,7 +917,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             const checkModule = document.createElement("script");
             checkModule.type = "module";
             if (!("noModule" in checkModule)) {
-                console.log("[V229] 浏览器不支持ES6 Module，使用传统加载方式");
+                console.log("[V394] 浏览器不支持ES6 Module，使用传统加载方式");
                 reject(new Error("ES6 Module not supported"));
                 return;
             }
@@ -929,11 +929,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                     moduleScript.type = "module";
                     moduleScript.src = path + "?v=" + v;
                     moduleScript.onload = function() {
-                        console.log("[V230] " + label + "加载成功");
+                        console.log("[V394] " + label + "加载成功");
                         resolve();
                     };
                     moduleScript.onerror = function(e) {
-                        console.warn("[V230] " + label + "加载失败:", e);
+                        console.warn("[V394] " + label + "加载失败:", e);
                         reject(e);
                     };
                     document.head.appendChild(moduleScript);
@@ -941,7 +941,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             }
             
             // V255修复：直接加载js/main.js作为ES6入口
-            console.log("[V255] 加载ES6入口模块 js/main.js");
+            console.log("[V394] 加载ES6入口模块 js/main.js");
             tryLoadModule("js/main.js", "ES6主入口")
                 .then(resolve)
                 .catch(reject);
@@ -982,7 +982,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     
     // V229: ES6 Module模式下，业务模块使用动态import()懒加载
     // 只有核心基础模块在main.js中静态import
-    console.log('[V229] 业务模块将使用动态import()懒加载，按需加载');
+    console.log('[V394] 业务模块将使用动态import()懒加载，按需加载');
     
     // ==================== 并行加载函数 ====================
     function loadScriptsParallel(scripts, onAllLoaded, onSingleLoad) {
@@ -1020,15 +1020,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         // V229: 如果ES6 Module已加载，业务模块使用动态import()懒加载
         // 不需要传统的脚本预加载
         if (window.ES6_MODULES_LOADED) {
-            console.log("[V229] ES6 Module模式已启用，业务模块将按需动态加载");
+            console.log("[V394] ES6 Module模式已启用，业务模块将按需动态加载");
             return;
         }
         
         // 传统降级模式：延迟加载非关键模块
         setTimeout(function() {
-            console.log("[V229] 传统模式：开始后台延迟加载非关键模块");
+            console.log("[V394] 传统模式：开始后台延迟加载非关键模块");
             loadScriptsParallel(legacyLazyModules, function() {
-                console.log("[V229] 所有模块加载完成");
+                console.log("[V394] 所有模块加载完成");
                 // 初始化视频播放器（延迟加载）
                 setTimeout(function() {
                     if (typeof window.initEnhancedVideoPlayer === "function" && window.videoCtx && !window.videoCtx.isInitialized) {
@@ -1045,7 +1045,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         retries = retries || 0;
         if (typeof window.initPortal === "function") {
             window.initPortal();
-            console.log("[V229] 首页关键模块加载完成，已初始化");
+            console.log("[V394] 首页关键模块加载完成，已初始化");
             // Register Service Worker
             if ("serviceWorker" in navigator) {
                 navigator.serviceWorker.register('./sw.js').catch(function(err) {});
@@ -1061,20 +1061,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     }
 
     // ==================== V229: ES6 Module优先加载流程 ====================
-    console.log("[V229] 尝试ES6 Module优先加载");
+    console.log("[V394] 尝试ES6 Module优先加载");
     loadES6Modules().then(function() {
         // ES6 Module加载成功，开始初始化
-        console.log("[V229] ES6 Module核心模块全部加载完成，开始初始化首页");
+        console.log("[V394] ES6 Module核心模块全部加载完成，开始初始化首页");
         safeInitPortal();
     }).catch(function() {
         // ES6 Module加载失败，降级到传统加载方式
         window.ES6_MODULE_FALLBACK = true;
-        console.log("[V229] 降级到传统关键模块并行加载");
+        console.log("[V394] 降级到传统关键模块并行加载");
         loadScriptsParallel(criticalModules, function() {
-            console.log("[V229] 传统方式关键模块全部加载完成，开始初始化首页");
+            console.log("[V394] 传统方式关键模块全部加载完成，开始初始化首页");
             safeInitPortal();
         }, function(src) {
-            console.log("[V229] 传统方式关键模块加载:", src);
+            console.log("[V394] 传统方式关键模块加载:", src);
         });
     });
     
