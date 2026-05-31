@@ -362,9 +362,9 @@ function showThinkingType(type) {
     
     const questions = window.thinkingQuestions[type];
     
-    const content = (typeof ensureDetailModal === 'function') ? ensureDetailModal() : document.getElementById('detail-content');
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     
     content.innerHTML = `
         <div class="modal-title">${typeIcons[type]} ${typeNames[type]}训练</div>
@@ -402,9 +402,9 @@ function startThinkingQuiz(type, page = 0) {
         abstract: '抽象思维'
     };
     
-    const content = (typeof ensureDetailModal === 'function') ? ensureDetailModal() : document.getElementById('detail-content');
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     
     content.innerHTML = `
         <div class="modal-title">📝 ${typeNames[type]} - 练习</div>
@@ -495,7 +495,7 @@ function submitThinkingAnswers(type, page) {
     
     const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
     
-    const content = (typeof ensureDetailModal === 'function') ? ensureDetailModal() : document.getElementById('detail-content');
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     content.innerHTML = `
         <div class="modal-title">📝 ${typeNames[type]} - 答案对比</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">第 ${page + 1} / ${totalPages} 页</div>
@@ -675,9 +675,9 @@ function viewThinkingNote(noteId) {
     const note = user?.thinkingNotes?.find(n => n.id === noteId);
     if (!note) return;
     
-    const content = (typeof ensureDetailModal === 'function') ? ensureDetailModal() : document.getElementById('detail-content');
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     content.innerHTML = `
         <div class="modal-title">📝 思维训练笔记</div>
         <img src="${note.image}" style="width:100%;border-radius:8px;margin-bottom:16px;">

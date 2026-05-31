@@ -19,6 +19,7 @@ function ensureDetailModal() {
     modal.appendChild(inner);
     return document.getElementById('detail-content');
 }
+window.ensureDetailModal = ensureDetailModal;
 
 window.methodTrainingQuestions = {
     // 费曼学习法 - 用简单语言解释复杂概念
