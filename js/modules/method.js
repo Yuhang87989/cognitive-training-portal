@@ -330,7 +330,7 @@ function showMethodDetail(id) {
         <div style="background:#fff3cd;padding:12px;border-radius:10px;font-size:12px;color:#856404;margin-top:16px;">${m.tip}</div>
         <button class="login-btn login-btn-primary" style="margin-top:16px;" onclick="closeDetail()">我学会了</button>
     `;
-    document.getElementById('detail-modal').classList.add('show');
+    if(document.getElementById('detail-modal'))document.getElementById('detail-modal').classList.add('show');
 }
 
 function showThinkingType(type) {
@@ -365,7 +365,7 @@ function showThinkingType(type) {
     
     const modal = document.getElementById('detail-modal');
     var content = ensureDetailModal();
-    modal.classList.add('show');
+    if(modal) modal.classList.add('show');
     
     content.innerHTML = `
         <div class="modal-title">${typeIcons[type]} ${typeNames[type]}训练</div>
@@ -754,7 +754,7 @@ function openMethodQuestions(methodId) {
         <button onclick="submitMethodAnswers('${methodId}', 0)" class="login-btn login-btn-primary" style="margin-top:12px;width:100%;">提交答案</button>
         <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;width:100%;">返回</button>
     `;
-    document.getElementById('detail-modal').classList.add('show');
+    if(document.getElementById('detail-modal'))document.getElementById('detail-modal').classList.add('show');
 }
 
 // AI分析学霸方法的图片
@@ -860,7 +860,7 @@ function showMethodNote(image) {
         <img src="${image}" style="width:100%;border-radius:12px;"/>
         <button class="modal-close" onclick="window.closeModal()" style="margin-top:12px;width:100%;">关闭</button>
     `;
-    document.getElementById('detail-modal').classList.add('show');
+    if(document.getElementById('detail-modal'))document.getElementById('detail-modal').classList.add('show');
 }
 
 // 导出函数到window
@@ -906,7 +906,7 @@ function startMethodQuiz(methodId, page = 0) {
     
     const modal = document.getElementById('detail-modal');
     var content = ensureDetailModal();
-    modal.classList.add('show');
+    if(modal) modal.classList.add('show');
     
     content.innerHTML = `
         <div class="modal-title">📝 ${methodNames[methodId]} - 练习</div>
@@ -1034,7 +1034,7 @@ function conserveAnswer(idx) {
     showConserveQuestion();
 }
 
-function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+function closeDetail() { if(document.getElementById('detail-modal'))document.getElementById('detail-modal').classList.remove('show'); }
 
 function closeModal(modalId) {
     if (!modalId) {
@@ -1069,7 +1069,7 @@ async function photoToQuestion(imageData) {
             '<img src="' + imageData + '" style="max-width:200px;max-height:150px;border-radius:8px;margin-bottom:12px;"/>' +
             '<div id="photo-ocr-status" style="font-size:13px;color:#666;">🔍 正在识别图片文字...</div>' +
         '</div>';
-    modal.classList.add('show');
+    if(modal) modal.classList.add('show');
     
     try {
         var ocrText = '';
@@ -1131,7 +1131,7 @@ function showGameOver(score, total) {
             '<div style="font-size:14px;color:#666;margin-top:8px;">正确率: ' + (total > 0 ? Math.round(score/total*100) : 0) + '%</div>' +
         '</div>' +
         '<button onclick="window.closeModal()" class="login-btn login-btn-primary">确定</button>';
-    modal.classList.add('show');
+    if(modal) modal.classList.add('show');
 }
 window.showGameOver = showGameOver;
 
