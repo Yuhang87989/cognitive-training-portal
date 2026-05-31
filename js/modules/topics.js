@@ -152,8 +152,9 @@ function openTopicQuestion(topicId) {
         return;
     }
     
+    const content = window.ensureDetailModal ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
+    if (!modal || !content) { window.showToast('页面加载中，请稍后重试'); return; }
     modal.classList.add('show');
     
     content.innerHTML = `
