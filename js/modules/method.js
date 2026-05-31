@@ -3,7 +3,7 @@
 
 // 确保detail-modal存在
 function ensureDetailModal() {
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     if (content) return content;
     var modal = document.getElementById('detail-modal');
     if (!modal) {
@@ -317,7 +317,7 @@ function showConserveQuestion() {
 function showMethodDetail(id) {
     const m = window.methodDetails[id];
     if (!m) return;
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     content.innerHTML = `
         <div style="text-align:center;margin-bottom:16px;">
             <div style="font-size:48px;margin-bottom:8px;">${m.title.split(' ')[0]}</div>
@@ -363,7 +363,7 @@ function showThinkingType(type) {
     const questions = thinkingQuestions[type];
     
     const modal = document.getElementById('detail-modal');
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     modal.classList.add('show');
     
     content.innerHTML = `
@@ -416,7 +416,7 @@ function submitMethodAnswers(methodId, page) {
     const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
     
     // 显示答案对比
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     content.innerHTML = `
         <div class="modal-title">📝 ${methodNames[methodId]} - 答案对比</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">
@@ -469,7 +469,7 @@ function submitThinkingAnswers(type, page) {
     
     const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
     
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     content.innerHTML = `
         <div class="modal-title">📝 ${typeNames[type]} - 答案对比</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">第 ${page + 1} / ${totalPages} 页</div>
@@ -723,7 +723,7 @@ function openMethodQuestions(methodId) {
         return;
     }
     
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     content.innerHTML = `
         <div class="modal-title">${methodIcons[methodId] || '📖'} ${methodNames[methodId] || methodId}</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">
@@ -853,7 +853,7 @@ function renderMethodNotes() {
 }
 
 function showMethodNote(image) {
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     content.innerHTML = `
         <div class="modal-title">📷 笔记预览</div>
         <img src="${image}" style="width:100%;border-radius:12px;"/>
@@ -904,7 +904,7 @@ function startMethodQuiz(methodId, page = 0) {
     };
     
     const modal = document.getElementById('detail-modal');
-    var content = document.getElementById('detail-content');
+    var content = ensureDetailModal();
     modal.classList.add('show');
     
     content.innerHTML = `
