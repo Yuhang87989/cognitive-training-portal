@@ -150,7 +150,7 @@ function playVideoFromList(id) {
 // ============================================================
 window.filterVideoCourse = filterVideoCourse;
 window.playVideoFromList = playVideoFromList;
-window.playLocalVideo = playLocalVideo;
+if (typeof playLocalVideo !== 'undefined') window.playLocalVideo = playLocalVideo;
 window.deleteLocalVideo = deleteLocalVideo;
 
 
@@ -163,7 +163,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderLocalVideoList,
         filterVideoCourse,
         playVideoFromList,
-        playLocalVideo,
+        // playLocalVideo defined in player.js
         deleteLocalVideo,
         videoCourses: window.videoCourses
     };

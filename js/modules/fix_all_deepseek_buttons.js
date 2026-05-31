@@ -231,10 +231,6 @@
 })();
 
 // ============================================================
-// ES6 Module 导出
+// ES6 Module 导出（已通过window挂载，此处仅作标记）
 // ============================================================
-    ensureDeepSeekHelpModal: window.ensureDeepSeekHelpModal,
-    openDeepseekHelpModal: window.openDeepseekHelpModal,
-    openDeepSeekHelpModal: window.openDeepSeekHelpModal,
-    renderUsageStats: window.renderUsageStats,
-    openUsageStats: window.openUsageStats
+// All functions are exported via window.*

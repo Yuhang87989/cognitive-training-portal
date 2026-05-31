@@ -1,7 +1,7 @@
 // Service Worker for 认知训练门户 V394
 // 缓存策略: Network First (确保最新代码) + 离线回退
 
-var CACHE_NAME = 'ct-v394';
+var CACHE_NAME = 'ct-v395';
 var OFFLINE_URL = './index.html';
 
 self.addEventListener('install', function(event) {
@@ -41,7 +41,7 @@ self.addEventListener('fetch', function(event) {
             if (response && response.ok) {
                 var clone = response.clone();
                 caches.open(CACHE_NAME).then(function(cache) {
-                    cache.put(request, clone);
+                    cache.put(request, clone).catch(function(e){ console.warn("[SW] cache.put failed:", e); });
                 });
             }
             return response;

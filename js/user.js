@@ -36,7 +36,7 @@ function closeUserMenuOutside(e) {
 }
 
 function showUserSwitchModal() {
-    closeUserMenu();
+    if (typeof closeUserMenu === "function") closeUserMenu();
     var data = window.loadData();
     
     if (data.users.length === 0) {
@@ -157,7 +157,7 @@ function openAvatarModal() {
     
     content.innerHTML = avatarHtml;
     modal.classList.add('show');
-    closeUserMenu();
+    if (typeof closeUserMenu === "function") closeUserMenu();
 }
 
 function renderUserList() {
@@ -264,7 +264,7 @@ function closeCreateUserModal() { document.getElementById('create-user-modal').c
 function closeUserSwitchModal() { document.getElementById('user-switch-modal').classList.remove('show'); }
 
 function showDeleteUserModal() {
-    closeUserMenu();
+    if (typeof closeUserMenu === "function") closeUserMenu();
     var data = window.loadData();
     
     if (data.users.length === 0) {
@@ -523,7 +523,7 @@ window.closeCreateUserModal = closeCreateUserModal;
 window.closeDeleteUserModal = closeDeleteUserModal;
 window.closeDifficultyModal = closeDifficultyModal;
 window.closeEditProfileModal = closeEditProfileModal;
-window.closeUserMenu = closeUserMenu; // 从ui.js导入
+if (typeof closeUserMenu === "function") window.closeUserMenu = closeUserMenu;
 window.closeUserSwitchModal = closeUserSwitchModal;
 window.confirmDeleteUser = confirmDeleteUser;
 window.createNewUser = createNewUser;
