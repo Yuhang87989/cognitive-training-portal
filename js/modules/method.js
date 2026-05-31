@@ -3,7 +3,7 @@
 
 // 确保detail-modal存在
 function ensureDetailModal() {
-    var content = ensureDetailModal();
+    var content = document.getElementById('detail-content');
     if (content) return content;
     var modal = document.getElementById('detail-modal');
     if (!modal) {
