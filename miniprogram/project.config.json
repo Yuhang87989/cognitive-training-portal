@@ -1,0 +1,33 @@
+{
+  "miniprogramRoot": "./",
+  "cloudfunctionRoot": "./cloud/functions/",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": true,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "appid": "你的AppID",
+  "projectname": "cognitive-training-portal",
+  "libVersion": "3.3.4",
+  "cloudfunctionTemplateRoot": "",
+  "condition": {}
+}

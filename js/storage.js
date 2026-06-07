@@ -58,6 +58,7 @@ function loadData() {
             data.users = [{ ...DEFAULT_USER }];
             data.currentUser = DEFAULT_USER.id;
             window.saveData(data);
+        }
             console.log('用户列表为空，已创建默认用户:', DEFAULT_USER.name);
         }
         
@@ -110,7 +111,15 @@ function saveUserData(user) {
             data.users.push(user);
         }
         window.saveData(data);
+        // V403: 云数据库同步
+        if (window.CloudSync && CloudSync.isEnabled()) {
+            CloudSync.saveUserData('core', user);
+        }
     } catch(e) {
+        console.warn('saveUserData失败:', e);
+    }
+}
+ catch(e) {
         console.warn('saveUserData失败:', e);
     }
 }
@@ -140,6 +149,7 @@ function clearCurrentUserData() {
     user.weeklyProgress = {};
     
     window.saveData(data);
+        }
     updateUI();
     syncTodayStats();
     closeUserMenu();
@@ -237,10 +247,20 @@ function syncUserData(user) {
     const data = window.loadData();
     const idx = data.users.findIndex(u => u.id === user.id);
     if (idx >= 0) { data.users[idx] = user; window.saveData(data); }
+            // V403: 云数据库同步
+    if (window.CloudSync && CloudSync.isEnabled()) {
+        CloudSync.saveUserData('core', user);
+    }
+}
+
     // IndexedDB同步
     if (window.DB) {
         try { DB.saveUser(user); } catch(e) {
             console.warn('[Storage] IndexedDB同步失败:', e);
+        }
+        // V403: 云数据库同步
+        if (window.CloudSync && CloudSync.isEnabled()) {
+            CloudSync.saveUserData('core', user);
         }
     }
 }
