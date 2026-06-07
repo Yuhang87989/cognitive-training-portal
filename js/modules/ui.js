@@ -353,18 +353,11 @@ window.cleanupModuleState = function() {
     var videoIframe = document.querySelector('#video-player-iframe');
     if (videoIframe) videoIframe.src = '';
     
-    // 3. 关闭全屏容器（直接操作，不依赖异步popstate）
-    var fullscreenEl = document.getElementById('fullscreen-container');
-    if (fullscreenEl) {
-        fullscreenEl.classList.remove('active');
-    }
-    window._fullscreenOpen = false;
-    
-    // 4. 清空内容容器
+    // 3. 清空内容容器（供openFullscreenPage切换模块时清理旧内容）
     var contentEl = document.getElementById('fullscreen-content');
     if (contentEl) contentEl.innerHTML = '';
     
-    // 5. 关闭所有浮窗播放器
+    // 4. 关闭浮窗播放器（不影响fullscreen-container导航状态）
     var miniPlayer = document.getElementById('mini-player');
     if (miniPlayer) miniPlayer.classList.remove('show');
     var audioPlayerFs = document.getElementById('audio-player-fullscreen');
@@ -378,23 +371,24 @@ window.cleanupModuleState = function() {
     var gameFs = document.getElementById('game-fullscreen-container');
     if (gameFs) gameFs.style.display = 'none';
     
-    // 6. 清理可能的全局状态污染
+    // 5. 清理可能的全局状态污染
     if (window._petInterval) {
         clearInterval(window._petInterval);
         window._petInterval = null;
     }
     
-    // 7. 清理所有模态框
+    // 6. 清理所有模态框
     document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(function(el) { el.remove(); });
     
-    console.log('[V400] 模块状态已清理');
+    console.log('[V400b] 模块状态已清理');
 };
 
 // 监听浏览器返回按钮
 window.addEventListener('popstate', function(event) {
+    // V400b: 处理浏览器返回按钮（非代码触发的back）
     if (window._fullscreenOpen) {
         window.cleanupModuleState();
-        const el = document.getElementById('fullscreen-container');
+        var el = document.getElementById('fullscreen-container');
         if (el) el.classList.remove('active');
         window._fullscreenOpen = false;
     }
@@ -485,7 +479,15 @@ function openFullscreenPage(module) {
 
 // 关闭全屏页面 - 使用历史记录返回
 function closeFullscreenPage() {
-    if (window._fullscreenOpen) {
+    if (!window._fullscreenOpen) return;
+    // V400b: 先清理媒体和浮窗，再关闭容器
+    window.cleanupModuleState();
+    // 直接关闭全屏容器
+    var el = document.getElementById('fullscreen-container');
+    if (el) el.classList.remove('active');
+    window._fullscreenOpen = false;
+    // 回退历史记录（如果还在 fullscreen 状态中）
+    if (history.state && history.state.fullscreen) {
         history.back();
     }
 }
@@ -877,14 +879,13 @@ function toggleUserSelect() {
 
 function switchMainTab(tab, element) {
     // 更新导航栏状态
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(function(item) { item.classList.remove('active'); });
     if (element) element.classList.add('active');
     
     // 如果是首页，关闭所有全屏页面并清理状态
     if (tab === 'home') {
-        closeFullscreenPage();
+        closeFullscreenPage(); // 内部已包含cleanupModuleState
         closeSettingsPanel();
-        window.cleanupModuleState(); // 清理所有模块状态，包括播放器
     }
 }
 
