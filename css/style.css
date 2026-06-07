@@ -280,7 +280,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 .audio-player-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:2000;display:none;flex-direction:column;}
 .audio-player-modal.show{display:flex}
-.mini-player.show{display:flex!important}.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
+.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:none;align-items:center;z-index:100;}.mini-player.show{display:flex!important}
 
 
 .filter-btn{padding:6px 12px;border-radius:16px;border:1px solid #e0e0e0;background:white;font-size:12px;cursor:pointer;transition:all 0.2s}
