@@ -1,5 +1,6 @@
 // 版本: V144
 
+// V397: 视频懒加载 - 不预加载视频文件
 window.videoCourses = [
     {id:"video0",title:"🐻 小熊掉苹果",teacher:"测试视频",duration:"0:10",durationSec:10,category:"测试",gradient:"linear-gradient(135deg,#f5af19,#f12711)",icon:"🐻",url:"https://www.w3schools.com/html/mov_bbb.mp4",views:9999,isTest:true},
     {id:"video1",title:"专注力训练",teacher:"认知训练",duration:"5:23",durationSec:323,category:"学习方法",gradient:"linear-gradient(135deg,#667eea,#764ba2)",icon:"🎯",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/focus-training.mp4",views:5680},
@@ -18,7 +19,7 @@ CTM.registerModule('video', {
 function renderVideo(container) {
     // 使用videoCourses数组渲染21个视频
     const videos = videoCourses.map(function(v) {
-        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
+        return '<div class="video-item" data-video-id="' + v.id + '" onclick="playVideoFromList(\'' + v.id + '\')">' +
                '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
                '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
                '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +
@@ -112,7 +113,7 @@ function filterVideoCourse(category, btn) {
     
     var videos = window.videoCourses.filter(function(v) { return category === 'all' || v.category === category; });
     var videoHtml = videos.map(function(v) {
-        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
+        return '<div class="video-item" data-video-id="' + v.id + '" onclick="playVideoFromList(\'' + v.id + '\')">' +
                '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
                '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
                '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +

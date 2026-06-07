@@ -578,7 +578,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         }
         
         // 设置视频兼容性属性
-        videoEl.preload = 'metadata';
+        videoEl.preload = 'none';  // V397: 延迟加载
         videoEl.setAttribute('playsinline', '');
         videoEl.setAttribute('webkit-playsinline', '');
         videoEl.setAttribute('x5-video-player-type', 'h5');

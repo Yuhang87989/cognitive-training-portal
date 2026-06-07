@@ -129,7 +129,7 @@ function renderPodcastListItems(podcasts) {
         isPlayingNow = isActive && podcastPlayerState.isPlaying;
         indicator = isPlayingNow ? '<span class="podcast-playing-indicator">🔊</span>' : '<span class="podcast-play-icon">▶</span>';
         
-        itemHtml = '<div class="podcast-list-item' + (isActive ? ' active' : '') + '" onclick="playPodcastById(\'' + p.id + '\')">';
+        itemHtml = '<div class="podcast-list-item' + (isActive ? ' active' : '') + '" data-podcast-id="' + p.id + '" onclick="playPodcastById(\'' + p.id + '\')">';
         itemHtml += '<span class="podcast-list-icon" style="background:' + p.gradient + ';">' + p.icon + '</span>';
         itemHtml += '<div class="podcast-list-info">';
         itemHtml += '<div class="podcast-list-title">' + p.title + '</div>';
@@ -266,10 +266,8 @@ function updatePodcastUI() {
         if (progressEl) progressEl.style.display = 'block';
         if (timeEl) timeEl.textContent = podcast.duration;
         
-        // 更新列表
-        if (list) {
-            list.innerHTML = renderPodcastListItems(podcastCourses);
-        }
+        // V397: 轻量更新列表
+        updatePodcastListActive();
         
         // 更新下拉选择
         if (select) select.value = podcast.id;
@@ -319,10 +317,8 @@ function podcastTogglePlay() {
         if (btn) btn.textContent = '⏸';
     }
     
-    // 更新列表图标
-    if (list) {
-        list.innerHTML = renderPodcastListItems(podcastCourses);
-    }
+    // V397: 轻量更新
+    updatePodcastListActive();
 }
 
 // ============================================================
@@ -405,6 +401,32 @@ function podcastCycleSpeed() {
 // ============================================================
 // 初始化音频元素
 // ============================================================
+// V397: 轻量更新播客列表活跃状态（不全量重建DOM）
+function updatePodcastListActive() {
+    if (!podcastPlayerState.currentPodcast) return;
+    var items = document.querySelectorAll('.podcast-list-item');
+    for (var i = 0; i < items.length; i++) {
+        var itemId = items[i].getAttribute('data-podcast-id');
+        var isActive = itemId == podcastPlayerState.currentPodcast.id;
+        if (isActive && !items[i].classList.contains('active')) {
+            items[i].classList.add('active');
+        } else if (!isActive && items[i].classList.contains('active')) {
+            items[i].classList.remove('active');
+        }
+        // Update play indicator
+        var indicator = items[i].querySelector('.podcast-playing-indicator, .podcast-play-icon');
+        if (indicator) {
+            if (isActive && podcastPlayerState.isPlaying) {
+                indicator.className = 'podcast-playing-indicator';
+                indicator.textContent = '🔊';
+            } else if (isActive) {
+                indicator.className = 'podcast-play-icon';
+                indicator.textContent = '▶';
+            }
+        }
+    }
+}
+
 function initPodcastAudio() {
     var audio = document.getElementById('hidden-audio');
     
@@ -415,24 +437,22 @@ function initPodcastAudio() {
         document.body.appendChild(audio);
     }
     
-    // 播放开始
+    // 播放开始 - V397: 轻量更新而非全量重建
     audio.onplay = function() {
-        var playBtn, list;
+        var playBtn;
         podcastPlayerState.isPlaying = true;
         playBtn = document.getElementById('podcast-play-btn');
         if (playBtn) playBtn.textContent = '⏸';
-        list = document.getElementById('podcast-list');
-        if (list) list.innerHTML = renderPodcastListItems(podcastCourses);
+        updatePodcastListActive();
     };
     
-    // 暂停
+    // 暂停 - V397: 轻量更新
     audio.onpause = function() {
-        var playBtn, list;
+        var playBtn;
         podcastPlayerState.isPlaying = false;
         playBtn = document.getElementById('podcast-play-btn');
         if (playBtn) playBtn.textContent = '▶';
-        list = document.getElementById('podcast-list');
-        if (list) list.innerHTML = renderPodcastListItems(podcastCourses);
+        updatePodcastListActive();
     };
     
     // 时间更新
