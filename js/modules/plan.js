@@ -182,7 +182,7 @@ window.renderPlan = function(container) {
     
     var weekKey = 'week' + weekDay.week;
     var currentWeekData = window.weekPlans[weekKey];
-    var isInTraining = weekDay.week >= 1 && weekDay.week <= 10 && currentWeekData;
+    var isInTraining = weekDay.week >= 1 && weekDay.week <= 12 && currentWeekData;
     
     var completedCount = 0;
     var totalCount = 0;

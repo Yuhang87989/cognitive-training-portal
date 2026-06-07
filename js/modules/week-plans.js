@@ -428,6 +428,92 @@ window.week10Plan = {
 
 
 // ===== Week Plans 映射 =====
+// ===== Week11训练计划 =====
+window.week11Plan = {
+    weekId:'week11',weekTitle:'Week11：期末巩固与知识应用周',
+    weekDesc:'期末复习巩固，知识应用与跨学科思维训练，费曼输出与项目式学习',
+    days:[
+        {day:1,title:'知识体系梳理',tasks:[
+            {id:'w11d1t1',title:'学科知识系统梳理',type:'review',duration:15,completed:false},
+            {id:'w11d1t2',title:'核心概念关联训练',type:'practice',duration:10,completed:false},
+            {id:'w11d1t3',title:'知识框架可视化',type:'creative',duration:10,completed:false}
+        ]},
+        {day:2,title:'知识应用与问题解决',tasks:[
+            {id:'w11d2t1',title:'学科应用思维训练',type:'practice',duration:10,completed:false},
+            {id:'w11d2t2',title:'问题分析与建模',type:'strategy',duration:10,completed:false},
+            {id:'w11d2t3',title:'实战问题解决练习',type:'practice',duration:15,completed:false}
+        ]},
+        {day:3,title:'元认知自动化训练',tasks:[
+            {id:'w11d3t1',title:'元认知监控强化训练',type:'practice',duration:10,completed:false},
+            {id:'w11d3t2',title:'思维过程自我调节',type:'strategy',duration:10,completed:false},
+            {id:'w11d3t3',title:'学习策略主动调控',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:4,title:'综合能力提升',tasks:[
+            {id:'w11d4t1',title:'多策略综合应用训练',type:'practice',duration:15,completed:false},
+            {id:'w11d4t2',title:'跨学科问题解决',type:'practice',duration:10,completed:false},
+            {id:'w11d4t3',title:'学霸方法内化训练',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:5,title:'费曼输出日',tasks:[
+            {id:'w11d5t1',title:'费曼学习法实践输出',type:'practice',duration:15,completed:false},
+            {id:'w11d5t2',title:'知识点讲解训练',type:'creative',duration:15,completed:false},
+            {id:'w11d5t3',title:'输出质量自评与优化',type:'strategy',duration:10,completed:false}
+        ]},
+        {day:6,title:'项目式学习日',tasks:[
+            {id:'w11d6t1',title:'项目选题与方案设计',type:'creative',duration:15,completed:false},
+            {id:'w11d6t2',title:'项目执行与协作',type:'practice',duration:20,completed:false},
+            {id:'w11d6t3',title:'项目展示与反思',type:'writing',duration:10,completed:false}
+        ]},
+        {day:7,title:'复盘总结日',tasks:[
+            {id:'w11d7t1',title:'本周成长数据回顾',type:'review',duration:10,completed:false},
+            {id:'w11d7t2',title:'看见成长·规划未来',type:'writing',duration:10,completed:false},
+            {id:'w11d7t3',title:'制定Week12训练目标',type:'strategy',duration:5,completed:false}
+        ]}
+    ]
+};
+
+// ===== Week12训练计划（暑假特别版） =====
+window.week12Plan = {
+    weekId:'week12',weekTitle:'Week12：暑假特别版——边玩边学成长周',
+    weekDesc:'暑假特别版！探索职业梦想、大自然、科学实验、发明创造和未来城市，成为地球守护者',
+    days:[
+        {day:1,title:'暑假开幕·目标设定',tasks:[
+            {id:'w12d1t1',title:'暑假目标SMART设定',type:'strategy',duration:10,completed:false},
+            {id:'w12d1t2',title:'自我效能评估训练',type:'practice',duration:10,completed:false},
+            {id:'w12d1t3',title:'暑假学习计划制定',type:'planning',duration:10,completed:false}
+        ]},
+        {day:2,title:'梦想职业大探索',tasks:[
+            {id:'w12d2t1',title:'霍兰德职业兴趣测试',type:'quiz',duration:10,completed:false},
+            {id:'w12d2t2',title:'职业能力匹配分析',type:'practice',duration:10,completed:false},
+            {id:'w12d2t3',title:'梦想职业规划书',type:'creative',duration:15,completed:false}
+        ]},
+        {day:3,title:'大自然探险家',tasks:[
+            {id:'w12d3t1',title:'生态系统构成学习',type:'practice',duration:10,completed:false},
+            {id:'w12d3t2',title:'自然观察记录训练',type:'attention',duration:10,completed:false},
+            {id:'w12d3t3',title:'生态保护行动方案',type:'creative',duration:10,completed:false}
+        ]},
+        {day:4,title:'科学小实验',tasks:[
+            {id:'w12d4t1',title:'实验方法步骤学习',type:'video',duration:10,completed:false},
+            {id:'w12d4t2',title:'科学探究思维训练',type:'practice',duration:10,completed:false},
+            {id:'w12d4t3',title:'实验报告撰写',type:'writing',duration:15,completed:false}
+        ]},
+        {day:5,title:'我是发明家',tasks:[
+            {id:'w12d5t1',title:'TRIZ创新方法入门',type:'strategy',duration:10,completed:false},
+            {id:'w12d5t2',title:'创新思维训练',type:'game',duration:10,completed:false},
+            {id:'w12d5t3',title:'发明创意方案设计',type:'creative',duration:15,completed:false}
+        ]},
+        {day:6,title:'未来城市设计师',tasks:[
+            {id:'w12d6t1',title:'城市规划基础学习',type:'practice',duration:10,completed:false},
+            {id:'w12d6t2',title:'系统思维应用训练',type:'strategy',duration:10,completed:false},
+            {id:'w12d6t3',title:'未来城市设计方案',type:'creative',duration:15,completed:false}
+        ]},
+        {day:7,title:'地球守护者·收官日',tasks:[
+            {id:'w12d7t1',title:'可持续发展理念学习',type:'practice',duration:10,completed:false},
+            {id:'w12d7t2',title:'环保行动承诺与计划',type:'creative',duration:10,completed:false},
+            {id:'w12d7t3',title:'暑假特别版成长总结',type:'writing',duration:15,completed:false}
+        ]}
+    ]
+};
+
 window.weekPlans = {
     week1: week1Plan,
     week2: week2Plan,
@@ -438,7 +524,9 @@ window.weekPlans = {
     week7: week7Plan,
     week8: week8Plan,
     week9: week9Plan,
-    week10: week10Plan
+    week10: week10Plan,
+    week11: week11Plan,
+    week12: week12Plan
 };
 
 
