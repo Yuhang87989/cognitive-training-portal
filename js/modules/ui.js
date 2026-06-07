@@ -342,6 +342,17 @@ window._fullscreenOpen = false;
 
 // 清理模块状态 - 解决模块切换冲突问题
 window.cleanupModuleState = function() {
+    // 停止播客音频
+    if (typeof window.stopPodcastAudio === 'function') {
+        window.stopPodcastAudio();
+    }
+    
+    // 停止视频播放
+    var videoAudios = document.querySelectorAll('video');
+    videoAudios.forEach(function(v) { v.pause(); v.src = ''; });
+    var videoIframe = document.querySelector('#video-player-iframe');
+    if (videoIframe) videoIframe.src = '';
+    
     // 清空内容容器
     const contentEl = document.getElementById('fullscreen-content');
     if (contentEl) contentEl.innerHTML = '';
