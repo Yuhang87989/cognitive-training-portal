@@ -187,6 +187,16 @@ function playPodcastById(podcastId) {
 }
 
 // ============================================================
+// 格式化时间显示
+// ============================================================
+function formatPodcastTime(seconds) {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    var mins = Math.floor(seconds / 60);
+    var secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
+}
+
+// ============================================================
 // 播放播客 - 音频播放优先，UI更新在try-catch中
 // ============================================================
 function podcastPlay(podcast) {
@@ -203,6 +213,40 @@ function podcastPlay(podcast) {
         audio.currentTime = 0;
         audio.src = podcast.url;
         audio.playbackRate = podcastPlayerState.playbackRate;
+        
+        // V400: 重新绑定事件处理器（stopPodcastAudio可能已解绑）
+        audio.ontimeupdate = function() {
+            if (audio.duration) {
+                var progressFill = document.getElementById('podcast-progress-fill');
+                if (progressFill) progressFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+                var currentTimeEl = document.getElementById('podcast-current-time');
+                if (currentTimeEl) currentTimeEl.textContent = formatPodcastTime(audio.currentTime);
+                var totalTimeEl = document.getElementById('podcast-total-time');
+                if (totalTimeEl) totalTimeEl.textContent = formatPodcastTime(audio.duration);
+            }
+        };
+        audio.onended = function() {
+            podcastPlayerState.isPlaying = false;
+            if (podcastCourses.length > 0) {
+                podcastNext();
+            }
+        };
+        audio.onplay = function() {
+            podcastPlayerState.isPlaying = true;
+            var btn = document.getElementById('podcast-play-btn');
+            if (btn) btn.textContent = '⏸';
+        };
+        audio.onpause = function() {
+            podcastPlayerState.isPlaying = false;
+            var btn = document.getElementById('podcast-play-btn');
+            if (btn) btn.textContent = '▶';
+        };
+        audio.onerror = function() {
+            podcastPlayerState.isPlaying = false;
+            updatePodcastUI();
+            window.showToast('音频加载失败，请稍后重试');
+        };
+        
         audio.load();
         
         // 使用回调处理自动播放结果
@@ -225,13 +269,6 @@ function podcastPlay(podcast) {
                 }
             });
         }
-        
-        // 音频加载错误处理
-        audio.onerror = function() {
-            podcastPlayerState.isPlaying = false;
-            updatePodcastUI();
-            window.showToast('音频加载失败，请稍后重试');
-        };
     } else if (!podcast.url) {
         if (typeof showToast === 'function') {
             window.showToast('该播客暂无音频');
@@ -703,29 +740,27 @@ function escapeHtml(text) {
 function stopPodcastAudio() {
     var audio = document.getElementById('hidden-audio');
     if (audio) {
-        // 1. 先解绑所有事件回调，防止pause/src变更触发回调导致重新播放
-        audio.onplay = null;
-        audio.onpause = null;
-        audio.ontimeupdate = null;
+        // V400: 只解绑onended防止podcastNext重新触发，保留其他事件供podcastPlay复用
         audio.onended = null;
-        audio.onerror = null;
-        // 2. 暂停并清除
+        // 暂停并重置
         audio.pause();
         audio.currentTime = 0;
-        audio.src = '';
+        // 用removeAttribute+load安全重置，避免src=''导致某些浏览器audio元素不可用
+        audio.removeAttribute('src');
+        audio.load();
     }
-    // 3. 重置播放状态
+    // 重置播放状态
     if (typeof podcastPlayerState !== 'undefined' && podcastPlayerState) {
         podcastPlayerState.isPlaying = false;
         podcastPlayerState.currentPodcast = null;
         podcastPlayerState.currentTime = 0;
         podcastPlayerState.duration = 0;
     }
-    // 4. 更新UI按钮状态
+    // 更新UI按钮状态
     var playBtn = document.getElementById('podcast-play-btn');
     if (playBtn) playBtn.textContent = '▶';
     
-    // 5. 隐藏迷你播放器
+    // 隐藏迷你播放器
     var miniPlayer = document.getElementById('mini-player');
     if (miniPlayer) miniPlayer.classList.remove('show');
     var titleEl = document.getElementById('podcast-player-title');

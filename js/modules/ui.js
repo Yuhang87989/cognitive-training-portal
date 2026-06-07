@@ -342,31 +342,52 @@ window._fullscreenOpen = false;
 
 // 清理模块状态 - 解决模块切换冲突问题
 window.cleanupModuleState = function() {
-    // 停止播客音频
+    // 1. 停止播客音频
     if (typeof window.stopPodcastAudio === 'function') {
         window.stopPodcastAudio();
     }
     
-    // 停止视频播放
-    var videoAudios = document.querySelectorAll('video');
-    videoAudios.forEach(function(v) { v.pause(); v.src = ''; });
+    // 2. 停止视频播放
+    var videos = document.querySelectorAll('video');
+    videos.forEach(function(v) { v.pause(); v.removeAttribute('src'); v.load(); });
     var videoIframe = document.querySelector('#video-player-iframe');
     if (videoIframe) videoIframe.src = '';
     
-    // 清空内容容器
-    const contentEl = document.getElementById('fullscreen-content');
+    // 3. 关闭全屏容器（直接操作，不依赖异步popstate）
+    var fullscreenEl = document.getElementById('fullscreen-container');
+    if (fullscreenEl) {
+        fullscreenEl.classList.remove('active');
+    }
+    window._fullscreenOpen = false;
+    
+    // 4. 清空内容容器
+    var contentEl = document.getElementById('fullscreen-content');
     if (contentEl) contentEl.innerHTML = '';
     
-    // 清理可能的全局状态污染
+    // 5. 关闭所有浮窗播放器
+    var miniPlayer = document.getElementById('mini-player');
+    if (miniPlayer) miniPlayer.classList.remove('show');
+    var audioPlayerFs = document.getElementById('audio-player-fullscreen');
+    if (audioPlayerFs) audioPlayerFs.classList.remove('show');
+    var enhancedVideo = document.getElementById('enhanced-video-player');
+    if (enhancedVideo) enhancedVideo.style.display = 'none';
+    var mediaPlayerFs = document.getElementById('media-player-fullscreen');
+    if (mediaPlayerFs) mediaPlayerFs.classList.remove('show');
+    var videoModal = document.getElementById('video-player-modal');
+    if (videoModal) videoModal.classList.remove('show');
+    var gameFs = document.getElementById('game-fullscreen-container');
+    if (gameFs) gameFs.style.display = 'none';
+    
+    // 6. 清理可能的全局状态污染
     if (window._petInterval) {
         clearInterval(window._petInterval);
         window._petInterval = null;
     }
     
-    // 清理所有模态框
-    document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(el => el.remove());
+    // 7. 清理所有模态框
+    document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(function(el) { el.remove(); });
     
-    console.log('[DataSync] 模块状态已清理');
+    console.log('[V400] 模块状态已清理');
 };
 
 // 监听浏览器返回按钮
