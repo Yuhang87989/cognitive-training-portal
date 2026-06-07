@@ -84,9 +84,9 @@ function renderPodcast(container) {
     html += '<div class="card" style="margin-top:12px;">';
     html += '<div class="podcast-list-header" onclick="togglePodcastList()">';
     html += '<span>📋 播客列表</span>';
-    html += '<span id="podcast-list-toggle">▼</span>';
+    html += '<span id="podcast-list-toggle">▶</span>';
     html += '</div>';
-    html += '<div id="podcast-list-container" class="podcast-list-container">';
+    html += '<div id="podcast-list-container" class="podcast-list-container" style="display:none">';
     html += '<div class="podcast-list-grid" id="podcast-list">';
     html += renderPodcastListItems(podcastCourses);
     html += '</div>';
@@ -153,10 +153,10 @@ function togglePodcastList() {
     if (container && toggle) {
         if (container.style.display === 'none') {
             container.style.display = 'block';
-            toggle.textContent = '▲';
+            toggle.textContent = '▼';
         } else {
             container.style.display = 'none';
-            toggle.textContent = '▼';
+            toggle.textContent = '▶';
         }
     }
 }
