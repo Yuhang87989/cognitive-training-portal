@@ -724,6 +724,10 @@ function stopPodcastAudio() {
     // 4. 更新UI按钮状态
     var playBtn = document.getElementById('podcast-play-btn');
     if (playBtn) playBtn.textContent = '▶';
+    
+    // 5. 隐藏迷你播放器
+    var miniPlayer = document.getElementById('mini-player');
+    if (miniPlayer) miniPlayer.classList.remove('show');
     var titleEl = document.getElementById('podcast-player-title');
     if (titleEl) titleEl.textContent = '选择播客开始收听';
     var subtitleEl = document.getElementById('podcast-player-subtitle');
