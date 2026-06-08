@@ -9,7 +9,7 @@
     // V396: 宠物解锁任务系统 - 第一个免费选择，其他完成任务解锁
     const PET_SKINS = [
         { id: 'cat', name: '小橘猫', emoji: '🐱', color: '#ff9800', desc: '活泼可爱的小猫咪',
-          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' },
+          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat-happy.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' },
           unlock: { type: 'free', desc: '免费选择' } },
         { id: 'dog', name: '小柴犬', emoji: '🐕', color: '#8d6e63', desc: '忠诚友善的小狗狗',
           img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog.jpg', sad: 'imgs/pets/pet-dog.jpg' },
