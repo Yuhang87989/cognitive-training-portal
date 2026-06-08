@@ -399,7 +399,7 @@ var UsageStatsModule = {
     var monthStats = self.getMonthStats();
     
     var modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal-overlay show';
     modal.id = 'usage-stats-modal';
     modal.onclick = function(e) {
       if (e.target === modal) {

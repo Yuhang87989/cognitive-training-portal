@@ -113,7 +113,7 @@ window.renderUsageStats = renderUsageStats;
 // DeepSeek帮助文档模态框
 window.openDeepseekHelpModal = function() {
     const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal-overlay show';
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
     
     modal.innerHTML = `
@@ -454,7 +454,7 @@ window.renderMyPage = function(container) {
         console.warn('⚠️ openDeepseekHelpModal 函数未找到，重新导出...');
         window.openDeepseekHelpModal = function() {
             const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
+            modal.className = 'modal-overlay show';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             
             modal.innerHTML = `

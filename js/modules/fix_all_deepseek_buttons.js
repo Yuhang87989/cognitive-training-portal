@@ -21,7 +21,7 @@
         
         window.openDeepseekHelpModal = function() {
             const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
+            modal.className = 'modal-overlay show';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             
             modal.innerHTML = `

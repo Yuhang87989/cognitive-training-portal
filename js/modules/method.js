@@ -8,7 +8,7 @@ function ensureDetailModal() {
     var modal = document.getElementById('detail-modal');
     if (!modal) {
         modal = document.createElement('div');
-        modal.className = 'modal-overlay';
+        modal.className = 'modal-overlay show';
         modal.id = 'detail-modal';
         document.body.appendChild(modal);
     }
