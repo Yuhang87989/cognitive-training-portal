@@ -241,7 +241,9 @@
     function renderAnimePet(skinId, expression) {
         const url = getPetImageUrl(skinId, expression);
         if (url) {
-            return '<img src="' + url + '" style="width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'<span style=\'font-size:80px\'>' + (PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0]).emoji + '</span>\'">';
+            // V403e: 修复onerror引号嵌套，使用双引号避免冲突
+            var fallbackEmoji = (PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0]).emoji;
+            return '<img src="' + url + '" style="width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.onerror=null;this.style.display=\'none\';this.parentNode.innerHTML=\'<span style=&quot;font-size:80px&quot;>' + fallbackEmoji + '</span>\'">';
         }
         // Fallback to emoji
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];

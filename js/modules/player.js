@@ -52,7 +52,9 @@ function playPodcastCourse(courseId) {
     if (courseTitleEl) courseTitleEl.textContent = course.title;
     if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
     
-    if (!course.shareUrl) {
+    // V403e: 兼容没有shareUrl的播客数据，用url字段直接播放
+    var podcastSourceUrl = course.shareUrl || course.url;
+    if (!podcastSourceUrl) {
         window.showToast('该播客暂不可用');
         return;
     }
@@ -67,7 +69,7 @@ function playPodcastCourse(courseId) {
     
     // 尝试获取播客数据（包含字幕文本）
     window.showToast('正在加载播客...');
-    fetch(course.shareUrl, {redirect: 'follow'}).then(function(resp) {
+    fetch(podcastSourceUrl, {redirect: 'follow'}).then(function(resp) {
         if (!resp.ok) throw new Error('fetch failed');
         return resp.json();
     }).then(function(podcastData) {
@@ -578,7 +580,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         }
         
         // 设置视频兼容性属性
-        videoEl.preload = 'none';  // V397: 延迟加载
+        videoEl.preload = 'metadata';  // V403e: 加载元信息避免无限转圈
         videoEl.setAttribute('playsinline', '');
         videoEl.setAttribute('webkit-playsinline', '');
         videoEl.setAttribute('x5-video-player-type', 'h5');

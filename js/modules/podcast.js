@@ -247,7 +247,8 @@ function podcastPlay(podcast) {
             window.showToast('音频加载失败，请稍后重试');
         };
         
-        audio.load();
+        // V403e: 不手动调load()，让play()自动触发加载，避免load/play竞争
+        // audio.load() 在设src后是多余的，play()内部会自动触发加载
         
         // 使用回调处理自动播放结果
         var playPromise = audio.play();
