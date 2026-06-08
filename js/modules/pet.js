@@ -245,7 +245,7 @@
         if (url) {
             return '<div style="position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;">' +
                 '<span style="font-size:80px;">' + skin.emoji + '</span>' +
-                '<img src="' + url + '" style="position:absolute;top:0;left:0;width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.style.display=\'none\'">' +
+                '<img src="' + url + '" style="position:absolute;top:0;left:0;width:140px;height:140px;object-fit:contain;border-radius:16px;" alt="pet" onerror="this.remove()">' +
                 '</div>';
         }
         return '<span style="font-size:80px;">' + skin.emoji + '</span>';
