@@ -406,8 +406,23 @@ function toggleMediaPlay() {
 
 function toggleEnhancedVideoPlay() {
     if (!evpVideo) return;
-    if (videoCtx.isPlaying) { evpVideo.pause(); var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'flex'; }
-    else { evpVideo.play(); var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'none'; }
+    var loadingEl = document.getElementById('evp-loading');
+    if (videoCtx.isPlaying) { 
+        evpVideo.pause(); 
+        var bigPlayEl = document.getElementById('evp-big-play'); 
+        if (bigPlayEl) bigPlayEl.style.display = 'flex'; 
+        if (loadingEl) loadingEl.style.display = 'none';
+    } else { 
+        if (loadingEl) loadingEl.style.display = 'flex';
+        evpVideo.play().then(function() {
+            var bigPlayEl = document.getElementById('evp-big-play'); 
+            if (bigPlayEl) bigPlayEl.style.display = 'none'; 
+            if (loadingEl) loadingEl.style.display = 'none';
+        }).catch(function(e) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            window.showToast('播放失败，请重试');
+        });
+    }
 }
 
 function togglePlayPause() {
@@ -580,7 +595,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         }
         
         // 设置视频兼容性属性
-        videoEl.preload = 'metadata';  // V403e: 加载元信息避免无限转圈
+        videoEl.preload = 'auto';  // V403g: 预加载视频数据减少转圈等待
         videoEl.setAttribute('playsinline', '');
         videoEl.setAttribute('webkit-playsinline', '');
         videoEl.setAttribute('x5-video-player-type', 'h5');
@@ -635,11 +650,13 @@ function openEnhancedVideoPlayer(title, url, videoId) {
             videoEl.play().then(function() {
                 videoCtx.isPlaying = true;
                 if (bigPlayEl) bigPlayEl.style.display = 'none';
+                if (loadingEl) loadingEl.style.display = 'none';
                 window.showToast('正在播放: ' + title);
             }).catch(function(e) {
                 // 自动播放被阻止（常见于移动端），显示大播放按钮等待用户点击
                 videoCtx.isPlaying = false;
                 if (bigPlayEl) bigPlayEl.style.display = 'flex';
+                if (loadingEl) loadingEl.style.display = 'none';
                 console.log('自动播放被阻止，等待用户交互:', e.message);
             });
         };

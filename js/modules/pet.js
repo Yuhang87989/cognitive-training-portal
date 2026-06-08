@@ -243,9 +243,10 @@
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
         const url = getPetImageUrl(skinId, expression);
         if (url) {
-            return '<div style="position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;">' +
-                '<span style="font-size:80px;">' + skin.emoji + '</span>' +
-                '<img src="' + url + '" style="position:absolute;top:0;left:0;width:140px;height:140px;object-fit:contain;border-radius:16px;" alt="pet" onerror="this.remove()">' +
+            // 图片加载成功覆盖emoji，失败时显示emoji
+            return '<div style="position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:16px;">' +
+                '<span style="font-size:80px;" class="pet-emoji-fallback">' + skin.emoji + '</span>' +
+                '<img src="' + url + '" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" alt="pet" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">' +
                 '</div>';
         }
         return '<span style="font-size:80px;">' + skin.emoji + '</span>';
