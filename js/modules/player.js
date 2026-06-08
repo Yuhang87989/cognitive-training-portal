@@ -1,4 +1,4 @@
-// 版本: V226 - ES6 Module
+// 版本: V403n - 播客+视频修复
 // 视频播放器模块
 
 
@@ -10,6 +10,16 @@ window.videoCtx = {
     lastVolume: 0.8,
     currentVideo: null,
     isInitialized: false
+};
+
+// ========== 播客播放器全局状态 ==========
+window.audioCtx = {
+    isPlaying: false,
+    playbackSpeed: 1,
+    volume: 0.8,
+    lastVolume: 0.8,
+    currentTrack: null,
+    currentIndex: -1
 };
 
 function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } window.showToast('播放: ' + title); }
@@ -136,18 +146,9 @@ function playVideoCourse(courseId) {
     var course = null;
     for (var i = 0; i < videoCourses.length; i++) { if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; } }
     if (!course) return;
-    videoCtx.currentVideo = course;
-    var titleEl = document.getElementById('evp-title');
-    if (titleEl) titleEl.textContent = course.title;
-    evpVideo.src = course.url;
-    evpVideo.playbackRate = videoCtx.playbackSpeed;
-    evpVideo.volume = videoCtx.volume;
-    var playerEl = document.getElementById('enhanced-video-player');
-    var bigPlayEl = document.getElementById('evp-big-play');
-    if (playerEl) playerEl.style.display = 'flex';
-    if (bigPlayEl) bigPlayEl.style.display = 'none';
+    // 直接调用增强播放器，统一走canplay事件驱动
+    openEnhancedVideoPlayer(course.title, course.url, course.id);
     updateVideoListState(courseId);
-    evpVideo.play().then(function() { videoCtx.isPlaying = true; window.showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
 }
 
 function playLocalAudio(audioId) {
@@ -615,7 +616,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         }
         
         // 设置视频兼容性属性
-        videoEl.preload = 'auto';  // V403g: 预加载视频数据减少转圈等待
+        videoEl.preload = 'metadata';  // V403n: 先只加载元数据（快速），播放时浏览器自动缓冲
         videoEl.setAttribute('playsinline', '');
         videoEl.setAttribute('webkit-playsinline', '');
         videoEl.setAttribute('x5-video-player-type', 'h5');
@@ -940,13 +941,9 @@ function setVideoSourceFromUrl(videoEl, url) {
 }
 
 function cacheVideoFromUrl(url) {
-    if (!url || url.indexOf('http') !== 0) return;
-    fetch(url).then(function(r) {
-        if (r.ok) return r.blob();
-        throw new Error('fetch failed');
-    }).then(function(blob) {
-        cacheVideo(url, blob);
-    }).catch(function() {});
+    // V403n: 不再后台fetch整个视频（抢带宽），改为利用浏览器原生缓冲
+    // 浏览器在video播放时会自动缓冲，无需额外fetch
+    return;
 }
 
 // ========== 视频压缩功能 ==========
