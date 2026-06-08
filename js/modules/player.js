@@ -626,23 +626,30 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         // 确保视频元素引用是最新的
         evpVideo = videoEl;
         
-        // 尝试播放，处理自动播放限制（移动端）
+        // V403k: 播放尝试，加超时保底防止Promise永远pending
+        var playTimeout = setTimeout(function() {
+            // 5秒后如果play()还没resolve/reject，显示bigPlay让用户手动操作
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (bigPlayEl) bigPlayEl.style.display = 'flex';
+        }, 5000);
+        
         const attemptPlay = function() {
             videoEl.play().then(function() {
+                clearTimeout(playTimeout);
                 videoCtx.isPlaying = true;
                 if (bigPlayEl) bigPlayEl.style.display = 'none';
                 if (loadingEl) loadingEl.style.display = 'none';
             }).catch(function(e) {
+                clearTimeout(playTimeout);
                 // 自动播放被阻止（常见于移动端），显示大播放按钮等待用户点击
                 videoCtx.isPlaying = false;
                 if (bigPlayEl) bigPlayEl.style.display = 'flex';
                 if (loadingEl) loadingEl.style.display = 'none';
-                console.log('自动播放被阻止，等待用户交互:', e.message);
             });
         };
         
-        // 延迟执行播放尝试，确保 src 已设置
-        setTimeout(attemptPlay, 300);
+        // 延迟执行播放尝试
+        setTimeout(attemptPlay, 500);
     }
 }
 
@@ -913,10 +920,7 @@ function handleAudioUpload(input) {
 
 
 function setVideoSourceFromUrl(videoEl, url) {
-    var sourceEl = document.createElement('source');
-    sourceEl.src = url;
-    sourceEl.type = 'video/mp4';
-    videoEl.appendChild(sourceEl);
+    // V403k: 只设videoEl.src，不再同时添加source标签（避免双重加载冲突）
     videoEl.src = url;
 }
 
