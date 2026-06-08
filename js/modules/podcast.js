@@ -247,8 +247,8 @@ function podcastPlay(podcast) {
             window.showToast('音频加载失败，请稍后重试');
         };
         
-        // V403e: 不手动调load()，让play()自动触发加载，避免load/play竞争
-        // audio.load() 在设src后是多余的，play()内部会自动触发加载
+        // V403f: 恢复load()，设src后需load()才能让浏览器开始获取资源
+        audio.load();
         
         // 使用回调处理自动播放结果
         var playPromise = audio.play();
@@ -746,9 +746,8 @@ function stopPodcastAudio() {
         // 暂停并重置
         audio.pause();
         audio.currentTime = 0;
-        // 用removeAttribute+load安全重置，避免src=''导致某些浏览器audio元素不可用
-        audio.removeAttribute('src');
-        audio.load();
+        // V403f: 简单pause即可，removeAttribute+load会导致audio不可用
+        audio.pause();
     }
     // 重置播放状态
     if (typeof podcastPlayerState !== 'undefined' && podcastPlayerState) {

@@ -620,6 +620,18 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         // 重置错误状态和重试计数
         videoEl.dataset.videoRetryCount = '0';
         
+        // V403f: 视频加载超时检测，15秒后取消loading避免无限转圈
+        if (window._videoLoadTimer) clearTimeout(window._videoLoadTimer);
+        window._videoLoadTimer = setTimeout(function() {
+            var loadingEl = document.getElementById('evp-loading');
+            var bigPlayEl = document.getElementById('evp-big-play');
+            if (loadingEl && loadingEl.style.display !== 'none') {
+                loadingEl.style.display = 'none';
+                if (bigPlayEl) bigPlayEl.style.display = 'flex';
+                window.showToast('视频加载较慢，点击播放按钮重试');
+            }
+        }, 15000);
+        
         videoEl.playbackRate = videoCtx.playbackSpeed;
         videoEl.volume = videoCtx.volume;
         
