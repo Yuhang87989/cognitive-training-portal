@@ -941,14 +941,8 @@ window.renderMyPage = function(container) {
             </div>
             <div id="accordion-user" class="accordion-content" style="max-height:${window.accordionState.user ? '500px' : '0'};opacity:${window.accordionState.user ? 1 : 0};">
                 <div class="accordion-content-inner">
-                    <button class="foldable-btn" onclick="openEditProfileModal()">
-                        <span>✏️</span> 修改资料
-                    </button>
-                    <button class="foldable-btn" onclick="openAvatarModal()">
-                        <span>🎨</span> 更换头像
-                    </button>
-                    <button class="foldable-btn" onclick="openDifficultyModal()">
-                        <span>⚙️</span> 难度设置
+                    <button class="foldable-btn" onclick="showRoleSwitchModal()">
+                        <span>👥</span> 角色切换 <span id="current-role-label" style="margin-left:auto;font-size:12px;color:#999;"></span>
                     </button>
                     <div class="setting-row">
                         <div>
