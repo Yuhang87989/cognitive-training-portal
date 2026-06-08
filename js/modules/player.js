@@ -607,35 +607,16 @@ function openEnhancedVideoPlayer(title, url, videoId) {
             videoEl.removeChild(videoEl.firstChild);
         }
         
-        // 优先使用本地缓存（减少网络请求，解决卡顿）
-        var finalUrl = url;
+        // V403h: 先设置视频源，再尝试播放（修复getCachedVideo异步导致play()时src为空）
+        setVideoSourceFromUrl(videoEl, url);
+        
+        // 后台缓存视频供下次使用
         if (url && url.indexOf('http') === 0 && url.indexOf('blob:') === -1) {
-            getCachedVideo(url).then(function(cachedBlob) {
-                if (cachedBlob) {
-                    var cachedUrl = URL.createObjectURL(cachedBlob);
-                    var sourceEl = document.createElement('source');
-                    sourceEl.src = cachedUrl;
-                    sourceEl.type = 'video/mp4';
-                    videoEl.appendChild(sourceEl);
-                    videoEl.src = cachedUrl;
-                    console.log('使用缓存视频:', title);
-                } else {
-                    setVideoSourceFromUrl(videoEl, url);
-                    // 播放后缓存视频
-                    cacheVideoFromUrl(url);
-                }
-            }).catch(function() {
-                setVideoSourceFromUrl(videoEl, url);
-                cacheVideoFromUrl(url);
-            });
-        } else {
-            setVideoSourceFromUrl(videoEl, url);
+            cacheVideoFromUrl(url);
         }
         
         // 重置错误状态和重试计数
         videoEl.dataset.videoRetryCount = '0';
-        
-        // V403g: 不再强制超时停止，大文件需要足够加载时间
         
         videoEl.playbackRate = videoCtx.playbackSpeed;
         videoEl.volume = videoCtx.volume;
@@ -651,7 +632,6 @@ function openEnhancedVideoPlayer(title, url, videoId) {
                 videoCtx.isPlaying = true;
                 if (bigPlayEl) bigPlayEl.style.display = 'none';
                 if (loadingEl) loadingEl.style.display = 'none';
-                window.showToast('正在播放: ' + title);
             }).catch(function(e) {
                 // 自动播放被阻止（常见于移动端），显示大播放按钮等待用户点击
                 videoCtx.isPlaying = false;
@@ -661,8 +641,8 @@ function openEnhancedVideoPlayer(title, url, videoId) {
             });
         };
         
-        // 延迟执行播放尝试，确保 loadedmetadata 已触发
-        setTimeout(attemptPlay, 100);
+        // 延迟执行播放尝试，确保 src 已设置
+        setTimeout(attemptPlay, 300);
     }
 }
 

@@ -243,10 +243,10 @@
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
         const url = getPetImageUrl(skinId, expression);
         if (url) {
-            // 图片加载成功覆盖emoji，失败时显示emoji
-            return '<div style="position:relative;width:140px;height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:16px;">' +
-                '<span style="font-size:80px;" class="pet-emoji-fallback">' + skin.emoji + '</span>' +
-                '<img src="' + url + '" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;" alt="pet" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">' +
+            // 只显示图片，加载失败时显示emoji兜底
+            return '<div style="width:140px;height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:16px;background:#f5f5f5;">' +
+                '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" alt="pet" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+                '<span style="font-size:80px;display:none;align-items:center;justify-content:center;">' + skin.emoji + '</span>' +
                 '</div>';
         }
         return '<span style="font-size:80px;">' + skin.emoji + '</span>';
