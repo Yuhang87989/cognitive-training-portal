@@ -1,5 +1,5 @@
 // ==========================================
-// V199 我的 - 个人中心页面
+// V403o 我的 - 个人中心页面 + 角色切换
 // 功能：2x2快捷功能卡片 + 5个折叠分区
 // ==========================================
 
@@ -1076,6 +1076,267 @@ function openBackupPage() {
 }
 
 console.log('✅ V199 my-page.js 已加载 - 2x2快捷功能卡片 + 5个折叠分区');
+
+
+// ========== V403o: 角色切换 + 家长/管理员界面 ==========
+
+// 角色名称映射
+var ROLE_MAP = {
+    student: { name: '学生', icon: '🧒', desc: '进行认知训练和学习' },
+    parent: { name: '家长', icon: '👨‍👩‍👧', desc: '查看孩子学习数据' },
+    admin: { name: '管理员', icon: '🔧', desc: '管理平台和用户' }
+};
+
+// 获取当前角色
+window.getCurrentRole = function() {
+    if (typeof CloudSync !== 'undefined' && CloudSync.isEnabled && CloudSync.isEnabled()) {
+        return CloudSync.getRole ? CloudSync.getRole() : 'student';
+    }
+    return localStorage.getItem('user_role') || 'student';
+};
+
+// 切换角色
+window.switchUserRole = function(newRole) {
+    if (['student', 'parent', 'admin'].indexOf(newRole) === -1) return;
+    
+    // 保存到本地
+    localStorage.setItem('user_role', newRole);
+    
+    // 如果云同步可用，同步到云端
+    if (typeof CloudSync !== 'undefined' && CloudSync.isEnabled && CloudSync.isEnabled() && CloudSync.switchRole) {
+        CloudSync.switchRole(newRole);
+    }
+    
+    // 更新UI
+    var label = document.getElementById('current-role-label');
+    if (label) label.textContent = '(' + ROLE_MAP[newRole].name + ')';
+    
+    window.showToast('已切换为' + ROLE_MAP[newRole].name + '模式');
+    
+    // 关闭弹窗
+    var modal = document.querySelector('.role-switch-modal');
+    if (modal) modal.remove();
+    
+    // 如果切换到家长/管理员，打开对应页面
+    if (newRole === 'parent') {
+        showParentDashboard();
+    } else if (newRole === 'admin') {
+        showAdminDashboard();
+    }
+};
+
+// 角色切换弹窗
+window.showRoleSwitchModal = function() {
+    var currentRole = window.getCurrentRole();
+    
+    var modal = document.createElement('div');
+    modal.className = 'modal-overlay show role-switch-modal';
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    
+    var roleCards = '';
+    var roles = ['student', 'parent', 'admin'];
+    for (var i = 0; i < roles.length; i++) {
+        var r = roles[i];
+        var info = ROLE_MAP[r];
+        var isActive = r === currentRole;
+        roleCards += '<div onclick="switchUserRole(this.dataset.role)" data-role="' + r + '" style="' +
+            'background:' + (isActive ? 'linear-gradient(135deg,#667eea,#764ba2)' : '#f8f9fa') + ';' +
+            'color:' + (isActive ? 'white' : '#333') + ';' +
+            'padding:20px;border-radius:12px;cursor:pointer;text-align:center;' +
+            'border:2px solid ' + (isActive ? '#667eea' : '#e0e0e0') + ';' +
+            'transition:all 0.2s;">' +
+            '<div style="font-size:36px;margin-bottom:8px;">' + info.icon + '</div>' +
+            '<div style="font-size:16px;font-weight:600;margin-bottom:4px;">' + info.name + '</div>' +
+            '<div style="font-size:12px;opacity:0.7;">' + info.desc + '</div>' +
+            (isActive ? '<div style="margin-top:8px;font-size:12px;opacity:0.8;">✓ 当前</div>' : '') +
+            '</div>';
+    }
+    
+    modal.innerHTML = '<div class="modal-content" style="max-width:400px;">' +
+        '<div class="modal-header"><h3>👥 角色切换</h3>' +
+        '<button class="modal-close" onclick="this.closest(&#39;.role-switch-modal&#39;).remove()">×</button></div>' +
+        '<div style="padding:20px;">' +
+        '<p style="color:#666;font-size:14px;margin-bottom:16px;">选择你的身份以进入对应功能界面</p>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">' + roleCards + '</div>' +
+        '</div></div>';
+    
+    document.body.appendChild(modal);
+};
+
+// 家长看板
+window.showParentDashboard = function() {
+    var modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.id = 'parent-dashboard';
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    
+    modal.innerHTML = '<div class="modal-content" style="max-width:600px;max-height:85vh;overflow-y:auto;">' +
+        '<div class="modal-header"><h3>👨‍👩‍👧 家长看板</h3>' +
+        '<button class="modal-close" onclick="document.getElementById(&#39;parent-dashboard&#39;).remove()">×</button></div>' +
+        '<div style="padding:20px;" id="parent-dashboard-content">' +
+        '<div style="text-align:center;padding:40px 0;">' +
+        '<div style="font-size:48px;margin-bottom:16px;">👨‍👩‍👧</div>' +
+        '<div style="font-size:16px;font-weight:600;margin-bottom:8px;">家长监管模式</div>' +
+        '<div style="color:#666;font-size:14px;margin-bottom:24px;">绑定孩子账号后，可查看学习数据和训练报告</div>' +
+        '<div style="background:#f8f9fa;border-radius:12px;padding:16px;margin-bottom:16px;text-align:left;">' +
+        '<div style="font-size:14px;font-weight:600;margin-bottom:12px;">🔗 绑定孩子账号</div>' +
+        '<div style="display:flex;gap:8px;">' +
+        '<input type="text" id="child-openid-input" placeholder="输入孩子的用户ID" style="flex:1;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;">' +
+        '<button onclick="bindChild()" style="padding:10px 16px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;">绑定</button>' +
+        '</div></div>' +
+        '<div id="children-list" style="text-align:left;"></div>' +
+        '</div></div></div>';
+    
+    document.body.appendChild(modal);
+    loadChildren();
+};
+
+// 绑定孩子
+window.bindChild = function() {
+    var input = document.getElementById('child-openid-input');
+    if (!input || !input.value.trim()) {
+        window.showToast('请输入孩子的用户ID');
+        return;
+    }
+    
+    var childId = input.value.trim();
+    
+    if (typeof CloudSync !== 'undefined' && CloudSync.requestBindChild) {
+        CloudSync.requestBindChild(childId).then(function() {
+            window.showToast('绑定请求已发送');
+            input.value = '';
+            loadChildren();
+        }).catch(function(e) {
+            window.showToast('绑定失败: ' + (e.message || e));
+        });
+    } else {
+        // 本地模式：保存到localStorage
+        var bindings = JSON.parse(localStorage.getItem('parent_bindings') || '[]');
+        if (bindings.indexOf(childId) === -1) {
+            bindings.push(childId);
+            localStorage.setItem('parent_bindings', JSON.stringify(bindings));
+            window.showToast('已绑定孩子账号');
+            input.value = '';
+            loadChildren();
+        } else {
+            window.showToast('该账号已绑定');
+        }
+    }
+};
+
+// 加载孩子列表
+window.loadChildren = function() {
+    var listEl = document.getElementById('children-list');
+    if (!listEl) return;
+    
+    var bindings = JSON.parse(localStorage.getItem('parent_bindings') || '[]');
+    
+    if (bindings.length === 0) {
+        listEl.innerHTML = '<div style="color:#999;font-size:14px;text-align:center;padding:16px;">暂无绑定的孩子账号</div>';
+        return;
+    }
+    
+    var html = '<div style="font-size:14px;font-weight:600;margin-bottom:8px;">📋 已绑定的孩子</div>';
+    bindings.forEach(function(id, idx) {
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;background:white;border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid #f0f0f0;">' +
+            '<div><div style="font-weight:600;font-size:14px;">🧒 孩子 ' + (idx + 1) + '</div>' +
+            '<div style="font-size:12px;color:#999;">ID: ' + id.substring(0, 8) + '...</div></div>' +
+            '<div style="display:flex;gap:8px;">' +
+            '<button onclick="viewChildData(idx)" style="padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">查看数据</button>' +
+            '<button onclick="unbindChild(idx)" style="padding:6px 12px;background:#ff4757;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">解绑</button>' +
+            '</div></div>';
+    });
+    
+    listEl.innerHTML = html;
+};
+
+// 查看孩子数据
+window.viewChildData = function(idx) {
+    var bindings = JSON.parse(localStorage.getItem('parent_bindings') || '[]');
+    var childId = bindings[idx] || '';
+    window.showToast('正在加载孩子数据...');
+    // TODO: 实现从云端拉取数据的详情页面
+};
+
+// 解绑孩子
+window.unbindChild = function(index) {
+    if (!confirm('确定要解绑吗？')) return;
+    var bindings = JSON.parse(localStorage.getItem('parent_bindings') || '[]');
+    bindings.splice(index, 1);
+    localStorage.setItem('parent_bindings', JSON.stringify(bindings));
+    window.showToast('已解绑');
+    loadChildren();
+};
+
+// 管理员看板
+window.showAdminDashboard = function() {
+    var modal = document.createElement('div');
+    modal.className = 'modal-overlay show';
+    modal.id = 'admin-dashboard';
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+    
+    modal.innerHTML = '<div class="modal-content" style="max-width:600px;max-height:85vh;overflow-y:auto;">' +
+        '<div class="modal-header"><h3>🔧 管理员看板</h3>' +
+        '<button class="modal-close" onclick="document.getElementById(&#39;admin-dashboard&#39;).remove()">×</button></div>' +
+        '<div style="padding:20px;" id="admin-dashboard-content">' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">' +
+        '<div style="background:linear-gradient(135deg,#667eea20,#764ba220);border-radius:12px;padding:20px;text-align:center;">' +
+        '<div style="font-size:32px;margin-bottom:4px;">👥</div>' +
+        '<div style="font-size:24px;font-weight:bold;color:#667eea;" id="admin-total-users">--</div>' +
+        '<div style="font-size:12px;color:#666;">总用户数</div></div>' +
+        '<div style="background:linear-gradient(135deg,#43e97b20,#38f9d720);border-radius:12px;padding:20px;text-align:center;">' +
+        '<div style="font-size:32px;margin-bottom:4px;">📊</div>' +
+        '<div style="font-size:24px;font-weight:bold;color:#43e97b;" id="admin-today-records">--</div>' +
+        '<div style="font-size:12px;color:#666;">今日训练</div></div>' +
+        '</div>' +
+        '<div style="background:#f8f9fa;border-radius:12px;padding:16px;">' +
+        '<div style="font-size:14px;font-weight:600;margin-bottom:12px;">📋 管理功能</div>' +
+        '<button onclick="adminViewUsers()" style="width:100%;padding:12px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:14px;margin-bottom:8px;text-align:left;">👥 用户管理</button>' +
+        '<button onclick="adminViewLogs()" style="width:100%;padding:12px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:14px;margin-bottom:8px;text-align:left;">📝 操作日志</button>' +
+        '<button onclick="adminExportData()" style="width:100%;padding:12px;background:white;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer;font-size:14px;text-align:left;">📤 导出数据</button>' +
+        '</div></div></div>';
+    
+    document.body.appendChild(modal);
+    loadAdminStats();
+};
+
+// 加载管理员统计
+window.loadAdminStats = function() {
+    var totalUsersEl = document.getElementById('admin-total-users');
+    var todayRecordsEl = document.getElementById('admin-today-records');
+    
+    if (typeof CloudSync !== 'undefined' && CloudSync.getAdminStats) {
+        CloudSync.getAdminStats().then(function(stats) {
+            if (totalUsersEl) totalUsersEl.textContent = stats[0].total || 0;
+            if (todayRecordsEl) todayRecordsEl.textContent = stats[1].total || 0;
+        }).catch(function() {
+            if (totalUsersEl) totalUsersEl.textContent = '0';
+            if (todayRecordsEl) todayRecordsEl.textContent = '0';
+        });
+    } else {
+        // 本地模式：显示本地统计
+        var localUsers = JSON.parse(localStorage.getItem('local_user_count') || '1');
+        if (totalUsersEl) totalUsersEl.textContent = localUsers;
+        if (todayRecordsEl) todayRecordsEl.textContent = '0';
+    }
+};
+
+// 管理员功能占位
+window.adminViewUsers = function() { window.showToast('用户管理功能开发中'); };
+window.adminViewLogs = function() { window.showToast('操作日志功能开发中'); };
+window.adminExportData = function() { window.showToast('数据导出功能开发中'); };
+
+// 初始化角色标签
+(function() {
+    var role = window.getCurrentRole();
+    setTimeout(function() {
+        var label = document.getElementById('current-role-label');
+        if (label && ROLE_MAP[role]) {
+            label.textContent = '(' + ROLE_MAP[role].name + ')';
+        }
+    }, 500);
+})();
+
 
 // ============================================================
 // ES6 Module 导出
