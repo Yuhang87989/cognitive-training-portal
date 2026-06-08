@@ -67,48 +67,68 @@ function playPodcastCourse(courseId) {
     if (coverPlayingEl) coverPlayingEl.classList.add('playing');
     updatePodcastListState(courseId);
     
-    // 尝试获取播客数据（包含字幕文本）
+    // V403m: 判断URL是否是直接音频文件（.mp3等），直接播放而非fetch解析JSON
+    var isDirectAudio = /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(podcastSourceUrl);
+    
+    if (isDirectAudio) {
+        // 直接音频文件：设置src直接播放
+        audioEl.src = podcastSourceUrl;
+        if (typeof savedPositions !== 'undefined' && savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
+        audioEl.playbackRate = audioCtx.playbackSpeed;
+        audioEl.volume = audioCtx.volume;
+        window.showToast('正在加载: ' + course.title);
+        audioEl.play().then(function() {
+            audioCtx.isPlaying = true;
+            updatePlayButtons();
+            window.showToast('正在播放: ' + course.title);
+        }).catch(function(e) {
+            console.warn('自动播放被阻止:', e);
+            audioCtx.isPlaying = false;
+            updatePlayButtons();
+            window.showToast('点击播放按钮开始收听');
+        });
+        return;
+    }
+    
+    // 非直接音频URL：尝试获取播客JSON数据（含字幕）
     window.showToast('正在加载播客...');
     fetch(podcastSourceUrl, {redirect: 'follow'}).then(function(resp) {
         if (!resp.ok) throw new Error('fetch failed');
         return resp.json();
     }).then(function(podcastData) {
-        // 保存字幕数据供TTS使用
-        if (podcastData.captions) {
-            window._currentPodcastCaptions = podcastData.captions;
-        }
-        // 保存audio_uri
+        if (podcastData.captions) window._currentPodcastCaptions = podcastData.captions;
         var audioUri = podcastData.audio_uri;
-        if (audioUri) {
-            window._currentAudioUri = audioUri;
-        }
-        
-        // 尝试获取签名音频URL
+        if (audioUri) window._currentAudioUri = audioUri;
         return tryGetSignedAudioUrl(audioUri, courseId, audioEl);
     }).then(function(signedUrl) {
         if (signedUrl) {
-            // 有签名URL，直接播放原声
             audioEl.src = signedUrl;
-            if (savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
+            if (typeof savedPositions !== 'undefined' && savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
             audioEl.playbackRate = audioCtx.playbackSpeed;
             audioEl.volume = audioCtx.volume;
             audioEl.play().then(function() {
                 audioCtx.isPlaying = true;
                 updatePlayButtons();
                 window.showToast('正在播放: ' + course.title);
-            }).catch(function(e) {
-                window.showToast('播放失败，尝试语音朗读模式');
-                startPodcastTTS();
-            });
+            }).catch(function() { window.showToast('播放失败'); });
         } else {
-            // 没有签名URL，使用TTS朗读模式
-            window.showToast('使用语音朗读模式播放');
-            startPodcastTTS();
+            var fallbackUrl = course.url || podcastSourceUrl;
+            if (fallbackUrl && /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(fallbackUrl)) {
+                audioEl.src = fallbackUrl;
+                audioEl.playbackRate = audioCtx.playbackSpeed;
+                audioEl.volume = audioCtx.volume;
+                audioEl.play().then(function() {
+                    audioCtx.isPlaying = true;
+                    updatePlayButtons();
+                    window.showToast('正在播放: ' + course.title);
+                }).catch(function() { window.showToast('播放失败'); });
+            } else {
+                window.showToast('该播客暂不可用');
+            }
         }
     }).catch(function(e) {
         console.error('播客加载失败:', e);
-        window.showToast('加载失败，尝试语音朗读');
-        startPodcastTTS();
+        window.showToast('播客加载失败');
     });
 }
 
@@ -626,30 +646,25 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         // 确保视频元素引用是最新的
         evpVideo = videoEl;
         
-        // V403k: 播放尝试，加超时保底防止Promise永远pending
-        var playTimeout = setTimeout(function() {
-            // 5秒后如果play()还没resolve/reject，显示bigPlay让用户手动操作
-            if (loadingEl) loadingEl.style.display = 'none';
-            if (bigPlayEl) bigPlayEl.style.display = 'flex';
-        }, 5000);
-        
-        const attemptPlay = function() {
+        // V403m: 等视频canplay后再播放，不设时间限制
+        var autoPlayOnCanPlay = function() {
+            videoEl.removeEventListener('canplay', autoPlayOnCanPlay);
             videoEl.play().then(function() {
-                clearTimeout(playTimeout);
                 videoCtx.isPlaying = true;
                 if (bigPlayEl) bigPlayEl.style.display = 'none';
                 if (loadingEl) loadingEl.style.display = 'none';
             }).catch(function(e) {
-                clearTimeout(playTimeout);
                 // 自动播放被阻止（常见于移动端），显示大播放按钮等待用户点击
                 videoCtx.isPlaying = false;
                 if (bigPlayEl) bigPlayEl.style.display = 'flex';
                 if (loadingEl) loadingEl.style.display = 'none';
             });
         };
-        
-        // 延迟执行播放尝试
-        setTimeout(attemptPlay, 500);
+        videoEl.addEventListener('canplay', autoPlayOnCanPlay);
+        // 如果视频已经可以播放（缓存等情况），直接触发
+        if (videoEl.readyState >= 3) {
+            autoPlayOnCanPlay();
+        }
     }
 }
 
