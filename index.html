@@ -3,7 +3,7 @@
 <head>
 <script>
 // V371: 自动版本号 - 基于发布日期，无需手动维护
-var SITE_VERSION = '403';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '403d';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
@@ -791,7 +791,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 <!-- 头像选择模态框 -->
 <div id="avatar-modal" class="modal-overlay">
-    <div class="modal-content" id="avatar-modal-content" style="max-width:380px;"></div>
+    <div class="modal-content" id="avatar-modal-content" style="max-width:380px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 style="margin:0;font-size:18px;">选择头像</h3>
+            <span onclick="closeAvatarModal()" style="cursor:pointer;font-size:22px;color:#999;">✕</span>
+        </div>
+        <div id="avatar-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;justify-items:center;"></div>
+    </div>
 </div>
 
 <!-- 全屏子页面 -->
