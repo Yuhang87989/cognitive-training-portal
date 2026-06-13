@@ -566,6 +566,16 @@ async function callDeepSeekAPI(messages, temperature) {
         var user = window.getCurrentUserData();
         apiKey = user && user.deepseekApiKey ? user.deepseekApiKey : '';
     }
+    // 每日API调用上限防护（防止Key被滥用）
+    var DAILY_API_LIMIT = 50;
+    var today = new Date().toISOString().slice(0,10);
+    var dailyUsage = JSON.parse(localStorage.getItem('ds_daily_usage') || '{}');
+    if (dailyUsage.date !== today) { dailyUsage = {date: today, count: 0}; }
+    if (dailyUsage.count >= DAILY_API_LIMIT) {
+        return {success: false, message: '今日AI调用已达上限(' + DAILY_API_LIMIT + '次)，请明天再试'};
+    }
+    dailyUsage.count++;
+    localStorage.setItem('ds_daily_usage', JSON.stringify(dailyUsage));
     if (!apiKey) return {success: false, message: '请先配置DeepSeek API Key'};
     
     var apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
