@@ -409,7 +409,7 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
     } else {
         apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '') || '';
         apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' ? DEEPSEEK_API_URL : '') || 'https://api.deepseek.com/v1/chat/completions';
-        model = (typeof DEEPSEEK_MODEL !== 'undefined' ? DEEPSEEK_MODEL : '') || 'deepseek-chat';
+        model = (typeof DEEPSEEK_MODEL !== 'undefined' ? DEEPSEEK_MODEL : '') || 'deepseek-v4-flash';
     }
     if (!apiKey) return {success: false, content: '', message: '未配置API Key'};
     try {
@@ -571,7 +571,7 @@ async function callDeepSeekAPI(messages, temperature) {
     var apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
                  'https://api.deepseek.com/chat/completions';
     var model = (typeof DEEPSEEK_MODEL !== 'undefined' && DEEPSEEK_MODEL) ? DEEPSEEK_MODEL : 
-                'deepseek-chat';
+                'deepseek-v4-flash';
     
     var systemPrompt = '';
     if (typeof window.deepseekMode !== 'undefined') {

@@ -83,7 +83,7 @@ async function callDeepSeek(question) {
                 'Authorization': 'Bearer ' + apiKey
             },
             body: JSON.stringify({
-                model: 'deepseek-chat',
+                model: 'deepseek-v4-flash',
                 messages: messages
             })
         });
@@ -129,7 +129,7 @@ async function callDeepSeekVision(text, imageBase64) {
                 'Authorization': 'Bearer ' + apiKey
             },
             body: JSON.stringify({
-                model: 'deepseek-chat',
+                model: 'deepseek-v4-flash',
                 messages: messages
             })
         });
