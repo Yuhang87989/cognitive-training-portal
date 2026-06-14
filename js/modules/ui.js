@@ -337,6 +337,15 @@ window.cleanupModuleState = function() {
     const contentEl = document.getElementById('fullscreen-content');
     if (contentEl) contentEl.innerHTML = '';
     
+    // 停止播客音频
+    if (typeof window.stopPodcastAudio === 'function') {
+        window.stopPodcastAudio();
+    }
+    
+    // 隐藏迷你播放器
+    const miniPlayer = document.getElementById('mini-player');
+    if (miniPlayer) miniPlayer.classList.remove('show');
+    
     // 清理可能的全局状态污染
     if (window._petInterval) {
         clearInterval(window._petInterval);
