@@ -337,15 +337,6 @@ window.cleanupModuleState = function() {
     const contentEl = document.getElementById('fullscreen-content');
     if (contentEl) contentEl.innerHTML = '';
     
-    // 停止播客音频
-    if (typeof window.stopPodcastAudio === 'function') {
-        window.stopPodcastAudio();
-    }
-    
-    // 隐藏迷你播放器
-    const miniPlayer = document.getElementById('mini-player');
-    if (miniPlayer) miniPlayer.classList.remove('show');
-    
     // 清理可能的全局状态污染
     if (window._petInterval) {
         clearInterval(window._petInterval);
@@ -361,6 +352,20 @@ window.cleanupModuleState = function() {
 // 监听浏览器返回按钮
 window.addEventListener('popstate', function(event) {
     if (window._fullscreenOpen) {
+        // 判断退出的是否是播客模块，只在播客退出时清理播放器
+        var exitingModule = (event.state && event.state.module) || (history.state && history.state.module);
+        // 从pushState记录中获取上一次打开的模块
+        var lastModule = window._lastFullscreenModule;
+        if (lastModule === 'podcast') {
+            // 停止播客音频
+            if (typeof window.stopPodcastAudio === 'function') {
+                window.stopPodcastAudio();
+            }
+            // 隐藏迷你播放器
+            var miniPlayer = document.getElementById('mini-player');
+            if (miniPlayer) miniPlayer.classList.remove('show');
+        }
+        window._lastFullscreenModule = null;
         window.cleanupModuleState();
         const el = document.getElementById('fullscreen-container');
         if (el) el.classList.remove('active');
@@ -371,6 +376,7 @@ window.addEventListener('popstate', function(event) {
 // 打开全屏页面
 function openFullscreenPage(module) {
     window._fullscreenOpen = true;
+    window._lastFullscreenModule = module;
     history.pushState({fullscreen: true, module: module}, "", "");
     window.cleanupModuleState();
     closeUserMenu();
