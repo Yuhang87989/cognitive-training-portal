@@ -9,22 +9,22 @@
     // V396: 宠物解锁任务系统 - 第一个免费选择，其他完成任务解锁
     const PET_SKINS = [
         { id: 'cat', name: '小橘猫', emoji: '🐱', color: '#ff9800', desc: '活泼可爱的小猫咪',
-          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat-happy.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' },
+          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' },
           unlock: { type: 'free', desc: '免费选择' } },
         { id: 'dog', name: '小柴犬', emoji: '🐕', color: '#8d6e63', desc: '忠诚友善的小狗狗',
-          img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog.jpg', sad: 'imgs/pets/pet-dog.jpg' },
+          img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog-sleep.jpg', sad: 'imgs/pets/pet-dog.jpg' },
           unlock: { type: 'quiz', target: 5, desc: '完成5道学霸方法练习题', progress: 0 } },
         { id: 'rabbit', name: '小白兔', emoji: '🐰', color: '#f8bbd0', desc: '软萌可爱的小兔子',
-          img: { idle: 'imgs/pets/pet-rabbit.jpg', happy: 'imgs/pets/pet-rabbit.jpg', eating: 'imgs/pets/pet-rabbit.jpg', sleeping: 'imgs/pets/pet-rabbit.jpg', sad: 'imgs/pets/pet-rabbit.jpg' },
+          img: { idle: 'imgs/pets/pet-rabbit.jpg', happy: 'imgs/pets/pet-rabbit.jpg', eating: 'imgs/pets/pet-rabbit.jpg', sleeping: 'imgs/pets/pet-rabbit-sleep.jpg', sad: 'imgs/pets/pet-rabbit.jpg' },
           unlock: { type: 'thinking', target: 5, desc: '完成5道思维训练练习题', progress: 0 } },
         { id: 'panda', name: '小熊猫', emoji: '🐼', color: '#fafafa', desc: '国宝级的萌宠',
-          img: { idle: 'imgs/pets/pet-panda.jpg', happy: 'imgs/pets/pet-panda.jpg', eating: 'imgs/pets/pet-panda.jpg', sleeping: 'imgs/pets/pet-panda.jpg', sad: 'imgs/pets/pet-panda.jpg' },
+          img: { idle: 'imgs/pets/pet-panda.jpg', happy: 'imgs/pets/pet-panda.jpg', eating: 'imgs/pets/pet-panda.jpg', sleeping: 'imgs/pets/pet-panda-sleep.jpg', sad: 'imgs/pets/pet-panda.jpg' },
           unlock: { type: 'level', target: 5, desc: '宠物达到Lv.5', progress: 0 } },
         { id: 'fox', name: '小狐狸', emoji: '🦊', color: '#ff6b35', desc: '聪明伶俐的小狐狸',
-          img: { idle: 'imgs/pets/pet-fox.jpg', happy: 'imgs/pets/pet-fox.jpg', eating: 'imgs/pets/pet-fox.jpg', sleeping: 'imgs/pets/pet-fox.jpg', sad: 'imgs/pets/pet-fox.jpg' },
+          img: { idle: 'imgs/pets/pet-fox.jpg', happy: 'imgs/pets/pet-fox.jpg', eating: 'imgs/pets/pet-fox.jpg', sleeping: 'imgs/pets/pet-fox-sleep.jpg', sad: 'imgs/pets/pet-fox.jpg' },
           unlock: { type: 'game', target: 3, desc: '玩3次训练游戏', progress: 0 } },
         { id: 'bear', name: '小熊熊', emoji: '🐻', color: '#a1887f', desc: '憨厚可爱的小熊',
-          img: { idle: 'imgs/pets/pet-bear.jpg', happy: 'imgs/pets/pet-bear.jpg', eating: 'imgs/pets/pet-bear.jpg', sleeping: 'imgs/pets/pet-bear.jpg', sad: 'imgs/pets/pet-bear.jpg' },
+          img: { idle: 'imgs/pets/pet-bear.jpg', happy: 'imgs/pets/pet-bear.jpg', eating: 'imgs/pets/pet-bear.jpg', sleeping: 'imgs/pets/pet-bear-sleep.jpg', sad: 'imgs/pets/pet-bear.jpg' },
           unlock: { type: 'days', target: 7, desc: '累计登录7天', progress: 0 } }
     ];
     
@@ -238,17 +238,13 @@
     }
     
     // 生成宠物图片HTML
-    // V403f: emoji+图片叠加，图片加载成功覆盖emoji，失败时emoji兜底
     function renderAnimePet(skinId, expression) {
-        const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
         const url = getPetImageUrl(skinId, expression);
         if (url) {
-            // 只显示图片，加载失败时显示emoji兜底
-            return '<div style="width:140px;height:140px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:16px;background:#f5f5f5;">' +
-                '<img src="' + url + '" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" alt="pet" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
-                '<span style="font-size:80px;display:none;align-items:center;justify-content:center;">' + skin.emoji + '</span>' +
-                '</div>';
+            return '<img src="' + url + '" style="width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'<span style=\'font-size:80px\'>' + (PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0]).emoji + '</span>\'">';
         }
+        // Fallback to emoji
+        const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
         return '<span style="font-size:80px;">' + skin.emoji + '</span>';
     }
     function getPetExpression(data) {
@@ -470,7 +466,7 @@
                 const petDisplay = document.getElementById('pet-display-anim');
                 if (petDisplay) petDisplay.classList.replace('pet-sleeping', 'pet-idle');
                 updatePetExpression('idle');
-            }, 3000);
+            }, 8000);
         }, 2000);
     }
     
