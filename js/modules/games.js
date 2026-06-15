@@ -3557,6 +3557,7 @@ function endGame() {
         </div>
     `;
     
+    console.log("[V407] endGame saving, gameType=", gameType, "gameScore=", gameScore, "gameStartTime=", gameStartTime);
     // 保存统计数据
     const user = getCurrentUserData();
     if (user) {
@@ -3581,6 +3582,7 @@ function endGame() {
         user.studyDays[today] = (user.studyDays[today]||0) + Math.ceil(timeSpent/60);
         
         syncUserData(user);
+        console.log("[V407] syncUserData called, gameScores=", JSON.stringify(user.gameScores));
         syncTodayStats();
 
     // V353: 自动标记学习计划任务完成
@@ -6378,6 +6380,7 @@ window.showMetacognitivePrediction = showMetacognitivePrediction;
 window.currentPrediction = currentPrediction;
 
 function showGameOver(score, total) {
+    console.log("[V407] showGameOver called, score=", score, "total=", total, "gameType=", typeof gameType !== "undefined" ? gameType : "UNDEFINED");
     // V406: 保存积分到用户数据（之前showGameOver不保存，导致多个子游戏积分不记录）
     gameScore = score;
     var scoreEl = document.getElementById('game-score');
