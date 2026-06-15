@@ -129,6 +129,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .game-board{display:grid;gap:10px;margin:0 auto;max-width:340px;flex:1;align-content:center;width:100%;min-height:300px}
 .game-board.size-3{grid-template-columns:repeat(3,1fr)}
 .game-board.size-4{grid-template-columns:repeat(4,1fr)}
+.game-board.size-5{grid-template-columns:repeat(5,1fr);max-width:380px;gap:6px}
+.game-board.size-6{grid-template-columns:repeat(6,1fr);max-width:420px;gap:4px}
 .game-cell{aspect-ratio:1;background:var(--border-gray);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;min-height:36px}
 .game-cell:active{transform:scale(0.95)}
 .games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}
