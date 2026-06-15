@@ -4926,6 +4926,84 @@ function startFocusChallenge() {
     }, 1000);
 }
 
+// V406: 新增听音辨位游戏（之前调用不存在的startAudioPosition导致报错）
+function startAudioPosition() {
+    document.getElementById('game-title').textContent = '🎧 听音辨位';
+    const board = document.getElementById('game-board');
+    board.style.display = 'flex';
+    board.style.flexDirection = 'column';
+    board.style.alignItems = 'center';
+    board.style.justifyContent = 'center';
+    board.style.gap = '16px';
+    board.style.textAlign = 'center';
+    
+    const sounds = [
+        { freq: 440, name: '标准音A', icon: '🎵' },
+        { freq: 523, name: '高音C', icon: '🎶' },
+        { freq: 659, name: '高音E', icon: '🎼' },
+        { freq: 880, name: '高音A', icon: '🎹' }
+    ];
+    
+    window._audioData = { sounds, currentTarget: 0, score: 0, round: 0, total: 5 };
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+    showAudioRound();
+}
+
+function showAudioRound() {
+    const data = window._audioData;
+    if (!data) return;
+    if (data.round >= data.total) {
+        gameScore = data.score * 20;
+        endGame();
+        return;
+    }
+    data.currentTarget = Math.floor(Math.random() * data.sounds.length);
+    data.round++;
+    
+    const board = document.getElementById('game-board');
+    board.innerHTML = '<div style="font-size:48px;margin-bottom:12px;">🎵</div>' +
+        '<div style="font-size:14px;color:#666;margin-bottom:16px;">第 ' + data.round + '/' + data.total + ' 回合</div>' +
+        '<button onclick="playAudioTone()" style="padding:16px 32px;background:linear-gradient(135deg,#89f7fe,#66a6ff);color:white;border:none;border-radius:16px;font-size:16px;cursor:pointer;margin-bottom:20px;">🔊 播放音调</button>' +
+        '<div style="font-size:12px;color:#999;margin-bottom:12px;">听音后选择正确的音符</div>' +
+        '<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">' +
+        data.sounds.map((s, i) => '<div onclick="checkAudioAnswer(' + i + ')" style="padding:14px 20px;background:#f5f7ff;border:2px solid #ddd;border-radius:12px;cursor:pointer;font-size:14px;">' + s.icon + ' ' + s.name + '</div>').join('') +
+        '</div>' +
+        '<div style="margin-top:16px;font-size:14px;color:#667eea;">得分: ' + data.score + '/' + data.total + '</div>';
+}
+
+function playAudioTone() {
+    const data = window._audioData;
+    if (!data) return;
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = data.sounds[data.currentTarget].freq;
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.8);
+    } catch(e) {}
+}
+
+function checkAudioAnswer(idx) {
+    const data = window._audioData;
+    if (!data) return;
+    if (idx === data.currentTarget) {
+        data.score++;
+        gameScore = data.score * 20;
+        document.getElementById('game-score').textContent = gameScore;
+        SoundEffects.playCorrect();
+    } else {
+        SoundEffects.playWrong();
+    }
+    setTimeout(() => showAudioRound(), 500);
+}
+
 function startGame(type) {
     gameType = type;
     gameScore = 0;
@@ -6300,18 +6378,19 @@ window.showMetacognitivePrediction = showMetacognitivePrediction;
 window.currentPrediction = currentPrediction;
 
 function showGameOver(score, total) {
-    var modal = document.getElementById('modal');
-    var content = document.getElementById('modal-content');
-    if (!modal || !content) return;
-    content.innerHTML = '<div class="modal-title">🎮 游戏结束</div>' +
-        '<div style="text-align:center;padding:20px;">' +
-            '<div style="font-size:36px;font-weight:bold;color:#667eea;">' + score + ' / ' + total + '</div>' +
-            '<div style="font-size:14px;color:#666;margin-top:8px;">正确率: ' + (total > 0 ? Math.round(score/total*100) : 0) + '%</div>' +
-        '</div>' +
-        '<button onclick="closeModal()" class="login-btn login-btn-primary">确定</button>';
-    modal.classList.add('show');
+    // V406: 保存积分到用户数据（之前showGameOver不保存，导致多个子游戏积分不记录）
+    gameScore = score;
+    var scoreEl = document.getElementById('game-score');
+    if (scoreEl) scoreEl.textContent = score;
+    
+    // 调用endGame保存统计数据（endGame会显示自己的结果界面并保存gameScores/gameCounts等）
+    endGame();
 }
 window.showGameOver = showGameOver;
+window.startAudioPosition = startAudioPosition;
+window.showAudioRound = showAudioRound;
+window.playAudioTone = playAudioTone;
+window.checkAudioAnswer = checkAudioAnswer;
 
 
 window.renderGames = renderGames;

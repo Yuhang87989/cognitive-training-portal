@@ -56,18 +56,7 @@ window.clearAvatarChatHistory = clearAvatarChatHistory;
 
 // 基础API调用（带历史上下文）
 async function callDeepSeek(question) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '');
-    
-    // 每日API调用上限防护
-    var DAILY_API_LIMIT = 50;
-    var today = new Date().toISOString().slice(0,10);
-    var dailyUsage = JSON.parse(localStorage.getItem('ds_daily_usage') || '{}');
-    if (dailyUsage.date !== today) { dailyUsage = {date: today, count: 0}; }
-    if (dailyUsage.count >= DAILY_API_LIMIT) {
-        return {success: false, content: '今日AI调用已达上限，请明天再试'};
-    }
-    dailyUsage.count++;
-    localStorage.setItem('ds_daily_usage', JSON.stringify(dailyUsage));
+    const apiKey = localStorage.getItem('deepseek_api_key') || '(typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '')';
     
     // 构建消息列表：system + 历史消息 + 当前消息
     var messages = [
@@ -114,7 +103,7 @@ async function callDeepSeek(question) {
 
 // 多模态API调用（支持图片）
 async function callDeepSeekVision(text, imageBase64) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '');
+    const apiKey = localStorage.getItem('deepseek_api_key') || '(typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '')';
     
     const messages = [
         { role: 'system', content: '你是专业的学习助手，擅长解答各学科问题，也能分析图片中的题目。' }
