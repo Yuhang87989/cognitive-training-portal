@@ -36,46 +36,83 @@ function closeUserMenuOutside(e) {
 }
 
 function showUserSwitchModal() {
-    if (typeof closeUserMenu === "function") closeUserMenu();
-    var data = window.loadData();
-    
-    if (data.users.length === 0) {
-        window.showToast('暂无用户，请先创建账号');
-        return;
-    }
-    
-    if (data.users.length === 1) {
-        window.showToast('只有一个用户：' + data.users[0].name + '，无需切换');
-        return;
-    }
-    
-    var container = document.getElementById('user-switch-list');
-    if (!container) {
-        window.showToast('页面加载异常');
-        return;
-    }
-    
-    var colors = ['#667eea', '#FF9A63', '#43E97B'];
-    var htmlContent = '';
-    
-    data.users.forEach(function(u, i) {
-        var isCurrent = u.id === data.currentUser;
-        htmlContent += '<div style="display:flex;align-items:center;gap:8px;padding:12px;background:' + (isCurrent ? '#f0f7ff' : 'white') + ';border-radius:12px;margin-bottom:8px;">';
-        htmlContent += '<div onclick="switchToUser(\'' + u.id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;">';
-        htmlContent += '<div style="background:' + colors[i % 3] + ';color:white;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;">' + u.name.charAt(0) + '</div>';
-        htmlContent += '<div><div style="font-weight:600;">' + u.name + (isCurrent ? ' (当前)' : '') + '</div>';
-        htmlContent += '<div style="font-size:12px;color:#999;">' + gradeNames[u.grade] + ' · Lv.' + u.difficulty + '</div></div></div>';
-        if (!isCurrent) {
-            htmlContent += '<button onclick="event.stopPropagation();deleteUser(\'' + u.id + '\')" style="padding:6px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>';
+    try {
+        if (typeof closeUserMenu === "function") closeUserMenu();
+        var data = window.loadData();
+        
+        if (data.users.length === 0) {
+            window.showToast('暂无用户，请先创建账号');
+            return;
         }
-        htmlContent += '</div>';
-    });
-    
-    container.innerHTML = htmlContent;
-    document.getElementById('user-switch-modal').classList.add('show');
+        
+        if (data.users.length === 1) {
+            window.showToast('只有一个用户：' + data.users[0].name + '，无需切换');
+            return;
+        }
+        
+        var container = document.getElementById('user-switch-list');
+        if (!container) {
+            ensureUserModals();
+            container = document.getElementById('user-switch-list');
+        }
+        if (!container) {
+            window.showToast('切换用户暂时不可用，请刷新页面');
+            return;
+        }
+        
+        var colors = ['#667eea', '#FF9A63', '#43E97B'];
+        var htmlContent = '';
+        
+        data.users.forEach(function(u, i) {
+            var isCurrent = u.id === data.currentUser;
+            htmlContent += '<div style="display:flex;align-items:center;gap:8px;padding:12px;background:' + (isCurrent ? '#f0f7ff' : 'white') + ';border-radius:12px;margin-bottom:8px;">';
+            htmlContent += '<div onclick="switchToUser(\'' + u.id + '\')" style="display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;">';
+            htmlContent += '<div style="background:' + colors[i % 3] + ';color:white;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;">' + u.name.charAt(0) + '</div>';
+            htmlContent += '<div><div style="font-weight:600;">' + u.name + (isCurrent ? ' (当前)' : '') + '</div>';
+            htmlContent += '<div style="font-size:12px;color:#999;">' + gradeNames[u.grade] + ' \u00b7 Lv.' + u.difficulty + '</div></div></div>';
+            if (!isCurrent) {
+                htmlContent += '<button onclick="event.stopPropagation();deleteUser(\'' + u.id + '\')" style="padding:6px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>';
+            }
+            htmlContent += '</div>';
+        });
+        
+        container.innerHTML = htmlContent;
+        var modal = document.getElementById('user-switch-modal');
+        if (modal) modal.classList.add('show');
+    } catch(e) {
+        console.error('[showUserSwitchModal] error:', e);
+        window.showToast('切换用户暂时不可用，请刷新页面');
+    }
 }
 
-function showCreateUserModal() { document.getElementById('create-user-modal').classList.add('show'); }
+function showCreateUserModal() {
+    try {
+        var modal = document.getElementById('create-user-modal');
+        if (!modal) {
+            ensureUserModals();
+            modal = document.getElementById('create-user-modal');
+        }
+        if (!modal) {
+            window.showToast('创建用户暂时不可用，请刷新页面');
+            return;
+        }
+        modal.classList.add('show');
+    } catch(e) {
+        console.error('[showCreateUserModal] error:', e);
+        window.showToast('创建用户暂时不可用，请刷新页面');
+    }
+}
+
+// V412: 确保用户模态框DOM存在，缺失时动态创建
+function ensureUserModals() {
+    if (document.getElementById('create-user-modal')) return;
+    console.log('[V412] 用户模态框DOM缺失，动态创建...');
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = '<div id="create-user-modal" class="modal-overlay"><div class="modal-content" style="max-width:350px;"><div class="modal-title">\uD83D\uDC64 创建新用户</div><div style="margin-bottom:16px;"><label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">姓名</label><input type="text" id="create-name" placeholder="请输入姓名" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;" /></div><div style="margin-bottom:16px;"><label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">年级</label><select id="create-grade" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;"><option value="5">五年级</option><option value="6">六年级</option><option value="7">初一</option><option value="8">初二</option><option value="9">初三</option></select></div><div style="margin-bottom:16px;"><label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">初始难度</label><select id="create-difficulty" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;"><option value="1">Lv.1 入门级</option><option value="2">Lv.2 初级</option><option value="3">Lv.3 中级</option></select></div><button onclick="createNewUser()" class="login-btn login-btn-primary" style="margin-bottom:8px;">创建用户</button><button onclick="closeCreateUserModal()" class="login-btn login-btn-secondary">取消</button></div></div><div id="user-switch-modal" class="modal-overlay"><div class="modal-content" style="max-width:350px;"><div class="modal-title">\uD83D\uDC65 切换用户</div><div id="user-switch-list" style="margin-bottom:16px;max-height:300px;overflow-y:auto;"></div><button onclick="showCreateUserModal()" class="login-btn login-btn-primary" style="margin-bottom:8px;">+ 创建新用户</button><button onclick="closeUserSwitchModal()" class="login-btn login-btn-secondary">取消</button></div></div>';
+    while (wrapper.firstChild) {
+        document.body.appendChild(wrapper.firstChild);
+    }
+}
 
 function quickLogin(userId) {
     const data = window.loadData();
@@ -182,11 +219,9 @@ function renderUserList() {
 function createNewUser() {
     var nameEl = document.getElementById('create-name');
     var gradeEl = document.getElementById('create-grade');
-    var diffEl = document.getElementById('create-difficulty');
     
     var name = nameEl ? nameEl.value.trim() : '';
     var grade = gradeEl ? parseInt(gradeEl.value) : 7;
-    var difficulty = diffEl ? parseInt(diffEl.value) : 1;
     
     if (!name) {
         window.showToast('请输入名字');
@@ -205,7 +240,7 @@ function createNewUser() {
         id: 'user_' + Date.now(),
         name: name,
         grade: grade,
-        difficulty: difficulty,
+        difficulty: 1,
         points: 1000,
         createdAt: new Date().toISOString(),
         stats: {
