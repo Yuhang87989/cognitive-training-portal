@@ -411,7 +411,7 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
         apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' ? DEEPSEEK_API_URL : '') || 'https://api.deepseek.com/v1/chat/completions';
         model = (typeof DEEPSEEK_MODEL !== 'undefined' ? DEEPSEEK_MODEL : '') || 'deepseek-v4-flash';
     }
-    if (!apiKey) return {success: false, content: '', message: '未配置API Key'};
+    if (!apiKey && apiUrl.indexOf('workers.dev') === -1) return {success: false, content: '', message: '未配置API Key'};
     try {
         var response = await fetch(apiUrl, {
             method: 'POST',
@@ -576,7 +576,6 @@ async function callDeepSeekAPI(messages, temperature) {
     }
     dailyUsage.count++;
     localStorage.setItem('ds_daily_usage', JSON.stringify(dailyUsage));
-    if (!apiKey) return {success: false, message: '请先配置DeepSeek API Key'};
     
     var apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
                  'https://api.deepseek.com/chat/completions';
