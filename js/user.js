@@ -51,7 +51,7 @@ function showUserSwitchModal() {
     
     var container = document.getElementById('user-switch-list');
     if (!container) {
-        window.showToast('功能暂时不可用，请刷新页面');
+        window.showToast('页面加载异常');
         return;
     }
     
@@ -279,7 +279,7 @@ function showDeleteUserModal() {
     
     var container = document.getElementById('delete-user-list');
     if (!container) {
-        window.showToast('功能暂时不可用，请刷新页面');
+        window.showToast('页面加载异常');
         return;
     }
     
