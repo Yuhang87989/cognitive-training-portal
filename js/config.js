@@ -3,7 +3,7 @@
 // V177修改: DeepSeek文字/语音，Tesseract.js本地OCR+DeepSeek分析图片
 
 // DeepSeek API配置
-const DEEPSEEK_API_KEY = 'sk-675be97b97114969a987147838b443e2';
+const DEEPSEEK_API_KEY = 'sk-2a8da73bb84843d283ce6ffed9cc4037';
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 // DeepSeek V4 Flash - 高性价比快速模型
 const DEEPSEEK_MODEL = 'deepseek-v4-flash';
