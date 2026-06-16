@@ -241,7 +241,8 @@
     function renderAnimePet(skinId, expression) {
         const url = getPetImageUrl(skinId, expression);
         if (url) {
-            return '<img src="' + url + '" style="width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.style.display=\'none\';this.parentNode.innerHTML=\'<span style=\'font-size:80px\'>' + (PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0]).emoji + '</span>\'">';
+            const emoji = (PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0]).emoji;
+            return '<img src="' + url + '" style="width:140px;height:140px;object-fit:contain;" alt="pet" onerror="this.onerror=null;this.outerHTML=\'<span style="font-size:80px">' + emoji + '</span>\'">';
         }
         // Fallback to emoji
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
