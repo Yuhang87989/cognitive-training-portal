@@ -1787,7 +1787,7 @@ function showDeleteUserModal() {
         htmlContent += '</div>';
     });
     
-    container.innerHTML = htmlContent;
+    document.getElementById('user-switch-list').innerHTML = htmlContent;
     document.getElementById('delete-user-modal').classList.add('show');
 }
 
@@ -2063,7 +2063,7 @@ function showUserSwitchModal() {
         htmlContent += '</div>';
     });
     
-    container.innerHTML = htmlContent;
+    document.getElementById('user-switch-list').innerHTML = htmlContent;
     document.getElementById('user-switch-modal').classList.add('show');
 }
 
