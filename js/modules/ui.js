@@ -1787,7 +1787,7 @@ function showDeleteUserModal() {
         htmlContent += '</div>';
     });
     
-    document.getElementById('user-switch-list').innerHTML = htmlContent;
+    document.getElementById('delete-user-list').innerHTML = htmlContent;
     document.getElementById('delete-user-modal').classList.add('show');
 }
 
