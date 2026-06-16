@@ -854,6 +854,12 @@ function move2048(dir) {
     }
 }
 
+function add2048Tile() {
+    const empty = [];
+    g2048Board.forEach((v,i)=>{if(v===0)empty.push(i);});
+    if(empty.length) g2048Board[empty[Math.floor(Math.random()*empty.length)]] = Math.random()<0.9?2:4;
+}
+
 function moveSlide(x,y) {
     if((Math.abs(x-slideEmpty.x)===1&&y===slideEmpty.y)||(Math.abs(y-slideEmpty.y)===1&&x===slideEmpty.x)) {
         const idx = y*4+x;
@@ -1971,6 +1977,196 @@ function startFocusChallenge() {
             alert(`🎉 挑战结束！得分: ${score}，正确率: ${document.getElementById('focus-accuracy').textContent}%`);
         }
     }, 1000);
+}
+
+
+function startAttentionTrack() {
+    document.getElementById('game-title').textContent = '🎯 注意力追踪';
+    const board = document.getElementById('game-board');
+    board.style.display = 'block';
+    board.style.textAlign = 'center';
+
+    const counts = [5, 7, 9, 12, 15];
+    const numCount = counts[Math.min(gameLevel - 1, 4)];
+    const colors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#667eea', '#43E97B', '#FF9A9E', '#A78BFA', '#F472B6'];
+
+    attentionSequence = [];
+    for (let i = 0; i < numCount; i++) {
+        attentionSequence.push({
+            color: colors[i % colors.length],
+            number: i + 1,
+            x: 0, y: 0,
+            vx: (Math.random() - 0.5) * 2.5,
+            vy: (Math.random() - 0.5) * 2.5
+        });
+    }
+    attentionIndex = 0;
+    attentionAnimId = null;
+
+    board.innerHTML = '<div style="background:white;border-radius:16px;padding:16px;max-width:400px;margin:0 auto;">' +
+        '<div id="att-phase" style="font-size:14px;color:#667eea;font-weight:bold;margin-bottom:6px;">📋 记忆阶段：记住每个球的编号</div>' +
+        '<div id="att-countdown" style="font-size:13px;color:#999;margin-bottom:10px;"></div>' +
+        '<div id="att-arena" style="position:relative;width:100%;height:280px;background:linear-gradient(135deg,#f0f4ff,#e8eeff);border-radius:12px;overflow:hidden;margin-bottom:10px;"></div>' +
+        '<div id="att-next" style="font-size:15px;color:#667eea;font-weight:bold;min-height:22px;"></div>' +
+    '</div>';
+
+    var arena = document.getElementById('att-arena');
+    var arenaW = arena.offsetWidth || 360;
+    var arenaH = 280;
+    var ballSize = numCount <= 7 ? 48 : (numCount <= 12 ? 40 : 34);
+    var pad = ballSize;
+
+    var positions = [];
+    attentionSequence.forEach(function(item, i) {
+        var x, y, attempts = 0, valid;
+        do {
+            x = pad + Math.random() * (arenaW - 2 * pad);
+            y = pad + Math.random() * (arenaH - 2 * pad);
+            valid = positions.every(function(p) { return Math.hypot(p.x - x, p.y - y) > ballSize * 1.4; });
+            attempts++;
+        } while (!valid && attempts < 200);
+        positions.push({ x: x, y: y });
+        item.x = x;
+        item.y = y;
+
+        var ball = document.createElement('div');
+        ball.id = 'att-ball-' + i;
+        ball.style.cssText = 'position:absolute;left:' + (x - ballSize / 2) + 'px;top:' + (y - ballSize / 2) + 'px;width:' + ballSize + 'px;height:' + ballSize + 'px;background:' + item.color + ';border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:' + (ballSize > 40 ? 18 : 14) + 'px;font-weight:bold;color:white;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.18);z-index:2;user-select:none;';
+        ball.textContent = item.number;
+        ball.onclick = function() { clickAttention(i); };
+        arena.appendChild(ball);
+    });
+
+    gameScore = 0;
+    document.getElementById('game-score').textContent = '0';
+
+    var memTime = 3;
+    document.getElementById('att-countdown').textContent = '数字显示中... ' + memTime + ' 秒';
+    var memTimer = setInterval(function() {
+        memTime--;
+        if (memTime <= 0) {
+            clearInterval(memTimer);
+            document.getElementById('att-countdown').textContent = '';
+            _startAttentionMovement(arena, arenaW, arenaH, ballSize);
+        } else {
+            document.getElementById('att-countdown').textContent = '数字显示中... ' + memTime + ' 秒';
+        }
+    }, 1000);
+}
+
+function _startAttentionMovement(arena, arenaW, arenaH, ballSize) {
+    document.getElementById('att-phase').textContent = '👀 追踪阶段：盯住每个球的位置！';
+    document.getElementById('att-next').textContent = '';
+
+    attentionSequence.forEach(function(_, i) {
+        var ball = document.getElementById('att-ball-' + i);
+        if (ball) {
+            ball.textContent = '?';
+            ball.style.fontSize = (ballSize > 40 ? 20 : 16) + 'px';
+        }
+    });
+
+    var moveDurations = [3500, 4500, 5500, 6500, 7500];
+    var moveDuration = moveDurations[Math.min(gameLevel - 1, 4)];
+    var speedMul = [0.8, 1.0, 1.2, 1.5, 1.8][Math.min(gameLevel - 1, 4)];
+    var startTime = Date.now();
+
+    function animate() {
+        var elapsed = Date.now() - startTime;
+        if (elapsed >= moveDuration) {
+            _startAttentionClickPhase(ballSize);
+            return;
+        }
+        var w = arena.offsetWidth || arenaW;
+        var h = arenaH;
+
+        attentionSequence.forEach(function(item, i) {
+            item.x += item.vx * speedMul;
+            item.y += item.vy * speedMul;
+
+            if (item.x < ballSize / 2) { item.vx = Math.abs(item.vx); item.x = ballSize / 2; }
+            if (item.x > w - ballSize / 2) { item.vx = -Math.abs(item.vx); item.x = w - ballSize / 2; }
+            if (item.y < ballSize / 2) { item.vy = Math.abs(item.vy); item.y = ballSize / 2; }
+            if (item.y > h - ballSize / 2) { item.vy = -Math.abs(item.vy); item.y = h - ballSize / 2; }
+
+            var ball = document.getElementById('att-ball-' + i);
+            if (ball) {
+                ball.style.left = (item.x - ballSize / 2) + 'px';
+                ball.style.top = (item.y - ballSize / 2) + 'px';
+            }
+        });
+
+        attentionAnimId = requestAnimationFrame(animate);
+    }
+
+    attentionAnimId = requestAnimationFrame(animate);
+}
+
+function _startAttentionClickPhase(ballSize) {
+    if (attentionAnimId) { cancelAnimationFrame(attentionAnimId); attentionAnimId = null; }
+    document.getElementById('att-phase').textContent = '👆 点击阶段：按编号顺序点击球';
+    document.getElementById('att-next').textContent = '请点击编号 1';
+    attentionIndex = 0;
+
+    attentionSequence.forEach(function(_, i) {
+        var ball = document.getElementById('att-ball-' + i);
+        if (ball) {
+            ball.textContent = '?';
+            ball.style.boxShadow = '0 0 0 3px rgba(102,126,234,0.5), 0 3px 10px rgba(0,0,0,0.18)';
+            ball.style.cursor = 'pointer';
+            ball.style.animation = 'att-pulse 1.5s infinite';
+        }
+    });
+
+    if (!document.getElementById('att-pulse-style')) {
+        var style = document.createElement('style');
+        style.id = 'att-pulse-style';
+        style.textContent = '@keyframes att-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }';
+        document.head.appendChild(style);
+    }
+}
+
+function clickAttention(index) {
+    if (attentionIndex >= attentionSequence.length) return;
+    var expectedNum = attentionIndex + 1;
+    var clickedNum = attentionSequence[index].number;
+    var ball = document.getElementById('att-ball-' + index);
+
+    if (clickedNum === expectedNum) {
+        gameScore++;
+        document.getElementById('game-score').textContent = gameScore;
+        if (ball) {
+            ball.textContent = clickedNum;
+            ball.style.background = '#43E97B';
+            ball.style.animation = '';
+            ball.style.boxShadow = '0 3px 10px rgba(67,233,123,0.4)';
+        }
+        try { SoundEffects.playCorrect(); } catch(e) {}
+        attentionIndex++;
+        if (attentionIndex < attentionSequence.length) {
+            document.getElementById('att-next').textContent = '请点击编号 ' + (attentionIndex + 1);
+        } else {
+            document.getElementById('att-phase').textContent = '🎉 完美！全部正确！';
+            document.getElementById('att-next').textContent = '';
+            setTimeout(function() {
+                if (gameLevel < 5) { gameLevel++; updateGameLevelBadge(); }
+                startAttentionTrack();
+            }, 1500);
+        }
+    } else {
+        if (ball) {
+            var origBg = ball.style.background;
+            ball.style.background = '#FF6B6B';
+            ball.style.animation = '';
+            setTimeout(function() { ball.style.background = origBg; ball.style.animation = 'att-pulse 1.5s infinite'; }, 400);
+        }
+        try { SoundEffects.playWrong(); } catch(e) {}
+        setTimeout(function() { startAttentionTrack(); }, 1000);
+    }
+}
+
+function startAttentionSeq() {
+    startAttentionTrack();
 }
 
 // V406: 新增听音辨位游戏（之前调用不存在的startAudioPosition导致报错）
