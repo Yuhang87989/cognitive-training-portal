@@ -49,12 +49,6 @@ function showUserSwitchModal() {
         return;
     }
     
-    var container = document.getElementById('user-switch-list');
-    if (!container) {
-        window.showToast('页面加载异常');
-        return;
-    }
-    
     var colors = ['#667eea', '#FF9A63', '#43E97B'];
     var htmlContent = '';
     
@@ -274,12 +268,6 @@ function showDeleteUserModal() {
     
     if (data.users.length === 1) {
         window.showToast('只有一个用户，无法删除');
-        return;
-    }
-    
-    var container = document.getElementById('delete-user-list');
-    if (!container) {
-        window.showToast('页面加载异常');
         return;
     }
     
