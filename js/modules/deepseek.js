@@ -415,7 +415,7 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
     try {
         var response = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ model: model, messages: messages, temperature: temperature || 0.3, max_tokens: 2000 })
         });
         if (!response.ok) {
@@ -597,7 +597,7 @@ async function callDeepSeekAPI(messages, temperature) {
     try {
         var response = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ model: model, messages: fullMessages, temperature: temperature || 0.7, max_tokens: 4096 })
         });
         
@@ -639,7 +639,7 @@ async function callSiliconFlowAPI(messages, temperature) {
     try {
         var response = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ model: model, messages: messages, temperature: temperature || 0.7 })
         });
         

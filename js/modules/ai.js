@@ -80,7 +80,7 @@ async function callDeepSeek(question) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey
+                // Authorization由Worker处理，前端不传Key
             },
             body: JSON.stringify({
                 model: 'deepseek-v4-flash',
@@ -126,7 +126,7 @@ async function callDeepSeekVision(text, imageBase64) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey
+                // Authorization由Worker处理，前端不传Key
             },
             body: JSON.stringify({
                 model: 'deepseek-v4-flash',
