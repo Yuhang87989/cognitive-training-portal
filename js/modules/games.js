@@ -3397,6 +3397,27 @@ function clickLink(idx) {
 }
 
 function closeGame() { 
+    // V410: 退出游戏时保存当前积分
+    if (typeof gameType !== 'undefined' && gameType && gameScore > 0) {
+        var _user = getCurrentUserData();
+        if (_user) {
+            _user.gameScores = _user.gameScores || {};
+            _user.gameScores[gameType] = Math.max(_user.gameScores[gameType] || 0, gameScore);
+            _user.gameCounts = _user.gameCounts || {};
+            _user.gameCounts[gameType] = (_user.gameCounts[gameType] || 0) + 1;
+            var _timeSpent = (typeof gameStartTime !== 'undefined' && gameStartTime) ? Math.round((Date.now() - gameStartTime) / 1000) : 0;
+            _user.gameTimes = _user.gameTimes || {};
+            _user.gameTimes[gameType] = (_user.gameTimes[gameType] || 0) + _timeSpent;
+            _user.todayStats = _user.todayStats || { questions:0, correct:0, minutes:0 };
+            _user.todayStats.minutes += Math.ceil(_timeSpent/60);
+            var _today = new Date().toISOString().split('T')[0];
+            _user.studyDays = _user.studyDays || {};
+            _user.studyDays[_today] = (_user.studyDays[_today]||0) + Math.ceil(_timeSpent/60);
+            syncUserData(_user);
+            console.log('[V410] closeGame saved: gameType=', gameType, 'gameScore=', gameScore);
+        }
+    }
+    
     // 清理所有游戏计时器
     if (gameTimer) clearInterval(gameTimer);
     if (gameTimerDisplay) clearInterval(gameTimerDisplay);
@@ -3601,6 +3622,27 @@ function endGame() {
 }
 
 function exitGame() {
+    // V410: 退出游戏时保存当前积分
+    if (typeof gameType !== 'undefined' && gameType && gameScore > 0) {
+        var _user = getCurrentUserData();
+        if (_user) {
+            _user.gameScores = _user.gameScores || {};
+            _user.gameScores[gameType] = Math.max(_user.gameScores[gameType] || 0, gameScore);
+            _user.gameCounts = _user.gameCounts || {};
+            _user.gameCounts[gameType] = (_user.gameCounts[gameType] || 0) + 1;
+            var _timeSpent = (typeof gameStartTime !== 'undefined' && gameStartTime) ? Math.round((Date.now() - gameStartTime) / 1000) : 0;
+            _user.gameTimes = _user.gameTimes || {};
+            _user.gameTimes[gameType] = (_user.gameTimes[gameType] || 0) + _timeSpent;
+            _user.todayStats = _user.todayStats || { questions:0, correct:0, minutes:0 };
+            _user.todayStats.minutes += Math.ceil(_timeSpent/60);
+            var _today = new Date().toISOString().split('T')[0];
+            _user.studyDays = _user.studyDays || {};
+            _user.studyDays[_today] = (_user.studyDays[_today]||0) + Math.ceil(_timeSpent/60);
+            syncUserData(_user);
+            console.log('[V410] exitGame saved: gameType=', gameType, 'gameScore=', gameScore);
+        }
+    }
+    
     // 清理所有游戏计时器
     if (gameTimer) clearInterval(gameTimer);
     if (gameTimerDisplay) clearInterval(gameTimerDisplay);
@@ -6380,31 +6422,12 @@ window.showMetacognitivePrediction = showMetacognitivePrediction;
 window.currentPrediction = currentPrediction;
 
 function showGameOver(score, total) {
-    console.log("[V408] showGameOver called, score=", score, "total=", total, "gameType=", typeof gameType !== "undefined" ? gameType : "UNDEFINED");
-    try {
-        gameScore = score;
-        var scoreEl = document.getElementById('game-score');
-        if (scoreEl) scoreEl.textContent = score;
-        
-        // 直接保存积分，不依赖endGame的UI渲染
-        var user = getCurrentUserData();
-        if (user && typeof gameType !== "undefined" && gameType) {
-            user.gameScores = user.gameScores || {};
-            user.gameScores[gameType] = Math.max(user.gameScores[gameType] || 0, gameScore);
-            user.gameCounts = user.gameCounts || {};
-            user.gameCounts[gameType] = (user.gameCounts[gameType] || 0) + 1;
-            var timeSpent = (typeof gameStartTime !== "undefined" && gameStartTime) ? Math.round((Date.now() - gameStartTime) / 1000) : 0;
-            user.gameTimes = user.gameTimes || {};
-            user.gameTimes[gameType] = (user.gameTimes[gameType] || 0) + timeSpent;
-            syncUserData(user);
-            console.log("[V408] showGameOver saved directly! gameType=", gameType, "gameScore=", gameScore, "gameScores=", JSON.stringify(user.gameScores));
-        } else {
-            console.log("[V408] showGameOver SAVE FAILED: user=", !!user, "gameType=", typeof gameType !== "undefined" ? gameType : "UNDEFINED");
-        }
-    } catch(e) {
-        console.error("[V408] showGameOver ERROR:", e.message, e.stack);
-    }
-    // 调用endGame显示结果界面
+    console.log("[V410] showGameOver called, score=", score, "total=", total, "gameType=", typeof gameType !== "undefined" ? gameType : "UNDEFINED");
+    // V410: 只设置gameScore，不再直接保存积分，由endGame统一保存（避免双重计数）
+    gameScore = score;
+    var scoreEl = document.getElementById('game-score');
+    if (scoreEl) scoreEl.textContent = score;
+    // 调用endGame显示结果界面并保存积分
     endGame();
 }
 window.showGameOver = showGameOver;
