@@ -4,7 +4,7 @@
 
 // DeepSeek API配置
 const DEEPSEEK_API_KEY = ''; // 已迁移到Cloudflare Worker，前端不再需要Key
-const DEEPSEEK_API_URL = 'https://deepseek-proxy.392430818.workers.dev/v1/chat/completions';
+const DEEPSEEK_API_URL = 'http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
 // DeepSeek V4 Flash - 高性价比快速模型
 const DEEPSEEK_MODEL = 'deepseek-v4-flash';
 // DeepSeek V4 Pro - 高质量深度模型
