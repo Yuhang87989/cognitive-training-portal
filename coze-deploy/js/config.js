@@ -4,7 +4,7 @@
 
 // DeepSeek API配置
 const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
-const DEEPSEEK_API_URL = 'http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
+const DEEPSEEK_API_URL = 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
 const DEEPSEEK_MODEL = 'deepseek-chat';
 
 // 存储键名

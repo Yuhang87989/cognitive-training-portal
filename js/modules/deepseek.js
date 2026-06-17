@@ -408,7 +408,7 @@ async function callVisionAPIEndpoint(messages, temperature, apiType) {
         model = (typeof VISION_SILICONFLOW_MODEL !== 'undefined' ? VISION_SILICONFLOW_MODEL : '') || 'Qwen/Qwen3-VL-30B-A3B-Instruct';
     } else {
         apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '') || '';
-        apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' ? DEEPSEEK_API_URL : '') || 'http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
+        apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' ? DEEPSEEK_API_URL : '') || 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
         model = (typeof DEEPSEEK_MODEL !== 'undefined' ? DEEPSEEK_MODEL : '') || 'deepseek-v4-flash';
     }
     if (!apiKey && apiUrl.indexOf('tencentscf.com') === -1) return {success: false, content: '', message: '未配置API Key'};
@@ -578,7 +578,7 @@ async function callDeepSeekAPI(messages, temperature) {
     localStorage.setItem('ds_daily_usage', JSON.stringify(dailyUsage));
     
     var apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
-                 'http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
+                 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
     var model = (typeof DEEPSEEK_MODEL !== 'undefined' && DEEPSEEK_MODEL) ? DEEPSEEK_MODEL : 
                 'deepseek-v4-flash';
     
