@@ -2129,6 +2129,80 @@ window.doExitSystem = doExitSystem;
 window.openAbout = openAbout;
 
 // ============================================================
+// V416: 按角色动态显示首页模块
+// ============================================================
+window._applyRoleModules = function() {
+    var STORAGE_KEY = 'cognitive_training_v137';
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var data = raw ? JSON.parse(raw) : null;
+    var role = 'student';
+    if (data && data.users) {
+        for (var i = 0; i < data.users.length; i++) {
+            if (data.users[i].id === data.currentUser) {
+                role = data.users[i].role || 'student';
+                break;
+            }
+        }
+    }
+
+    // 模块按角色分类：学生可见全部学习模块，家长看家长看板，管理员看管理看板
+    var studentModules = ['exam', 'mindmap', 'practice', 'method', 'thinking', 'podcast', 'video', 'library', 'selfdrive', 'pet', 'wrongbook', 'ai'];
+    var parentModules = ['parent-dashboard'];
+    var adminModules = ['admin-dashboard'];
+
+    var visibleModules, dashboardHTML;
+    if (role === 'parent') {
+        visibleModules = parentModules;
+    } else if (role === 'admin') {
+        visibleModules = adminModules;
+    } else {
+        visibleModules = studentModules;
+    }
+
+    // 控制 module-btn 的显隐
+    var moduleBtns = document.querySelectorAll('.module-btn');
+    moduleBtns.forEach(function(btn) {
+        var onclick = btn.getAttribute('onclick') || '';
+        var match = onclick.match(/openFullscreenPage\('(\w+)'\)/);
+        if (match) {
+            var mod = match[1];
+            btn.style.display = visibleModules.indexOf(mod) >= 0 ? '' : 'none';
+        }
+    });
+
+    // 家长/管理员看板：在 module-section 里动态插入看板内容
+    var grid = document.querySelector('.module-grid-unified');
+    if (!grid) return;
+
+    // 移除旧看板容器
+    var oldParent = document.getElementById('parent-dashboard-inline');
+    var oldAdmin = document.getElementById('admin-dashboard-inline');
+    if (oldParent) oldParent.remove();
+    if (oldAdmin) oldAdmin.remove();
+
+    if (role === 'parent' && window.renderParentDashboard) {
+        var parentDiv = document.createElement('div');
+        parentDiv.id = 'parent-dashboard-inline';
+        parentDiv.style.cssText = 'grid-column:1/-1;';
+        grid.appendChild(parentDiv);
+        window.renderParentDashboard(parentDiv);
+    } else if (role === 'admin' && window.renderAdminDashboard) {
+        var adminDiv = document.createElement('div');
+        adminDiv.id = 'admin-dashboard-inline';
+        adminDiv.style.cssText = 'grid-column:1/-1;';
+        grid.appendChild(adminDiv);
+        window.renderAdminDashboard(adminDiv);
+    }
+};
+
+// 页面加载完成后自动应用角色模块
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(window._applyRoleModules, 500); });
+} else {
+    setTimeout(window._applyRoleModules, 500);
+}
+
+// ============================================================
 // ES6 Module Export - V225 ES6改造
 // ============================================================
 

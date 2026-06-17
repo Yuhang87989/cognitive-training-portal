@@ -975,6 +975,12 @@ window.renderMyPage = function(container) {
                         </div>
                         <div class="toggle-switch ${soundEnabled ? 'active' : ''}" onclick="toggleSound()"></div>
                     </div>
+                    <button class="foldable-btn" onclick="window._showRoleSwitchModal && window._showRoleSwitchModal()">
+                        <span>🎭</span> 角色切换
+                    </button>
+                    <button class="foldable-btn" onclick="window.CloudSync && window.CloudSync.showPhoneBindModal && window.CloudSync.showPhoneBindModal()">
+                        <span>📱</span> 手机号绑定
+                    </button>
                 </div>
             </div>
         </div>
@@ -1074,6 +1080,76 @@ function openBackupPage() {
 }
 
 console.log('✅ V199 my-page.js 已加载 - 2x2快捷功能卡片 + 5个折叠分区');
+
+// ============================================================
+// 角色切换弹窗
+// ============================================================
+window._showRoleSwitchModal = function() {
+    var STORAGE_KEY = 'cognitive_training_v137';
+    var existing = document.getElementById('role-switch-modal');
+    if (existing) existing.remove();
+
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var data = raw ? JSON.parse(raw) : null;
+    var currentUser = null;
+    if (data && data.users) {
+        for (var i = 0; i < data.users.length; i++) {
+            if (data.users[i].id === data.currentUser) {
+                currentUser = data.users[i];
+                break;
+            }
+        }
+    }
+    var currentRole = currentUser ? (currentUser.role || 'student') : 'student';
+
+    var roles = [
+        { key: 'student', icon: '🧒', label: '学生', desc: '学习训练、错题本、AI精准练' },
+        { key: 'parent',  icon: '👨‍👩‍👧', label: '家长', desc: '学习监控、时间管控、鼓励留言' },
+        { key: 'admin',   icon: '🛡️', label: '管理员', desc: '用户管理、系统设置、数据统计' }
+    ];
+
+    var roleCards = roles.map(function(r) {
+        var isActive = r.key === currentRole;
+        return '<div onclick="window._doSwitchRole(\'' + r.key + '\')" style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid ' + (isActive ? '#667eea' : '#eee') + ';border-radius:12px;margin-bottom:8px;cursor:pointer;background:' + (isActive ? '#f0f0ff' : 'white') + ';">' +
+            '<div style="font-size:28px;">' + r.icon + '</div>' +
+            '<div style="flex:1;">' +
+                '<div style="font-size:15px;font-weight:600;color:#333;">' + r.label + (isActive ? ' <span style="color:#667eea;font-size:12px;">当前</span>' : '') + '</div>' +
+                '<div style="font-size:12px;color:#999;">' + r.desc + '</div>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+
+    var modal = document.createElement('div');
+    modal.id = 'role-switch-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = '<div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;">' +
+        '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:4px;">🎭 角色切换</div>' +
+        '<div style="font-size:13px;color:#666;margin-bottom:16px;">切换后首页模块将相应调整</div>' +
+        roleCards +
+        '<button onclick="document.getElementById(\'role-switch-modal\').remove()" style="width:100%;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:4px;">取消</button>' +
+    '</div>';
+    document.body.appendChild(modal);
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+};
+
+window._doSwitchRole = function(role) {
+    var STORAGE_KEY = 'cognitive_training_v137';
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var data = raw ? JSON.parse(raw) : null;
+    if (!data || !data.users) return;
+    for (var i = 0; i < data.users.length; i++) {
+        if (data.users[i].id === data.currentUser) {
+            data.users[i].role = role;
+            break;
+        }
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    var existing = document.getElementById('role-switch-modal');
+    if (existing) existing.remove();
+    window.showToast && window.showToast('已切换为' + (role === 'student' ? '学生' : role === 'parent' ? '家长' : '管理员') + '模式');
+    // 角色切换后刷新首页模块显示
+    if (window._applyRoleModules) window._applyRoleModules();
+};
 
 // ============================================================
 // ES6 Module 导出

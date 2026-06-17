@@ -60,6 +60,8 @@ import './modules/map.js';           // 认知地图
 import './modules/my-page.js';       // 我的页面
 import './modules/pomodoro.js';      // 番茄钟
 import './modules/notepad.js';       // 记事本
+import './modules/parent-dashboard.js'; // 家长看板
+import './modules/admin-dashboard.js';  // 管理员看板
 
 console.log('[V262] 核心模块 + 业务模块 + 数据模块全部预先加载完成！');
 

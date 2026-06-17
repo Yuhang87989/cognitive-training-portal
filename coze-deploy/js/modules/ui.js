@@ -294,46 +294,100 @@ function openHelp() {
     modal.classList.add('show');
     content.innerHTML = `
         <div class="modal-title">📖 使用帮助</div>
-        <div style="max-height:300px;overflow-y:auto;">
+        <div style="max-height:400px;overflow-y:auto;">
             <div style="margin-bottom:16px;">
-                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🎯 训练模块</div>
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🧠 思维导图</div>
                 <div style="font-size:13px;color:#666;line-height:1.6;">
-                    • 每日完成8次训练可获得积分奖励<br>
-                    • 难度级别影响题目难度和积分倍数<br>
-                    • 连续训练可获得额外奖励
+                    • 拖拽节点调整位置<br>
+                    • 支持5种视觉样式切换<br>
+                    • 可创建多个导图文件<br>
+                    • 数据自动保存到本地
                 </div>
             </div>
             <div style="margin-bottom:16px;">
-                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">📚 母题训练</div>
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">📅 学习计划</div>
                 <div style="font-size:13px;color:#666;line-height:1.6;">
-                    • 选择年级和科目开始训练<br>
-                    • 支持拍照上传题目获取AI解析<br>
-                    • 错题自动加入错题本
+                    • 点击日期切换查看不同日期<br>
+                    • 勾选任务标记完成状态<br>
+                    • 数据本地持久化存储
                 </div>
             </div>
+
             <div style="margin-bottom:16px;">
-                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">🤖 AI功能</div>
+                <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:8px;">📝 模拟考试</div>
                 <div style="font-size:13px;color:#666;line-height:1.6;">
-                    • DeepSeek AI 支持多学科问答<br>
-                    • AI数字分身提供个性化辅导<br>
-                    • 拍照识别自动解题
+                    • 选择科目和难度开始考试<br>
+                    • 答题后即时查看详细解析<br>
+                    • 错题自动加入错题本<br>
+                    • 支持导出试卷导出成绩记录
                 </div>
             </div>
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:12px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:12px;">关闭</button>
     `;
 }
 
-function openFullscreenPage(module) {
-    cleanupModuleState(); // 清理上一个模块的状态
-    closeUserMenu();
-    const container = document.getElementById('fullscreen-container');
-    const titleEl = document.getElementById('fullscreen-title');
+
+// ========== 历史记录导航系统 ==========
+window._fullscreenOpen = false;
+
+// 清理模块状态 - 解决模块切换冲突问题
+window.cleanupModuleState = function() {
+    // 清空内容容器
     const contentEl = document.getElementById('fullscreen-content');
+    if (contentEl) contentEl.innerHTML = '';
+    
+    // 清理可能的全局状态污染
+    if (window._petInterval) {
+        clearInterval(window._petInterval);
+        window._petInterval = null;
+    }
+    
+    // 清理所有模态框
+    document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(el => el.remove());
+    
+    console.log('[DataSync] 模块状态已清理');
+};
+
+// 监听浏览器返回按钮
+window.addEventListener('popstate', function(event) {
+    if (window._fullscreenOpen) {
+        // 判断退出的是否是播客模块，只在播客退出时清理播放器
+        var exitingModule = (event.state && event.state.module) || (history.state && history.state.module);
+        // 从pushState记录中获取上一次打开的模块
+        var lastModule = window._lastFullscreenModule;
+        if (lastModule === 'podcast') {
+            // 停止播客音频
+            if (typeof window.stopPodcastAudio === 'function') {
+                window.stopPodcastAudio();
+            }
+            // 隐藏迷你播放器
+            var miniPlayer = document.getElementById('mini-player');
+            if (miniPlayer) miniPlayer.classList.remove('show');
+        }
+        window._lastFullscreenModule = null;
+        window.cleanupModuleState();
+        const el = document.getElementById('fullscreen-container');
+        if (el) el.classList.remove('active');
+        window._fullscreenOpen = false;
+    }
+});
+
+// 打开全屏页面
+function openFullscreenPage(module) {
+    window._fullscreenOpen = true;
+    window._lastFullscreenModule = module;
+    history.pushState({fullscreen: true, module: module}, "", "");
+    window.cleanupModuleState();
+    closeUserMenu();
+    var container = document.getElementById('fullscreen-container');
+    var titleEl = document.getElementById('fullscreen-title');
+    var contentEl = document.getElementById('fullscreen-content');
     if (!container || !titleEl || !contentEl) return;
     
-    const moduleTitles = {
-        'practice': '🎯 AI精准练',
+    var moduleTitles = {
+        'ai': '🎯 AI精准练',
+        'practice': '📚 母题训练',
         'map': '🧠 认知地图',
         'plan': '📅 学习计划',
         'topics': '📚 母题训练',
@@ -346,88 +400,77 @@ function openFullscreenPage(module) {
         'wrongbook': '📒 错题本',
         'pomodoro': '🍅 番茄闹钟',
         'calculator': '🧮 计算器',
-        'notepad': '📝 记事本',
+        'notepad': '📝 学习日记',
         'usage-stats': '📊 AI使用统计',
         'settings': '⚙️ 设置',
         'my': '👤 我的',
         'selfdrive': '💪 自驱力训练',
         'backup': '💾 数据备份',
         'weekly': '📅 每周回顾',
-        'progress': '📉 进步曲线'
+        'progress': '📉 进步曲线',
+        'exam': '📝 模拟考试',
+        'pet': '🐱 虚拟宠物',
+        'library': '📚 学习图书馆',
+        'mindmap': '🧠 思维导图'
     };
+    titleEl.textContent = moduleTitles[module] || module;
     
-    titleEl.textContent = moduleTitles[module] || '模块';
-    
-    // settings模块特殊处理
-    if (module === 'settings') {
-        openSettingsPanel();
-        closeFullscreenPage();
-        return;
-    }
-    
-    // V229: 使用动态懒加载加载模块
-    // 检查是否支持懒加载
-    if (window.MODULE_LAZY_LOAD_MAP && window.MODULE_LAZY_LOAD_MAP[module]) {
-        // 先显示加载状态
-        showModuleLoading(contentEl, moduleTitles[module] || module);
-        
-        // 异步加载模块
-        lazyLoadModule(module)
-            .then((renderFunc) => {
-                if (typeof renderFunc === 'function') {
-                    renderFunc(contentEl);
-                    // 重新添加返回按钮（因为模块可能重写了content）
-                    addBackButtonToModule(contentEl);
-                } else {
-                    contentEl.innerHTML = '<div class="card"><p style="color:red;">模块加载异常：渲染函数未找到</p></div>';
-                    addBackButtonToModule(contentEl);
-                }
-            })
-            .catch((error) => {
-                console.error('模块加载失败:', error);
-                contentEl.innerHTML = `
-                    <div class="card" style="text-align:center;padding:40px;">
-                        <p style="color:red;font-size:18px;margin-bottom:10px;">⚠️ 模块加载失败</p>
-                        <p style="color:#666;margin-bottom:20px;">${error.message || '请刷新页面重试'}</p>
-                        <button onclick="location.reload()" style="padding:10px 24px;background:#667eea;color:white;border:none;border-radius:8px;cursor:pointer;">刷新页面</button>
-                    </div>
-                `;
-                addBackButtonToModule(contentEl);
-            });
-    } else {
-        // 不支持懒加载的模块，降级处理或提示
-        contentEl.innerHTML = '<div class="card"><p>模块开发中...</p></div>';
-        addBackButtonToModule(contentEl);
-    }
+    contentEl.innerHTML = '';
+    contentEl.style.cssText = '';
+    contentEl.className = 'fp-content';
     
     container.classList.add('active');
-}
-
-/**
- * 为模块页面添加返回按钮（V229: 抽离为独立函数）
- */
-function addBackButtonToModule(contentEl) {
-    if (!contentEl) return;
     
-    const existingBack = contentEl.querySelector('.module-back-btn');
-    if (!existingBack) {
-        const backBtn = document.createElement('button');
-        backBtn.className = 'module-back-btn';
-        backBtn.textContent = '← 返回首页';
-        backBtn.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 32px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:24px;font-size:14px;cursor:pointer;z-index:100;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,0.3);';
-        backBtn.onclick = function() { closeFullscreenPage(); };
-        contentEl.style.position = 'relative';
-        contentEl.appendChild(backBtn);
+    console.log('[V390] 打开模块:', module);
+    
+    switch (module) {
+        case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
+        case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
+        case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
+        case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
+        case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
+        case 'method': if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
+        case 'thinking': if (typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
+        case 'podcast': if (typeof window.renderPodcast === 'function') window.renderPodcast(contentEl); break;
+        case 'video': if (typeof window.renderVideo === 'function') window.renderVideo(contentEl); break;
+        case 'games': if (typeof window.renderGames === 'function') window.renderGames(contentEl); break;
+        case 'deepseek': if (typeof window.renderDeepseek === 'function') window.renderDeepseek(contentEl); break;
+        case 'wrongbook': if (typeof window.renderWrongbook === 'function') window.renderWrongbook(contentEl); break;
+        case 'pomodoro': if (typeof window.renderPomodoro === 'function') window.renderPomodoro(contentEl); break;
+        case 'my': if (typeof window.renderMyPage === 'function') window.renderMyPage(contentEl); break;
+        case 'calculator': if (typeof window.renderCalculator === 'function') window.renderCalculator(contentEl); break;
+        case 'exam': if (typeof window.renderExam === 'function') window.renderExam(contentEl); break;
+        case 'backup': if (typeof window.renderBackupManager === 'function') window.renderBackupManager(contentEl); break;
+        case 'progress': if (typeof window.renderProgressChart === 'function') window.renderProgressChart(contentEl); break;
+        case 'usage-stats': if (typeof window.renderUsageStats === 'function') window.renderUsageStats(contentEl); break;
+        case 'weekly': if (typeof window.renderWeeklyReview === 'function') window.renderWeeklyReview(contentEl); break;
+        case 'journal': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'notepad': if (typeof window.renderNotepad === 'function') window.renderNotepad(contentEl); break;
+        case 'library': if (typeof window.renderLibrary === 'function') window.renderLibrary(contentEl); break;
+        case 'pet': if (typeof window.renderPet === 'function') window.renderPet(contentEl); break;
+        case 'mindmap': if (typeof window.renderMindMap === 'function') window.renderMindMap(contentEl); break;
+        case 'selfdrive': if (typeof window.renderSelfDrive === 'function') window.renderSelfDrive(contentEl); else if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
+        default:
+            contentEl.innerHTML = '<div style="padding:40px;text-align:center;color:#999;"><div style="font-size:48px;margin-bottom:16px;">🚧</div><div>' + module + ' 开发中...</div></div>';
     }
 }
 
-function closeFullscreenPage() { cleanupModuleState(); const el = document.getElementById('fullscreen-container'); if (el) el.classList.remove('active'); }
+
+
+// 关闭全屏页面 - 使用历史记录返回
+function closeFullscreenPage() {
+    if (window._fullscreenOpen) {
+        history.back();
+    }
+}
+
+
 
 function handleLogin() {
-    const data = loadData();
+    const data = window.loadData();
     const btn = document.querySelector('.user-select-btn');
     if (!btn || !btn.dataset.userId) {
-        showToast('请先选择学习者');
+        window.showToast('请先选择学习者');
         return;
     }
     const userId = btn.dataset.userId;
@@ -438,7 +481,7 @@ function handleLogin() {
         user.difficulty = difficulty; 
         user.lastLogin = Date.now(); 
         data.currentUser = userId; 
-        saveData(data); 
+        window.saveData(data); 
         // 先切换页面，再更新UI
         showPage('home');
         setTimeout(() => {
@@ -448,12 +491,12 @@ function handleLogin() {
             showWelcomeMessage(user);
         }, 50);
     } else {
-        showToast('用户不存在，请重新选择');
+        window.showToast('用户不存在，请重新选择');
     }
 }
 
 function logoutAndReturn() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     
     // 停止TTS
     stopTTSSpeech();
@@ -476,9 +519,9 @@ function doExitSystem() {
     console.log("执行完整退出系统...");
     
     // 1. 保留currentUser（用户名保留），只重置运行时状态
-    var data = loadData();
+    var data = window.loadData();
     // 不清除currentUser，保留用户名
-    saveData(data);
+    window.saveData(data);
     
     // 2. 停止TTS语音
     if (typeof stopTTSSpeech === "function") {
@@ -597,16 +640,16 @@ window.setInterval = function(func, delay) {
 };
 // V148-fix: 切换用户后关闭全屏页面，回到首页刷新
 function switchToUser(userId) {
-    var data = loadData();
+    var data = window.loadData();
     var user = data.users.find(function(u) { return u.id === userId; });
     
     if (!user) {
-        showToast('用户不存在');
+        window.showToast('用户不存在');
         return;
     }
     
     data.currentUser = userId;
-    saveData(data);
+    window.saveData(data);
     closeUserSwitchModal();
     
     // 切换用户后关闭全屏页面，回到首页刷新
@@ -614,17 +657,17 @@ function switchToUser(userId) {
     showPage('home');
     updateUI();
     syncTodayStats();
-    showToast('已切换到: ' + user.name);
+    window.showToast('已切换到: ' + user.name);
 }
 
 function deleteUser(userId) {
     if (!confirm('确定要删除此用户吗？此操作不可恢复！')) return;
     
-    var data = loadData();
+    var data = window.loadData();
     var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
     
     if (userIndex === -1) {
-        showToast('用户不存在');
+        window.showToast('用户不存在');
         return;
     }
     
@@ -640,10 +683,10 @@ function deleteUser(userId) {
         }
     }
     
-    saveData(data);
+    window.saveData(data);
     showUserSwitchModal(); // 刷新用户列表
     updateUI();
-    showToast('已删除用户: ' + userName);
+    window.showToast('已删除用户: ' + userName);
 }
 
 function registerNewUser() {
@@ -657,50 +700,50 @@ function registerNewUser() {
     
     // 验证姓名
     if (!name) {
-        showToast('请输入姓名');
+        window.showToast('请输入姓名');
         return;
     }
     if (name.length > 10) {
-        showToast('姓名不能超过10个字符');
+        window.showToast('姓名不能超过10个字符');
         return;
     }
     
     // 验证手机号
     if (!phone) {
-        showToast('请输入手机号');
+        window.showToast('请输入手机号');
         return;
     }
     if (!/^1[3-9]\d{9}$/.test(phone)) {
-        showToast('请输入正确的手机号');
+        window.showToast('请输入正确的手机号');
         return;
     }
     
     // 检查手机号是否已注册
-    const data = loadData();
+    const data = window.loadData();
     if (data.users.find(u => u.phone === phone)) {
-        showToast('该手机号已注册，请直接登录或切换用户');
+        window.showToast('该手机号已注册，请直接登录或切换用户');
         return;
     }
     
     // 验证密码
     if (!password) {
-        showToast('请输入密码');
+        window.showToast('请输入密码');
         return;
     }
     if (password.length < 6) {
-        showToast('密码长度至少6位');
+        window.showToast('密码长度至少6位');
         return;
     }
     
     // 验证确认密码
     if (password !== confirmPassword) {
-        showToast('两次输入的密码不一致');
+        window.showToast('两次输入的密码不一致');
         return;
     }
     
     // 验证年级
     if (!grade) {
-        showToast('请选择年级');
+        window.showToast('请选择年级');
         return;
     }
     
@@ -734,7 +777,7 @@ function registerNewUser() {
     // 保存用户
     data.users.push(newUser);
     data.currentUser = newUser.id;
-    saveData(data);
+    window.saveData(data);
     
     // 关闭注册模态框
     document.getElementById('register-modal').classList.remove('show');
@@ -744,7 +787,7 @@ function registerNewUser() {
     syncTodayStats();
     
     // 显示欢迎提示
-    showToast('欢迎 ' + name + '！开始你的认知训练之旅吧！');
+    window.showToast('欢迎 ' + name + '！开始你的认知训练之旅吧！');
 }
 
 function openChangePasswordModal() {
@@ -759,7 +802,7 @@ function closeCreateUserModal() { document.getElementById('create-user-modal').c
 function showCreateUserModal() { document.getElementById('create-user-modal').classList.add('show'); }
 
 function openDifficultyModal() {
-    const userData = getCurrentUserData();
+    const userData = window.getCurrentUserData();
     const currentLevel = userData ? userData.difficulty : 1;
     // 高亮当前选中的按钮
     document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -775,7 +818,7 @@ function closeDifficultyModal() {
 }
 
 function setDifficulty(level) {
-    const userData = getCurrentUserData();
+    const userData = window.getCurrentUserData();
     if (userData) {
         userData.difficulty = level;
         syncUserData(userData);
@@ -796,7 +839,7 @@ function setDifficulty(level) {
             btn.style.borderColor = isSelected ? '#1A6BFF' : '#ddd';
             btn.style.background = isSelected ? '#E8F4FF' : 'white';
         });
-        showToast('难度已调整为 Lv.' + level);
+        window.showToast('难度已调整为 Lv.' + level);
     }
     closeDifficultyModal();
 }
@@ -815,7 +858,7 @@ function switchMainTab(tab, element) {
     if (tab === 'home') {
         closeFullscreenPage();
         closeSettingsPanel();
-        cleanupModuleState(); // 清理所有模块状态，包括播放器
+        window.cleanupModuleState(); // 清理所有模块状态，包括播放器
     }
 }
 
@@ -887,7 +930,7 @@ function showToast(message, duration = 2000) {
 function updateUI() {
     updateAllAvatarDisplays();
 
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user) return;
     const greetingEl = document.getElementById('greeting-name');
     const diffEl = document.getElementById('difficulty-text');
@@ -917,7 +960,7 @@ function toggleSettingsGroup(groupId) {
 }
 
 function openSettingsPanel() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user) {
         // 更新用户信息卡片
         const avatarEl = document.getElementById('settings-avatar');
@@ -1098,7 +1141,7 @@ function drawRadarChart(data) {
 }
 
 function calculateCognitiveData() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user) {
         return getDefaultCognitiveData();
     }
@@ -1108,27 +1151,38 @@ function calculateCognitiveData() {
     const gameCounts = user.gameCounts || {};
     const methodStats = user.methodStats || {};
     const thinkingStats = user.thinkingStats || {};
-    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
 
 
 // ====== 1. 专注力计算 ======
-// 来源：舒尔特方格、视觉搜索、快速点击
+// 来源：舒尔特方格、视觉搜索、快速点击、母题训练
     let attentionScore = 50; // 基础分
     const attentionGames = ['schulte', 'visual', 'tap'];
     attentionGames.forEach(g => {
         if (gameScores[g]) attentionScore += Math.min(gameScores[g] / 10, 12);
         if (gameCounts[g]) attentionScore += Math.min(gameCounts[g] * 2, 6);
     });
+    // 母题训练贡献专注力
+    const topicStats = user.topicStats || {};
+    const topicCount = Object.keys(topicStats).length;
+    const topicCorrect = Object.values(topicStats).filter(t => t.correct).length;
+    attentionScore += Math.min(topicCount * 1.5, 10);
+    attentionScore += Math.min(topicCorrect * 2, 8);
 
 
 // ====== 2. 记忆力计算 ======
-// 来源：数字记忆、图形记忆、学霸方法记忆训练
+// 来源：数字记忆、图形记忆、学霸方法记忆训练、母题训练
     let memoryScore = 50;
     const memoryGames = ['digit', 'pattern'];
     memoryGames.forEach(g => {
         if (gameScores[g]) memoryScore += Math.min(gameScores[g] / 8, 15);
         if (gameCounts[g]) memoryScore += Math.min(gameCounts[g] * 3, 8);
     });
+    // 母题训练正确率贡献记忆力
+    if (topicCount > 0) {
+        const topicAccuracy = topicCorrect / topicCount;
+        memoryScore += Math.min(Math.round(topicAccuracy * 15), 15);
+    }
     // 学霸方法 - 记忆法训练 (methodId: memory)
     if (methodStats['memory']) {
         const stats = methodStats['memory'];
@@ -1169,7 +1223,7 @@ function calculateCognitiveData() {
 
 
 // ====== 5. 坚持力计算 ======
-// 来源：学习连续性、总训练量、连续打卡天数
+// 来源：学习连续性、总训练量、连续打卡天数、虚拟宠物互动
     let persistenceScore = 50;
     // 连续学习天数
     const streakDays = calculateStreakDays(user);
@@ -1179,10 +1233,15 @@ function calculateCognitiveData() {
     // 总训练量（游戏完成总数）
     const totalGamesPlayed = Object.values(gameCounts).reduce((sum, count) => sum + count, 0);
     persistenceScore += Math.min(totalGamesPlayed * 2, 15);
+    // 虚拟宠物互动（从独立存储读取）
+    try {
+        var petData = JSON.parse(localStorage.getItem('virtual_pet_data') || '{}');
+        if (petData.level) persistenceScore += Math.min(petData.level * 2, 10);
+    } catch(e) {}
 
 
 // ====== 6. 元认知计算 ======
-// 来源：学霸方法训练总数、思维训练总数、AI问答次数
+// 来源：学霸方法训练总数、思维训练总数、AI问答次数、图书馆阅读
     let metacognitionScore = 50;
     // 学霸方法总训练量
     const methodTotal = Object.values(methodStats).reduce((sum, s) => sum + (s.completed || 0), 0);
@@ -1192,6 +1251,12 @@ function calculateCognitiveData() {
     metacognitionScore += Math.min(thinkingTotal * 2, 15);
     // AI问答次数
     if (user.aiChatCount) metacognitionScore += Math.min(user.aiChatCount, 10);
+    // 图书馆阅读进度
+    try {
+        var libData = JSON.parse(localStorage.getItem('learning_library_data') || '{}');
+        var readCount = libData.readingProgress ? Object.keys(libData.readingProgress).length : 0;
+        metacognitionScore += Math.min(readCount * 2, 10);
+    } catch(e) {}
     
     // 限制在 20-100 范围
     return {
@@ -1361,7 +1426,7 @@ function renderStatItems(data) {
 }
 
 function updateAllAvatarDisplays() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user) return;
     
     const avatar = user.avatar || AVATAR_LIST[0].emoji;
@@ -1382,51 +1447,62 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V144</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V305</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                认知训练门户是一款专为12-16岁青少年设计的注意力和记忆力训练应用。通过科学系统的训练方法，帮助学生提升学习效率，培养良好的学习习惯。
+                认知训练门户是一款专为12-16岁青少年设计的综合学习平台。通过科学的认知训练、思维导图工具和AI智能辅导，帮助学生提升学习效率，培养良好的学习习惯。
             </div>
         </div>
         <div style="background:#fff3e0;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">✨ 核心功能</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                • 12大训练模块（AI分身、母题、播客等）<br>
-                • 23个认知训练游戏<br>
-                • 378道经典母题库<br>
-                • DeepSeek AI 智能辅导<br>
-                • 个性化学习计划
+                • 🧠 思维导图 - 拖拽编辑、5种视觉样式、多文件管理<br>
+                • 📅 学习计划 - 日期切换、数据持久化<br>
+                • 📝 模拟考试 - 完整测评体系<br>
+                • 📚 学习图书馆 - 多格式阅读支持<br>
+                • 🐱 虚拟宠物 - 陪伴式成长激励<br>
+                • 💪 自驱力训练 - 学习动力培养<br>
+                • 🤖 AI精准练 - 薄弱点智能诊断<br>
+                • 🎧 播客课堂 - 音频学习资源<br>
+                • 📒 错题本 - 自动收集、反复练习
+            </div>
+        </div>
+        <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">🔧 技术架构</div>
+            <div style="font-size:13px;color:#666;line-height:1.8;">
+                • 传统Script模块化架构（放弃ES6 Modules）<br>
+                • 全函数挂载window，确保兼容性<br>
+                • localStorage本地数据持久化<br>
             </div>
         </div>
         <div style="background:#e8f5e9;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">👨‍💻 开发团队</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                Coze AI Agent 智能助手<br>
-                技术支持：DeepSeek API
+                Coze AI Agent 智能开发团队<br>
             </div>
         </div>
         <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">
             © 2026 认知训练门户 版权所有
         </div>
-        <button class="modal-close" onclick="closeModal()" style="width:100%;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="width:100%;">关闭</button>
     `;
 }
 
 function selectAvatar(emoji) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user) {
         user.avatar = emoji;
         syncUserData(user);
         updateAllAvatarDisplays();
-        showToast('头像已更换');
+        window.showToast('头像已更换');
     }
     closeAvatarModal();
 }
 
 function updateMethodStats() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const stats = user?.methodStats || {};
     
     let totalCompleted = 0;
@@ -1447,7 +1523,7 @@ function updateMethodStats() {
 }
 
 function updateThinkingStats() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const stats = user?.thinkingStats || {};
     
     let totalCompleted = 0;
@@ -1472,7 +1548,7 @@ function getWeekNumber() {
 function switchPlanDay(day) {
     window._planDay = day;
     const el = document.getElementById('module-content');
-    if (el) renderPlan(el);
+    if (el) window.renderPlan(el);
 }
 
 // ============================================================
@@ -1498,12 +1574,13 @@ window.closeSettingsPanel = closeSettingsPanel;
 window.savePasswordChanges = savePasswordChanges;
 window.setDifficulty = setDifficulty;
 window.toggleUserMenu = toggleUserMenu;
+window.switchMainTab = switchMainTab;
+window.updateHomeUserInfo = updateHomeUserInfo;
 window.openRegisterModal = openRegisterModal;
 window.handleLogin = handleLogin;
-window.initPortal = initPortal;
 window.selectAvatar = selectAvatar;
-window.selectGrade = selectGrade;
-window.selectSubject = selectSubject;
+if (typeof selectGrade !== 'undefined') window.selectGrade = selectGrade;
+if (typeof selectSubject !== 'undefined') window.selectSubject = selectSubject;
 window.closeAboutModal = closeAboutModal;
 window.closeApiConfigModal = closeApiConfigModal;
 window.closeAvatarModal = closeAvatarModal;
@@ -1604,7 +1681,7 @@ if('serviceWorker' in navigator){
 // 更新首页用户信息显示
 function updateHomeUserInfo(user) {
     if (!user) {
-        user = getCurrentUserData();
+        user = window.getCurrentUserData();
     }
     if (!user) return;
     
@@ -1638,11 +1715,11 @@ function updateHomeUserInfo(user) {
 
 // 更新今日统计
 function updateTodayStats() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user) return;
     
     const today = new Date().toISOString().split('T')[0];
-    const todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { date: today, questions: 0, correct: 0, minutes: 0 };
     
     // 如果不是今天，重置统计
     if (todayStats.date !== today) {
@@ -1677,44 +1754,17 @@ function updateTodayStats() {
     if (streakEl) streakEl.textContent = streak;
 }
 
-// 应用初始化入口函数
-function initPortal() {
-    // 检查是否有用户数据
-    const userData = getCurrentUserData();
-    
-    if (userData && userData.name) {
-        // 已登录，更新首页用户信息
-        updateHomeUserInfo(userData);
-    } else {
-        // 未登录，显示默认状态（同学）
-        updateHomeUserInfo(null);
-    }
-    
-    // 显示首页（默认就是显示的，这里确保状态正确）
-    const homePage = document.getElementById('page-home');
-    if (homePage) {
-        homePage.style.display = 'block';
-        homePage.classList.add('active');
-    }
-    
-    console.log('Portal initialized');
-}
+// 注意：initPortal函数现在在main.js中定义，这里不再重复定义
 
 // ============================================================
 
 // ====== 删除用户功能 ======
 function showDeleteUserModal() {
     closeUserMenu();
-    var data = loadData();
+    var data = window.loadData();
     
     if (data.users.length === 0) {
-        showToast('暂无用户');
-        return;
-    }
-    
-    var container = document.getElementById('delete-user-list');
-    if (!container) {
-        showToast('页面加载异常');
+        window.showToast('暂无用户');
         return;
     }
     
@@ -1737,7 +1787,7 @@ function showDeleteUserModal() {
         htmlContent += '</div>';
     });
     
-    container.innerHTML = htmlContent;
+    document.getElementById('delete-user-list').innerHTML = htmlContent;
     document.getElementById('delete-user-modal').classList.add('show');
 }
 
@@ -1756,9 +1806,9 @@ window.updateRecommendCard = updateRecommendCard;
 
 // 显示数据统计弹窗
 function showDataStatsModal() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user) {
-        showToast('请先登录');
+        window.showToast('请先登录');
         return;
     }
     
@@ -1769,7 +1819,7 @@ function showDataStatsModal() {
     // 计算统计数据
     const totalDays = Object.keys(studyDays).length;
     const today = new Date().toISOString().split('T')[0];
-    const todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
+    let todayStats = user.todayStats || { questions: 0, correct: 0, minutes: 0 };
     const accuracy = todayStats.questions > 0 ? Math.round(todayStats.correct / todayStats.questions * 100) : 0;
     
     const modal = document.getElementById('detail-modal');
@@ -1777,14 +1827,14 @@ function showDataStatsModal() {
     if (!modal || !content) return;
     
     modal.classList.add('show');
-    content.innerHTML = '<div class="modal-header" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"><div class="modal-title">📊 学习数据统计</div></div><div style="max-height:400px;overflow-y:auto;"><div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:16px;color:white;margin-bottom:16px;"><div style="font-size:14px;opacity:0.9;margin-bottom:8px;">今日学习</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;"><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.questions || 0) + '</div><div style="font-size:11px;opacity:0.8;">完成题目</div></div><div><div style="font-size:24px;font-weight:bold;">' + accuracy + '%</div><div style="font-size:11px;opacity:0.8;">正确率</div></div><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.minutes || 0) + '</div><div style="font-size:11px;opacity:0.8;">学习分钟</div></div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;"><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF6B6B;">' + wrongNotes.length + '</div><div style="font-size:11px;color:#666;">错题数量</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#43E97B;">' + totalDays + '</div><div style="font-size:11px;color:#666;">学习天数</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#667eea;">' + (stats.totalQuestions || 0) + '</div><div style="font-size:11px;color:#666;">累计题目</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF9A63;">' + (stats.totalMinutes || 0) + '</div><div style="font-size:11px;color:#666;">累计分钟</div></div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#333;">📈 历史正确率</div><div style="font-size:28px;font-weight:bold;color:#43E97B;">' + (stats.totalQuestions > 0 ? Math.round((stats.correctAnswers || 0) / stats.totalQuestions * 100) : 0) + '%</div><div style="font-size:11px;color:#999;margin-top:4px;">' + (stats.correctAnswers || 0) + ' / ' + (stats.totalQuestions || 0) + ' 题</div></div></div><button class="modal-close" onclick="closeModal()" style="margin-top:16px;width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>';
+    content.innerHTML = '<div class="modal-header" style="display:flex;align-items:center;gap:12px;margin-bottom:20px;"><div class="modal-title">📊 学习数据统计</div></div><div style="max-height:400px;overflow-y:auto;"><div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:12px;padding:16px;color:white;margin-bottom:16px;"><div style="font-size:14px;opacity:0.9;margin-bottom:8px;">今日学习</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;"><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.questions || 0) + '</div><div style="font-size:11px;opacity:0.8;">完成题目</div></div><div><div style="font-size:24px;font-weight:bold;">' + accuracy + '%</div><div style="font-size:11px;opacity:0.8;">正确率</div></div><div><div style="font-size:24px;font-weight:bold;">' + (todayStats.minutes || 0) + '</div><div style="font-size:11px;opacity:0.8;">学习分钟</div></div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;"><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF6B6B;">' + wrongNotes.length + '</div><div style="font-size:11px;color:#666;">错题数量</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#43E97B;">' + totalDays + '</div><div style="font-size:11px;color:#666;">学习天数</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#667eea;">' + (stats.totalQuestions || 0) + '</div><div style="font-size:11px;color:#666;">累计题目</div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:22px;font-weight:bold;color:#FF9A63;">' + (stats.totalMinutes || 0) + '</div><div style="font-size:11px;color:#666;">累计分钟</div></div></div><div style="background:#f8f9fa;border-radius:10px;padding:14px;"><div style="font-size:13px;font-weight:600;margin-bottom:8px;color:#333;">📈 历史正确率</div><div style="font-size:28px;font-weight:bold;color:#43E97B;">' + (stats.totalQuestions > 0 ? Math.round((stats.correctAnswers || 0) / stats.totalQuestions * 100) : 0) + '%</div><div style="font-size:11px;color:#999;margin-top:4px;">' + (stats.correctAnswers || 0) + ' / ' + (stats.totalQuestions || 0) + ' 题</div></div></div><button class="modal-close" onclick="window.closeModal()" style="margin-top:16px;width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>';
 }
 
 // 导出数据
 function exportData() {
-    const data = loadData();
+    const data = window.loadData();
     if (!data) {
-        showToast('导出失败，无数据');
+        window.showToast('导出失败，无数据');
         return;
     }
     const exportData = {
@@ -1811,7 +1861,7 @@ function exportData() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('数据导出成功！');
+    window.showToast('数据导出成功！');
 }
 
 // 导入数据
@@ -1829,11 +1879,11 @@ function handleImportFile(event) {
         try {
             const importedData = JSON.parse(e.target.result);
             if (!importedData || !importedData.users || !Array.isArray(importedData.users)) {
-                showToast('文件格式错误');
+                window.showToast('文件格式错误');
                 return;
             }
             if (!confirm('确定要导入数据吗？这将覆盖当前所有用户数据！')) return;
-            const currentData = loadData();
+            const currentData = window.loadData();
             importedData.users.forEach(function(u) {
                 const existingIdx = currentData.users.findIndex(function(cu) { return cu.id === u.id; });
                 if (existingIdx >= 0) currentData.users[existingIdx] = u;
@@ -1842,12 +1892,12 @@ function handleImportFile(event) {
             if (importedData.currentUser && currentData.users.find(u => u.id === importedData.currentUser)) {
                 currentData.currentUser = importedData.currentUser;
             }
-            saveData(currentData);
+            window.saveData(currentData);
             updateUI();
-            showToast('数据导入成功！');
+            window.showToast('数据导入成功！');
         } catch(err) {
             console.error('导入失败:', err);
-            showToast('导入失败：' + err.message);
+            window.showToast('导入失败：' + err.message);
         }
     };
     reader.readAsText(file);
@@ -1870,9 +1920,9 @@ window.drawRadarChart = drawRadarChart;
 
 // 清除当前用户数据
 function clearCurrentUserData() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user) {
-        showToast('请先登录');
+        window.showToast('请先登录');
         return;
     }
     
@@ -1892,7 +1942,7 @@ function clearCurrentUserData() {
     
     syncUserData(user);
     updateUI();
-    showToast('数据已清除');
+    window.showToast('数据已清除');
     closeUserMenu();
 }
 
@@ -1908,19 +1958,19 @@ function clearAllData() {
     localStorage.removeItem('self_drive_checkins');
     
     closeSettingsPanel();
-    showToast('所有数据已清除，页面即将刷新');
+    window.showToast('所有数据已清除，页面即将刷新');
     setTimeout(() => location.reload(), 1500);
 }
 
 // 同步数据（简化版 - 仅保存到本地）
 function syncData() {
-    const data = loadData();
+    const data = window.loadData();
     if (!data) {
-        showToast('无数据可同步');
+        window.showToast('无数据可同步');
         return;
     }
     
-    saveData(data);
+    window.saveData(data);
     const syncBtn = document.getElementById('sync-btn');
     const syncTimeEl = document.getElementById('last-sync-time');
     if (syncBtn) {
@@ -1936,7 +1986,7 @@ function syncData() {
         if (syncTimeEl) {
             syncTimeEl.textContent = '上次同步：' + new Date().toLocaleString();
         }
-        showToast('数据同步完成');
+        window.showToast('数据同步完成');
     }, 1000);
 }
 
@@ -1944,7 +1994,7 @@ function syncData() {
 function openApiConfigModal(type) {
     const modal = document.getElementById('api-config-modal');
     if (!modal) {
-        showToast('功能加载中，请稍后再试');
+        window.showToast('功能加载中，请稍后再试');
         return;
     }
     
@@ -1983,22 +2033,16 @@ function saveApiConfig() {
     }
     
     closeApiConfigModal();
-    showToast('配置已保存');
+    window.showToast('配置已保存');
 }
 
 // 显示用户切换模态框
 function showUserSwitchModal() {
     closeUserMenu();
-    const data = loadData();
+    const data = window.loadData();
     
     if (data.users.length === 0) {
-        showToast('暂无用户，请先创建');
-        return;
-    }
-    
-    const container = document.getElementById('user-switch-list');
-    if (!container) {
-        showToast('页面加载异常');
+        window.showToast('暂无用户，请先创建');
         return;
     }
     
@@ -2019,7 +2063,7 @@ function showUserSwitchModal() {
         htmlContent += '</div>';
     });
     
-    container.innerHTML = htmlContent;
+    document.getElementById('user-switch-list').innerHTML = htmlContent;
     document.getElementById('user-switch-modal').classList.add('show');
 }
 
@@ -2037,7 +2081,7 @@ function openAvatarModal() {
     const grid = document.getElementById('avatar-grid');
     
     if (!modal || !grid) {
-        showToast('头像功能加载中');
+        window.showToast('头像功能加载中');
         return;
     }
     
@@ -2059,11 +2103,106 @@ window.saveApiConfig = saveApiConfig;
 window.showUserSwitchModal = showUserSwitchModal;
 window.closeUserSwitchModal = closeUserSwitchModal;
 window.openAvatarModal = openAvatarModal;
+window.updateHomeUserInfo = updateHomeUserInfo;
+window.openFullscreenPage = openFullscreenPage;
+window.switchToUser = switchToUser;
+window.deleteUser = deleteUser;
+window.closeDetail = closeDetail;
+window.closeModal = closeModal;
+window.showToast = showToast;
+window.closeWelcomeModal = closeWelcomeModal;
+window.closeGoodbyeModal = closeGoodbyeModal;
+window.closeAboutModal = closeAboutModal;
+window.closeAvatarModal = closeAvatarModal;
+window.closeApiConfigModal = closeApiConfigModal;
+window.closeChangePasswordModal = closeChangePasswordModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.openChangePasswordModal = openChangePasswordModal;
+window.openDifficultyModal = openDifficultyModal;
+window.closeDifficultyModal = closeDifficultyModal;
+window.closeCreateUserModal = closeCreateUserModal;
+window.closeDeleteUserModal = closeDeleteUserModal;
+window.closeFullscreenPage = closeFullscreenPage;
+window.exitSystem = exitSystem;
+window.logoutAndReturn = logoutAndReturn;
+window.doExitSystem = doExitSystem;
+window.openAbout = openAbout;
+
+// ============================================================
+// V416: 按角色动态显示首页模块
+// ============================================================
+window._applyRoleModules = function() {
+    var STORAGE_KEY = 'cognitive_training_v137';
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var data = raw ? JSON.parse(raw) : null;
+    var role = 'student';
+    if (data && data.users) {
+        for (var i = 0; i < data.users.length; i++) {
+            if (data.users[i].id === data.currentUser) {
+                role = data.users[i].role || 'student';
+                break;
+            }
+        }
+    }
+
+    // 模块按角色分类：学生可见全部学习模块，家长看家长看板，管理员看管理看板
+    var studentModules = ['exam', 'mindmap', 'practice', 'method', 'thinking', 'podcast', 'video', 'library', 'selfdrive', 'pet', 'wrongbook', 'ai'];
+    var parentModules = ['parent-dashboard'];
+    var adminModules = ['admin-dashboard'];
+
+    var visibleModules, dashboardHTML;
+    if (role === 'parent') {
+        visibleModules = parentModules;
+    } else if (role === 'admin') {
+        visibleModules = adminModules;
+    } else {
+        visibleModules = studentModules;
+    }
+
+    // 控制 module-btn 的显隐
+    var moduleBtns = document.querySelectorAll('.module-btn');
+    moduleBtns.forEach(function(btn) {
+        var onclick = btn.getAttribute('onclick') || '';
+        var match = onclick.match(/openFullscreenPage\('(\w+)'\)/);
+        if (match) {
+            var mod = match[1];
+            btn.style.display = visibleModules.indexOf(mod) >= 0 ? '' : 'none';
+        }
+    });
+
+    // 家长/管理员看板：在 module-section 里动态插入看板内容
+    var grid = document.querySelector('.module-grid-unified');
+    if (!grid) return;
+
+    // 移除旧看板容器
+    var oldParent = document.getElementById('parent-dashboard-inline');
+    var oldAdmin = document.getElementById('admin-dashboard-inline');
+    if (oldParent) oldParent.remove();
+    if (oldAdmin) oldAdmin.remove();
+
+    if (role === 'parent' && window.renderParentDashboard) {
+        var parentDiv = document.createElement('div');
+        parentDiv.id = 'parent-dashboard-inline';
+        parentDiv.style.cssText = 'grid-column:1/-1;';
+        grid.appendChild(parentDiv);
+        window.renderParentDashboard(parentDiv);
+    } else if (role === 'admin' && window.renderAdminDashboard) {
+        var adminDiv = document.createElement('div');
+        adminDiv.id = 'admin-dashboard-inline';
+        adminDiv.style.cssText = 'grid-column:1/-1;';
+        grid.appendChild(adminDiv);
+        window.renderAdminDashboard(adminDiv);
+    }
+};
+
+// 页面加载完成后自动应用角色模块
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(window._applyRoleModules, 500); });
+} else {
+    setTimeout(window._applyRoleModules, 500);
+}
 
 // ============================================================
 // ES6 Module Export - V225 ES6改造
 // ============================================================
-export {
-    showPage,
-    closeModal
-};
+

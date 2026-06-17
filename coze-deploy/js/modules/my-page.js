@@ -31,20 +31,20 @@ window.toggleAccordion = function(id) {
 
 // 切换难度级别
 window.changeDifficulty = function(direction) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user) {
         let newDiff = user.difficulty + direction;
         newDiff = Math.max(1, Math.min(10, newDiff)); // 限制1-10级
         user.difficulty = newDiff;
         saveUserData(user);
         renderMyPage(document.getElementById('app-container'));
-        showToast('难度已调整为 Lv.' + newDiff);
+        window.showToast('难度已调整为 Lv.' + newDiff);
     }
 };
 
 // 更新每日训练次数
 window.updateDailyGoal = function(value) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user) {
         user.dailyGoal = parseInt(value);
         saveUserData(user);
@@ -56,18 +56,18 @@ window.toggleSound = function() {
     const enabled = localStorage.getItem('sound_enabled') !== 'false';
     localStorage.setItem('sound_enabled', (!enabled).toString());
     renderMyPage(document.getElementById('app-container'));
-    showToast(enabled ? '提示音已关闭' : '提示音已开启');
+    window.showToast(enabled ? '提示音已关闭' : '提示音已开启');
 };
 
 // 清空错题本
 window.clearWrongBook = function() {
     if (confirm('确定要清空所有错题吗？此操作不可恢复！')) {
-        const user = getCurrentUserData();
+        const user = window.getCurrentUserData();
         if (user) {
             user.wrongNotes = [];
             saveUserData(user);
             renderMyPage(document.getElementById('app-container'));
-            showToast('错题本已清空');
+            window.showToast('错题本已清空');
         }
     }
 };
@@ -76,7 +76,7 @@ window.clearWrongBook = function() {
 window.toggleDeepSeekMode = function(mode) {
     localStorage.setItem('deepseek_mode', mode);
     renderMyPage(document.getElementById('app-container'));
-    showToast(mode === 'fast' ? '已切换为快速模式' : '已切换为专家模式');
+    window.showToast(mode === 'fast' ? '已切换为快速模式' : '已切换为专家模式');
 };
 
 // 清除AI上下文
@@ -87,7 +87,7 @@ window.clearAIContext = function() {
     if (typeof clearDeepSeekConversation === 'function') {
         clearDeepSeekConversation();
     }
-    showToast('AI上下文已清除');
+    window.showToast('AI上下文已清除');
 };
 
 // 打开AI使用统计
@@ -95,7 +95,7 @@ window.openUsageStats = function() {
     if (window.UsageStatsModule) {
         window.UsageStatsModule.openUsageStatsModal();
     } else {
-        showToast('使用统计模块加载中，请稍后再试');
+        window.showToast('使用统计模块加载中，请稍后再试');
     }
 };
 
@@ -302,9 +302,12 @@ window.openDeepseekHelpModal = function() {
     modal.classList.add("show");
 };
 
-// 数据备份
+// V286 数据备份 - 使用DataSync模块
 window.doBackup = function() {
-    if (typeof exportData === 'function') {
+    if (typeof DataSync !== 'undefined' && DataSync.downloadBackup) {
+        DataSync.downloadBackup();
+        window.showToast('备份成功，文件已下载');
+    } else if (typeof exportData === 'function') {
         exportData();
     } else if (typeof LocalDB !== 'undefined' && LocalDB.exportAll) {
         LocalDB.exportAll().then(function(data) {
@@ -314,20 +317,55 @@ window.doBackup = function() {
             a.href = url;
             a.download = '认知训练备份_' + new Date().toISOString().split('T')[0] + '.json';
             a.click();
-            showToast('备份成功，文件已下载');
+            window.showToast('备份成功，文件已下载');
         });
     }
 };
 
-// 数据恢复
+// V286 数据恢复 - 使用DataSync模块
 window.doRestore = function() {
-    if (typeof LocalDB !== 'undefined' && LocalDB.importFromFile) {
-        LocalDB.importFromFile(function(result) {
-            if (result && result.success) {
-                showToast('数据恢复成功');
-                location.reload();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backupData = JSON.parse(e.target.result);
+                if (typeof DataSync !== 'undefined' && DataSync.importAll) {
+                    DataSync.importAll(backupData, function(result) {
+                        if (result && result.success) {
+                            window.showToast('数据恢复成功，共恢复 ' + result.success + ' 个模块');
+                            setTimeout(function() { location.reload(); }, 1000);
+                        } else {
+                            window.showToast('数据恢复失败');
+                        }
+                    });
+                } else {
+                    window.showToast('恢复模块未就绪，请稍后再试');
+                }
+            } catch (err) {
+                console.error('恢复失败:', err);
+                window.showToast('恢复失败：文件格式错误');
             }
-        });
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
+};
+
+// V286 数据同步 - 同步到IndexedDB
+window.syncData = function() {
+    if (typeof DataSync !== 'undefined' && DataSync.syncAllToIndexedDB) {
+        DataSync.syncAllToIndexedDB();
+        window.showToast('数据同步完成');
+    } else {
+        window.showToast('数据同步模块未就绪');
     }
 };
 
@@ -336,10 +374,10 @@ window.saveApiKey = function() {
     const key = document.getElementById('deepseek-api-key').value.trim();
     if (key) {
         localStorage.setItem('deepseek_api_key', key);
-        showToast('API Key已保存');
+        window.showToast('API Key已保存');
     } else {
         localStorage.removeItem('deepseek_api_key');
-        showToast('API Key已清除，将使用默认配置');
+        window.showToast('API Key已清除，将使用默认配置');
     }
 };
 
@@ -354,7 +392,7 @@ window.clearAppCache = function() {
                 });
             });
         }
-        showToast('缓存已清除，页面即将刷新');
+        window.showToast('缓存已清除，页面即将刷新');
         setTimeout(function() { location.reload(); }, 1500);
     }
 };
@@ -381,7 +419,7 @@ window.openCalculator = function() {
     openFullscreenPage('calculator');
 };
 
-// 打开记事本
+// 打开学习日记
 window.openNotepad = function() {
     openFullscreenPage('notepad');
 };
@@ -527,7 +565,24 @@ window.renderMyPage = function(container) {
         };
     }
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
+    
+    // V286 使用DataSync获取用户统计信息
+    let userStats = {
+        level: 1,
+        exp: 0,
+        totalTime: 0,
+        totalDays: 1
+    };
+    
+    if (typeof DataSync !== 'undefined' && DataSync.user) {
+        userStats = DataSync.user.getStats();
+        userStats.level = DataSync.user.getCurrent().level || 1;
+        userStats.exp = DataSync.user.getCurrent().exp || 0;
+        userStats.totalTime = DataSync.user.getCurrent().totalStudyTime || 0;
+        userStats.totalDays = DataSync.user.getCurrent().totalDays || 1;
+    }
+    
     const streakDays = calculateStreakDays();
     const wrongCount = (user && user.wrongNotes) ? user.wrongNotes.length : 0;
     const dailyGoal = user && user.dailyGoal ? user.dailyGoal : 8;
@@ -730,7 +785,7 @@ window.renderMyPage = function(container) {
     container.innerHTML = `
     <style>${myPageStyle}</style>
     <div style="padding:16px;">
-        <!-- 用户信息卡片 -->
+        <!-- 用户信息卡片 V286 -->
         <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:20px;color:white;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
                 <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;">
@@ -738,20 +793,28 @@ window.renderMyPage = function(container) {
                 </div>
                 <div>
                     <div style="font-size:18px;font-weight:600;">${user.name || '同学'}</div>
-                    <div style="font-size:12px;opacity:0.8;">连续学习 ${streakDays} 天</div>
+                    <div style="font-size:12px;opacity:0.8;">Lv.${userStats.level} | 经验 ${userStats.exp}/${userStats.level * 100}</div>
                 </div>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+            <!-- 经验条 V286 -->
+            <div style="background:rgba(255,255,255,0.2);border-radius:10px;height:6px;margin-bottom:12px;">
+                <div style="width:${Math.min(100, (userStats.exp / (userStats.level * 100)) * 100)}%;height:100%;background:white;border-radius:10px;transition:width 0.3s;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;">
                 <div>
-                    <div style="font-size:20px;font-weight:bold;">${user.totalTime || 0}</div>
+                    <div style="font-size:18px;font-weight:bold;">${userStats.totalDays}</div>
+                    <div style="font-size:11px;opacity:0.8;">学习天数</div>
+                </div>
+                <div>
+                    <div style="font-size:18px;font-weight:bold;">${userStats.totalTime}</div>
                     <div style="font-size:11px;opacity:0.8;">学习分钟</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;font-weight:bold;">${user.completedTasks || 0}</div>
-                    <div style="font-size:11px;opacity:0.8;">完成任务</div>
+                    <div style="font-size:18px;font-weight:bold;">${streakDays}</div>
+                    <div style="font-size:11px;opacity:0.8;">连续天数</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;font-weight:bold;">${(user.accuracy || 0).toFixed(0)}%</div>
+                    <div style="font-size:18px;font-weight:bold;">${(user.accuracy || 0).toFixed(0)}%</div>
                     <div style="font-size:11px;opacity:0.8;">正确率</div>
                 </div>
             </div>
@@ -766,6 +829,10 @@ window.renderMyPage = function(container) {
             <div class="quick-card" onclick="openFullscreenPage('selfdrive')">
                 <div class="quick-card-icon">💪</div>
                 <div class="quick-card-title">自驱力训练</div>
+            </div>
+            <div class="quick-card" onclick="openFullscreenPage('plan')">
+                <div class="quick-card-icon">📋</div>
+                <div class="quick-card-title">学习计划</div>
             </div>
             <div class="quick-card" onclick="openFullscreenPage('backup')">
                 <div class="quick-card-icon">💾</div>
@@ -829,9 +896,7 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="doRestore()">
                         <span>📥</span> 导入恢复
                     </button>
-                    <button class="foldable-btn" onclick="syncData()">
-                        <span>🔄</span> 数据同步
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -854,7 +919,7 @@ window.renderMyPage = function(container) {
                         <span>🔢</span> 计算器
                     </button>
                     <button class="foldable-btn" onclick="openFullscreenPage('notepad')">
-                        <span>📝</span> 记事本
+                        <span>📝</span> 学习日记
                     </button>
                     <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')">
                         <span>📊</span> AI使用统计
@@ -910,6 +975,12 @@ window.renderMyPage = function(container) {
                         </div>
                         <div class="toggle-switch ${soundEnabled ? 'active' : ''}" onclick="toggleSound()"></div>
                     </div>
+                    <button class="foldable-btn" onclick="window._showRoleSwitchModal && window._showRoleSwitchModal()">
+                        <span>🎭</span> 角色切换
+                    </button>
+                    <button class="foldable-btn" onclick="window.CloudSync && window.CloudSync.showPhoneBindModal && window.CloudSync.showPhoneBindModal()">
+                        <span>📱</span> 手机号绑定
+                    </button>
                 </div>
             </div>
         </div>
@@ -1011,32 +1082,75 @@ function openBackupPage() {
 console.log('✅ V199 my-page.js 已加载 - 2x2快捷功能卡片 + 5个折叠分区');
 
 // ============================================================
+// 角色切换弹窗
+// ============================================================
+window._showRoleSwitchModal = function() {
+    var STORAGE_KEY = 'cognitive_training_v137';
+    var existing = document.getElementById('role-switch-modal');
+    if (existing) existing.remove();
+
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var data = raw ? JSON.parse(raw) : null;
+    var currentUser = null;
+    if (data && data.users) {
+        for (var i = 0; i < data.users.length; i++) {
+            if (data.users[i].id === data.currentUser) {
+                currentUser = data.users[i];
+                break;
+            }
+        }
+    }
+    var currentRole = currentUser ? (currentUser.role || 'student') : 'student';
+
+    var roles = [
+        { key: 'student', icon: '🧒', label: '学生', desc: '学习训练、错题本、AI精准练' },
+        { key: 'parent',  icon: '👨‍👩‍👧', label: '家长', desc: '学习监控、时间管控、鼓励留言' },
+        { key: 'admin',   icon: '🛡️', label: '管理员', desc: '用户管理、系统设置、数据统计' }
+    ];
+
+    var roleCards = roles.map(function(r) {
+        var isActive = r.key === currentRole;
+        return '<div onclick="window._doSwitchRole(\'' + r.key + '\')" style="display:flex;align-items:center;gap:12px;padding:14px;border:2px solid ' + (isActive ? '#667eea' : '#eee') + ';border-radius:12px;margin-bottom:8px;cursor:pointer;background:' + (isActive ? '#f0f0ff' : 'white') + ';">' +
+            '<div style="font-size:28px;">' + r.icon + '</div>' +
+            '<div style="flex:1;">' +
+                '<div style="font-size:15px;font-weight:600;color:#333;">' + r.label + (isActive ? ' <span style="color:#667eea;font-size:12px;">当前</span>' : '') + '</div>' +
+                '<div style="font-size:12px;color:#999;">' + r.desc + '</div>' +
+            '</div>' +
+        '</div>';
+    }).join('');
+
+    var modal = document.createElement('div');
+    modal.id = 'role-switch-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = '<div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;">' +
+        '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:4px;">🎭 角色切换</div>' +
+        '<div style="font-size:13px;color:#666;margin-bottom:16px;">切换后首页模块将相应调整</div>' +
+        roleCards +
+        '<button onclick="document.getElementById(\'role-switch-modal\').remove()" style="width:100%;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:4px;">取消</button>' +
+    '</div>';
+    document.body.appendChild(modal);
+    modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+};
+
+window._doSwitchRole = function(role) {
+    var STORAGE_KEY = 'cognitive_training_v137';
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var data = raw ? JSON.parse(raw) : null;
+    if (!data || !data.users) return;
+    for (var i = 0; i < data.users.length; i++) {
+        if (data.users[i].id === data.currentUser) {
+            data.users[i].role = role;
+            break;
+        }
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    var existing = document.getElementById('role-switch-modal');
+    if (existing) existing.remove();
+    window.showToast && window.showToast('已切换为' + (role === 'student' ? '学生' : role === 'parent' ? '家长' : '管理员') + '模式');
+    // 角色切换后刷新首页模块显示
+    if (window._applyRoleModules) window._applyRoleModules();
+};
+
+// ============================================================
 // ES6 Module 导出
 // ============================================================
-export {
-    accordionState,
-    toggleAccordion,
-    changeDifficulty,
-    updateDailyGoal,
-    toggleSound,
-    clearWrongBook,
-    toggleDeepSeekMode,
-    clearAIContext,
-    openUsageStats,
-    renderUsageStats,
-    openDeepseekHelpModal,
-    doBackup,
-    doRestore,
-    saveApiKey,
-    clearAppCache,
-    showAbout,
-    openSelfDrivePage,
-    openPomodoro,
-    openCalculator,
-    openNotepad,
-    openWeeklyReview,
-    openProgressChart,
-    renderMyPage,
-    openBackupPage,
-    renderBackupManager
-};
