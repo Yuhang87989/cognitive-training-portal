@@ -56,7 +56,7 @@ window.clearAvatarChatHistory = clearAvatarChatHistory;
 
 // 基础API调用（带历史上下文）
 async function callDeepSeek(question) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || 'sk-8413f72a3f084fb08c84389555a76d37';
+    const apiKey = localStorage.getItem('deepseek_api_key') || '';
     
     // 构建消息列表：system + 历史消息 + 当前消息
     var messages = [
@@ -83,7 +83,7 @@ async function callDeepSeek(question) {
                 'Authorization': 'Bearer ' + apiKey
             },
             body: JSON.stringify({
-                model: 'deepseek-chat',
+                model: 'deepseek-v4-flash',
                 messages: messages
             })
         });
@@ -103,7 +103,7 @@ async function callDeepSeek(question) {
 
 // 多模态API调用（支持图片）
 async function callDeepSeekVision(text, imageBase64) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || 'sk-8413f72a3f084fb08c84389555a76d37';
+    const apiKey = localStorage.getItem('deepseek_api_key') || '';
     
     const messages = [
         { role: 'system', content: '你是专业的学习助手，擅长解答各学科问题，也能分析图片中的题目。' }
@@ -129,7 +129,7 @@ async function callDeepSeekVision(text, imageBase64) {
                 'Authorization': 'Bearer ' + apiKey
             },
             body: JSON.stringify({
-                model: 'deepseek-chat',
+                model: 'deepseek-v4-flash',
                 messages: messages
             })
         });

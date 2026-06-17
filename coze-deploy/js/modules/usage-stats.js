@@ -88,7 +88,7 @@ var UsageStatsModule = {
    */
   recordUsage: function(inputTokens, outputTokens, questionSummary, model) {
     if (questionSummary === undefined) questionSummary = '';
-    if (model === undefined) model = 'deepseek-chat';
+    if (model === undefined) model = 'deepseek-v4-flash';
     
     var record = {
       id: Date.now().toString(36) + Math.random().toString(36).substr(2),

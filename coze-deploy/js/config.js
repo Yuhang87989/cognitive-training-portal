@@ -3,9 +3,9 @@
 // V177修改: DeepSeek文字/语音，Tesseract.js本地OCR+DeepSeek分析图片
 
 // DeepSeek API配置
-const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
+const DEEPSEEK_API_KEY = ''; // 已迁移到SCF代理，前端不再需要Key
 const DEEPSEEK_API_URL = 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
-const DEEPSEEK_MODEL = 'deepseek-chat';
+const DEEPSEEK_MODEL = 'deepseek-v4-flash';
 
 // 存储键名
 const STORAGE_KEY = 'cognitive_training_v137';
