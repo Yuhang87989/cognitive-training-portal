@@ -4,7 +4,7 @@
 
 // DeepSeek API
 export const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
-export const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+export const DEEPSEEK_API_URL = 'http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
 export const DEEPSEEK_MODEL = 'deepseek-chat';
 
 // 存储配置

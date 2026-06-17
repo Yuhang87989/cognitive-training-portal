@@ -76,7 +76,7 @@ async function callDeepSeek(question) {
     messages.push({ role: 'user', content: question });
     
     try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        const response = await fetch('http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ async function callDeepSeekVision(text, imageBase64) {
     }
     
     try {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+        const response = await fetch('http://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
