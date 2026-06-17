@@ -795,20 +795,25 @@ function renderDeepseek(contentEl) {
 window.renderDeepseek = renderDeepseek;
 
 function updateDeepSeekBalance() {
-    var apiKey = (typeof DEEPSEEK_API_KEY !== 'undefined' && DEEPSEEK_API_KEY) ? DEEPSEEK_API_KEY : 
-                 localStorage.getItem('deepseek_api_key') || '';
-    if (!apiKey) {
-        var user = getCurrentUserData();
-        apiKey = user && user.deepseekApiKey ? user.deepseekApiKey : '';
+    var apiKey = '';
+    // 优先使用用户自己配置的Key查余额
+    try { var cfg = JSON.parse(localStorage.getItem('api_config') || '{}'); if (cfg.deepseek) apiKey = cfg.deepseek; } catch(e) {}
+    if (!apiKey) apiKey = localStorage.getItem('deepseek_api_key') || '';
+    if (!apiKey) { try { var user = getCurrentUserData(); if (user && user.deepseekApiKey) apiKey = user.deepseekApiKey; } catch(e) {} }
+    
+    var balanceUrl;
+    var fetchOptions = {};
+    if (apiKey) {
+        // 用户配了自己的Key，直接查DeepSeek
+        balanceUrl = 'https://api.deepseek.com/user/balance';
+        fetchOptions = { headers: { 'Authorization': 'Bearer ' + apiKey } };
+    } else {
+        // 没配Key，走SCF代理查公共Key余额
+        balanceUrl = 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/user/balance';
+        fetchOptions = {};
     }
-    if (!apiKey) {
-        var el = document.getElementById('ds-balance');
-        if (el) el.textContent = '未配置';
-        return;
-    }
-    fetch('https://api.deepseek.com/user/balance', {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
-    }).then(function(r) { return r.json(); }).then(function(data) {
+    
+    fetch(balanceUrl, fetchOptions).then(function(r) { return r.json(); }).then(function(data) {
         if (data && data.balance_infos && data.balance_infos.length > 0) {
             var bal = data.balance_infos[0].total_balance || '0';
             localStorage.setItem('deepseek_balance', bal);
@@ -820,6 +825,9 @@ function updateDeepSeekBalance() {
         if (cached) {
             var el = document.getElementById('ds-balance');
             if (el) el.textContent = '¥' + parseFloat(cached).toFixed(2);
+        } else {
+            var el = document.getElementById('ds-balance');
+            if (el) el.textContent = '查询失败';
         }
     });
 }
