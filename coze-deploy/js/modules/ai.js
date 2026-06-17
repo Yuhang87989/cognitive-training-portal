@@ -56,7 +56,7 @@ window.clearAvatarChatHistory = clearAvatarChatHistory;
 
 // 基础API调用（带历史上下文）
 async function callDeepSeek(question) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || '';
+    const apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '');
     
     // 构建消息列表：system + 历史消息 + 当前消息
     var messages = [
@@ -80,7 +80,7 @@ async function callDeepSeek(question) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey
+                // Authorization由SCF代理处理，前端不传Key
             },
             body: JSON.stringify({
                 model: 'deepseek-v4-flash',
@@ -103,7 +103,7 @@ async function callDeepSeek(question) {
 
 // 多模态API调用（支持图片）
 async function callDeepSeekVision(text, imageBase64) {
-    const apiKey = localStorage.getItem('deepseek_api_key') || '';
+    const apiKey = localStorage.getItem('deepseek_api_key') || (typeof DEEPSEEK_API_KEY !== 'undefined' ? DEEPSEEK_API_KEY : '');
     
     const messages = [
         { role: 'system', content: '你是专业的学习助手，擅长解答各学科问题，也能分析图片中的题目。' }
@@ -126,7 +126,7 @@ async function callDeepSeekVision(text, imageBase64) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + apiKey
+                // Authorization由SCF代理处理，前端不传Key
             },
             body: JSON.stringify({
                 model: 'deepseek-v4-flash',

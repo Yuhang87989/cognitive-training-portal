@@ -3,7 +3,8 @@
 // V177修改: DeepSeek文字/语音，Tesseract.js本地OCR+DeepSeek分析图片
 
 // DeepSeek API配置
-const DEEPSEEK_API_KEY = ''; // 已迁移到Cloudflare Worker，前端不再需要Key
+// 默认使用腾讯云SCF代理（免配置，每日50次），用户也可输入自己的Key（无限次）
+const DEEPSEEK_API_KEY = ''; // 留空=走SCF代理；填入用户自己的Key则直连DeepSeek
 const DEEPSEEK_API_URL = 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
 // DeepSeek V4 Flash - 高性价比快速模型
 const DEEPSEEK_MODEL = 'deepseek-v4-flash';

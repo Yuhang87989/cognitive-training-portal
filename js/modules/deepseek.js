@@ -566,21 +566,32 @@ async function callDeepSeekAPI(messages, temperature) {
         var user = window.getCurrentUserData();
         apiKey = user && user.deepseekApiKey ? user.deepseekApiKey : '';
     }
-    // 每日API调用上限防护（防止Key被滥用）
-    var DAILY_API_LIMIT = 50;
-    var today = new Date().toISOString().slice(0,10);
-    var dailyUsage = JSON.parse(localStorage.getItem('ds_daily_usage') || '{}');
-    if (dailyUsage.date !== today) { dailyUsage = {date: today, count: 0}; }
-    if (dailyUsage.count >= DAILY_API_LIMIT) {
-        return {success: false, message: '今日AI调用已达上限(' + DAILY_API_LIMIT + '次)，请明天再试'};
-    }
-    dailyUsage.count++;
-    localStorage.setItem('ds_daily_usage', JSON.stringify(dailyUsage));
     
-    var apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
+    // 有自己的Key → 直连DeepSeek，无限次；无Key → 走SCF代理，每日50次
+    var useOwnKey = apiKey && apiKey.trim().length > 0;
+    var apiUrl, model;
+    
+    if (useOwnKey) {
+        // 用户自己的Key：直连DeepSeek官方API，不限次数
+        apiUrl = 'https://api.deepseek.com/v1/chat/completions';
+        model = (typeof DEEPSEEK_MODEL !== 'undefined' && DEEPSEEK_MODEL) ? DEEPSEEK_MODEL : 'deepseek-v4-flash';
+    } else {
+        // 无Key：走SCF代理，每日50次上限
+        apiUrl = (typeof DEEPSEEK_API_URL !== 'undefined' && DEEPSEEK_API_URL) ? DEEPSEEK_API_URL : 
                  'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
-    var model = (typeof DEEPSEEK_MODEL !== 'undefined' && DEEPSEEK_MODEL) ? DEEPSEEK_MODEL : 
+        model = (typeof DEEPSEEK_MODEL !== 'undefined' && DEEPSEEK_MODEL) ? DEEPSEEK_MODEL : 
                 'deepseek-v4-flash';
+        // 每日API调用上限防护（仅SCF代理模式）
+        var DAILY_API_LIMIT = 50;
+        var today = new Date().toISOString().slice(0,10);
+        var dailyUsage = JSON.parse(localStorage.getItem('ds_daily_usage') || '{}');
+        if (dailyUsage.date !== today) { dailyUsage = {date: today, count: 0}; }
+        if (dailyUsage.count >= DAILY_API_LIMIT) {
+            return {success: false, message: '今日AI调用已达上限(' + DAILY_API_LIMIT + '次)，明天再试或输入自己的API Key无限使用'};
+        }
+        dailyUsage.count++;
+        localStorage.setItem('ds_daily_usage', JSON.stringify(dailyUsage));
+    }
     
     var systemPrompt = '';
     if (typeof window.deepseekMode !== 'undefined') {
@@ -594,9 +605,13 @@ async function callDeepSeekAPI(messages, temperature) {
     fullMessages = fullMessages.concat(messages);
     
     try {
+        var headers = { 'Content-Type': 'application/json' };
+        if (useOwnKey) {
+            headers['Authorization'] = 'Bearer ' + apiKey;
+        }
         var response = await fetch(apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify({ model: model, messages: fullMessages, temperature: temperature || 0.7, max_tokens: 4096 })
         });
         
@@ -1469,11 +1484,12 @@ function openApiConfigModalBridge(type) {
     var modal = document.createElement('div');
     modal.style.cssText = 'background:white;border-radius:16px;padding:24px;width:90%;max-width:360px;max-height:80vh;overflow-y:auto;';
     modal.innerHTML = '<div style="font-size:18px;font-weight:600;margin-bottom:16px;">⚙️ API配置</div>' +
+        '<div style="background:#e8f5e8;padding:12px;border-radius:8px;margin-bottom:16px;font-size:12px;color:#333;">💡 留空=使用内置代理（每日50次免费）；填入自己的Key=无限次直连DeepSeek</div>' +
         '<div style="margin-bottom:16px;"><div style="font-size:14px;font-weight:600;margin-bottom:8px;">🤖 DeepSeek API</div>' +
         '<div style="font-size:12px;color:#999;margin-bottom:8px;">当前: '+mk+'</div>' +
-        '<input id="ds-cfg-key" type="password" placeholder="输入DeepSeek API Key" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box;">' +
+        '<input id="ds-cfg-key" type="password" placeholder="输入DeepSeek API Key（留空用内置代理）" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box;">' +
         '<button onclick="saveDsApiKey()" style="width:100%;margin-top:8px;padding:10px;background:#4d6bfe;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;">保存</button></div>' +
-        '<div style="margin-bottom:16px;"><div style="font-size:14px;font-weight:600;margin-bottom:8px;">🔥 SiliconFlow API</div>' +
+        '<div style="margin-bottom:16px;"><div style="font-size:14px;font-weight:600;margin-bottom:8px;">🔥 SiliconFlow API（图片识别）</div>' +
         '<div style="font-size:12px;color:#999;margin-bottom:8px;">当前: '+ms+'</div>' +
         '<input id="sf-cfg-key" type="password" placeholder="输入SiliconFlow API Key" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box;">' +
         '<button onclick="saveSfApiKey()" style="width:100%;margin-top:8px;padding:10px;background:#ff6b35;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;">保存</button></div>' +

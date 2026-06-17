@@ -3,9 +3,13 @@
 // V177修改: DeepSeek文字/语音，Tesseract.js本地OCR+DeepSeek分析图片
 
 // DeepSeek API配置
-const DEEPSEEK_API_KEY = ''; // 已迁移到SCF代理，前端不再需要Key
+// 默认使用腾讯云SCF代理（免配置，每日50次），用户也可输入自己的Key（无限次）
+const DEEPSEEK_API_KEY = ''; // 留空=走SCF代理；填入用户自己的Key则直连DeepSeek
 const DEEPSEEK_API_URL = 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
+// DeepSeek V4 Flash - 高性价比快速模型
 const DEEPSEEK_MODEL = 'deepseek-v4-flash';
+// DeepSeek V4 Pro - 高质量深度模型
+const DEEPSEEK_PRO_MODEL = 'deepseek-v4-pro';
 
 // 存储键名
 const STORAGE_KEY = 'cognitive_training_v137';
@@ -53,20 +57,3 @@ window.CURRENT_VISION_API = 'siliconflow';  // 默认使用硅基流动
 window.QUESTIONS_PER_PAGE = 5;
 window.currentMethodPage = {};
 window.currentThinkingPage = {};
-
-// ============================================================
-// ES6 Module Export - V225 ES6改造
-// ============================================================
-export {
-    DEEPSEEK_API_KEY,
-    DEEPSEEK_API_URL,
-    DEEPSEEK_MODEL,
-    STORAGE_KEY,
-    API_CONFIG_KEY,
-    OLD_KEYS,
-    AVATAR_LIST,
-    VISION_SILICONFLOW_KEY,
-    VISION_SILICONFLOW_URL,
-    VISION_SILICONFLOW_MODEL,
-    VISION_DEEPSEEK_ENABLED
-};

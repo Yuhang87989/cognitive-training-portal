@@ -119,180 +119,75 @@ window.openDeepseekHelpModal = function() {
     modal.innerHTML = `
         <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
             <div class="modal-header">
-                <h3>🔮 DeepSeek 使用帮助</h3>
+                <h3>🤖 AI 助手使用帮助</h3>
                 <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
             </div>
             <div class="modal-body" style="padding: 20px;">
-                <h4 style="color: #667eea; margin-bottom: 10px;">📋 目录</h4>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <ul style="margin: 0; padding-left: 20px;">
-                        <li><a href="#mode-diff" style="color: #667eea;">快速模式 vs 专家模式</a></li>
-                        <li><a href="#token-explain" style="color: #667eea;">Token 消耗说明</a></li>
-                        <li><a href="#api-config" style="color: #667eea;">API Key 配置方法</a></li>
-                    </ul>
+                <div style="background: linear-gradient(135deg, #667eea15, #764ba215); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 15px;"><strong>✨ 无需配置，开箱即用！</strong></p>
+                    <p style="margin: 8px 0 0; font-size: 13px; color: #666;">AI助手已内置智能代理，直接提问即可使用，无需自行申请API Key。</p>
                 </div>
-                
-                <div id="mode-diff" style="margin-bottom: 25px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">⚡ 快速模式 vs 专家模式</h4>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                        <thead>
-                            <tr style="background: #667eea; color: white;">
-                                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">特性</th>
-                                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">快速模式</th>
-                                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">专家模式</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;"><strong>模型</strong></td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">DeepSeek Chat</td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">DeepSeek Reasoner</td>
-                            </tr>
-                            <tr style="background: #f8f9fa;">
-                                <td style="padding: 8px; border: 1px solid #ddd;"><strong>响应速度</strong></td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">🚀 快速 (~3-5秒)</td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">🐢 较慢 (~10-20秒)</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;"><strong>推理能力</strong></td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐</td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
-                            </tr>
-                            <tr style="background: #f8f9fa;">
-                                <td style="padding: 8px; border: 1px solid #ddd;"><strong>Token消耗</strong></td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">💰 较低</td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">💰💰 较高</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px; border: 1px solid #ddd;"><strong>适用场景</strong></td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">日常问答、简单解释</td>
-                                <td style="padding: 8px; border: 1px solid #ddd;">复杂题目、深度分析</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <h4 style="color: #667eea; margin-bottom: 10px;">⚡ 两种AI模式</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px;">
+                    <thead>
+                        <tr style="background: #667eea; color: white;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">特性</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">⚡ 快速模式</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">🧠 专家模式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;"><strong>模型</strong></td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">DeepSeek V4</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">DeepSeek Reasoner</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 8px; border: 1px solid #ddd;"><strong>速度</strong></td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">🚀 快 (~3-5秒)</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">🐢 较慢 (~10-30秒)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;"><strong>推理深度</strong></td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">⭐⭐⭐⭐⭐</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 8px; border: 1px solid #ddd;"><strong>适用场景</strong></td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">日常问答、简单解释</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">复杂题目、深度推理</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="color: #667eea; margin-bottom: 10px;">💰 使用额度</h4>
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin-bottom: 12px;">
+                    <p style="margin: 0 0 8px;"><strong>默认模式（免配置）：每日50次</strong></p>
+                    <p style="margin: 0; font-size: 13px; color: #666;">系统内置腾讯云代理，直接提问即可使用，每天50次免费额度。</p>
                 </div>
-                
-                <div id="token-explain" style="margin-bottom: 25px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">💰 Token 消耗说明</h4>
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-                        <p style="margin: 0 0 10px 0;"><strong>什么是 Token？</strong></p>
-                        <p style="margin: 0;">Token 是 AI 模型处理文本的基本单位。中文中，大约 1-2 个汉字 = 1 个 Token。</p>
-                    </div>
-                    <div style="margin-top: 15px;">
-                        <p style="margin-bottom: 8px;"><strong>计费标准：</strong></p>
-                        <ul style="margin: 0; padding-left: 20px;">
-                            <li><strong>输入</strong>：¥1.00 / 百万 Token</li>
-                            <li><strong>输出</strong>：¥2.00 / 百万 Token</li>
-                            <li><strong>一次对话</strong>：通常消耗 500-2000 Token（约 ¥0.001-¥0.004）</li>
-                        </ul>
-                    </div>
-                    <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8; margin-top: 15px;">
-                        <p style="margin: 0;"><strong>💡 省钱小贴士：</strong> 对话越长，Token 消耗越多。适时开启新对话可以节省费用。</p>
-                    </div>
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-bottom: 20px;">
+                    <p style="margin: 0 0 8px;"><strong>🔑 自己有Key？无限次使用</strong></p>
+                    <p style="margin: 0; font-size: 13px; color: #666;">如果你已注册 <a href="https://platform.deepseek.com/" target="_blank" style="color: #667eea;">DeepSeek开放平台</a> 并获取了API Key，在AI聊天页点击「设置」输入Key即可无限次使用，不走代理额度。</p>
                 </div>
-                
-                <div id="api-config">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">🔑 API Key 配置方法</h4>
-                
-                <div id="how-to-use" style="margin-bottom: 25px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">💬 如何使用 DeepSeek 提问</h4>
-                    <ol style="margin: 0; padding-left: 20px;">
-                        <li style="margin-bottom: 10px;">
-                            <strong>打开 DeepSeek 聊天</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">从首页或「我的」页面进入 DeepSeek AI 聊天页面</p>
-                        </li>
-                        <li style="margin-bottom: 10px;">
-                            <strong>选择模式</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">
-                                • 「快速模式」：适合日常问答、简单解释，响应快，消耗少<br>
-                                • 「专家模式」：适合复杂题目、深度分析，思考更深入，答案更详细
-                            </p>
-                        </li>
-                        <li style="margin-bottom: 10px;">
-                            <strong>输入问题</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">在底部输入框输入你的问题，支持中英文提问</p>
-                        </li>
-                        <li style="margin-bottom: 10px;">
-                            <strong>发送消息</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">点击发送按钮或按回车键发送，等待 AI 回复</p>
-                        </li>
-                        <li>
-                            <strong>继续对话</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">可以基于之前的回复继续追问，AI 会记住上下文</p>
-                        </li>
-                    </ol>
-                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-top: 15px;">
-                        <p style="margin: 0;"><strong>💡 使用提示：</strong> 描述问题越详细，得到的答案越准确。例如："请帮我详细讲解一下勾股定理的推导过程" 比 "什么是勾股定理" 效果更好。</p>
-                    </div>
+
+                <h4 style="color: #667eea; margin-bottom: 10px;">💬 如何提问更有效</h4>
+                <div style="margin-bottom: 12px;">
+                    <p style="font-size: 14px;"><strong>❌ 不好的提问：</strong>"什么是相对论？"</p>
+                    <p style="font-size: 14px;"><strong>✅ 好的提问：</strong>"我是初三学生，请用通俗易懂的语言解释相对论的基本概念，举1-2个生活中的例子"</p>
                 </div>
-                    <ol style="margin: 0; padding-left: 20px;">
-                        <li style="margin-bottom: 10px;">
-                            <strong>获取 API Key</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">访问 <a href="https://platform.deepseek.com/" target="_blank" style="color: #667eea;">DeepSeek 开放平台</a>，注册登录后在「API Keys」页面创建新的 Key</p>
-                        </li>
-                        <li style="margin-bottom: 10px;">
-                            <strong>充值余额</strong>
-                            <p style="margin: 0; font-size: 14px; color: #666;">在「费用中心」充值，最低 ¥10 起充</p>
-                        </li>
-                        <li style="margin-bottom: 10px;">
-                            <strong>配置到应用</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">在 DeepSeek 聊天页面点击「设置」按钮，输入你的 API Key</p>
-                        </li>
-                        <li>
-                            <strong>验证配置</strong>
-                            <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">发送一句简单的问候，如"你好"，如果能正常回复则配置成功</p>
-                        </li>
-                    </ol>
+                <div style="background: #d1ecf1; padding: 12px; border-radius: 8px; border-left: 4px solid #17a2b8; margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 13px;"><strong>💡 技巧：</strong>说清年级+具体问题+期望的回答方式，效果最好。</p>
+                </div>
+
+                <h4 style="color: #667eea; margin-bottom: 10px;">📸 图片识别</h4>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">点击输入框旁的📷按钮，可以拍照或上传题目图片，AI会自动识别并解答。</p>
+
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <p style="margin: 0; font-size: 13px; color: #999;">🔒 安全说明：AI服务由腾讯云SCF安全代理，密钥存储在服务端，前端不暴露，保障账户安全。</p>
                 </div>
             </div>
             <div class="modal-footer" style="text-align: center;">
-                
-                <div id="prompt-tips" style="margin-bottom: 25px;">
-                    <h4 style="color: #667eea; margin-bottom: 10px;">💡 高级提问技巧</h4>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <h5 style="color: #333; margin-bottom: 8px;">🎯 原则1：描述越详细，答案越精准</h5>
-                        <p style="margin: 0; font-size: 14px; color: #666;">
-                            <strong>❌ 不好的提问：</strong>"什么是相对论？"<br>
-                            <strong>✅ 好的提问：</strong>"请用通俗易懂的语言解释爱因斯坦的相对论，假设我是初中生，尽量少用公式"
-                        </p>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <h5 style="color: #333; margin-bottom: 8px;">📝 原则2：明确输出格式</h5>
-                        <p style="margin: 0; font-size: 14px; color: #666;">
-                            告诉AI你想要什么格式的回答：分点列出、表格形式、思维导图大纲、对话体、故事化表述等
-                        </p>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <h5 style="color: #333; margin-bottom: 8px;">🎭 原则3：角色扮演法</h5>
-                        <p style="margin: 0; font-size: 14px; color: #666;">
-                            让AI扮演特定角色："作为一名高中数学老师，请用5分钟的试讲风格讲解三角函数的应用"
-                        </p>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <h5 style="color: #333; margin-bottom: 8px;">🔄 原则4：迭代优化</h5>
-                        <p style="margin: 0; font-size: 14px; color: #666;">
-                            第一次回答不满意时，可以继续追问："太复杂了，请再简化一下"、"能不能举个具体的例子？"、"补充XX方面的内容"
-                        </p>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <h5 style="color: #333; margin-bottom: 8px;">📐 原则5：结构化提问模板</h5>
-                        <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; color: #666;">
-                            <p style="margin: 0 0 8px 0;"><strong>【背景】</strong>我是XX年级学生，正在学习...</p>
-                            <p style="margin: 0 0 8px 0;"><strong>【问题】</strong>我不理解...</p>
-                            <p style="margin: 0 0 8px 0;"><strong>【要求】</strong>请用XX风格讲解，包含XX个例子，字数控制在...</p>
-                            <p style="margin: 0;"><strong>【输出格式】</strong>分3段回答，每段不超过...</p>
-                        </div>
-                    </div>
-                    
-                    <div style="background: linear-gradient(135deg, #667eea10, #764ba210); padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
-                        <p style="margin: 0;"><strong>✨ 记住：</strong> AI 的回答质量取决于你的提问质量。花 10 秒钟把问题说清楚，可以节省几分钟的反复沟通！</p>
-                    </div>
-                </div>
                 <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">我知道了</button>
             </div>
         </div>
@@ -399,7 +294,8 @@ window.clearAppCache = function() {
 
 // 显示关于信息
 window.showAbout = function() {
-    alert('认知训练门户 V199\n\n一个专注于提升认知能力的训练平台。\n包含多种思维训练游戏、AI辅导、错题管理等功能。\n\n© 2024 认知训练团队');
+    var ver = (typeof SITE_VERSION !== 'undefined') ? SITE_VERSION : 'unknown';
+    alert('认知训练门户 V' + ver + '\n\n一个专注于提升认知能力的训练平台。\n包含多种思维训练游戏、AI辅导、错题管理等功能。\n\n© 2025 认知训练团队');
 };
 
 // 打开设置页面
