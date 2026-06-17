@@ -385,28 +385,6 @@ function openFullscreenPage(module) {
     var contentEl = document.getElementById('fullscreen-content');
     if (!container || !titleEl || !contentEl) return;
     
-    // V416: 懒加载 - 如果模块JS未加载则先加载
-    if (window._loadLazyModule && window._lazyModules && window._lazyModules[module]) {
-        if (!window._loadedLazyModules || !window._loadedLazyModules.has(module)) {
-            contentEl.innerHTML = '<div style="padding:40px;text-align:center;color:#667eea;"><div style="font-size:32px;margin-bottom:12px;">⏳</div><div>加载中...</div></div>';
-            container.classList.add('active');
-            var moduleTitles = {
-                'ai': '🎯 AI精准练', 'practice': '📚 母题训练', 'method': '💡 学霸方法',
-                'thinking': '🧩 思维训练', 'podcast': '🎧 播客课堂', 'video': '📺 视频课堂',
-                'games': '🎮 训练游戏', 'deepseek': '🤖 DeepSeek', 'wrongbook': '📒 错题本',
-                'exam': '📝 模拟考试', 'library': '📚 学习图书馆', 'mindmap': '🧠 思维导图',
-                'map': '🧠 认知地图', 'selfdrive': '💪 自驱力训练', 'notepad': '📝 学习日记',
-                'calculator': '🧮 计算器', 'plan': '📅 学习计划', 'paper-tool': '📝 试卷工具',
-                'parent-dashboard': '👨‍👩‍👧 家长看板', 'admin-dashboard': '🛡️ 管理员看板'
-            };
-            titleEl.textContent = moduleTitles[module] || module;
-            window._loadLazyModule(module, function() {
-                _doRenderModule(module, contentEl);
-            });
-            return;
-        }
-    }
-    
     var moduleTitles = {
         'ai': '🎯 AI精准练',
         'practice': '📚 母题训练',
@@ -444,11 +422,7 @@ function openFullscreenPage(module) {
     container.classList.add('active');
     
     console.log('[V416] 打开模块:', module);
-    _doRenderModule(module, contentEl);
-}
-
-// V416: 模块渲染核心（从openFullscreenPage提取，供懒加载回调复用）
-function _doRenderModule(module, contentEl) {
+    
     switch (module) {
         case 'ai': if (typeof window.renderPractice === 'function') window.renderPractice(contentEl); break;
         case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
