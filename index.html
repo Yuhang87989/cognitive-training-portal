@@ -1145,47 +1145,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
-<script src="js/config.js?v=403"></script>
-<script src="js/ctm.js?v=403"></script>
-<script src="js/db.js?v=403"></script>
-<script src="js/utils.js?v=403"></script>
-<script src="js/storage.js?v=403"></script>
-<script src="js/user.js?v=403"></script>
-<script src="js/audio.js?v=403"></script>
-<script src="js/data/podcasts.js?v=403"></script>
-<script src="js/data/videos.js?v=403"></script>
-<script src="js/data/games-config.js?v=403"></script>
-<script src="js/data/topics.js?v=403"></script>
-<script src="js/ui-pet.js?v=403"></script>
-<script src="js/modules/ui.js?v=403"></script>
-<script src="js/modules/week-plans.js?v=403"></script>
-<script src="js/modules/data-sync.js?v=403"></script>
-<script src="js/modules/pet.js?v=403"></script>
-<script src="js/modules/topics.js?v=403"></script>
-<script src="js/modules/practice.js?v=403"></script>
-<script src="js/modules/deepseek.js?v=403"></script>
-<script src="js/modules/wrongbook.js?v=403"></script>
-<script src="js/modules/games.js?v=403"></script>
-<script src="js/modules/podcast.js?v=403"></script>
-<script src="js/modules/video.js?v=403"></script>
-<script src="js/modules/player.js?v=403"></script>
-<script src="js/modules/thinking.js?v=403"></script>
-<script src="js/modules/method.js?v=403"></script>
-<script src="js/modules/self-drive.js?v=403"></script>
-<script src="js/modules/map.js?v=403"></script>
-<script src="js/modules/my-page.js?v=403"></script>
-<script src="js/modules/pomodoro.js?v=403"></script>
-<script src="js/modules/library.js?v=403"></script>
-<script src="js/modules/notepad.js?v=403"></script>
-<script src="js/modules/exam.js?v=403"></script>
-<script src="js/modules/paper-tool.js?v=403"></script>
-<script src="js/modules/mindmap.js?v=403"></script>
-<script src="js/modules/calculator.js?v=403"></script>
-<script src="js/modules/plan.js?v=403"></script>
-<script src="js/modules/local-db.js?v=403"></script>
-<script src="js/modules/cloud-sync.js?v=403"></script>
+<script src="js/config.js?v=416"></script>
+<script src="js/ctm.js?v=416"></script>
+<script src="js/db.js?v=416"></script>
+<script src="js/utils.js?v=416"></script>
+<script src="js/storage.js?v=416"></script>
+<script src="js/user.js?v=416"></script>
+<script src="js/audio.js?v=416"></script>
+<script src="js/data/podcasts.js?v=416"></script>
+<script src="js/data/videos.js?v=416"></script>
+<script src="js/data/games-config.js?v=416"></script>
+<script src="js/data/topics.js?v=416"></script>
+<script src="js/ui-pet.js?v=416"></script>
+<script src="js/modules/ui.js?v=416"></script>
+<script src="js/modules/week-plans.js?v=416"></script>
+<script src="js/modules/data-sync.js?v=416"></script>
+<script src="js/modules/pet.js?v=416"></script>
+<script src="js/modules/topics.js?v=416"></script>
+<script src="js/modules/my-page.js?v=416"></script>
+<script src="js/modules/pomodoro.js?v=416"></script>
+<script src="js/modules/local-db.js?v=416"></script>
+<script src="js/modules/cloud-sync.js?v=416"></script>
 <script src="js/modules/stats.js?v=416"></script>
-<script src="js/modules/parent-dashboard.js?v=416"></script>
-<script src="js/modules/admin-dashboard.js?v=416"></script>
+<script>
+// V416: 非首屏模块懒加载 - 点击子页面时才加载对应JS，首屏少加载747KB
+window._lazyModules = {
+    'practice':   'js/modules/practice.js?v=416',
+    'deepseek':   'js/modules/deepseek.js?v=416',
+    'wrongbook':  'js/modules/wrongbook.js?v=416',
+    'games':      'js/modules/games.js?v=416',
+    'podcast':    'js/modules/podcast.js?v=416',
+    'video':      'js/modules/video.js?v=416',
+    'player':     'js/modules/player.js?v=416',
+    'thinking':   'js/modules/thinking.js?v=416',
+    'method':     'js/modules/method.js?v=416',
+    'selfdrive':  'js/modules/self-drive.js?v=416',
+    'map':        'js/modules/map.js?v=416',
+    'library':    'js/modules/library.js?v=416',
+    'notepad':    'js/modules/notepad.js?v=416',
+    'exam':       'js/modules/exam.js?v=416',
+    'paper-tool': 'js/modules/paper-tool.js?v=416',
+    'mindmap':    'js/modules/mindmap.js?v=416',
+    'calculator': 'js/modules/calculator.js?v=416',
+    'plan':       'js/modules/plan.js?v=416',
+    'parent-dashboard': 'js/modules/parent-dashboard.js?v=416',
+    'admin-dashboard':  'js/modules/admin-dashboard.js?v=416',
+    'ai':         'js/modules/deepseek.js?v=416',
+    'deepseek-chat':'js/modules/deepseek.js?v=416',
+};
+window._loadedLazyModules = new Set();
+window._loadLazyModule = function(key, callback) {
+    var path = window._lazyModules[key];
+    if (!path) { callback && callback(); return; }
+    if (window._loadedLazyModules.has(key)) { callback && callback(); return; }
+    var s = document.createElement('script');
+    s.src = path;
+    s.onload = function() {
+        window._loadedLazyModules.add(key);
+        callback && callback();
+    };
+    s.onerror = function() { callback && callback(); };
+    document.body.appendChild(s);
+};
+</script>
 </body>
 </html> 
