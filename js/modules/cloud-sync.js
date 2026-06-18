@@ -39,7 +39,7 @@ window.CloudSync = {
         this._wxAutoLogin();
 
         // CloudBase云同步（环境ID有效时才启用）
-        if (this.envId && this.envId !== 'cognitive-training-12345') {
+        if (this.envId && this.envId !== 'cloudbase-d4g0dkg6n553af199') {
             this._initCloudBase();
         }
     },

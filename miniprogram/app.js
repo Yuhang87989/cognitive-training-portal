@@ -6,7 +6,7 @@ App({
     }
     
     wx.cloud.init({
-      env: 'cognitive-training-12345',  // 替换为实际环境ID
+      env: 'cloudbase-d4g0dkg6n553af199',  // 替换为实际环境ID
       traceUser: true
     })
     
@@ -31,7 +31,7 @@ App({
   
   globalData: {
     openid: '',
-    cloudEnvId: 'cognitive-training-12345',
+    cloudEnvId: 'cloudbase-d4g0dkg6n553af199',
     h5Url: 'https://yuhang87989.github.io/cognitive-training-portal'
   }
 })
