@@ -552,49 +552,49 @@ function renderMethod(container) {
         <!-- 7种学习方法卡片 -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
             <div onclick="openMethodQuestions('feyman')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                <img loading="lazy" src="imgs/methods/feynman.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/feynman.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">费曼学习法</div>
                     <div style="font-size:11px;color:#999;">教会别人=自己学会</div>
                 </div>
             </div>
             <div onclick="openMethodQuestions('pomodoro')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                <img loading="lazy" src="imgs/methods/pomodoro.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/pomodoro.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">番茄工作法</div>
                     <div style="font-size:11px;color:#999;">25分钟专注+5分钟休息</div>
                 </div>
             </div>
             <div onclick="openMethodQuestions('ebbinghaus')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                <img loading="lazy" src="imgs/methods/ebbinghaus.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/ebbinghaus.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">遗忘曲线</div>
                     <div style="font-size:11px;color:#999;">科学复习抗遗忘</div>
                 </div>
             </div>
             <div onclick="openMethodQuestions('mindmap')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                <img loading="lazy" src="imgs/methods/mindmap.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/mindmap.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">思维导图</div>
                     <div style="font-size:11px;color:#999;">发散思维理清结构</div>
                 </div>
             </div>
             <div onclick="openMethodQuestions('cornell')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                <img loading="lazy" src="imgs/methods/cornell.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/cornell.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">康奈尔笔记法</div>
                     <div style="font-size:11px;color:#999;">三栏笔记高效复习</div>
                 </div>
             </div>
             <div onclick="openMethodQuestions('sq3r')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
-                <img loading="lazy" src="imgs/methods/sq3r.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/sq3r.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">SQ3R阅读法</div>
                     <div style="font-size:11px;color:#999;">五步精读吃透课本</div>
                 </div>
             </div>
             <div onclick="openMethodQuestions('timeManagement')" style="background:white;border-radius:12px;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.08);grid-column:span 2;">
-                <img loading="lazy" src="imgs/methods/timemanage.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
+                <img loading="lazy" src="https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/methods/timemanage.jpg" style="width:100%;height:90px;object-fit:cover;" onerror="this.style.display='none'">
                 <div style="padding:8px 10px;">
                     <div style="font-size:13px;font-weight:600;">时间管理术</div>
                     <div style="font-size:11px;color:#999;">合理规划高效利用</div>
