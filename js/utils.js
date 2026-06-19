@@ -425,3 +425,24 @@ window.loadModuleData = loadModuleData;
     cleanupModuleState,
     loadScript,
     loadModuleData
+
+// Twemoji支持 - 微信小程序web-view中emoji替换为SVG图片
+function parseEmojis() {
+    if (typeof twemoji !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent)) {
+        twemoji.parse(document.body, {
+            base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
+            ext: '.svg',
+            size: ''
+        });
+    }
+}
+// 首次加载
+setTimeout(parseEmojis, 500);
+// 模块切换后重新解析
+var _origShowModule = window.showModule;
+if (_origShowModule) {
+    window.showModule = function() {
+        _origShowModule.apply(this, arguments);
+        setTimeout(parseEmojis, 200);
+    };
+}
