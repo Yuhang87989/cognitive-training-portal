@@ -3,9 +3,9 @@
 // V177修改: DeepSeek文字/语音，Tesseract.js本地OCR+DeepSeek分析图片
 
 // DeepSeek API配置
-const DEEPSEEK_API_KEY = 'sk-8413f72a3f084fb08c84389555a76d37';
-const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
-const DEEPSEEK_MODEL = 'deepseek-chat';
+const DEEPSEEK_API_KEY = '';  // Key已删除，请通过SCF代理使用
+const DEEPSEEK_API_URL = 'https://1444210630-dffiqlbtx9.ap-guangzhou.tencentscf.com/v1/chat/completions';
+const DEEPSEEK_MODEL = 'deepseek-v4-flash';
 
 // 存储键名
 const STORAGE_KEY = 'cognitive_training_v137';
@@ -38,7 +38,7 @@ const AVATAR_LIST = [
 // 方案1: 硅基流动(推荐，国内速度快，支持Qwen3-VL)
 // 注册地址: https://cloud.siliconflow.com
 // 获取API Key后填入下方
-const VISION_SILICONFLOW_KEY = 'sk-upymyvbtqdunkmmksrmtqugootqqysvgevwkllyomqcvskrw';  // 硅基流动API Key
+const VISION_SILICONFLOW_KEY = '';  // 硅基流动Key已移除，需迁移到后端
 const VISION_SILICONFLOW_URL = 'https://api.siliconflow.cn/v1/chat/completions';
 const VISION_SILICONFLOW_MODEL = 'Qwen/Qwen3-VL-30B-A3B-Instruct';  // 高性价比视觉模型
 
