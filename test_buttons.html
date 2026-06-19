@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>测试页面</title>
+<style>
+body{font-family:-apple-system,sans-serif;padding:20px;background:#f5f6fa}
+h1{color:#333;margin-bottom:20px}
+button{display:block;width:100%;padding:16px;margin-bottom:10px;background:#3377FF;color:white;border:none;border-radius:12px;font-size:16px;cursor:pointer}
+button:active{opacity:0.8}
+.result{background:white;padding:20px;border-radius:12px;margin-top:20px;min-height:100px}
+</style>
+</head>
+<body>
+<h1>🧪 功能测试</h1>
+<button onclick="testStorage()">测试存储</button>
+<button onclick="testRender()">测试渲染</button>
+<button onclick="openFullscreenPage('topics')">测试母题训练</button>
+<button onclick="openFullscreenPage('method')">测试学霸方法</button>
+<button onclick="openFullscreenPage('games')">测试训练游戏</button>
+<div class="result" id="result">点击按钮测试...</div>
+
+<div id="fullscreen-container" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:1000">
+<div style="padding:20px">
+<div onclick="document.getElementById('fullscreen-container').style.display='none'" style="cursor:pointer;margin-bottom:20px">← 返回</div>
+<h2 id="fullscreen-title">标题</h2>
+<div id="fullscreen-content">内容</div>
+</div>
+</div>
+
+<script>
+function log(msg) {
+    document.getElementById('result').innerHTML = msg;
+}
+
+function testStorage() {
+    localStorage.clear();
+    var user = {id:'1',name:'邱宇菲',grade:7,difficulty:1};
+    localStorage.setItem('test', JSON.stringify(user));
+    var loaded = JSON.parse(localStorage.getItem('test'));
+    log('存储测试: ' + (loaded.name === '邱宇菲' ? '✅ 成功' : '❌ 失败'));
+}
+
+function testRender() {
+    var el = document.getElementById('fullscreen-content');
+    if (el) {
+        el.innerHTML = '<p style="color:green">✅ 渲染正常</p>';
+        log('渲染测试: ✅ 成功');
+    } else {
+        log('渲染测试: ❌ 失败 - 找不到容器');
+    }
+}
+
+function openFullscreenPage(module) {
+    var titles = {
+        'topics': '📚 母题训练',
+        'method': '💡 学霸方法',
+        'games': '🎮 训练游戏'
+    };
+    
+    document.getElementById('fullscreen-title').textContent = titles[module] || module;
+    document.getElementById('fullscreen-content').innerHTML = '<p>模块: ' + module + '</p><p>加载中...</p>';
+    document.getElementById('fullscreen-container').style.display = 'block';
+    
+    log('打开模块: ' + module);
+}
+</script>
+</body>
+</html>

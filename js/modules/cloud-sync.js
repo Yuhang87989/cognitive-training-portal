@@ -41,7 +41,7 @@ window.CloudSync = {
         this._wxAutoLogin();
 
         // CloudBase云同步（环境ID有效时才启用）
-        if (this.envId) {
+        if (this.envId && this.envId !== 'cloudbase-d4g0dkg6n553ar189') {
             this._initCloudBase();
         }
     },

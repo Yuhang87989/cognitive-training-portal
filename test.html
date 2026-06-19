@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>测试页面</title>
+    <style>
+        body { padding: 20px; font-family: Arial; }
+        .btn { padding: 20px; margin: 10px; font-size: 18px; background: #3377FF; color: white; border: none; border-radius: 10px; cursor: pointer; }
+        #result { padding: 20px; background: #f0f0f0; border-radius: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>认知训练门户 - 功能测试</h1>
+    <button class="btn" onclick="testStorage()">测试1: 检查本地存储</button>
+    <button class="btn" onclick="createTestUser()">测试2: 创建测试用户</button>
+    <button class="btn" onclick="checkUsers()">测试3: 查看用户列表</button>
+    <button class="btn" onclick="clearStorage()">测试4: 清除所有数据</button>
+    <div id="result">等待测试...</div>
+    
+    <script>
+        function log(msg) {
+            document.getElementById('result').innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + msg + '</div>';
+            console.log(msg);
+        }
+        
+        function testStorage() {
+            log('--- 测试本地存储 ---');
+            try {
+                localStorage.setItem('test', 'ok');
+                log('✓ localStorage可用');
+                localStorage.removeItem('test');
+            } catch(e) {
+                log('✗ localStorage不可用: ' + e.message);
+            }
+            
+            const data = localStorage.getItem('cognitive_training_v49');
+            if (data) {
+                log('✓ 已有数据');
+                const parsed = JSON.parse(data);
+                log('用户数: ' + (parsed.users ? parsed.users.length : 0));
+            } else {
+                log('✗ 无数据');
+            }
+        }
+        
+        function createTestUser() {
+            log('--- 创建测试用户 ---');
+            let dataStr = localStorage.getItem('cognitive_training_v49');
+            let data = dataStr ? JSON.parse(dataStr) : {users: [], currentUser: null};
+            
+            const newUser = {
+                id: 'user_' + Date.now(),
+                name: '测试用户' + (data.users.length + 1),
+                grade: 7,
+                difficulty: 1,
+                points: 1000,
+                createdAt: new Date().toISOString()
+            };
+            
+            data.users.push(newUser);
+            data.currentUser = newUser.id;
+            
+            localStorage.setItem('cognitive_training_v49', JSON.stringify(data));
+            log('✓ 创建成功: ' + newUser.name);
+            log('总用户数: ' + data.users.length);
+        }
+        
+        function checkUsers() {
+            log('--- 查看用户列表 ---');
+            const dataStr = localStorage.getItem('cognitive_training_v49');
+            if (!dataStr) {
+                log('✗ 无数据');
+                return;
+            }
+            
+            const data = JSON.parse(dataStr);
+            log('用户总数: ' + data.users.length);
+            data.users.forEach((u, i) => {
+                log((i+1) + '. ' + u.name + ' (ID: ' + u.id.substring(0, 15) + '...)');
+            });
+            log('当前用户: ' + data.currentUser);
+        }
+        
+        function clearStorage() {
+            if (confirm('确定要清除所有数据吗？')) {
+                localStorage.removeItem('cognitive_training_v49');
+                log('✓ 已清除所有数据');
+            }
+        }
+    </script>
+</body>
+</html>

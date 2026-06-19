@@ -1,7 +1,0 @@
-{
-  "name": "sms-sender",
-  "version": "1.0.0",
-  "dependencies": {
-    "tencentcloud-sdk-nodejs-sms": "^4.0.0"
-  }
-}
