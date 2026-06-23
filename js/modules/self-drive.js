@@ -137,6 +137,7 @@ function checkInToday() {
 
 // 目标页面
 function renderGoalPage() {
+    window._sdUpdateHeader('🎯 我的目标');
     const container = document.getElementById('fullscreen-content') || document.body;
     container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
@@ -200,6 +201,7 @@ function deleteGoal(index) {
 
 // 习惯追踪页面
 function renderHabitPage() {
+    window._sdUpdateHeader('📅 习惯追踪');
     const container = document.getElementById('fullscreen-content') || document.body;
     container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
@@ -289,6 +291,7 @@ function deleteHabit(index) {
 
 // 成就墙页面
 function renderAchievementPage() {
+    window._sdUpdateHeader('🏆 成就墙');
     const container = document.getElementById('fullscreen-content') || document.body;
     // 预设成就
     const presetAchievements = [
@@ -335,6 +338,7 @@ function renderAchievementPage() {
 
 // 每日反思页面
 function renderDiaryPage() {
+    window._sdUpdateHeader('📝 每日反思');
     const container = document.getElementById('fullscreen-content') || document.body;
     container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
@@ -387,6 +391,7 @@ function deleteDiary(index) {
 
 // 训练方法库页面
 function renderMethodPage() {
+    window._sdUpdateHeader('📚 训练方法');
     const container = document.getElementById('fullscreen-content') || document.body;
     const methods = [
         {
@@ -510,8 +515,33 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 // V255: 将函数挂载到window，确保全局可访问
-// V424: 自驱力子页面直接渲染到fullscreen-content，不再依赖detail-modal
+// V425: 子页面进入时更新顶部fp-header返回按钮为backToSelfDriveMain，返回时恢复
+// 更新顶部返回按钮和标题（进入子页面时）
+window._sdUpdateHeader = function(title) {
+    var backEl = document.querySelector('.fp-back');
+    if (backEl) {
+        backEl.setAttribute('onclick', 'window.backToSelfDriveMain()');
+    }
+    var titleEl = document.getElementById('fullscreen-title');
+    if (titleEl) {
+        titleEl.textContent = title || '💪 自驱力训练';
+    }
+};
+
+// 恢复顶部返回按钮和标题（回到自驱力主页面时）
+window._sdRestoreHeader = function() {
+    var backEl = document.querySelector('.fp-back');
+    if (backEl) {
+        backEl.setAttribute('onclick', 'closeFullscreenPage()');
+    }
+    var titleEl = document.getElementById('fullscreen-title');
+    if (titleEl) {
+        titleEl.textContent = '💪 自驱力训练';
+    }
+};
+
 window.backToSelfDriveMain = function() {
+    window._sdRestoreHeader();
     var container = document.getElementById('fullscreen-content');
     if (container && typeof window.renderSelfDrive === 'function') {
         window.renderSelfDrive(container);
