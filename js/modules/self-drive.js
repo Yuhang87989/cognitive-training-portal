@@ -154,7 +154,7 @@ function renderGoalPage() {
         ` : `
             <div style="display:flex;flex-direction:column;gap:12px;">
                 ${SelfDrive.goals.map((goal, i) => `
-                    <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                    <div style="background:#f8f9fa;padding:16px;border-radius:12px;">
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;">
                             <div style="flex:1;">
                                 <div style="font-size:14px;font-weight:600;color:#333;text-decoration:${goal.completed ? 'line-through' : 'none'};opacity:${goal.completed ? 0.5 : 1};">${goal.text}</div>
@@ -169,7 +169,7 @@ function renderGoalPage() {
                 `).join('')}
             </div>
         `}
-    </div>`;
+    </div></div>`;
 }
 
 function addGoal() {
@@ -218,7 +218,7 @@ function renderHabitPage() {
         ` : `
             <div style="display:flex;flex-direction:column;gap:12px;">
                 ${SelfDrive.habits.map((habit, i) => `
-                    <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                    <div style="background:#f8f9fa;padding:16px;border-radius:12px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                             <span style="font-size:14px;font-weight:600;color:#333;">${habit.icon || '✅'} ${habit.name}</span>
                             <span style="font-size:12px;color:#43e97b;font-weight:600;">${habit.streak || 0}天</span>
@@ -239,7 +239,7 @@ function renderHabitPage() {
                 `).join('')}
             </div>
         `}
-    </div>`;
+    </div></div>`;
 }
 
 function addHabit() {
@@ -333,7 +333,7 @@ function renderAchievementPage() {
                 `;
             }).join('')}
         </div>
-    </div>`;
+    </div></div>`;
 }
 
 // 每日反思页面
@@ -355,7 +355,7 @@ function renderDiaryPage() {
         ` : `
             <div style="display:flex;flex-direction:column;gap:12px;">
                 ${SelfDrive.diary.slice().reverse().map((entry, i) => `
-                    <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                    <div style="background:#f8f9fa;padding:16px;border-radius:12px;">
                         <div style="font-size:11px;color:#999;margin-bottom:8px;">${entry.date}</div>
                         <div style="font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;">${entry.text}</div>
                         <div style="text-align:right;margin-top:8px;">
@@ -365,7 +365,7 @@ function renderDiaryPage() {
                 `).join('')}
             </div>
         `}
-    </div>`;
+    </div></div>`;
 }
 
 function addDiary() {
@@ -465,7 +465,7 @@ function renderMethodPage() {
         <div style="font-size:12px;color:#666;margin-bottom:16px;">核心：由内在需求或兴趣驱动的行动力，而非依赖外部奖励或压力</div>
         <div style="display:flex;flex-direction:column;gap:12px;">
             ${methods.map(m => `
-                <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <div style="background:#f8f9fa;padding:16px;border-radius:12px;">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
                         <span style="font-size:20px;">${m.icon}</span>
                         <span style="font-size:14px;font-weight:600;color:#333;">${m.title}</span>
@@ -477,7 +477,7 @@ function renderMethodPage() {
                 </div>
             `).join('')}
         </div>
-    </div>`;
+    </div></div>`;
 }
 
 // 注册模块
