@@ -137,10 +137,7 @@ function checkInToday() {
 
 // 目标页面
 function renderGoalPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
+    const container = document.getElementById('fullscreen-content') || document.body;
     container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -203,10 +200,7 @@ function deleteGoal(index) {
 
 // 习惯追踪页面
 function renderHabitPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
+    const container = document.getElementById('fullscreen-content') || document.body;
     container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -295,10 +289,7 @@ function deleteHabit(index) {
 
 // 成就墙页面
 function renderAchievementPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
+    const container = document.getElementById('fullscreen-content') || document.body;
     // 预设成就
     const presetAchievements = [
         { id: 'first_goal', name: '设定目标', desc: '设定第一个目标', icon: '🎯', condition: () => SelfDrive.goals.length >= 1 },
@@ -344,10 +335,7 @@ function renderAchievementPage() {
 
 // 每日反思页面
 function renderDiaryPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
+    const container = document.getElementById('fullscreen-content') || document.body;
     container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -399,10 +387,7 @@ function deleteDiary(index) {
 
 // 训练方法库页面
 function renderMethodPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
+    const container = document.getElementById('fullscreen-content') || document.body;
     const methods = [
         {
             icon: '🎯',
@@ -525,10 +510,8 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 // V255: 将函数挂载到window，确保全局可访问
-// 自驱力子页面返回主页面：关闭detail-modal并刷新自驱力主页面
+// V424: 自驱力子页面直接渲染到fullscreen-content，不再依赖detail-modal
 window.backToSelfDriveMain = function() {
-    var modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.remove('show');
     var container = document.getElementById('fullscreen-content');
     if (container && typeof window.renderSelfDrive === 'function') {
         window.renderSelfDrive(container);
