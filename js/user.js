@@ -36,16 +36,22 @@ function closeUserMenuOutside(e) {
 }
 
 function showUserSwitchModal() {
-    if (typeof closeUserMenu === "function") closeUserMenu();
-    var data = window.loadData();
+    closeUserMenu();
+    var data = loadData();
     
     if (data.users.length === 0) {
-        window.showToast('暂无用户，请先创建账号');
+        showToast('暂无用户，请先创建账号');
         return;
     }
     
     if (data.users.length === 1) {
-        window.showToast('只有一个用户：' + data.users[0].name + '，无需切换');
+        showToast('只有一个用户：' + data.users[0].name + '，无需切换');
+        return;
+    }
+    
+    var container = document.getElementById('user-switch-list');
+    if (!container) {
+        showToast('页面加载异常');
         return;
     }
     
@@ -72,11 +78,11 @@ function showUserSwitchModal() {
 function showCreateUserModal() { document.getElementById('create-user-modal').classList.add('show'); }
 
 function quickLogin(userId) {
-    const data = window.loadData();
+    const data = loadData();
     const user = data.users.find(u => u.id === userId);
     if (!user) return;
     data.currentUser = userId;
-    window.saveData(data);
+    saveData(data);
     
     // 更新登录页元素
     const displayEl = document.getElementById('selected-user-display');
@@ -97,7 +103,7 @@ function quickLogin(userId) {
 }
 
 function openEditProfileModal() {
-    const user = window.getCurrentUserData();
+    const user = getCurrentUserData();
     if (user) {
         document.getElementById('edit-name').value = user.name;
         document.getElementById('edit-grade').value = user.grade;
@@ -106,7 +112,7 @@ function openEditProfileModal() {
 }
 
 function openDifficultyModal() {
-    const userData = window.getCurrentUserData();
+    const userData = getCurrentUserData();
     const currentLevel = userData ? userData.difficulty : 1;
     // 高亮当前选中的按钮
     document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -118,7 +124,7 @@ function openDifficultyModal() {
 }
 
 function openAvatarModal() {
-    const user = window.getCurrentUserData();
+    const user = getCurrentUserData();
     const modal = document.getElementById('avatar-modal');
     const content = document.getElementById('avatar-modal-content');
     
@@ -151,11 +157,11 @@ function openAvatarModal() {
     
     content.innerHTML = avatarHtml;
     modal.classList.add('show');
-    if (typeof closeUserMenu === "function") closeUserMenu();
+    closeUserMenu();
 }
 
 function renderUserList() {
-    const data = window.loadData();
+    const data = loadData();
     const container = document.getElementById('user-list-container');
     if (!container) return;
     const colors = ['linear-gradient(135deg,#667eea,#764ba2)', 'linear-gradient(135deg,#FF9A63,#E87A4E)', 'linear-gradient(135deg,#43E97B,#38F9D7)'];
@@ -183,15 +189,15 @@ function createNewUser() {
     var difficulty = diffEl ? parseInt(diffEl.value) : 1;
     
     if (!name) {
-        window.showToast('请输入名字');
+        showToast('请输入名字');
         return;
     }
     
-    var data = window.loadData();
+    var data = loadData();
     
     // 检查名字是否重复
     if (data.users.some(function(u) { return u.name === name; })) {
-        window.showToast('名字已存在，请换一个');
+        showToast('名字已存在，请换一个');
         return;
     }
     
@@ -222,7 +228,7 @@ function createNewUser() {
     
     data.users.push(newUser);
     data.currentUser = newUser.id;
-    window.saveData(data);
+    saveData(data);
     
     closeCreateUserModal();
     
@@ -247,7 +253,7 @@ function createNewUser() {
     var difficultyText = document.getElementById('difficulty-text');
     if (difficultyText) difficultyText.textContent = 'Lv.' + difficulty;
     
-    window.showToast('创建成功: ' + name);
+    showToast('创建成功: ' + name);
     
     // 清空表单
     if (nameEl) nameEl.value = '';
@@ -258,16 +264,22 @@ function closeCreateUserModal() { document.getElementById('create-user-modal').c
 function closeUserSwitchModal() { document.getElementById('user-switch-modal').classList.remove('show'); }
 
 function showDeleteUserModal() {
-    if (typeof closeUserMenu === "function") closeUserMenu();
-    var data = window.loadData();
+    closeUserMenu();
+    var data = loadData();
     
     if (data.users.length === 0) {
-        window.showToast('暂无用户');
+        showToast('暂无用户');
         return;
     }
     
     if (data.users.length === 1) {
-        window.showToast('只有一个用户，无法删除');
+        showToast('只有一个用户，无法删除');
+        return;
+    }
+    
+    var container = document.getElementById('delete-user-list');
+    if (!container) {
+        showToast('页面加载异常');
         return;
     }
     
@@ -296,14 +308,39 @@ function closeDeleteUserModal() {
     document.getElementById('delete-user-modal').classList.remove('show'); 
 }
 
+
+function switchToUser(userId) {
+    var data = window.loadData();
+    var user = data.users.find(function(u) { return u.id === userId; });
+    if (!user) return;
+    data.currentUser = userId;
+    window.saveData(data);
+    window.showToast("已切换到: " + user.name);
+    if (typeof updateUI === "function") updateUI();
+    if (typeof renderUserList === "function") renderUserList();
+}
+
+function deleteUser(userId) {
+    if (!confirm("确定要删除此用户吗？此操作不可恢复！")) return;
+    var data = window.loadData();
+    var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
+    if (userIndex === -1) { window.showToast("用户不存在"); return; }
+    if (data.users.length <= 1) { window.showToast("至少保留一个用户"); return; }
+    var userName = data.users[userIndex].name;
+    data.users.splice(userIndex, 1);
+    if (data.currentUser === userId) { data.currentUser = data.users[0].id; }
+    window.saveData(data);
+    window.showToast("已删除用户: " + userName);
+    if (typeof updateUI === "function") updateUI();
+}
 function confirmDeleteUser(userId) {
     if (!confirm('确定要删除此用户吗？此操作不可恢复！')) return;
     
-    var data = window.loadData();
+    var data = loadData();
     var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
     
     if (userIndex === -1) {
-        window.showToast('用户不存在');
+        showToast('用户不存在');
         return;
     }
     
@@ -319,7 +356,7 @@ function confirmDeleteUser(userId) {
         }
     }
     
-    window.saveData(data);
+    saveData(data);
     
     // 刷新UI
     updateUI();
@@ -329,16 +366,16 @@ function confirmDeleteUser(userId) {
     // 如果只剩一个用户，关闭模态框
     if (data.users.length <= 1) {
         closeDeleteUserModal();
-        window.showToast('已删除用户: ' + userName);
+        showToast('已删除用户: ' + userName);
     } else {
         // 刷新删除用户列表
         showDeleteUserModal();
-        window.showToast('已删除用户: ' + userName);
+        showToast('已删除用户: ' + userName);
     }
 }
 
 function setDifficulty(level) {
-    const userData = window.getCurrentUserData();
+    const userData = getCurrentUserData();
     if (userData) {
         userData.difficulty = level;
         syncUserData(userData);
@@ -359,7 +396,7 @@ function setDifficulty(level) {
             btn.style.borderColor = isSelected ? '#1A6BFF' : '#ddd';
             btn.style.background = isSelected ? '#E8F4FF' : 'white';
         });
-        window.showToast('难度已调整为 Lv.' + level);
+        showToast('难度已调整为 Lv.' + level);
     }
     closeDifficultyModal();
 }
@@ -369,14 +406,14 @@ function closeDifficultyModal() {
 }
 
 function saveProfileChanges() {
-    const user = window.getCurrentUserData();
+    const user = getCurrentUserData();
     if (!user) return;
     
     const newName = document.getElementById('edit-name').value.trim();
     const newGrade = parseInt(document.getElementById('edit-grade').value);
     
     if (!newName) {
-        window.showToast('请输入姓名');
+        showToast('请输入姓名');
         return;
     }
     
@@ -388,7 +425,7 @@ function saveProfileChanges() {
     updateUI();
     openSettingsPanel(); // 刷新设置面板
     closeEditProfileModal();
-    window.showToast('个人信息已更新');
+    showToast('个人信息已更新');
 }
 
 function closeEditProfileModal() {
@@ -401,24 +438,24 @@ function savePasswordChanges() {
     const confirmPwd = document.getElementById('confirm-password').value;
     
     if (!currentPwd || !newPwd || !confirmPwd) {
-        window.showToast('请填写所有密码字段');
+        showToast('请填写所有密码字段');
         return;
     }
     
     if (newPwd !== confirmPwd) {
-        window.showToast('两次输入的新密码不一致');
+        showToast('两次输入的新密码不一致');
         return;
     }
     
     if (newPwd.length < 6) {
-        window.showToast('密码长度至少6位');
+        showToast('密码长度至少6位');
         return;
     }
     
     // 验证当前密码（简化版，实际应做密码验证）
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     if (data.password && data.password !== currentPwd) {
-        window.showToast('当前密码错误');
+        showToast('当前密码错误');
         return;
     }
     
@@ -427,7 +464,7 @@ function savePasswordChanges() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     
     closeChangePasswordModal();
-    window.showToast('密码修改成功');
+    showToast('密码修改成功');
 }
 
 function closeChangePasswordModal() {
@@ -451,7 +488,7 @@ function openApiConfigModal(type) {
             </div>
             <button onclick="saveApiConfigModal('deepseek')" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存配置</button>
             <div style="margin-top:8px;">
-                <button onclick="window.showAPIRechargeModal()" style="width:100%;padding:10px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">💳 API平台充值</button>
+                <button onclick="showAPIRechargeModal()" style="width:100%;padding:10px;background:linear-gradient(135deg,#667eea,#4facfe);color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">💳 API平台充值</button>
             </div>
             <button onclick="closeApiConfigModal()" class="login-btn login-btn-secondary">取消</button>
         `;
@@ -472,22 +509,14 @@ function openApiConfigModal(type) {
 }
 
 function selectAvatar(emoji) {
-    const user = window.getCurrentUserData();
+    const user = getCurrentUserData();
     if (user) {
         user.avatar = emoji;
         syncUserData(user);
         updateAllAvatarDisplays();
-        window.showToast('头像已更换');
+        showToast('头像已更换');
     }
     closeAvatarModal();
-}
-
-function closeAvatarModal() {
-    document.getElementById('avatar-modal').classList.remove('show');
-}
-
-function closeApiConfigModal() {
-    document.getElementById('api-config-modal').classList.remove('show');
 }
 
 function openChangePasswordModal() {
@@ -504,16 +533,16 @@ function openChangePasswordModal() {
 // ============================================================
 
 // Window exports for onclick handlers
-window.closeApiConfigModal = closeApiConfigModal;
-window.closeAvatarModal = closeAvatarModal;
 window.closeChangePasswordModal = closeChangePasswordModal;
 window.closeCreateUserModal = closeCreateUserModal;
 window.closeDeleteUserModal = closeDeleteUserModal;
 window.closeDifficultyModal = closeDifficultyModal;
 window.closeEditProfileModal = closeEditProfileModal;
-if (typeof closeUserMenu === "function") window.closeUserMenu = closeUserMenu;
+window.closeUserMenu = closeUserMenu; // 从ui.js导入
 window.closeUserSwitchModal = closeUserSwitchModal;
 window.confirmDeleteUser = confirmDeleteUser;
+window.switchToUser = switchToUser;
+window.deleteUser = deleteUser;
 window.createNewUser = createNewUser;
 window.openApiConfigModal = openApiConfigModal;
 window.openAvatarModal = openAvatarModal;
@@ -531,7 +560,7 @@ if (typeof selectGrade !== "undefined") window.selectGrade = selectGrade;
 
 // ====== 管理用户功能 ======
 function openManageUserModal() {
-    var data = window.loadData();
+    var data = loadData();
     var modal = document.getElementById('detail-modal');
     var content = document.getElementById('detail-content');
     if (!modal || !content) return;
@@ -571,41 +600,16 @@ function openManageUserModal() {
     content.innerHTML = htmlContent;
 }
 
-// ============================================================
-// 挂载所有函数到window - 供HTML onclick事件调用
-// ============================================================
-window.toggleUserMenu = toggleUserMenu;
-window.closeUserMenuOutside = closeUserMenuOutside;
-window.showUserSwitchModal = showUserSwitchModal;
-window.showCreateUserModal = showCreateUserModal;
-window.quickLogin = quickLogin;
-window.openEditProfileModal = openEditProfileModal;
-window.openDifficultyModal = openDifficultyModal;
-window.openAvatarModal = openAvatarModal;
-window.renderUserList = renderUserList;
-window.createNewUser = createNewUser;
-window.closeCreateUserModal = closeCreateUserModal;
-window.closeUserSwitchModal = closeUserSwitchModal;
-window.showDeleteUserModal = showDeleteUserModal;
-window.closeDeleteUserModal = closeDeleteUserModal;
-window.confirmDeleteUser = confirmDeleteUser;
-window.setDifficulty = setDifficulty;
-window.closeDifficultyModal = closeDifficultyModal;
-window.saveProfileChanges = saveProfileChanges;
-window.closeEditProfileModal = closeEditProfileModal;
-window.savePasswordChanges = savePasswordChanges;
-window.closeChangePasswordModal = closeChangePasswordModal;
-window.openApiConfigModal = openApiConfigModal;
-window.selectAvatar = selectAvatar;
-window.openChangePasswordModal = openChangePasswordModal;
 window.openManageUserModal = openManageUserModal;
 
 // ============================================================
 // ES6 Module Export - V225 ES6改造
 // ============================================================
+export {
     toggleUserMenu,
     closeUserMenuOutside,
     showUserSwitchModal,
     showCreateUserModal,
     quickLogin,
     openManageUserModal
+};

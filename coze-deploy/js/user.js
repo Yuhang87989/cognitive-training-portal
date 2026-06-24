@@ -308,6 +308,31 @@ function closeDeleteUserModal() {
     document.getElementById('delete-user-modal').classList.remove('show'); 
 }
 
+
+function switchToUser(userId) {
+    var data = window.loadData();
+    var user = data.users.find(function(u) { return u.id === userId; });
+    if (!user) return;
+    data.currentUser = userId;
+    window.saveData(data);
+    window.showToast("已切换到: " + user.name);
+    if (typeof updateUI === "function") updateUI();
+    if (typeof renderUserList === "function") renderUserList();
+}
+
+function deleteUser(userId) {
+    if (!confirm("确定要删除此用户吗？此操作不可恢复！")) return;
+    var data = window.loadData();
+    var userIndex = data.users.findIndex(function(u) { return u.id === userId; });
+    if (userIndex === -1) { window.showToast("用户不存在"); return; }
+    if (data.users.length <= 1) { window.showToast("至少保留一个用户"); return; }
+    var userName = data.users[userIndex].name;
+    data.users.splice(userIndex, 1);
+    if (data.currentUser === userId) { data.currentUser = data.users[0].id; }
+    window.saveData(data);
+    window.showToast("已删除用户: " + userName);
+    if (typeof updateUI === "function") updateUI();
+}
 function confirmDeleteUser(userId) {
     if (!confirm('确定要删除此用户吗？此操作不可恢复！')) return;
     
@@ -516,6 +541,8 @@ window.closeEditProfileModal = closeEditProfileModal;
 window.closeUserMenu = closeUserMenu; // 从ui.js导入
 window.closeUserSwitchModal = closeUserSwitchModal;
 window.confirmDeleteUser = confirmDeleteUser;
+window.switchToUser = switchToUser;
+window.deleteUser = deleteUser;
 window.createNewUser = createNewUser;
 window.openApiConfigModal = openApiConfigModal;
 window.openAvatarModal = openAvatarModal;
