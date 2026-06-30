@@ -1,7 +1,7 @@
 // ==========================================
-// V426 自驱力与内驱力训练模块
-// 修复：使用onclick属性赋值替代setAttribute（兼容微信WebView）
-// 修复：子页面使用fullscreen-content容器+白色卡片包裹
+// V432 自驱力与内驱力训练模块
+// 恢复：子页面使用 detail-modal 小窗口模式
+// 修复：返回按钮使用 closeModal 关闭弹窗
 // 培养学习动力、目标感、意志力
 // ==========================================
 
@@ -112,89 +112,74 @@ function checkInToday() {
 }
 
 // ============================================================
-// V426: 辅助函数 - 使用onclick属性赋值（兼容微信WebView）
-// setAttribute('onclick',...) 在微信WebView中不可靠
+// V432: 子页面使用 detail-modal 小窗口模式
 // ============================================================
 
-window._sdUpdateHeader = function(title) {
-    var backEl = document.querySelector('.fp-back');
-    if (backEl) {
-        backEl.onclick = function() { window.backToSelfDriveMain(); };
-    }
-    var titleEl = document.getElementById('fullscreen-title');
-    if (titleEl) {
-        titleEl.textContent = title || '💪 自驱力训练';
+window._sdOpenSubPage = function() {
+    var modal = document.getElementById('detail-modal');
+    if (modal) modal.classList.add('show');
+};
+
+window._sdBackToMain = function() {
+    var modal = document.getElementById('detail-modal');
+    if (modal) modal.classList.remove('show');
+    var mainContainer = document.getElementById('fullscreen-content') || document.getElementById('main-content') || document.querySelector('.content');
+    if (mainContainer && typeof window.renderSelfDrive === 'function') {
+        window.renderSelfDrive(mainContainer);
     }
 };
 
-window._sdRestoreHeader = function() {
-    var backEl = document.querySelector('.fp-back');
-    if (backEl) {
-        backEl.onclick = function() { window.closeFullscreenPage(); };
-    }
-    var titleEl = document.getElementById('fullscreen-title');
-    if (titleEl) {
-        titleEl.textContent = '💪 自驱力训练';
-    }
-};
-
-window.backToSelfDriveMain = function() {
-    window._sdRestoreHeader();
-    var container = document.getElementById('fullscreen-content');
-    if (container && typeof window.renderSelfDrive === 'function') {
-        window.renderSelfDrive(container);
-    }
-};
-
-// ============================================================
-// 子页面渲染 - 使用fullscreen-content + 白色卡片包裹
-// ============================================================
-
+// 目标页面
 function renderGoalPage() {
-    window._sdUpdateHeader('🎯 我的目标');
-    var container = document.getElementById('fullscreen-content') || document.body;
+    window._sdOpenSubPage();
+    var container = document.getElementById('detail-content') || document.body;
     
-    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
-    '<div style="padding:16px;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
-            '<h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>' +
-            '<button onclick="addGoal()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>' +
-        '</div>' +
-        (SelfDrive.goals.length === 0 ? 
-            '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:12px;">🎯</div><div>还没有设定目标</div><div style="font-size:12px;margin-top:8px;">设定一个小目标，开始行动吧！</div></div>'
-        : 
-            '<div style="display:flex;flex-direction:column;gap:12px;">' +
-                SelfDrive.goals.map(function(goal, i) {
-                    return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
-                        '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
-                            '<div style="flex:1;">' +
-                                '<div style="font-size:14px;font-weight:600;color:#333;text-decoration:' + (goal.completed ? 'line-through' : 'none') + ';opacity:' + (goal.completed ? 0.5 : 1) + ';">' + goal.text + '</div>' +
-                                '<div style="font-size:11px;color:#999;margin-top:4px;">' + (goal.date || '') + '</div>' +
-                            '</div>' +
-                            '<div style="display:flex;gap:8px;">' +
-                                '<button onclick="toggleGoal(' + i + ')" style="padding:4px 8px;background:' + (goal.completed ? '#43e97b' : '#f0f0f0') + ';color:' + (goal.completed ? 'white' : '#666') + ';border:none;border-radius:6px;font-size:11px;cursor:pointer;">' + (goal.completed ? '✅' : '完成') + '</button>' +
-                                '<button onclick="deleteGoal(' + i + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>' +
+    container.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+        '<h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>' +
+        '<button onclick="addGoal()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>' +
+    '</div>' +
+    (SelfDrive.goals.length === 0 ?
+        '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:12px;">🎯</div><div>还没有设定目标</div><div style="font-size:12px;margin-top:8px;">设定一个小目标，开始行动吧！</div></div>'
+    :
+        '<div style="display:flex;flex-direction:column;gap:12px;">' +
+            SelfDrive.goals.map(function(goal, i) {
+                return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+                        '<div style="flex:1;">' +
+                            '<div style="font-size:14px;font-weight:600;color:#333;">' + goal.title + '</div>' +
+                            '<div style="font-size:12px;color:#999;margin-top:4px;">截止日期：' + (goal.deadline || '无') + '</div>' +
+                            '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">' +
+                                goal.steps.map(function(step, si) {
+                                    return '<span onclick="toggleGoalStep(' + i + ',' + si + ')" style="font-size:11px;padding:4px 8px;background:' + (step.done ? '#43e97b' : '#e0e0e0') + ';color:' + (step.done ? 'white' : '#666') + ';border-radius:12px;cursor:pointer;">' + (step.done ? '✅' : '○') + ' ' + step.text + '</span>';
+                                }).join('') +
                             '</div>' +
                         '</div>' +
-                    '</div>';
-                }).join('') +
-            '</div>'
-        ) +
-    '</div></div>';
+                        '<button onclick="deleteGoal(' + i + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;margin-left:8px;">删除</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('') +
+        '</div>'
+    ) +
+    '<button onclick="window._sdBackToMain()" style="width:100%;padding:12px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-top:20px;">← 返回</button>';
 }
 
 function addGoal() {
-    var text = prompt('🎯 输入你的目标：');
-    if (!text) return;
-    SelfDrive.goals.push({ text: text, date: new Date().toLocaleDateString(), completed: false });
+    var title = prompt('🎯 输入目标名称：');
+    if (!title) return;
+    var deadline = prompt('📅 截止日期（如：2025-12-31，可留空）：') || '';
+    var stepsText = prompt('📝 分解步骤（用逗号分隔，如：第一步,第二步,第三步）：') || '';
+    var steps = stepsText.split(',').filter(function(s) { return s.trim(); }).map(function(s) {
+        return { text: s.trim(), done: false };
+    });
+    
+    SelfDrive.goals.push({ title: title, deadline: deadline, steps: steps });
     SelfDrive.save();
     window.showToast('✅ 目标已添加');
     renderGoalPage();
 }
 
-function toggleGoal(index) {
-    SelfDrive.goals[index].completed = !SelfDrive.goals[index].completed;
+function toggleGoalStep(goalIndex, stepIndex) {
+    SelfDrive.goals[goalIndex].steps[stepIndex].done = !SelfDrive.goals[goalIndex].steps[stepIndex].done;
     SelfDrive.save();
     renderGoalPage();
 }
@@ -206,38 +191,36 @@ function deleteGoal(index) {
     renderGoalPage();
 }
 
+// 习惯追踪页面
 function renderHabitPage() {
-    window._sdUpdateHeader('📅 习惯追踪');
-    var container = document.getElementById('fullscreen-content') || document.body;
+    window._sdOpenSubPage();
+    var container = document.getElementById('detail-content') || document.body;
     
-    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
-    '<div style="padding:16px;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
-            '<h3 style="margin:0;font-size:18px;">📅 习惯追踪</h3>' +
-            '<button onclick="addHabit()" style="padding:8px 16px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>' +
-        '</div>' +
-        (SelfDrive.habits.length === 0 ?
-            '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:12px;">📅</div><div>还没有追踪习惯</div><div style="font-size:12px;margin-top:8px;">添加一个想养成的习惯吧！</div></div>'
-        :
-            '<div style="display:flex;flex-direction:column;gap:12px;">' +
-                SelfDrive.habits.map(function(habit, i) {
-                    return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
-                        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
-                            '<div style="flex:1;">' +
-                                '<div style="font-size:14px;font-weight:600;color:#333;">' + habit.icon + ' ' + habit.name + '</div>' +
-                                '<div style="font-size:12px;color:#999;margin-top:4px;">连续 ' + (habit.streak || 0) + ' 天</div>' +
-                            '</div>' +
-                            '<div style="display:flex;gap:8px;">' +
-                                '<button onclick="checkHabit(' + i + ')" style="padding:4px 12px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">打卡</button>' +
-                                '<button onclick="deleteHabit(' + i + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>' +
-                            '</div>' +
+    container.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+        '<h3 style="margin:0;font-size:18px;">📅 习惯追踪</h3>' +
+        '<button onclick="addHabit()" style="padding:8px 16px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>' +
+    '</div>' +
+    (SelfDrive.habits.length === 0 ?
+        '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:12px;">📅</div><div>还没有追踪习惯</div><div style="font-size:12px;margin-top:8px;">添加一个想养成的习惯吧！</div></div>'
+    :
+        '<div style="display:flex;flex-direction:column;gap:12px;">' +
+            SelfDrive.habits.map(function(habit, i) {
+                return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                        '<div style="flex:1;">' +
+                            '<div style="font-size:14px;font-weight:600;color:#333;">' + habit.icon + ' ' + habit.name + '</div>' +
+                            '<div style="font-size:12px;color:#999;margin-top:4px;">连续 ' + (habit.streak || 0) + ' 天</div>' +
                         '</div>' +
-                    '</div>';
-                }).join('') +
-            '</div>'
-        ) +
-    '</div></div>';
+                        '<div style="display:flex;gap:8px;">' +
+                            '<button onclick="checkHabit(' + i + ')" style="padding:4px 12px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">打卡</button>' +
+                            '<button onclick="deleteHabit(' + i + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('') +
+        '</div>'
+    ) +
+    '<button onclick="window._sdBackToMain()" style="width:100%;padding:12px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-top:20px;">← 返回</button>';
 }
 
 function addHabit() {
@@ -270,9 +253,10 @@ function deleteHabit(index) {
     renderHabitPage();
 }
 
+// 成就墙页面
 function renderAchievementPage() {
-    window._sdUpdateHeader('🏆 成就墙');
-    var container = document.getElementById('fullscreen-content') || document.body;
+    window._sdOpenSubPage();
+    var container = document.getElementById('detail-content') || document.body;
     
     var presetAchievements = [
         { id: 'first_goal', name: '设定目标', desc: '设定第一个目标', icon: '🎯', cond: SelfDrive.goals.length >= 1 },
@@ -290,51 +274,46 @@ function renderAchievementPage() {
     });
     SelfDrive.save();
     
-    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
-    '<div style="padding:16px;">' +
-        '<h3 style="margin:0 0 20px 0;font-size:18px;">🏆 成就墙</h3>' +
-        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' +
-            presetAchievements.map(function(pa) {
-                var unlocked = SelfDrive.achievements.find(function(a) { return a.id === pa.id; });
-                return '<div style="text-align:center;padding:12px;background:' + (unlocked ? 'white' : '#f5f5f5') + ';border-radius:12px;opacity:' + (unlocked ? 1 : 0.5) + ';box-shadow:' + (unlocked ? '0 2px 8px rgba(0,0,0,0.05)' : 'none') + ';">' +
-                    '<div style="font-size:32px;margin-bottom:4px;">' + pa.icon + '</div>' +
-                    '<div style="font-size:12px;font-weight:600;color:#333;">' + pa.name + '</div>' +
-                    '<div style="font-size:10px;color:#999;margin-top:2px;">' + pa.desc + '</div>' +
-                    (unlocked ? '<div style="font-size:9px;color:#43e97b;margin-top:4px;">✅ 已解锁</div>' : '<div style="font-size:9px;color:#999;margin-top:4px;">🔒 未解锁</div>') +
-                '</div>';
-            }).join('') +
-        '</div>' +
-    '</div></div>';
+    var achievementsHtml = presetAchievements.map(function(pa) {
+        var unlocked = SelfDrive.achievements.find(function(a) { return a.id === pa.id; });
+        return '<div style="text-align:center;padding:12px;background:' + (unlocked ? 'white' : '#f5f5f5') + ';border-radius:12px;opacity:' + (unlocked ? 1 : 0.5) + ';box-shadow:' + (unlocked ? '0 2px 8px rgba(0,0,0,0.05)' : 'none') + ';">' +
+            '<div style="font-size:32px;margin-bottom:4px;">' + pa.icon + '</div>' +
+            '<div style="font-size:12px;font-weight:600;color:#333;">' + pa.name + '</div>' +
+            '<div style="font-size:10px;color:#999;margin-top:2px;">' + pa.desc + '</div>' +
+            (unlocked ? '<div style="font-size:9px;color:#43e97b;margin-top:4px;">✅ 已解锁</div>' : '<div style="font-size:9px;color:#999;margin-top:4px;">🔒 未解锁</div>') +
+        '</div>';
+    }).join('');
+    
+    container.innerHTML = '<h3 style="margin:0 0 20px 0;font-size:18px;">🏆 成就墙</h3>' +
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' + achievementsHtml + '</div>' +
+        '<button onclick="window._sdBackToMain()" style="width:100%;padding:12px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-top:20px;">← 返回</button>';
 }
 
+// 每日反思页面
 function renderDiaryPage() {
-    window._sdUpdateHeader('📝 每日反思');
-    var container = document.getElementById('fullscreen-content') || document.body;
+    window._sdOpenSubPage();
+    var container = document.getElementById('detail-content') || document.body;
     
-    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
-    '<div style="padding:16px;">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
-            '<h3 style="margin:0;font-size:18px;">📝 每日反思</h3>' +
-            '<button onclick="addDiary()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 写反思</button>' +
-        '</div>' +
-        (SelfDrive.diary.length === 0 ?
-            '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:12px;">📝</div><div>还没有反思记录</div><div style="font-size:12px;margin-top:8px;">记录今天的收获与思考吧！</div></div>'
-        :
-            '<div style="display:flex;flex-direction:column;gap:12px;">' +
-                SelfDrive.diary.slice().reverse().map(function(entry, i) {
-                    return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
-                        '<div style="font-size:11px;color:#999;margin-bottom:8px;">' + entry.date + '</div>' +
-                        '<div style="font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;">' + entry.text + '</div>' +
-                        '<div style="text-align:right;margin-top:8px;">' +
-                            '<button onclick="deleteDiary(' + (SelfDrive.diary.length - 1 - i) + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>' +
-                        '</div>' +
-                    '</div>';
-                }).join('') +
-            '</div>'
-        ) +
-    '</div></div>';
+    container.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+        '<h3 style="margin:0;font-size:18px;">📝 每日反思</h3>' +
+        '<button onclick="addDiary()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 写反思</button>' +
+    '</div>' +
+    (SelfDrive.diary.length === 0 ?
+        '<div style="text-align:center;padding:40px;color:#999;"><div style="font-size:48px;margin-bottom:12px;">📝</div><div>还没有反思记录</div><div style="font-size:12px;margin-top:8px;">记录今天的收获与思考吧！</div></div>'
+    :
+        '<div style="display:flex;flex-direction:column;gap:12px;">' +
+            SelfDrive.diary.slice().reverse().map(function(entry, i) {
+                return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
+                    '<div style="font-size:11px;color:#999;margin-bottom:8px;">' + entry.date + '</div>' +
+                    '<div style="font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;">' + entry.text + '</div>' +
+                    '<div style="text-align:right;margin-top:8px;">' +
+                        '<button onclick="deleteDiary(' + (SelfDrive.diary.length - 1 - i) + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('') +
+        '</div>'
+    ) +
+    '<button onclick="window._sdBackToMain()" style="width:100%;padding:12px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-top:20px;">← 返回</button>';
 }
 
 function addDiary() {
@@ -353,9 +332,10 @@ function deleteDiary(index) {
     renderDiaryPage();
 }
 
+// 训练方法库页面
 function renderMethodPage() {
-    window._sdUpdateHeader('📚 训练方法');
-    var container = document.getElementById('fullscreen-content') || document.body;
+    window._sdOpenSubPage();
+    var container = document.getElementById('detail-content') || document.body;
     
     var methods = [
         { icon: '🎯', title: '1. 强化"自主感"', desc: '把"我必须做"转变为"我选择做"', tips: ['改变语言：不说"我得去运动"，而说"我选择运动，因为它让我精力更好"', '给选项：不想写作业？可以"先写10分钟"或"先列大纲"。选其一，立刻行动'] },
@@ -368,7 +348,7 @@ function renderMethodPage() {
     ];
     
     var methodsHtml = methods.map(function(m) {
-        var tipsHtml = m.tips.map(function(t) { return '<div style="font-size:12px;color:#666;margin-bottom:4px;">\u2022 ' + t + '</div>'; }).join('');
+        var tipsHtml = m.tips.map(function(t) { return '<div style="font-size:12px;color:#666;margin-bottom:4px;">• ' + t + '</div>'; }).join('');
         return '<div style="background:#f8f9fa;padding:16px;border-radius:12px;">' +
             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
                 '<span style="font-size:20px;">' + m.icon + '</span>' +
@@ -379,13 +359,10 @@ function renderMethodPage() {
         '</div>';
     }).join('');
     
-    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
-    '<div style="padding:16px;">' +
-        '<h3 style="margin:0 0 20px 0;font-size:18px;">📚 自驱力科学训练方法</h3>' +
+    container.innerHTML = '<h3 style="margin:0 0 20px 0;font-size:18px;">📚 自驱力科学训练方法</h3>' +
         '<div style="font-size:12px;color:#666;margin-bottom:16px;">核心：由内在需求或兴趣驱动的行动力，而非依赖外部奖励或压力</div>' +
         '<div style="display:flex;flex-direction:column;gap:12px;">' + methodsHtml + '</div>' +
-    '</div></div>';
+        '<button onclick="window._sdBackToMain()" style="width:100%;padding:12px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-top:20px;">← 返回</button>';
 }
 
 // 注册模块
