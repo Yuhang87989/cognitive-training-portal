@@ -1,5 +1,7 @@
 // ==========================================
-// V195 自驱力与内驱力训练模块
+// V432 自驱力与内驱力训练模块
+// 恢复：子页面使用 detail-modal 小窗口模式
+// 修复：返回按钮使用 closeModal 关闭弹窗
 // 培养学习动力、目标感、意志力
 // ==========================================
 
@@ -16,7 +18,6 @@ window.SelfDrive = {
         localStorage.setItem('self_drive_diary', JSON.stringify(this.diary));
     },
     
-    // 激励语录库
     quotes: [
         "每天进步一点点，坚持带来大改变 💪",
         "学习不是为了别人，是为了遇见更好的自己 ✨",
@@ -37,77 +38,55 @@ window.SelfDrive = {
 
 // 渲染自驱力训练主页面
 window.renderSelfDrive = function(container) {
-    const todayQuote = SelfDrive.getRandomQuote();
-    const streakDays = calculateStreakDays();
+    var todayQuote = SelfDrive.getRandomQuote();
+    var streakDays = calculateStreakDays();
     
-    container.innerHTML = `
-    <div style="padding:16px;">
-        <h3 style="margin:0 0 16px 0;font-size:16px;color:#333;">💪 自驱力训练</h3>
-        
-        <!-- 今日激励 -->
-        <div style="background:linear-gradient(135deg,#667eea20,#764ba220);border-radius:12px;padding:16px;margin-bottom:16px;">
-            <div style="font-size:12px;color:#667eea;margin-bottom:8px;">✨ 今日能量</div>
-            <div style="font-size:14px;color:#333;line-height:1.6;">${todayQuote}</div>
-        </div>
-        
-        <!-- 连续打卡 -->
-        <div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                <span style="font-size:14px;font-weight:600;">🔥 连续打卡</span>
-                <span style="font-size:28px;font-weight:bold;color:#ff6b6b;">${streakDays}天</span>
-            </div>
-            <button onclick="checkInToday()" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff6b6b,#ff9a63);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
-                ${hasCheckedInToday() ? '✅ 今日已打卡' : '📝 今日打卡'}
-            </button>
-        </div>
-        
-        <!-- 功能入口 -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-            <button onclick="renderGoalPage()" style="padding:16px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
-                🎯 目标设定
-            </button>
-            <button onclick="renderHabitPage()" style="padding:16px 12px;background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
-                📅 习惯追踪
-            </button>
-            <button onclick="renderAchievementPage()" style="padding:16px 12px;background:linear-gradient(135deg,#fa709a,#fee140);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
-                🏆 成就墙
-            </button>
-            <button onclick="renderDiaryPage()" style="padding:16px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">
-                📝 每日反思
-            </button>
-        </div>
-        
-        <button onclick="renderMethodPage()" style="width:100%;padding:16px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">
-            📚 科学训练方法
-        </button>
-        
-        <!-- 成就概览 -->
-        <div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-            <div style="font-size:14px;font-weight:600;margin-bottom:12px;">📊 训练概览</div>
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;">
-                <div><div style="font-size:24px;font-weight:bold;color:#667eea;">${SelfDrive.goals.length}</div><div style="font-size:11px;color:#999;">目标</div></div>
-                <div><div style="font-size:24px;font-weight:bold;color:#43e97b;">${SelfDrive.habits.length}</div><div style="font-size:11px;color:#999;">习惯</div></div>
-                <div><div style="font-size:24px;font-weight:bold;color:#fa709a;">${SelfDrive.achievements.length}</div><div style="font-size:11px;color:#999;">成就</div></div>
-            </div>
-        </div>
-    </div>`;
+    container.innerHTML = '<div style="padding:16px;">' +
+        '<h3 style="margin:0 0 16px 0;font-size:16px;color:#333;">💪 自驱力训练</h3>' +
+        '<div style="background:linear-gradient(135deg,#667eea20,#764ba220);border-radius:12px;padding:16px;margin-bottom:16px;">' +
+            '<div style="font-size:12px;color:#667eea;margin-bottom:8px;">✨ 今日能量</div>' +
+            '<div style="font-size:14px;color:#333;line-height:1.6;">' + todayQuote + '</div>' +
+        '</div>' +
+        '<div style="background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+                '<span style="font-size:14px;font-weight:600;">🔥 连续打卡</span>' +
+                '<span style="font-size:28px;font-weight:bold;color:#ff6b6b;">' + streakDays + '天</span>' +
+            '</div>' +
+            '<button onclick="checkInToday()" style="width:100%;padding:12px;background:linear-gradient(135deg,#ff6b6b,#ff9a63);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">' +
+                (hasCheckedInToday() ? '✅ 今日已打卡' : '📝 今日打卡') +
+            '</button>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
+            '<button onclick="renderGoalPage()" style="padding:16px 12px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">🎯 目标设定</button>' +
+            '<button onclick="renderHabitPage()" style="padding:16px 12px;background:linear-gradient(135deg,#43e97b,#38f9d7);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">📅 习惯追踪</button>' +
+            '<button onclick="renderAchievementPage()" style="padding:16px 12px;background:linear-gradient(135deg,#fa709a,#fee140);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">🏆 成就墙</button>' +
+            '<button onclick="renderDiaryPage()" style="padding:16px 12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">📝 每日反思</button>' +
+        '</div>' +
+        '<button onclick="renderMethodPage()" style="width:100%;padding:16px;background:linear-gradient(135deg,#FF6B6B,#FF9A63);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">📚 科学训练方法</button>' +
+        '<div style="background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
+            '<div style="font-size:14px;font-weight:600;margin-bottom:12px;">📊 训练概览</div>' +
+            '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;">' +
+                '<div><div style="font-size:24px;font-weight:bold;color:#667eea;">' + SelfDrive.goals.length + '</div><div style="font-size:11px;color:#999;">目标</div></div>' +
+                '<div><div style="font-size:24px;font-weight:bold;color:#43e97b;">' + SelfDrive.habits.length + '</div><div style="font-size:11px;color:#999;">习惯</div></div>' +
+                '<div><div style="font-size:24px;font-weight:bold;color:#fa709a;">' + SelfDrive.achievements.length + '</div><div style="font-size:11px;color:#999;">成就</div></div>' +
+            '</div>' +
+        '</div>' +
+    '</div>';
 };
 
-// 计算连续打卡天数
 function calculateStreakDays() {
-    const checkins = JSON.parse(localStorage.getItem('self_drive_checkins') || '[]');
+    var checkins = JSON.parse(localStorage.getItem('self_drive_checkins') || '[]');
     if (checkins.length === 0) return 0;
     
-    let streak = 0;
-    const today = new Date().toDateString();
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    var today = new Date().toDateString();
+    var streak = 0;
+    var current = new Date();
     
-    checkins.sort().reverse();
-    for (let i = 0; i < checkins.length; i++) {
-        const checkDate = new Date(checkins[i]).toDateString();
-        const expectedDate = new Date(Date.now() - i * 86400000).toDateString();
-        if (checkDate === expectedDate || (i === 0 && checkDate === yesterday)) {
+    while (true) {
+        var dateStr = current.toDateString();
+        if (checkins.includes(dateStr)) {
             streak++;
+            current.setDate(current.getDate() - 1);
         } else {
             break;
         }
@@ -116,425 +95,336 @@ function calculateStreakDays() {
 }
 
 function hasCheckedInToday() {
-    const checkins = JSON.parse(localStorage.getItem('self_drive_checkins') || '[]');
-    const today = new Date().toDateString();
-    return checkins.some(c => new Date(c).toDateString() === today);
+    var checkins = JSON.parse(localStorage.getItem('self_drive_checkins') || '[]');
+    return checkins.includes(new Date().toDateString());
 }
 
 function checkInToday() {
-    if (hasCheckedInToday()) {
-        window.showToast('今天已经打过卡啦！');
-        return;
+    var checkins = JSON.parse(localStorage.getItem('self_drive_checkins') || '[]');
+    var today = new Date().toDateString();
+    
+    if (!checkins.includes(today)) {
+        checkins.push(today);
+        localStorage.setItem('self_drive_checkins', JSON.stringify(checkins));
+        
+        // 添加成就
+        if (calculateStreakDays() >= 7) {
+            addAchievement('连续打卡7天', '坚持一周，棒极了！ 🔥');
+        }
+        if (calculateStreakDays() >= 30) {
+            addAchievement('连续打卡30天', '一个月的坚持，了不起！ 🌟');
+        }
+        
+        showToast('打卡成功！继续加油 💪');
+        var container = document.getElementById('fullscreen-content');
+        if (container) window.renderSelfDrive(container);
+    } else {
+        showToast('今日已打卡 ✅');
     }
-    
-    const checkins = JSON.parse(localStorage.getItem('self_drive_checkins') || '[]');
-    checkins.push(new Date().toISOString());
-    localStorage.setItem('self_drive_checkins', JSON.stringify(checkins));
-    
-    window.showToast('🎉 打卡成功！继续加油！');
-    renderSelfDrive(document.getElementById('main-content') || document.querySelector('.content'));
 }
 
-// 目标页面
-function renderGoalPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
+function addAchievement(title, desc) {
+    if (!SelfDrive.achievements.find(a => a.title === title)) {
+        SelfDrive.achievements.push({
+            title: title,
+            desc: desc,
+            date: new Date().toLocaleDateString()
+        });
+        SelfDrive.save();
+    }
+}
+
+function showToast(msg) {
+    var toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#333;color:white;padding:12px 24px;border-radius:8px;z-index:10000;font-size:14px;';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 2000);
+}
+
+// ==========================================
+// 子页面渲染函数
+// ==========================================
+
+// 目标设定页面
+window.renderGoalPage = function() {
+    var container = document.getElementById('detail-content') || document.body;
+    var modal = document.getElementById('detail-modal');
     if (modal) modal.classList.add('show');
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
-    <div style="padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>
-            <button onclick="addGoal()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
-        </div>
-        ${SelfDrive.goals.length === 0 ? `
-            <div style="text-align:center;padding:40px;color:#999;">
-                <div style="font-size:48px;margin-bottom:12px;">🎯</div>
-                <div>还没有设定目标</div>
-                <div style="font-size:12px;margin-top:8px;">设定一个小目标，开始行动吧！</div>
-            </div>
-        ` : `
-            <div style="display:flex;flex-direction:column;gap:12px;">
-                ${SelfDrive.goals.map((goal, i) => `
-                    <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                            <div style="flex:1;">
-                                <div style="font-size:14px;font-weight:600;color:#333;text-decoration:${goal.completed ? 'line-through' : 'none'};opacity:${goal.completed ? 0.5 : 1};">${goal.text}</div>
-                                <div style="font-size:11px;color:#999;margin-top:4px;">${goal.date || ''}</div>
-                            </div>
-                            <div style="display:flex;gap:8px;">
-                                <button onclick="toggleGoal(${i})" style="padding:4px 8px;background:${goal.completed ? '#43e97b' : '#f0f0f0'};color:${goal.completed ? 'white' : '#666'};border:none;border-radius:6px;font-size:11px;cursor:pointer;">${goal.completed ? '✅' : '完成'}</button>
-                                <button onclick="deleteGoal(${i})" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `}
-    </div>`;
+    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
+    '<div style="padding:16px;">' +
+        '<h3 style="margin:0 0 16px 0;font-size:15px;color:#333;">🎯 目标设定</h3>' +
+        '<div style="margin-bottom:16px;">' +
+            '<input id="goal-input" type="text" placeholder="输入新目标..." style="width:calc(100% - 80px);padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;">' +
+            '<button onclick="addGoal()" style="width:70px;padding:10px;background:#4facfe;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">添加</button>' +
+        '</div>' +
+        '<div id="goals-list" style="max-height:300px;overflow-y:auto;"></div>' +
+    '</div></div>';
+    
+    renderGoalsList();
+};
+
+function renderGoalsList() {
+    var list = document.getElementById('goals-list');
+    if (!list) return;
+    
+    var html = '';
+    SelfDrive.goals.forEach(function(goal, i) {
+        html += '<div style="background:#f8f9fa;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">' +
+            '<div style="flex:1;">' +
+                '<div style="font-size:13px;color:#333;">' + goal.text + '</div>' +
+                '<div style="font-size:11px;color:#999;margin-top:4px;">' + goal.date + '</div>' +
+            '</div>' +
+            '<button onclick="deleteGoal(' + i + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">删除</button>' +
+        '</div>';
+    });
+    
+    if (SelfDrive.goals.length === 0) {
+        html = '<div style="text-align:center;color:#999;padding:20px;">暂无目标，添加一个吧！</div>';
+    }
+    
+    list.innerHTML = html;
 }
 
 function addGoal() {
-    const text = prompt('🎯 输入你的目标：');
-    if (!text) return;
+    var input = document.getElementById('goal-input');
+    if (!input || !input.value.trim()) return;
     
     SelfDrive.goals.push({
-        text: text,
-        date: new Date().toLocaleDateString(),
-        completed: false
+        text: input.value.trim(),
+        date: new Date().toLocaleDateString()
     });
     SelfDrive.save();
-    window.showToast('✅ 目标已添加');
-    renderGoalPage();
-}
-
-function toggleGoal(index) {
-    SelfDrive.goals[index].completed = !SelfDrive.goals[index].completed;
-    SelfDrive.save();
-    renderGoalPage();
+    input.value = '';
+    renderGoalsList();
+    showToast('目标添加成功 🎯');
 }
 
 function deleteGoal(index) {
-    if (!confirm('确定删除这个目标吗？')) return;
     SelfDrive.goals.splice(index, 1);
     SelfDrive.save();
-    renderGoalPage();
+    renderGoalsList();
+    showToast('目标已删除');
 }
 
 // 习惯追踪页面
-function renderHabitPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
+window.renderHabitPage = function() {
+    var container = document.getElementById('detail-content') || document.body;
+    var modal = document.getElementById('detail-modal');
     if (modal) modal.classList.add('show');
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
-    <div style="padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h3 style="margin:0;font-size:18px;">📅 习惯追踪</h3>
-            <button onclick="addHabit()" style="padding:8px 16px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 新增</button>
-        </div>
-        ${SelfDrive.habits.length === 0 ? `
-            <div style="text-align:center;padding:40px;color:#999;">
-                <div style="font-size:48px;margin-bottom:12px;">📅</div>
-                <div>还没有添加习惯</div>
-                <div style="font-size:12px;margin-top:8px;">好习惯从今天开始养成！</div>
-            </div>
-        ` : `
-            <div style="display:flex;flex-direction:column;gap:12px;">
-                ${SelfDrive.habits.map((habit, i) => `
-                    <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                            <span style="font-size:14px;font-weight:600;color:#333;">${habit.icon || '✅'} ${habit.name}</span>
-                            <span style="font-size:12px;color:#43e97b;font-weight:600;">${habit.streak || 0}天</span>
-                        </div>
-                        <div style="display:flex;gap:4px;margin-bottom:8px;">
-                            ${(habit.checkins || []).slice(-7).map(c => `
-                                <div style="width:14px;height:14px;background:#43e97b;border-radius:3px;"></div>
-                            `).join('')}
-                            ${Array(Math.max(0, 7 - (habit.checkins || []).length)).fill(0).map(() => `
-                                <div style="width:14px;height:14px;background:#f0f0f0;border-radius:3px;"></div>
-                            `).join('')}
-                        </div>
-                        <div style="display:flex;gap:8px;">
-                            <button onclick="checkHabit(${i})" style="flex:1;padding:8px;background:#43e97b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">今日打卡</button>
-                            <button onclick="deleteHabit(${i})" style="padding:8px 12px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">删除</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `}
-    </div>`;
+    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
+    '<div style="padding:16px;">' +
+        '<h3 style="margin:0 0 16px 0;font-size:15px;color:#333;">📅 习惯追踪</h3>' +
+        '<div style="margin-bottom:16px;">' +
+            '<input id="habit-input" type="text" placeholder="输入新习惯..." style="width:calc(100% - 80px);padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;">' +
+            '<button onclick="addHabit()" style="width:70px;padding:10px;background:#43e97b;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">添加</button>' +
+        '</div>' +
+        '<div id="habits-list" style="max-height:300px;overflow-y:auto;"></div>' +
+    '</div></div>';
+    
+    renderHabitsList();
+};
+
+function renderHabitsList() {
+    var list = document.getElementById('habits-list');
+    if (!list) return;
+    
+    var today = new Date().toDateString();
+    var html = '';
+    SelfDrive.habits.forEach(function(habit, i) {
+        var checked = habit.checkins && habit.checkins.includes(today);
+        html += '<div style="background:#f8f9fa;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">' +
+            '<div style="flex:1;display:flex;align-items:center;">' +
+                '<button onclick="checkHabit(' + i + ')" style="width:24px;height:24px;border-radius:50%;border:2px solid ' + (checked ? '#43e97b' : '#ddd') + ';background:' + (checked ? '#43e97b' : 'transparent') + ';cursor:pointer;margin-right:12px;">' + (checked ? '✓' : '') + '</button>' +
+                '<div>' +
+                    '<div style="font-size:13px;color:#333;">' + habit.text + '</div>' +
+                    '<div style="font-size:11px;color:#999;">连续 ' + (habit.streak || 0) + ' 天</div>' +
+                '</div>' +
+            '</div>' +
+            '<button onclick="deleteHabit(' + i + ')" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">删除</button>' +
+        '</div>';
+    });
+    
+    if (SelfDrive.habits.length === 0) {
+        html = '<div style="text-align:center;color:#999;padding:20px;">暂无习惯，添加一个吧！</div>';
+    }
+    
+    list.innerHTML = html;
 }
 
 function addHabit() {
-    const name = prompt('📅 输入习惯名称（如：每天背10个单词）：');
-    if (!name) return;
+    var input = document.getElementById('habit-input');
+    if (!input || !input.value.trim()) return;
     
     SelfDrive.habits.push({
-        name: name,
-        icon: '✅',
+        text: input.value.trim(),
         streak: 0,
         checkins: []
     });
     SelfDrive.save();
-    window.showToast('✅ 习惯已添加');
-    renderHabitPage();
+    input.value = '';
+    renderHabitsList();
+    showToast('习惯添加成功 📅');
 }
 
 function checkHabit(index) {
-    const habit = SelfDrive.habits[index];
-    const today = new Date().toDateString();
+    var habit = SelfDrive.habits[index];
+    var today = new Date().toDateString();
     
     if (!habit.checkins) habit.checkins = [];
     
-    const lastCheckin = habit.checkins.length > 0 ? new Date(habit.checkins[habit.checkins.length - 1]).toDateString() : null;
-    if (lastCheckin === today) {
-        window.showToast('今天已经打过卡啦！');
-        return;
-    }
-    
-    habit.checkins.push(new Date().toISOString());
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    if (lastCheckin === yesterday) {
+    if (!habit.checkins.includes(today)) {
+        habit.checkins.push(today);
         habit.streak = (habit.streak || 0) + 1;
+        SelfDrive.save();
+        
+        if (habit.streak >= 7) {
+            addAchievement('坚持习惯7天', habit.text + ' 坚持7天！ 🌟');
+        }
+        
+        showToast('打卡成功！继续加油 💪');
     } else {
-        habit.streak = 1;
+        showToast('今日已完成 ✅');
     }
     
-    SelfDrive.save();
-    window.showToast('🎉 打卡成功！继续坚持！');
-    renderHabitPage();
+    renderHabitsList();
 }
 
 function deleteHabit(index) {
-    if (!confirm('确定删除这个习惯吗？')) return;
     SelfDrive.habits.splice(index, 1);
     SelfDrive.save();
-    renderHabitPage();
+    renderHabitsList();
+    showToast('习惯已删除');
 }
 
 // 成就墙页面
-function renderAchievementPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
+window.renderAchievementPage = function() {
+    var container = document.getElementById('detail-content') || document.body;
+    var modal = document.getElementById('detail-modal');
     if (modal) modal.classList.add('show');
     
-    // 预设成就
-    const presetAchievements = [
-        { id: 'first_goal', name: '设定目标', desc: '设定第一个目标', icon: '🎯', condition: () => SelfDrive.goals.length >= 1 },
-        { id: 'checkin_7', name: '一周坚持', desc: '连续打卡7天', icon: '🔥', condition: () => calculateStreakDays() >= 7 },
-        { id: 'checkin_30', name: '月度坚持', desc: '连续打卡30天', icon: '🏆', condition: () => calculateStreakDays() >= 30 },
-        { id: 'habit_3', name: '习惯养成', desc: '同时追踪3个习惯', icon: '📅', condition: () => SelfDrive.habits.length >= 3 },
-        { id: 'diary_5', name: '反思达人', desc: '写了5篇反思日记', icon: '📝', condition: () => SelfDrive.diary.length >= 5 },
-        { id: 'achievement_unlock', name: '解锁成就', desc: '解锁3个成就', icon: '🏅', condition: () => SelfDrive.achievements.length >= 3 }
-    ];
+    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
+    '<div style="padding:16px;">' +
+        '<h3 style="margin:0 0 16px 0;font-size:15px;color:#333;">🏆 成就墙</h3>' +
+        '<div id="achievements-list" style="max-height:350px;overflow-y:auto;"></div>' +
+    '</div></div>';
     
-    // 检查并解锁新成就
-    presetAchievements.forEach(pa => {
-        if (pa.condition() && !SelfDrive.achievements.find(a => a.id === pa.id)) {
-            SelfDrive.achievements.push({
-                id: pa.id,
-                name: pa.name,
-                desc: pa.desc,
-                icon: pa.icon,
-                unlockedAt: new Date().toISOString()
-            });
-        }
+    renderAchievementsList();
+};
+
+function renderAchievementsList() {
+    var list = document.getElementById('achievements-list');
+    if (!list) return;
+    
+    var html = '';
+    SelfDrive.achievements.forEach(function(ach) {
+        html += '<div style="background:#f8f9fa;border-radius:8px;padding:12px;margin-bottom:8px;">' +
+            '<div style="font-size:13px;font-weight:600;color:#333;">' + ach.title + '</div>' +
+            '<div style="font-size:11px;color:#999;margin-top:4px;">' + ach.desc + '</div>' +
+            '<div style="font-size:10px;color:#999;margin-top:4px;">' + ach.date + '</div>' +
+        '</div>';
     });
-    SelfDrive.save();
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
-    <div style="padding:20px;">
-        <h3 style="margin:0 0 20px 0;font-size:18px;">🏆 成就墙</h3>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-            ${presetAchievements.map(pa => {
-                const unlocked = SelfDrive.achievements.find(a => a.id === pa.id);
-                return `
-                    <div style="text-align:center;padding:12px;background:${unlocked ? 'white' : '#f5f5f5'};border-radius:12px;opacity:${unlocked ? 1 : 0.5};box-shadow:${unlocked ? '0 2px 8px rgba(0,0,0,0.05)' : 'none'};">
-                        <div style="font-size:32px;margin-bottom:4px;">${pa.icon}</div>
-                        <div style="font-size:12px;font-weight:600;color:#333;">${pa.name}</div>
-                        <div style="font-size:10px;color:#999;margin-top:2px;">${pa.desc}</div>
-                        ${unlocked ? '<div style="font-size:9px;color:#43e97b;margin-top:4px;">✅ 已解锁</div>' : '<div style="font-size:9px;color:#999;margin-top:4px;">🔒 未解锁</div>'}
-                    </div>
-                `;
-            }).join('')}
-        </div>
-    </div>`;
+    if (SelfDrive.achievements.length === 0) {
+        html = '<div style="text-align:center;color:#999;padding:40px;">暂无成就，开始训练吧！ 🏆</div>';
+    }
+    
+    list.innerHTML = html;
 }
 
 // 每日反思页面
-function renderDiaryPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
-    <div style="padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h3 style="margin:0;font-size:18px;">📝 每日反思</h3>
-            <button onclick="addDiary()" style="padding:8px 16px;background:#667eea;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;">+ 写反思</button>
-        </div>
-        ${SelfDrive.diary.length === 0 ? `
-            <div style="text-align:center;padding:40px;color:#999;">
-                <div style="font-size:48px;margin-bottom:12px;">📝</div>
-                <div>还没有反思记录</div>
-                <div style="font-size:12px;margin-top:8px;">记录今天的收获与思考吧！</div>
-            </div>
-        ` : `
-            <div style="display:flex;flex-direction:column;gap:12px;">
-                ${SelfDrive.diary.slice().reverse().map((entry, i) => `
-                    <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                        <div style="font-size:11px;color:#999;margin-bottom:8px;">${entry.date}</div>
-                        <div style="font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;">${entry.text}</div>
-                        <div style="text-align:right;margin-top:8px;">
-                            <button onclick="deleteDiary(${SelfDrive.diary.length - 1 - i})" style="padding:4px 8px;background:#ff6b6b;color:white;border:none;border-radius:6px;font-size:11px;cursor:pointer;">删除</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `}
-    </div>`;
-}
-
-function addDiary() {
-    const text = prompt('📝 今天有什么收获或感悟？');
-    if (!text) return;
-    
-    SelfDrive.diary.push({
-        text: text,
-        date: new Date().toLocaleString()
-    });
-    SelfDrive.save();
-    window.showToast('✅ 已保存');
-    renderDiaryPage();
-}
-
-function deleteDiary(index) {
-    if (!confirm('确定删除这条反思吗？')) return;
-    SelfDrive.diary.splice(index, 1);
-    SelfDrive.save();
-    renderDiaryPage();
-}
-
-
-// 训练方法库页面
-function renderMethodPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
-    
-    const methods = [
-        {
-            icon: '🎯',
-            title: '1. 强化"自主感"',
-            desc: '把"我必须做"转变为"我选择做"',
-            tips: [
-                '改变语言：不说"我得去运动"，而说"我选择运动，因为它让我精力更好"',
-                '给选项：不想写作业？可以"先写10分钟"或"先列大纲"。选其一，立刻行动'
-            ]
-        },
-        {
-            icon: '💪',
-            title: '2. 制造"胜任感"',
-            desc: '动力来源于"我能做好"的预期',
-            tips: [
-                '拆解任务：把大目标分解到"不可能失败"的小步骤（如"背1个单词"）',
-                '记录成就：每天写下3件完成的小事，哪怕只是"准时起床"'
-            ]
-        },
-        {
-            icon: '💡',
-            title: '3. 连接"价值感"',
-            desc: '明确"为什么做"比"怎么做"更能激发持久动力',
-            tips: [
-                '追问5层：针对目标连续追问"为什么"，直到触及内在价值观',
-                '视觉化结果：想象完成任务后的具体感受（如成就感、自由感），并写下来'
-            ]
-        },
-        {
-            icon: '🌱',
-            title: '4. 设计"低阻力"环境',
-            desc: '自驱力脆弱时，环境是关键推手',
-            tips: [
-                '降低启动成本：想看书就把书放在枕头边；想学习就提前把文具准备好',
-                '移除诱惑：学习时把手机放在另一个房间'
-            ]
-        },
-        {
-            icon: '❓',
-            title: '5. 用"好奇心"驱动探索',
-            desc: '内驱力常源于未知。对过程而非结果好奇',
-            tips: [
-                '问"如果……会怎样"：如"如果我每天写100字，一个月后会写出什么？"',
-                '允许无目的尝试：每周花1小时纯粹因为"觉得有趣"做一件事，不设目标'
-            ]
-        },
-        {
-            icon: '🔄',
-            title: '6. 建立正向反馈闭环',
-            desc: '大脑依赖多巴胺维持动力',
-            tips: [
-                '即时奖励：完成任务后立即给自己一个小奖励（如听一首喜欢的歌）',
-                '追踪进度：用可视化方式（如进度条、打卡记录）让成长"被看见"'
-            ]
-        },
-        {
-            icon: '⚡',
-            title: '7. 管理"认知资源"',
-            desc: '自驱力像肌肉会疲劳，需要节能和恢复',
-            tips: [
-                '意志力配额：把最重要的决策放在精力最好的时段做',
-                '主动休息：每45-90分钟强制休息，避免意志力耗尽'
-            ]
-        }
-    ];
-    
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.backToSelfDriveMain()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
-    <div style="padding:20px;">
-        <h3 style="margin:0 0 20px 0;font-size:18px;">📚 自驱力科学训练方法</h3>
-        <div style="font-size:12px;color:#666;margin-bottom:16px;">核心：由内在需求或兴趣驱动的行动力，而非依赖外部奖励或压力</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-            ${methods.map(m => `
-                <div style="background:white;padding:16px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                        <span style="font-size:20px;">${m.icon}</span>
-                        <span style="font-size:14px;font-weight:600;color:#333;">${m.title}</span>
-                    </div>
-                    <div style="font-size:12px;color:#667eea;margin-bottom:8px;">${m.desc}</div>
-                    <div style="padding-left:28px;">
-                        ${m.tips.map(t => `<div style="font-size:12px;color:#666;margin-bottom:4px;">• ${t}</div>`).join('')}
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    </div>`;
-}
-
-// 注册模块
-if (typeof CTM !== 'undefined') {
-    CTM.registerModule('selfdrive', {
-        name: '自驱力训练',
-        icon: '💪',
-        render: renderSelfDrive
-    });
-}
-
-// ============================================================
-// ES6 Module 导出
-// ============================================================
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        SelfDrive: window.SelfDrive,
-        renderSelfDrive,
-        calculateStreakDays,
-        hasCheckedInToday,
-        checkInToday,
-        renderGoalPage,
-        addGoal,
-        toggleGoal,
-        deleteGoal,
-        renderHabitPage,
-        addHabit,
-        checkHabit,
-        deleteHabit,
-        renderAchievementPage,
-        renderDiaryPage,
-        renderMethodPage
-    };
-}
-
-
-// V255: 将函数挂载到window，确保全局可访问
-// 自驱力子页面返回主页面：关闭detail-modal并刷新自驱力主页面
-window.backToSelfDriveMain = function() {
+window.renderDiaryPage = function() {
+    var container = document.getElementById('detail-content') || document.body;
     var modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.remove('show');
-    var container = document.getElementById('fullscreen-content');
-    if (container && typeof window.renderSelfDrive === 'function') {
-        window.renderSelfDrive(container);
-    }
+    if (modal) modal.classList.add('show');
+    
+    container.innerHTML = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
+    '<div style="padding:16px;">' +
+        '<h3 style="margin:0 0 16px 0;font-size:15px;color:#333;">📝 每日反思</h3>' +
+        '<div style="margin-bottom:16px;">' +
+            '<textarea id="diary-input" placeholder="今天的收获和反思..." style="width:100%;height:100px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;resize:none;"></textarea>' +
+        '</div>' +
+        '<button onclick="saveDiary()" style="width:100%;padding:12px;background:#667eea;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">保存反思</button>' +
+        '<div id="diary-list" style="max-height:200px;overflow-y:auto;margin-top:16px;"></div>' +
+    '</div></div>';
+    
+    renderDiaryList();
 };
 
+function renderDiaryList() {
+    var list = document.getElementById('diary-list');
+    if (!list) return;
+    
+    var html = '';
+    SelfDrive.diary.forEach(function(entry, i) {
+        html += '<div style="background:#f8f9fa;border-radius:8px;padding:12px;margin-bottom:8px;">' +
+            '<div style="font-size:11px;color:#999;margin-bottom:4px;">' + entry.date + '</div>' +
+            '<div style="font-size:13px;color:#333;">' + entry.text + '</div>' +
+        '</div>';
+    });
+    
+    if (SelfDrive.diary.length === 0) {
+        html = '<div style="text-align:center;color:#999;padding:20px;">暂无反思记录</div>';
+    }
+    
+    list.innerHTML = html;
+}
+
+function saveDiary() {
+    var input = document.getElementById('diary-input');
+    if (!input || !input.value.trim()) return;
+    
+    SelfDrive.diary.push({
+        text: input.value.trim(),
+        date: new Date().toLocaleDateString()
+    });
+    SelfDrive.save();
+    input.value = '';
+    renderDiaryList();
+    showToast('反思已保存 📝');
+}
+
+// 科学训练方法页面
+window.renderMethodPage = function() {
+    var container = document.getElementById('detail-content') || document.body;
+    var modal = document.getElementById('detail-modal');
+    if (modal) modal.classList.add('show');
+    
+    var methods = [
+        { title: '番茄工作法', desc: '25分钟专注+5分钟休息，提高效率', icon: '🍅' },
+        { title: 'SMART目标', desc: '具体、可衡量、可达成、相关、有时限', icon: '🎯' },
+        { title: '习惯堆叠', desc: '将新习惯绑定到现有习惯上', icon: '📦' },
+        { title: '奖励机制', desc: '完成目标后给自己小奖励', icon: '🎁' },
+        { title: '环境设计', desc: '减少干扰，创造专注环境', icon: '🏠' },
+        { title: '记录追踪', desc: '记录进度，可视化成长', icon: '📊' }
+    ];
+    
+    var html = '<div style="background:white;border-radius:16px;margin:4px;box-shadow:0 2px 8px rgba(0,0,0,0.05);overflow:hidden;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #f0f0f0;"><button onclick="window.closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>' +
+    '<div style="padding:16px;">' +
+        '<h3 style="margin:0 0 16px 0;font-size:15px;color:#333;">📚 科学训练方法</h3>';
+    
+    methods.forEach(function(m) {
+        html += '<div style="background:#f8f9fa;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;">' +
+            '<div style="width:40px;height:40px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:12px;">' + m.icon + '</div>' +
+            '<div>' +
+                '<div style="font-size:13px;font-weight:600;color:#333;">' + m.title + '</div>' +
+                '<div style="font-size:11px;color:#999;">' + m.desc + '</div>' +
+            '</div>' +
+        '</div>';
+    });
+    
+    html += '</div></div>';
+    container.innerHTML = html;
+};
+
+// V255: 将函数挂载到window（确保全局可访问）
 window.renderGoalPage = renderGoalPage;
 window.renderHabitPage = renderHabitPage;
 window.renderAchievementPage = renderAchievementPage;
