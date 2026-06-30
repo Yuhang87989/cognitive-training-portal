@@ -9,22 +9,22 @@
     // V396: 宠物解锁任务系统 - 第一个免费选择，其他完成任务解锁
     const PET_SKINS = [
         { id: 'cat', name: '小橘猫', emoji: '🐱', color: '#ff9800', desc: '活泼可爱的小猫咪',
-          img: { idle: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-cat.jpg', happy: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-cat.jpg', eating: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-cat-eat.jpg', sleeping: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-cat-sleep.jpg', sad: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-cat-sad.jpg' },
+          img: { idle: 'imgs/pets/pet-cat.jpg', happy: 'imgs/pets/pet-cat.jpg', eating: 'imgs/pets/pet-cat-eat.jpg', sleeping: 'imgs/pets/pet-cat-sleep.jpg', sad: 'imgs/pets/pet-cat-sad.jpg' },
           unlock: { type: 'free', desc: '免费选择' } },
         { id: 'dog', name: '小柴犬', emoji: '🐕', color: '#8d6e63', desc: '忠诚友善的小狗狗',
-          img: { idle: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-dog.jpg', happy: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-dog.jpg', eating: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-dog.jpg', sleeping: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-dog-sleep.jpg', sad: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-dog.jpg' },
+          img: { idle: 'imgs/pets/pet-dog.jpg', happy: 'imgs/pets/pet-dog.jpg', eating: 'imgs/pets/pet-dog.jpg', sleeping: 'imgs/pets/pet-dog-sleep.jpg', sad: 'imgs/pets/pet-dog.jpg' },
           unlock: { type: 'quiz', target: 5, desc: '完成5道学霸方法练习题', progress: 0 } },
         { id: 'rabbit', name: '小白兔', emoji: '🐰', color: '#f8bbd0', desc: '软萌可爱的小兔子',
-          img: { idle: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-rabbit.jpg', happy: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-rabbit.jpg', eating: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-rabbit.jpg', sleeping: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-rabbit-sleep.jpg', sad: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-rabbit.jpg' },
+          img: { idle: 'imgs/pets/pet-rabbit.jpg', happy: 'imgs/pets/pet-rabbit.jpg', eating: 'imgs/pets/pet-rabbit.jpg', sleeping: 'imgs/pets/pet-rabbit-sleep.jpg', sad: 'imgs/pets/pet-rabbit.jpg' },
           unlock: { type: 'thinking', target: 5, desc: '完成5道思维训练练习题', progress: 0 } },
         { id: 'panda', name: '小熊猫', emoji: '🐼', color: '#fafafa', desc: '国宝级的萌宠',
-          img: { idle: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-panda.jpg', happy: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-panda.jpg', eating: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-panda.jpg', sleeping: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-panda-sleep.jpg', sad: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-panda.jpg' },
+          img: { idle: 'imgs/pets/pet-panda.jpg', happy: 'imgs/pets/pet-panda.jpg', eating: 'imgs/pets/pet-panda.jpg', sleeping: 'imgs/pets/pet-panda-sleep.jpg', sad: 'imgs/pets/pet-panda.jpg' },
           unlock: { type: 'level', target: 5, desc: '宠物达到Lv.5', progress: 0 } },
         { id: 'fox', name: '小狐狸', emoji: '🦊', color: '#ff6b35', desc: '聪明伶俐的小狐狸',
-          img: { idle: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-fox.jpg', happy: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-fox.jpg', eating: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-fox.jpg', sleeping: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-fox-sleep.jpg', sad: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-fox.jpg' },
+          img: { idle: 'imgs/pets/pet-fox.jpg', happy: 'imgs/pets/pet-fox.jpg', eating: 'imgs/pets/pet-fox.jpg', sleeping: 'imgs/pets/pet-fox-sleep.jpg', sad: 'imgs/pets/pet-fox.jpg' },
           unlock: { type: 'game', target: 3, desc: '玩3次训练游戏', progress: 0 } },
         { id: 'bear', name: '小熊熊', emoji: '🐻', color: '#a1887f', desc: '憨厚可爱的小熊',
-          img: { idle: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-bear.jpg', happy: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-bear.jpg', eating: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-bear.jpg', sleeping: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-bear-sleep.jpg', sad: 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/imgs/pets/pet-bear.jpg' },
+          img: { idle: 'imgs/pets/pet-bear.jpg', happy: 'imgs/pets/pet-bear.jpg', eating: 'imgs/pets/pet-bear.jpg', sleeping: 'imgs/pets/pet-bear-sleep.jpg', sad: 'imgs/pets/pet-bear.jpg' },
           unlock: { type: 'days', target: 7, desc: '累计登录7天', progress: 0 } }
     ];
     

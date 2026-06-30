@@ -205,15 +205,10 @@ function checkDigit(correct) {
     if (input && input.value === correct) { 
         gameScore++; 
         document.getElementById('game-score').textContent = gameScore; 
-        SoundEffects.playCorrect();
+        SoundEffects.playCorrect(); // 正确音效
         showToast('正确！');
-        if (gameScore % 3 === 0 && gameLevel < 8) {
-            gameLevel++;
-            updateGameLevelBadge();
-            showToast('升级！数字变长了');
-        }
     } else {
-        SoundEffects.playWrong();
+        SoundEffects.playWrong(); // 错误音效
         showToast('错误，正确答案是 ' + correct);
     }
     setTimeout(() => startDigit(), 500);
@@ -1816,7 +1811,7 @@ function startDigit() {
     const count = 3 + gameLevel;
     const digits = Array.from({length:count},()=>Math.floor(Math.random()*10)).join('');
     board.innerHTML = `<div style="font-size:48px;font-weight:bold;color:#1A6BFF;letter-spacing:8px;">${digits}</div><div style="margin-top:20px;font-size:14px;color:#666;">记住这些数字！</div>`;
-    document.getElementById('game-score').textContent = gameScore;
+    gameScore = 0; document.getElementById('game-score').textContent = '0';
     setTimeout(() => {
         board.innerHTML = `<div style="font-size:18px;color:#666;margin-bottom:12px;">请输入你看到的数字：</div><input type="text" id="digit-input" style="width:200px;text-align:center;font-size:24px;padding:12px;border:2px solid #1A6BFF;border-radius:12px;" maxlength="${count}"/><button onclick="checkDigit('${digits}')" style="margin-top:16px;padding:12px 24px;background:#1A6BFF;color:white;border:none;border-radius:12px;font-size:16px;cursor:pointer;">确认</button>`;
     }, 1500+count*200);
