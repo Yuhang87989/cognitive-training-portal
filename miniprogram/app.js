@@ -32,6 +32,6 @@ App({
   globalData: {
     openid: '',
     cloudEnvId: 'cloudbase-d4g0dkg6n553af199',
-    h5Url: 'https://6mz7txgx3f.coze.site'
+    h5Url: 'https://yuhang87989.github.io/cognitive-training-portal/'
   }
 })
