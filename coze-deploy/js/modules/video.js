@@ -1,12 +1,13 @@
 // 版本: V144
 
+// V397: 视频懒加载 - 不预加载视频文件
 window.videoCourses = [
     {id:"video0",title:"🐻 小熊掉苹果",teacher:"测试视频",duration:"0:10",durationSec:10,category:"测试",gradient:"linear-gradient(135deg,#f5af19,#f12711)",icon:"🐻",url:"https://www.w3schools.com/html/mov_bbb.mp4",views:9999,isTest:true},
-    {id:"video1",title:"专注力训练",teacher:"认知训练",duration:"5:23",durationSec:323,category:"学习方法",gradient:"linear-gradient(135deg,#667eea,#764ba2)",icon:"🎯",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/专注力训练.mp4",views:5680},
-    {id:"video2",title:"学霸深度理解法",teacher:"认知训练",duration:"6:18",durationSec:378,category:"学习方法",gradient:"linear-gradient(135deg,#f093fb,#f5576c)",icon:"📚",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/学霸深度理解法_第1集.mp4",views:4320},
-    {id:"video3",title:"数学抽象推理",teacher:"认知训练",duration:"5:06",durationSec:306,category:"数学",gradient:"linear-gradient(135deg,#4facfe,#00f2fe)",icon:"🔢",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/数学抽象推理.mp4",views:3890},
-    {id:"video4",title:"物理因果守恒",teacher:"认知训练",duration:"5:41",durationSec:341,category:"物理",gradient:"linear-gradient(135deg,#43e97b,#38f9d7)",icon:"⚡",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/物理因果守恒_第1集.mp4",views:2950},
-    {id:"video5",title:"逆向思维训练",teacher:"认知训练",duration:"3:27",durationSec:207,category:"思维训练",gradient:"linear-gradient(135deg,#fa709a,#fee140)",icon:"🧩",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/逆向思维训练_第1集.mp4",views:2150}
+    {id:"video1",title:"专注力训练",teacher:"认知训练",duration:"5:23",durationSec:323,category:"学习方法",gradient:"linear-gradient(135deg,#667eea,#764ba2)",icon:"🎯",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/focus-training.mp4",views:5680},
+    {id:"video2",title:"学霸深度理解法",teacher:"认知训练",duration:"6:18",durationSec:378,category:"学习方法",gradient:"linear-gradient(135deg,#f093fb,#f5576c)",icon:"📚",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/deep-understanding-ep1.mp4",views:4320},
+    {id:"video3",title:"数学抽象推理",teacher:"认知训练",duration:"5:06",durationSec:306,category:"数学",gradient:"linear-gradient(135deg,#4facfe,#00f2fe)",icon:"🔢",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/math-abstract-reasoning.mp4",views:3890},
+    {id:"video4",title:"物理因果守恒",teacher:"认知训练",duration:"5:41",durationSec:341,category:"物理",gradient:"linear-gradient(135deg,#43e97b,#38f9d7)",icon:"⚡",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/physics-conservation-ep1.mp4",views:2950},
+    {id:"video5",title:"逆向思维训练",teacher:"认知训练",duration:"3:27",durationSec:207,category:"思维训练",gradient:"linear-gradient(135deg,#fa709a,#fee140)",icon:"🧩",url:"https://yuhang87989.github.io/cognitive-training-portal/videos/reverse-thinking-ep1.mp4",views:2150}
 ];
 
 CTM.registerModule('video', {
@@ -18,7 +19,7 @@ CTM.registerModule('video', {
 function renderVideo(container) {
     // 使用videoCourses数组渲染21个视频
     const videos = videoCourses.map(function(v) {
-        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
+        return '<div class="video-item" data-video-id="' + v.id + '" onclick="playVideoFromList(\'' + v.id + '\')">' +
                '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
                '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
                '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +
@@ -56,10 +57,17 @@ function renderVideo(container) {
     
     // 渲染本地视频列表
     renderLocalVideoList();
+    
+    // 确保视频播放器已初始化
+    setTimeout(function() {
+        if (typeof window.initEnhancedVideoPlayer === 'function' && window.videoCtx && !window.videoCtx.isInitialized) {
+            window.initEnhancedVideoPlayer();
+        }
+    }, 300);
 }
 
 function renderLocalVideoList() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const localVideos = user?.localVideos || [];
     const listEl = document.getElementById('local-video-list');
     
@@ -105,7 +113,7 @@ function filterVideoCourse(category, btn) {
     
     var videos = window.videoCourses.filter(function(v) { return category === 'all' || v.category === category; });
     var videoHtml = videos.map(function(v) {
-        return '<div class="video-item" onclick="playVideoFromList(\'' + v.id + '\')">' +
+        return '<div class="video-item" data-video-id="' + v.id + '" onclick="playVideoFromList(\'' + v.id + '\')">' +
                '<div class="video-thumb"><span class="play-icon">▶</span></div>' +
                '<div class="video-info"><div class="video-title">' + v.title + '</div>' +
                '<div class="video-meta">' + v.teacher + ' · ' + v.duration + '</div>' +
@@ -118,8 +126,23 @@ function filterVideoCourse(category, btn) {
 function playVideoFromList(id) {
     var course = window.videoCourses.find(function(v) { return v.id === id; });
     if (course) {
-        // 使用增强版视频播放器，传入videoId用于记录观看进度
-        openEnhancedVideoPlayer(course.title, course.url, course.id);
+        // 确保播放器已加载
+        if (typeof window.openEnhancedVideoPlayer === 'function') {
+            window.openEnhancedVideoPlayer(course.title, course.url, course.id);
+        } else {
+            // 播放器未加载，尝试初始化后播放
+            console.warn('[Video] 播放器未就绪，尝试初始化...');
+            if (typeof window.initEnhancedVideoPlayer === 'function') {
+                window.initEnhancedVideoPlayer();
+            }
+            setTimeout(function() {
+                if (typeof window.openEnhancedVideoPlayer === 'function') {
+                    window.openEnhancedVideoPlayer(course.title, course.url, course.id);
+                } else {
+                    window.showToast('视频播放器加载中，请稍后重试');
+                }
+            }, 500);
+        }
     }
 }
 
@@ -128,8 +151,8 @@ function playVideoFromList(id) {
 // ============================================================
 window.filterVideoCourse = filterVideoCourse;
 window.playVideoFromList = playVideoFromList;
-window.playLocalVideo = playLocalVideo;
-window.deleteLocalVideo = deleteLocalVideo;
+if (typeof playLocalVideo !== 'undefined') window.playLocalVideo = playLocalVideo;
+if (typeof deleteLocalVideo !== "undefined") window.deleteLocalVideo = deleteLocalVideo;
 
 
 // ============================================================
@@ -141,15 +164,13 @@ if (typeof module !== 'undefined' && module.exports) {
         renderLocalVideoList,
         filterVideoCourse,
         playVideoFromList,
-        playLocalVideo,
+        // playLocalVideo defined in player.js
         deleteLocalVideo,
         videoCourses: window.videoCourses
     };
 }
 
-export {
     renderVideo,
     renderLocalVideoList,
     filterVideoCourse,
     playVideoFromList
-};

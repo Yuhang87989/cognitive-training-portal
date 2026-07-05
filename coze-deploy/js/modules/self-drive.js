@@ -123,7 +123,7 @@ function hasCheckedInToday() {
 
 function checkInToday() {
     if (hasCheckedInToday()) {
-        showToast('今天已经打过卡啦！');
+        window.showToast('今天已经打过卡啦！');
         return;
     }
     
@@ -131,7 +131,7 @@ function checkInToday() {
     checkins.push(new Date().toISOString());
     localStorage.setItem('self_drive_checkins', JSON.stringify(checkins));
     
-    showToast('🎉 打卡成功！继续加油！');
+    window.showToast('🎉 打卡成功！继续加油！');
     renderSelfDrive(document.getElementById('main-content') || document.querySelector('.content'));
 }
 
@@ -141,7 +141,7 @@ function renderGoalPage() {
     const modal = document.getElementById('detail-modal');
     if (modal) modal.classList.add('show');
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="document.getElementById(\'detail-modal\').classList.remove(\'show\');var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>
@@ -184,7 +184,7 @@ function addGoal() {
         completed: false
     });
     SelfDrive.save();
-    showToast('✅ 目标已添加');
+    window.showToast('✅ 目标已添加');
     renderGoalPage();
 }
 
@@ -207,7 +207,7 @@ function renderHabitPage() {
     const modal = document.getElementById('detail-modal');
     if (modal) modal.classList.add('show');
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="document.getElementById(\'detail-modal\').classList.remove(\'show\');var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">📅 习惯追踪</h3>
@@ -257,7 +257,7 @@ function addHabit() {
         checkins: []
     });
     SelfDrive.save();
-    showToast('✅ 习惯已添加');
+    window.showToast('✅ 习惯已添加');
     renderHabitPage();
 }
 
@@ -269,7 +269,7 @@ function checkHabit(index) {
     
     const lastCheckin = habit.checkins.length > 0 ? new Date(habit.checkins[habit.checkins.length - 1]).toDateString() : null;
     if (lastCheckin === today) {
-        showToast('今天已经打过卡啦！');
+        window.showToast('今天已经打过卡啦！');
         return;
     }
     
@@ -282,7 +282,7 @@ function checkHabit(index) {
     }
     
     SelfDrive.save();
-    showToast('🎉 打卡成功！继续坚持！');
+    window.showToast('🎉 打卡成功！继续坚持！');
     renderHabitPage();
 }
 
@@ -323,7 +323,7 @@ function renderAchievementPage() {
     });
     SelfDrive.save();
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="document.getElementById(\'detail-modal\').classList.remove(\'show\');var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <h3 style="margin:0 0 20px 0;font-size:18px;">🏆 成就墙</h3>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
@@ -348,7 +348,7 @@ function renderDiaryPage() {
     const modal = document.getElementById('detail-modal');
     if (modal) modal.classList.add('show');
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="document.getElementById(\'detail-modal\').classList.remove(\'show\');var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">📝 每日反思</h3>
@@ -385,7 +385,7 @@ function addDiary() {
         date: new Date().toLocaleString()
     });
     SelfDrive.save();
-    showToast('✅ 已保存');
+    window.showToast('✅ 已保存');
     renderDiaryPage();
 }
 
@@ -469,7 +469,7 @@ function renderMethodPage() {
         }
     ];
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="closeModal()" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="document.getElementById(\'detail-modal\').classList.remove(\'show\');var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <h3 style="margin:0 0 20px 0;font-size:18px;">📚 自驱力科学训练方法</h3>
         <div style="font-size:12px;color:#666;margin-bottom:16px;">核心：由内在需求或兴趣驱动的行动力，而非依赖外部奖励或压力</div>
@@ -523,10 +523,10 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-export {
-    SelfDrive,
-    renderSelfDrive,
-    calculateStreakDays,
-    hasCheckedInToday,
-    checkInToday
-};
+
+// V255: 将函数挂载到window，确保全局可访问
+window.renderGoalPage = renderGoalPage;
+window.renderHabitPage = renderHabitPage;
+window.renderAchievementPage = renderAchievementPage;
+window.renderDiaryPage = renderDiaryPage;
+window.renderMethodPage = renderMethodPage;
