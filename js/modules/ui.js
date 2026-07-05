@@ -960,6 +960,7 @@ function toggleSettingsGroup(groupId) {
 }
 
 function openSettingsPanel() {
+    const gradeNames = {5:'五年级',6:'六年级',7:'初一',8:'初二',9:'初三'};
     const user = window.getCurrentUserData();
     if (user) {
         // 更新用户信息卡片
