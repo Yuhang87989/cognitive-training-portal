@@ -3552,7 +3552,7 @@ window.submitMethodAnswers = submitMethodAnswers;
 window.startThinkingQuiz = startThinkingQuiz;
 window.submitThinkingAnswers = submitThinkingAnswers;
 window.selectThinkingOpt = selectThinkingOpt;
-window.filterMethod = filterMethod;
+// filterMethod defined in method.js, not games.js
 window.viewMethodNote = viewMethodNote;
 window.deleteMethodNote = deleteMethodNote;
 window.closeDetail = closeDetail;

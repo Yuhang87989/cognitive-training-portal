@@ -152,7 +152,7 @@ function playVideoFromList(id) {
 window.filterVideoCourse = filterVideoCourse;
 window.playVideoFromList = playVideoFromList;
 if (typeof playLocalVideo !== 'undefined') window.playLocalVideo = playLocalVideo;
-window.deleteLocalVideo = deleteLocalVideo;
+if (typeof deleteLocalVideo !== "undefined") window.deleteLocalVideo = deleteLocalVideo;
 
 
 // ============================================================
