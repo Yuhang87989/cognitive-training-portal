@@ -3554,7 +3554,7 @@ window.submitThinkingAnswers = submitThinkingAnswers;
 window.selectThinkingOpt = selectThinkingOpt;
 // filterMethod defined in method.js, not games.js
 // viewMethodNote defined in method.js
-window.deleteMethodNote = deleteMethodNote;
+// deleteMethodNote not defined, removed to prevent ReferenceError
 window.closeDetail = closeDetail;
 window.closeModal = closeModal;
 window.submitTopicAnswer = submitTopicAnswer;
