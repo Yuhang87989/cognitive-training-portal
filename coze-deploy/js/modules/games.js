@@ -3555,9 +3555,9 @@ window.selectThinkingOpt = selectThinkingOpt;
 // filterMethod defined in method.js, not games.js
 // viewMethodNote defined in method.js
 // deleteMethodNote not defined, removed to prevent ReferenceError
-window.closeDetail = closeDetail;
-window.closeModal = closeModal;
-window.submitTopicAnswer = submitTopicAnswer;
+// closeDetail not defined in games.js
+// closeModal already exported from method.js
+// submitTopicAnswer not defined in games.js
 
 
 // ====== 元认知预测功能 ======
