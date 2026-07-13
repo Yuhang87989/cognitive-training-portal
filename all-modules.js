@@ -554,7 +554,7 @@ export function setDifficulty(level) {
 export function showAvatarModal() {
     closeUserSwitchModal();
     
-    const container = document.getElementById('avatar-options');
+    const container = document.getElementById('avatar-grid');
     const modal = document.getElementById('avatar-modal');
     
     if (!container || !modal) {
