@@ -217,7 +217,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <span style="margin-left:auto;font-size:11px;color:#999;" id="dropdown-difficulty">Lv.1</span>
                         </div>
                         <div class="user-dropdown-divider"></div>
-                        <div class="user-dropdown-item" onclick="window.UserModule.showAvatarModal()">
+                        <div class="user-dropdown-item" onclick="openAvatarModal()">
                             <span>🎨</span>
                             <span>更换头像</span>
                         </div>
@@ -797,7 +797,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="modal-content" id="avatar-modal-content" style="max-width:380px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h3 style="margin:0;font-size:18px;">选择头像</h3>
-            <span onclick="window.UserModule.closeAvatarModal()" style="cursor:pointer;font-size:22px;color:#999;">✕</span>
+            <span onclick="closeAvatarModal()" style="cursor:pointer;font-size:22px;color:#999;">✕</span>
         </div>
         <div id="avatar-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;justify-items:center;"></div>
     </div>

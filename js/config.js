@@ -33,6 +33,7 @@ const AVATAR_LIST = [
     { emoji: '🐶', gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
     { emoji: '🐰', gradient: 'linear-gradient(135deg,#f6d365,#fda085)' }
 ];
+window.AVATAR_LIST = AVATAR_LIST;
 
 // ============================================================
 // 视觉API配置 - V152新增
