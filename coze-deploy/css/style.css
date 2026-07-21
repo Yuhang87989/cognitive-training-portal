@@ -129,6 +129,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .game-board{display:grid;gap:10px;margin:0 auto;max-width:340px;flex:1;align-content:center;width:100%;min-height:300px}
 .game-board.size-3{grid-template-columns:repeat(3,1fr)}
 .game-board.size-4{grid-template-columns:repeat(4,1fr)}
+.game-board.size-5{grid-template-columns:repeat(5,1fr);max-width:380px;gap:6px}
+.game-board.size-6{grid-template-columns:repeat(6,1fr);max-width:420px;gap:4px}
 .game-cell{aspect-ratio:1;background:var(--border-gray);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;min-height:36px}
 .game-cell:active{transform:scale(0.95)}
 .games-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}
@@ -280,7 +282,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 .audio-player-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#1a1a2e,#16213e);z-index:2000;display:none;flex-direction:column;}
 .audio-player-modal.show{display:flex}
-.mini-player.show{display:flex!important}.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:flex;align-items:center;z-index:100;}
+.mini-player{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:white;border-radius:16px;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.15);display:none;align-items:center;z-index:100;}.mini-player.show{display:flex!important}
 
 
 .filter-btn{padding:6px 12px;border-radius:16px;border:1px solid #e0e0e0;background:white;font-size:12px;cursor:pointer;transition:all 0.2s}
@@ -597,3 +599,707 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     }
 }
 
+
+/* ============================================================ */
+/* DeepSeek网页版风格 - V359 */
+/* ============================================================ */
+
+/* 整体容器 */
+.ds-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background: #f7f7f8;
+}
+
+/* 左侧边栏 */
+.ds-sidebar {
+    width: 260px;
+    background: #202123;
+    border-right: 1px solid #2d2d30;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+    color: #ececf1;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ds-sidebar.hidden {
+    transform: translateX(-100%);
+    position: absolute;
+    height: 100%;
+    z-index: 100;
+}
+
+.ds-sidebar-header {
+    padding: 12px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.ds-new-chat-btn {
+    width: 100%;
+    padding: 10px 16px;
+    background: #4d6bfe;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.ds-new-chat-btn:hover {
+    background: #3d5bde;
+}
+
+.ds-chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px;
+}
+
+.ds-sidebar-search {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.ds-sidebar-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    background: white;
+}
+
+.ds-sidebar-search input:focus {
+    border-color: #4d6bfe;
+}
+
+.ds-chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+.ds-chat-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.ds-chat-item:hover {
+    background: rgba(77, 107, 254, 0.1);
+}
+
+.ds-chat-item.active {
+    background: rgba(77, 107, 254, 0.15);
+    border-left-color: #4d6bfe;
+}
+
+.ds-chat-item-title {
+    font-size: 13px;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 30px;
+}
+
+.ds-chat-item-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+}
+
+.ds-chat-item-delete {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.ds-chat-item:hover .ds-chat-item-delete {
+    opacity: 1;
+}
+
+.ds-chat-item-delete:hover {
+    color: #ff4757;
+}
+
+.ds-empty-list {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-size: 13px;
+}
+
+.ds-sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #2d2d30;
+    background: #202123;
+}
+
+.ds-balance-info {
+    font-size: 12px;
+    color: #ececf1;
+    cursor: pointer;
+    padding: 8px;
+    background: #2d2d30;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.ds-balance-info:hover {
+    background: #3a3a3c;
+}
+
+/* 移动端遮罩 */
+.ds-sidebar-mask {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+}
+
+.ds-sidebar-mask.active {
+    display: block;
+}
+
+/* 主聊天区 */
+.ds-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* 顶部栏 */
+.ds-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    gap: 12px;
+}
+
+.ds-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.ds-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ds-mode-switch {
+    display: flex;
+    gap: 4px;
+    background: #f0f0f0;
+    padding: 3px;
+    border-radius: 6px;
+}
+
+.ds-mode-btn {
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.ds-mode-btn.active {
+    background: #4d6bfe;
+    color: white;
+}
+
+/* 消息区域 */
+.ds-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #f7f7f8;
+}
+
+.ds-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 20px;
+}
+
+.ds-welcome-icon {
+    margin-bottom: 16px;
+}
+
+.ds-welcome-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.ds-welcome-desc {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 消息样式 */
+.ds-msg {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.ds-msg-user {
+    flex-direction: row-reverse;
+}
+
+.ds-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.ds-avatar-assistant {
+    background: white;
+    border: 1px solid #eee;
+}
+
+.ds-avatar-user {
+    background: #e8f0fe;
+    color: #4d6bfe;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ds-msg-content {
+    max-width: 70%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ds-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.ds-bubble-user {
+    background: #e8f0fe;
+    color: #333;
+    border-bottom-right-radius: 4px;
+}
+
+.ds-bubble-assistant {
+    background: white;
+    color: #333;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.ds-msg-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.ds-msg-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.ds-msg:hover .ds-msg-actions {
+    opacity: 1;
+}
+
+.ds-action-btn {
+    padding: 4px 8px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ds-action-btn:hover {
+    background: #e5e5e5;
+}
+
+/* 代码块 */
+.code-block-wrapper {
+    position: relative;
+    margin: 8px 0;
+}
+
+.code-block {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.code-block code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.inline-code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    background: #666;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.code-block-wrapper:hover .copy-code-btn {
+    opacity: 1;
+}
+
+.copy-code-btn:hover {
+    background: #444;
+}
+
+/* 思考内容 */
+.ds-thinking-block {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+}
+
+.ds-thinking-header {
+    font-size: 12px;
+    color: #b45309;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.ds-thinking-content {
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.6;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* 思考指示器 */
+.ds-thinking-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    color: #666;
+    font-size: 13px;
+}
+
+.ds-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #e5e5e5;
+    border-top-color: #4d6bfe;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 输入区域 */
+.ds-input-area {
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+.ds-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ds-tool-btn {
+    width: 36px;
+    height: 36px;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ds-tool-btn:hover {
+    background: #e5e5e5;
+}
+
+.ds-image-preview {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ds-image-preview img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.ds-input-box {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.ds-input-box textarea {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+}
+
+.ds-input-box textarea:focus {
+    border-color: #4d6bfe;
+}
+
+.ds-send-btn {
+    width: 44px;
+    height: 44px;
+    background: #4d6bfe;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.ds-send-btn:hover {
+    background: #3d5bde;
+}
+
+.ds-voice-row {
+    margin-top: 8px;
+}
+
+.ds-voice-btn {
+    padding: 8px 16px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ds-voice-btn:hover {
+    background: #e5e5e5;
+}
+
+/* 数学公式 */
+.math-block {
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    text-align: center;
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.math-inline {
+    padding: 2px 4px;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+/* 模态框 */
+.ds-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.ds-modal {
+    background: white;
+    border-radius: 12px;
+    max-width: 360px;
+    width: 90%;
+    overflow: hidden;
+}
+
+.ds-modal-header {
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+}
+
+.ds-modal-body {
+    padding: 16px;
+}
+
+.ds-modal-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.ds-modal-btns button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.ds-modal-btns button:first-child {
+    background: #4d6bfe;
+    color: white;
+}
+
+.ds-modal-btns button:first-child:hover {
+    background: #3d5bde;
+}
+
+.ds-modal-btns button:nth-child(2) {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.ds-modal-btns button:nth-child(2):hover {
+    background: #e5e5e5;
+}
+
+.ds-modal-btns button:last-child {
+    background: white;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .ds-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 100;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        transform: translateX(-100%);
+    }
+    .ds-sidebar.open {
+        transform: translateX(0);
+    }
+    .ds-sidebar.hidden {
+        transform: translateX(-100%);
+    }
+    
+    .ds-menu-btn {
+        display: block;
+    }
+    
+    .ds-msg-content {
+        max-width: 85%;
+    }
+}
+
+/* DeepSeek sidebar footer */
+.ds-footer-row { display: flex; align-items: center; justify-content: space-between; }
+.ds-footer-btns { display: flex; gap: 6px; }
+.ds-footer-btn { padding: 4px 10px; border: none; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.ds-footer-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.ds-image-preview { text-align: center; padding: 0 0 4px; }
+.ds-image-preview img { max-width: 80px; max-height: 60px; border-radius: 8px; border: 2px solid #e0e0e0; }

@@ -7,7 +7,7 @@
 // 每周回顾功能
 // ============================================================
 function renderWeeklyReview(container) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const today = new Date();
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
@@ -102,7 +102,7 @@ function renderWeeklyReview(container) {
             </div>
             
             <div style="margin-top:24px;text-align:center;">
-                <button onclick="closeFullscreenPage()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
+                <button onclick="history.back()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
                     返回继续学习
                 </button>
             </div>
@@ -126,7 +126,7 @@ function getEncouragement(days, minutes) {
 // 进步曲线功能
 // ============================================================
 function renderProgressChart(container) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const today = new Date();
     
     // 获取最近30天的数据
@@ -203,7 +203,7 @@ function renderProgressChart(container) {
             </div>
             
             <div style="margin-top:24px;text-align:center;">
-                <button onclick="closeFullscreenPage()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
+                <button onclick="history.back()" style="background:#667eea;color:white;border:none;padding:12px 32px;border-radius:24px;font-size:14px;cursor:pointer;">
                     返回继续学习
                 </button>
             </div>
@@ -234,9 +234,7 @@ console.log('V201 - 学习统计模块已加载');
 // ============================================================
 // ES6 Module 导出
 // ============================================================
-export {
     renderWeeklyReview,
     renderProgressChart,
     getEncouragement,
     getProgressAnalysis
-};

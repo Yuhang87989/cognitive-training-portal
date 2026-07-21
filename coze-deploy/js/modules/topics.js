@@ -14,7 +14,7 @@ function getTopicsPerPage() {
 }
 
 function renderTopics(container) {
-    const currentUser = getCurrentUserData();
+    const currentUser = window.getCurrentUserData();
     const userGrade = (currentUser && currentUser.grade) ? currentUser.grade : 7;
     
     container.innerHTML = `
@@ -37,7 +37,7 @@ function renderTopics(container) {
             <button class="subject-tab-btn" onclick="selectTopicsSubject(this, 'chemistry')">化学</button>
         </div>
         <div id="topics-list-container"></div>
-        <button onclick="closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
+        <button onclick="history.back()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
     `;
     currentTopicsGrade = userGrade;
     loadTopicsList();
@@ -148,12 +148,13 @@ function findTopic(topicId) {
 function openTopicQuestion(topicId) {
     const topic = findTopic(topicId);
     if (!topic) {
-        showToast('题目不存在');
+        window.showToast('题目不存在');
         return;
     }
     
+    const content = window.ensureDetailModal ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
+    if (!modal || !content) { window.showToast('页面加载中，请稍后重试'); return; }
     modal.classList.add('show');
     
     content.innerHTML = `
@@ -183,7 +184,7 @@ function checkTopicAnswer(topicId) {
     const topic = findTopic(topicId);
     
     if (!answer) {
-        showToast('请输入答案');
+        window.showToast('请输入答案');
         return;
     }
     
@@ -205,7 +206,7 @@ function checkTopicAnswer(topicId) {
            <div style="margin-top:8px;font-size:13px;color:#666;">解析：${topic.e}</div>
            <button class="game-btn btn-blue" style="margin-top:12px;" onclick="analyzeTopicWithAI(${topicId})">🤖 AI详细解说</button>`;
     
-    const userData = getCurrentUserData();
+    const userData = window.getCurrentUserData();
     if (userData) {
         if (!userData.topicStats) userData.topicStats = {};
         userData.topicStats[topicId] = { 
@@ -239,7 +240,7 @@ function checkTopicAnswer(topicId) {
 async function analyzeTopicWithAI(topicId) {
     const topic = findTopic(topicId);
     if (!topic) {
-        showToast('题目不存在');
+        window.showToast('题目不存在');
         return;
     }
     
@@ -264,7 +265,7 @@ async function analyzeTopicWithAI(topicId) {
                 aiResultArea.id = 'topic-ai-result';
                 content.appendChild(aiResultArea);
             } else {
-                showToast('无法显示AI辅导');
+                window.showToast('无法显示AI辅导');
                 return;
             }
         }
@@ -337,7 +338,7 @@ async function analyzeTopicWithAI(topicId) {
 
 function uploadTopicPhoto(topicId, input) {
     if (!input.files[0]) return;
-    showToast('照片上传成功，AI分析中...');
+    window.showToast('照片上传成功，AI分析中...');
     analyzeTopicWithAI(topicId);
 }
 
@@ -383,11 +384,9 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-export {
     renderTopics,
     selectTopicsGrade,
     selectTopicsSubject,
     loadTopicsList,
     openTopicQuestion,
     checkTopicAnswer
-};

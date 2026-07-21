@@ -5,7 +5,7 @@
 
 window.LocalDB = {
     dbName: 'CognitiveTrainingDB',
-    version: 1,
+    version: 2, // V286 升级版本号，添加moduleData表
     db: null,
     
     // 初始化数据库
@@ -47,8 +47,12 @@ window.LocalDB = {
             if (!db.objectStoreNames.contains('trainingRecords')) {
                 db.createObjectStore('trainingRecords', { keyPath: 'id' });
             }
+            // V286 添加模块数据同步表
+            if (!db.objectStoreNames.contains('moduleData')) {
+                db.createObjectStore('moduleData', { keyPath: 'id' });
+            }
             
-            console.log('IndexedDB表创建完成');
+            console.log('IndexedDB表创建完成 V286');
         };
         
         request.onsuccess = function(e) {
@@ -206,9 +210,9 @@ window.LocalDB = {
             a.download = '认知训练备份_' + new Date().toISOString().slice(0, 10) + '.json';
             a.click();
             URL.revokeObjectURL(url);
-            showToast('✅ 备份已下载');
+            window.showToast('✅ 备份已下载');
         }).catch(function() {
-            showToast('❌ 备份失败');
+            window.showToast('❌ 备份失败');
         });
     },
     
@@ -226,16 +230,16 @@ window.LocalDB = {
                 try {
                     const data = JSON.parse(e.target.result);
                     LocalDB.importAll(data).then(function(result) {
-                        showToast('✅ 导入完成，恢复了' + result.success + '项数据');
+                        window.showToast('✅ 导入完成，恢复了' + result.success + '项数据');
                         if (callback) callback(true);
                         // 同时同步到localStorage
                         syncDBToLocalStorage();
                     }).catch(function() {
-                        showToast('❌ 导入失败');
+                        window.showToast('❌ 导入失败');
                         if (callback) callback(false);
                     });
                 } catch(e) {
-                    showToast('❌ 文件格式错误');
+                    window.showToast('❌ 文件格式错误');
                     if (callback) callback(false);
                 }
             };
@@ -248,7 +252,7 @@ window.LocalDB = {
 // 数据双向同步：IndexedDB <-> localStorage
 window.syncDBToLocalStorage = function() {
     // 从localStorage同步到IndexedDB
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user) LocalDB.save('userInfo', user, 'currentUser');
     
     // 错题本同步
@@ -283,7 +287,7 @@ window.AutoBackup = {
     toggle: function(enabled) {
         this.enabled = enabled;
         localStorage.setItem('auto_backup_enabled', enabled ? 'true' : 'false');
-        showToast(enabled ? '✅ 自动备份已开启' : '自动备份已关闭');
+        window.showToast(enabled ? '✅ 自动备份已开启' : '自动备份已关闭');
     },
     
     setInterval: function(hours) {

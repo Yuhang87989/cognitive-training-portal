@@ -2,32 +2,119 @@
 <html lang="zh-CN">
 <head>
 <script>
-// V151: 强制清除旧Service Worker缓存
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(reg){
-      if(reg.active && reg.active.scriptURL.indexOf('v143')>-1){
-        reg.unregister();
-        console.log('[V151] 已注销旧SW');
-      }
-    });
-  });
-  caches.keys().then(function(names){
-    names.forEach(function(name){
-      if(name.indexOf('v143')>-1 || name.indexOf('v144')>-1 || name.indexOf('v145')>-1){
-        caches.delete(name);
-        console.log('[V151] 已删除旧缓存:',name);
-      }
-    });
-  });
+// V371: 自动版本号 - 基于发布日期，无需手动维护
+var SITE_VERSION = '418';  // 发布时更新这一个数字即可，其他地方自动同步
+
+(function(){
+  var STORED_VER = localStorage.getItem('_site_ver') || '';
+  if(STORED_VER !== SITE_VERSION){
+    localStorage.setItem('_site_ver', SITE_VERSION);
+    // V395: 版本变更时注销旧Service Worker并清空缓存
+    if(typeof navigator !== 'undefined' && navigator.serviceWorker){
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        regs.forEach(function(reg){ reg.unregister(); });
+      });
+    }
+    if(typeof caches !== 'undefined'){
+      caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); });
+    }
+    if(!sessionStorage.getItem('_v396_refreshed')){
+      sessionStorage.setItem('_v396_refreshed', '1');
+      location.reload();
+    }
+  }
+})();
+
+// V232: 占位函数 - 确保ES6 Module加载完成前点击有响应
+window._openFullscreenPagePlaceholder = function(module) {
+    console.log('[占位函数被调用，模块正在加载中...');
+    // 检查是否已经加载完成
+    if (window.openFullscreenPage && window.openFullscreenPage !== window._openFullscreenPagePlaceholder) {
+        return window.openFullscreenPage(module);
+    }
+    // 还在加载中，显示提示
+    alert('模块正在加载中，请稍候再试...');
+};
+
+// 初始化占位函数
+window.openFullscreenPage = window._openFullscreenPagePlaceholder;
+window.initPortal = function() {
+    console.log('[占位initPortal被调用，等待真实函数加载...');
+};
+// V395: 占位保护 - 避免HTML onclick在JS加载前报错
+if (typeof window.toggleUserMenu === 'undefined') window.toggleUserMenu = function(){ console.log('[占位] toggleUserMenu'); };
+if (typeof window.closeUserMenu === 'undefined') window.closeUserMenu = function(){};
+if (typeof window.selectGrade === 'undefined') window.selectGrade = function(){};
+if (typeof window.selectSubject === 'undefined') window.selectSubject = function(){};
+if (typeof window.playLocalVideo === 'undefined') window.playLocalVideo = function(){};
+if (typeof window.submitMethodAnswers === 'undefined') window.submitMethodAnswers = function(){};
+if (typeof window.startMethodQuiz === 'undefined') window.startMethodQuiz = function(){};
+if (typeof window.startThinkingQuiz === 'undefined') window.startThinkingQuiz = function(){};
+if (typeof window.submitThinkingAnswers === 'undefined') window.submitThinkingAnswers = function(){};
+if (typeof window.selectThinkingOpt === 'undefined') window.selectThinkingOpt = function(){};
+
+console.log('[V396] 占位函数已初始化');
+</script>
+
+<!-- V263: 用传统script标签依次加载所有业务模块，更可靠，一个模块出错不影响其他 -->
+<script>
+console.log('[V396] 开始用传统方式加载所有业务模块...');
+window.__loaded_modules = [];
+</script>
+<script>window.__loaded_modules.push('ui'); console.log('[V396] UI模块加载完成');</script>
+<script>window.__loaded_modules.push('config');</script>
+<script>window.__loaded_modules.push('ctm');</script>
+<script>window.__loaded_modules.push('db');</script>
+<script>window.__loaded_modules.push('storage');</script>
+<script>window.__loaded_modules.push('utils');</script>
+<script>window.__loaded_modules.push('user');</script>
+
+<script>window.__loaded_modules.push('audio');</script>
+
+<script>window.__loaded_modules.push('pet');</script>
+
+
+
+<!-- 数据模块 -->
+
+
+
+
+<!-- 业务模块 - 全部用传统方式加载，确保可用 -->
+
+
+
+
+
+
+    
+
+
+
+
+
+        
+
+        
+
+
+
+
+<script>
+console.log('[V396] 所有业务模块传统方式加载完成，共加载:', window.__loaded_modules.length, '个模块');
+// 初始化数据同步系统
+if (window.DataSync && window.DataSync.init) {
+    window.DataSync.init();
+    console.log('[V396] DataSync数据同步系统已启动');
 }
 </script>
+
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="theme-color" content="#3377FF"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<title>认知训练 V229</title>
+<title>认知训练 V255</title>
 <link rel="manifest" href="manifest.json"/>
 <link rel="icon" type="image/x-icon" href="favicon.ico"/>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
@@ -47,39 +134,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .login-logo-area{text-align:center;margin-bottom:24px}
 .login-avatar{width:80px;height:80px;background:white;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
 .login-title{font-size:24px;font-weight:bold;color:#1a1a2e;margin-bottom:4px}
-.login-subtitle{font-size:13px;color:#666}
+.login-subtitle{font-size:11px;color:#666}
 .login-card{background:white;border-radius:20px;padding:24px;box-shadow:0 4px 20px rgba(51,119,255,0.15);margin-bottom:16px}
 .home-header{background:linear-gradient(135deg,#E8F4FF,#D4ECFF);padding:16px 16px 20px;border-radius:0 0 24px 24px;position:relative}
 .header-top{display:flex;justify-content:space-between;align-items:center}
 .app-logo{width:44px;height:44px;background:linear-gradient(135deg,#3377FF,#FF9A63);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
 .app-logo-img{width:44px;height:44px;border-radius:12px;object-fit:cover;}
-.app-title{font-size:18px;font-weight:bold;color:#333;margin-left:8px}
+.app-title{font-size:26px;font-weight:bold;color:#333;margin-left:8px}
 .header-right{display:flex;align-items:center;gap:8px}
 .difficulty-tag{background:rgba(255,149,0,0.1);padding:6px 12px;border-radius:18px;font-size:12px;color:var(--orange);cursor:pointer;transition:all 0.2s}
-.user-avatar-circle{width:42px;height:42px;background:linear-gradient(135deg,#FFD4B8,#FFB6C1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:bold;color:#fff;cursor:pointer;transition:transform 0.2s}
-.module-section{padding:16px 12px 0}
-.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
-.module-btn{display:flex;flex-direction:column;align-items:center;padding:14px 6px 10px;border-radius:16px;border:none;cursor:pointer;transition:transform 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.08);position:relative;min-height:90px}
-.module-icon{font-size:26px;margin-bottom:6px}
-.module-name{font-size:12px;font-weight:bold;color:white;margin-bottom:2px;text-align:center}
-.module-desc{font-size:9px;color:rgba(255,255,255,0.9);text-align:center}
-.gradient-blue{background:linear-gradient(135deg,#3377FF,#4A80F5)}
-.gradient-orange{background:linear-gradient(135deg,#FF9A63,#E87A4E)}
-.gradient-green{background:linear-gradient(135deg,#43E97B,#38F9D7)}
-.gradient-purple{background:linear-gradient(135deg,#667eea,#764ba2)}
-.gradient-pink{background:linear-gradient(135deg,#FFB6C1,#FF9A63)}
+.user-avatar-circle{width:42px;height:42px;background:linear-gradient(135deg,#FFD4B8,#FFB6C1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;color:#fff;cursor:pointer;transition:transform 0.2s}
+.module-section{padding:16px 16px 80px}
+.module-title{font-size:16px;font-weight:bold;color:#333;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.module-grid-unified{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media (max-width: 380px) { .module-grid-unified { grid-template-columns: repeat(3, 1fr); } } @media (max-width: 480px) and (min-width: 381px) { .module-grid-unified { grid-template-columns: repeat(4, 1fr); } }
+.module-btn{display:flex;flex-direction:column;align-items:center;padding:14px 8px 12px;border-radius:20px;border:none;cursor:pointer;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);box-shadow:0 4px 15px rgba(0,0,0,0.1);position:relative;min-height:85px;overflow:hidden}
+.module-btn:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 8px 25px rgba(0,0,0,0.15)}
+.module-btn:active{transform:translateY(-2px) scale(0.98)}
+.module-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.15),transparent);pointer-events:none}
+.module-icon{font-size:26px;margin-bottom:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15))}
+.module-name{font-size:13px;font-weight:600;color:white;margin-bottom:3px;text-align:center;letter-spacing:0.3px}
+.module-desc{font-size:10px;color:rgba(255,255,255,0.85);text-align:center;font-weight:400}
+.module-tag{position:absolute;top:6px;right:6px;background:rgba(255,255,255,0.25);color:white;padding:2px 6px;border-radius:10px;font-size:9px;font-weight:500;backdrop-filter:blur(4px)}
+
+/* 统一配色 - 更柔和协调的渐变 */
+.gradient-blue{background:linear-gradient(135deg,#667eea,#764ba2)}
+.gradient-orange{background:linear-gradient(135deg,#fa709a,#fee140)}
+.gradient-green{background:linear-gradient(135deg,#11998e,#38ef7d)}
+.gradient-purple{background:linear-gradient(135deg,#8e2de2,#4a00e0)}
+.gradient-pink{background:linear-gradient(135deg,#f093fb,#f5576c)}
 .gradient-cyan{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+.gradient-yellow{background:linear-gradient(135deg,#f5af19,#f12711)}
+.gradient-indigo{background:linear-gradient(135deg,#3a1c71,#d76d77)}
+.gradient-teal{background:linear-gradient(135deg,#2193b0,#6dd5ed)}
 .today-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
 .stat-item{background:white;border-radius:12px;padding:10px 6px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-.stat-value{font-size:18px;font-weight:bold;color:var(--blue)}
-.stat-label{font-size:10px;color:var(--text-light);margin-top:2px}
+.stat-value{font-size:26px;font-weight:bold;color:var(--blue)}
+.stat-label{font-size:8px;color:var(--text-light);margin-top:2px}
 .bottom-nav{position:fixed;bottom:0;left:0;width:100%;max-width:480px;left:50%;transform:translateX(-50%);background:white;border-top:1px solid #f0f0f0;display:flex;padding:8px 0;z-index:50;box-shadow:0 -2px 10px rgba(0,0,0,0.05)}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:6px;cursor:pointer;color:var(--text-light);transition:all 0.2s}
 .nav-item.active{color:var(--blue)}
-.nav-icon{font-size:22px;margin-bottom:2px}
-.nav-label{font-size:10px}
+.nav-icon{font-size:16px;margin-bottom:2px}
+.nav-label{font-size:8px}
 </style>
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="css/style.css?v=403"/>
+<script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js"></script>
+<script>if(/MicroMessenger/i.test(navigator.userAgent)){document.addEventListener("DOMContentLoaded",function(){twemoji.parse(document.body,{base:"https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/",ext:".svg",size:""})})}</script>
+<script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 </head>
 <body>
 
@@ -101,7 +203,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="user-menu-wrapper">
                     <div class="user-avatar-circle" id="header-avatar" onclick="toggleUserMenu()">👤</div>
                     <div class="user-dropdown" id="user-dropdown">
-                        <div style="position:absolute;top:8px;right:12px;cursor:pointer;font-size:18px;color:rgba(255,255,255,0.7);z-index:10;" onclick="closeUserMenu()">✕</div>
+                        <div style="position:absolute;top:8px;right:12px;cursor:pointer;font-size:26px;color:rgba(255,255,255,0.7);z-index:10;" onclick="closeUserMenu()">✕</div>
                         <div class="user-dropdown-header" onclick="event.stopPropagation();openEditProfileModal()">
                             <div class="user-dropdown-avatar" id="dropdown-avatar">👤</div>
                             <div class="user-dropdown-name" id="dropdown-name">同学</div>
@@ -136,8 +238,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <span>删除用户</span>
                         </div>
                         <div class="user-dropdown-divider"></div>
-                        
-                        <div class="user-dropdown-item" onclick="openSettingsPanel()">
+<div class="user-dropdown-item" onclick="openSettingsPanel()">
                             <span>⚙️</span>
                             <span>设置</span>
                         </div>
@@ -168,80 +269,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         </div>
     </div>
 
+
     <div class="module-section">
-        <div class="module-grid">
-            <button class="module-btn gradient-orange" onclick="openFullscreenPage('practice')">
-                <span class="module-tag" style="background:#667eea;">AI</span>
-                <div class="module-icon">🎯</div>
-                <div class="module-name">AI精准练</div>
-                <div class="module-desc">薄弱点诊断</div>
+        <div class="module-grid-unified" style="grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <button class="module-btn gradient-green" onclick="openFullscreenPage('exam')">
+                <div class="module-icon">📝</div>
+                <div class="module-name">模拟考试</div>
+                <div class="module-desc">自我检测</div>
             </button>
-            <button class="module-btn gradient-green" onclick="openFullscreenPage('map')">
-                <div class="module-icon">🧠</div>
-                <div class="module-name">认知地图</div>
-                <div class="module-desc">能力可视化</div>
+            <button class="module-btn gradient-blue" onclick="openFullscreenPage('mindmap')">
+                <div class="module-icon">🗺️</div>
+                <div class="module-name">思维导图</div>
+                <div class="module-desc">思维可视化</div>
             </button>
-            <button class="module-btn gradient-purple" onclick="openFullscreenPage('plan')">
-                <span class="module-tag" style="background:#43E97B;">NEW</span>
-                <div class="module-icon">📅</div>
-                <div class="module-name">学习计划</div>
-                <div class="module-desc">Week1-7训练</div>
-            </button>
-            <button class="module-btn gradient-blue" onclick="openFullscreenPage('weekly')">
-                <div class="module-icon">📅</div>
-                <div class="module-name">每周回顾</div>
-                <div class="module-desc">学习数据分析</div>
-            </button>
-            <button class="module-btn gradient-pink" onclick="openFullscreenPage('topics')">
+            <button class="module-btn gradient-pink" onclick="openFullscreenPage('practice')">
                 <div class="module-icon">📚</div>
                 <div class="module-name">母题训练</div>
-                <div class="module-desc">126道经典题</div>
+                <div class="module-desc">126道经典</div>
             </button>
             <button class="module-btn gradient-cyan" onclick="openFullscreenPage('method')">
                 <div class="module-icon">💡</div>
                 <div class="module-name">学霸方法</div>
-                <div class="module-desc">高效学习技巧</div>
+                <div class="module-desc">高效技巧</div>
             </button>
             <button class="module-btn gradient-yellow" onclick="openFullscreenPage('thinking')">
                 <div class="module-icon">🧩</div>
                 <div class="module-name">思维训练</div>
-                <div class="module-desc">四维能力提升</div>
+                <div class="module-desc">逻辑提升</div>
             </button>
             <button class="module-btn gradient-blue" onclick="openFullscreenPage('podcast')">
                 <div class="module-icon">🎧</div>
                 <div class="module-name">播客课堂</div>
-                <div class="module-desc">21个音频课程</div>
+                <div class="module-desc">21个音频</div>
             </button>
             <button class="module-btn gradient-orange" onclick="openFullscreenPage('video')">
                 <div class="module-icon">📺</div>
                 <div class="module-name">视频课堂</div>
-                <div class="module-desc">视频学习</div>
+                <div class="module-desc">学习视频</div>
             </button>
-            <button class="module-btn gradient-green" onclick="openFullscreenPage('games')">
-                <div class="module-icon">🎮</div>
-                <div class="module-name">训练游戏</div>
-                <div class="module-desc">23大认知游戏</div>
+            <button class="module-btn gradient-green" onclick="openFullscreenPage('library')">
+                <div class="module-icon">📚</div>
+                <div class="module-name">学习图书馆</div>
+                <div class="module-desc">看书听书</div>
             </button>
-            <button class="module-btn gradient-purple" onclick="openFullscreenPage('deepseek')">
-                <div class="module-icon">🤖</div>
-                <div class="module-name">DeepSeek</div>
-                <div class="module-desc">AI智能助手</div>
+            <button class="module-btn gradient-teal" onclick="openFullscreenPage('selfdrive')">
+                <div class="module-icon">🚀</div>
+                <div class="module-name">自驱力训练</div>
+                <div class="module-desc">自主学习</div>
+            </button>
+            <button class="module-btn gradient-purple" onclick="openFullscreenPage('pet')">
+                
+                <div class="module-icon">🐱</div>
+                <div class="module-name">虚拟宠物</div>
+                <div class="module-desc">陪伴成长</div>
             </button>
             <button class="module-btn gradient-pink" onclick="openFullscreenPage('wrongbook')">
                 <div class="module-icon">📒</div>
                 <div class="module-name">错题本</div>
-                <div class="module-desc">错题复习巩固</div>
+                <div class="module-desc">错题复习</div>
             </button>
-
-            <button class="module-btn gradient-red" onclick="openSettingsPanel()" style="display:none;">
-                <div class="module-icon">⚙️</div>
-                <div class="module-name">设置</div>
-                <div class="module-desc">账户与充值</div>
+            <button class="module-btn gradient-orange" onclick="openFullscreenPage('ai')">
+                <span class="module-tag">AI</span>
+                <div class="module-icon">🎯</div>
+                <div class="module-name">AI精准练</div>
+                <div class="module-desc">薄弱点诊断</div>
             </button>
         </div>
     </div>
-
-</div>
 
 <!-- 主页面底部导航栏 -->
 <div class="bottom-nav">
@@ -271,23 +365,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <div id="settings-panel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:2100;overflow-y:auto;" onclick="closeSettingsPanel(event)">
     <div style="background:white;width:100%;max-width:400px;border-radius:0 0 20px 20px;padding:20px;max-height:90vh;overflow-y:auto;" onclick="event.stopPropagation()">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <div style="font-size:18px;font-weight:bold;">⚙️ 设置</div>
-            <div onclick="closeSettingsPanel()" style="cursor:pointer;font-size:20px;padding:8px;">✕</div>
+            <div style="font-size:26px;font-weight:bold;">⚙️ 设置</div>
+            <div onclick="closeSettingsPanel()" style="cursor:pointer;font-size:26px;padding:8px;">✕</div>
         </div>
         
         <!-- 用户信息卡片 -->
         <div id="settings-user-card" style="background:linear-gradient(135deg,#1A6BFF,#4A90E2);color:white;border-radius:16px;padding:16px;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <div id="settings-avatar" style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;">邱</div>
+                <div id="settings-avatar" style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;">邱</div>
                 <div>
                     <div id="settings-name" style="font-size:16px;font-weight:600;">邱宇菲</div>
                     <div id="settings-grade" style="font-size:12px;opacity:0.9;">初一 · Lv.1</div>
                 </div>
             </div>
             <div style="display:flex;gap:8px;">
-                <button onclick="openEditProfileModal()" style="flex:1;padding:10px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;font-size:13px;color:white;cursor:pointer;">✏️ 修改信息</button>
-                <button onclick="openChangePasswordModal()" style="flex:1;padding:10px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;font-size:13px;color:white;cursor:pointer;">🔐 修改密码</button>
-                <button onclick="openManageUserModal()" style="flex:1;padding:10px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;font-size:13px;color:white;cursor:pointer;">👥 管理用户</button>
+                <button onclick="openEditProfileModal()" style="flex:1;padding:10px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;font-size:11px;color:white;cursor:pointer;">✏️ 修改信息</button>
+                <button onclick="openChangePasswordModal()" style="flex:1;padding:10px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;font-size:11px;color:white;cursor:pointer;">🔐 修改密码</button>
+                <button onclick="openManageUserModal()" style="flex:1;padding:10px;background:rgba(255,255,255,0.2);border:none;border-radius:8px;font-size:11px;color:white;cursor:pointer;">👥 管理用户</button>
             </div>
         </div>
         
@@ -304,14 +398,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <div style="font-size:14px;color:#333;">难度级别</div>
                             <div style="font-size:12px;color:#999;">影响题目难度和积分奖励</div>
                         </div>
-                        <div id="settings-difficulty-display" style="background:#E8F4FF;color:#1A6BFF;padding:6px 12px;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer;" onclick="openDifficultyModal()">Lv.1</div>
+                        <div id="settings-difficulty-display" style="background:#E8F4FF;color:#1A6BFF;padding:6px 12px;border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;" onclick="openDifficultyModal()">Lv.1</div>
                     </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
                         <div>
                             <div style="font-size:14px;color:#333;">每日训练次数</div>
                             <div style="font-size:12px;color:#999;">建议每天训练8次</div>
                         </div>
-                        <select id="settings-train-count" onchange="updateTrainCount(this.value)" style="padding:6px 12px;border-radius:8px;border:1px solid #ddd;font-size:13px;cursor:pointer;">
+                        <select id="settings-train-count" onchange="updateTrainCount(this.value)" style="padding:6px 12px;border-radius:8px;border:1px solid #ddd;font-size:11px;cursor:pointer;">
                             <option value="4">4次</option>
                             <option value="6">6次</option>
                             <option value="8" selected>8次</option>
@@ -324,7 +418,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                             <div style="font-size:14px;color:#333;"><!-- 答题音效已禁用 --></div>
                             <div style="font-size:12px;color:#999;">正确/错误时播放提示音</div>
                         </div>
-                        <button id="sound-toggle-btn" onclick="toggleSoundEffects()" style="padding:8px 16px;border-radius:20px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:#43E97B;color:white;">已开启</button>
+                        <button id="sound-toggle-btn" onclick="toggleSoundEffects()" style="padding:8px 16px;border-radius:20px;border:none;font-size:11px;font-weight:600;cursor:pointer;background:#43E97B;color:white;">已开启</button>
                     </div>
                 </div>
             </div>
@@ -483,15 +577,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="settings-group-inner">
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;" onclick="openAbout()">
                         <div style="font-size:14px;color:#333;">版本信息</div>
-                        <div style="font-size:13px;color:#1A6BFF;">V151 →</div>
+                        <div style="font-size:11px;color:#1A6BFF;">V305 →</div>
                     </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
                         <div style="font-size:14px;color:#333;">反馈建议</div>
-                        <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openFeedback()">点击反馈</div>
+                        <div style="font-size:11px;color:#1A6BFF;cursor:pointer;" onclick="openFeedback()">点击反馈</div>
                     </div>
                     <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
                         <div style="font-size:14px;color:#333;">使用帮助</div>
-                        <div style="font-size:13px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
+                        <div style="font-size:11px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
                     </div>
                 </div>
             </div>
@@ -504,11 +598,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="modal-content" style="max-width:350px;">
         <div class="modal-title">👤 创建新用户</div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">姓名</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">姓名</label>
             <input type="text" id="create-name" placeholder="请输入姓名" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;" />
         </div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">年级</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">年级</label>
             <select id="create-grade" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
                 <option value="5">五年级</option>
                 <option value="6">六年级</option>
@@ -518,7 +612,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             </select>
         </div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">初始难度</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">初始难度</label>
             <select id="create-difficulty" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
                 <option value="1">Lv.1 入门级</option>
                 <option value="2">Lv.2 初级</option>
@@ -557,7 +651,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="modal-content" style="max-width:320px;">
         <div class="modal-title">🎯 选择难度级别</div>
         <div style="margin-bottom:16px;">
-            <div style="font-size:13px;color:#666;margin-bottom:12px;">难度越高，题目越难，积分奖励越多</div>
+            <div style="font-size:11px;color:#666;margin-bottom:12px;">难度越高，题目越难，积分奖励越多</div>
             <div style="display:flex;flex-direction:column;gap:8px;">
                 <button onclick="setDifficulty(1)" class="diff-btn" data-level="1" style="padding:14px;background:#f0f7ff;border:2px solid #1A6BFF;border-radius:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
                     <span><strong>Lv.1</strong> 入门级</span>
@@ -590,11 +684,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="modal-content" style="max-width:350px;">
         <div class="modal-title">✏️ 修改个人信息</div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">姓名</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">姓名</label>
             <input type="text" id="edit-name" class="input-field" placeholder="请输入姓名" maxlength="10">
         </div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">年级</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">年级</label>
             <select id="edit-grade" class="input-field">
                 <option value="5">五年级</option>
                 <option value="6">六年级</option>
@@ -613,15 +707,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
     <div class="modal-content" style="max-width:350px;">
         <div class="modal-title">🔐 修改密码</div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">当前密码</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">当前密码</label>
             <input type="password" id="current-password" class="input-field" placeholder="请输入当前密码">
         </div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">新密码</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">新密码</label>
             <input type="password" id="new-password" class="input-field" placeholder="请输入新密码">
         </div>
         <div style="margin-bottom:16px;">
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:6px;">确认新密码</label>
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">确认新密码</label>
             <input type="password" id="confirm-password" class="input-field" placeholder="请再次输入新密码">
         </div>
         <button onclick="savePasswordChanges()" class="login-btn login-btn-primary" style="margin-bottom:8px;">保存密码</button>
@@ -634,8 +728,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <div id="metacognitive-modal" class="modal-overlay">
     <div class="modal-content" style="max-width:340px;padding:24px;">
         <div style="text-align:center;margin-bottom:20px;">
-            <div style="font-size:28px;margin-bottom:8px;">🎯</div>
-            <div style="font-size:18px;font-weight:bold;color:#333;">预测你的得分</div>
+            <div style="font-size:26px;margin-bottom:8px;">🎯</div>
+            <div style="font-size:26px;font-weight:bold;color:#333;">预测你的得分</div>
             <div style="font-size:14px;color:#666;margin-top:4px;" id="meta-game-name">游戏名称</div>
         </div>
         
@@ -644,22 +738,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;">
                 <div>
                     <div style="font-size:11px;color:#999;">历史最高</div>
-                    <div style="font-size:20px;font-weight:bold;color:#FF6B6B;" id="meta-best-score">0</div>
+                    <div style="font-size:26px;font-weight:bold;color:#FF6B6B;" id="meta-best-score">0</div>
                 </div>
                 <div>
                     <div style="font-size:11px;color:#999;">历史平均</div>
-                    <div style="font-size:20px;font-weight:bold;color:#667eea;" id="meta-avg-score">-</div>
+                    <div style="font-size:26px;font-weight:bold;color:#667eea;" id="meta-avg-score">-</div>
                 </div>
                 <div>
                     <div style="font-size:11px;color:#999;">游戏次数</div>
-                    <div style="font-size:20px;font-weight:bold;color:#43E97B;" id="meta-game-count">0</div>
+                    <div style="font-size:26px;font-weight:bold;color:#43E97B;" id="meta-game-count">0</div>
                 </div>
             </div>
         </div>
         
         <!-- 首次提示 -->
         <div id="meta-first-time-tip" style="display:none;background:#FFF9E6;border:1px solid #FFD93D;border-radius:8px;padding:10px;margin-bottom:16px;text-align:center;">
-            <span style="font-size:13px;color:#B8860B;">🌟 首次挑战，大胆预测！</span>
+            <span style="font-size:11px;color:#B8860B;">🌟 首次挑战，大胆预测！</span>
         </div>
         
         <!-- 预测输入 -->
@@ -700,7 +794,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 
 <!-- 头像选择模态框 -->
 <div id="avatar-modal" class="modal-overlay">
-    <div class="modal-content" id="avatar-modal-content" style="max-width:380px;"></div>
+    <div class="modal-content" id="avatar-modal-content" style="max-width:380px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 style="margin:0;font-size:18px;">选择头像</h3>
+            <span onclick="closeAvatarModal()" style="cursor:pointer;font-size:22px;color:#999;">✕</span>
+        </div>
+        <div id="avatar-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;justify-items:center;"></div>
+    </div>
 </div>
 
 <!-- 全屏子页面 -->
@@ -765,7 +865,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <!-- 增强版视频播放器 -->
 <div id="enhanced-video-player" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;display:none;flex-direction:column;">
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:12px 16px;background:linear-gradient(rgba(0,0,0,0.6),transparent);">
-        <div onclick="closeEnhancedVideoPlayer()" style="color:white;font-size:18px;cursor:pointer;padding:8px 12px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:8px;">← 退出</div>
+        <div onclick="closeEnhancedVideoPlayer()" style="color:white;font-size:26px;cursor:pointer;padding:8px 12px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:8px;">← 退出</div>
         <div id="evp-title" style="color:white;font-size:14px;font-weight:bold;margin-left:8px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
     </div>
     <video id="evp-video" preload="metadata" playsinline webkit-playsinline x5-video-player-type="h5" x5-video-player-fullscreen="true" style="width:100%;height:100%;object-fit:contain;"></video>
@@ -780,16 +880,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button onclick="toggleEnhancedVideoPlay()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;" id="evp-play-btn">▶</button>
-                <button onclick="seekEnhancedVideoBackward()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">⏪</button>
-                <button onclick="seekEnhancedVideoForward()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">⏩</button>
+                <button onclick="toggleEnhancedVideoPlay()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;" id="evp-play-btn">▶</button>
+                <button onclick="seekEnhancedVideoBackward()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;">⏪</button>
+                <button onclick="seekEnhancedVideoForward()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;">⏩</button>
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
                 <button id="evp-speed-btn" onclick="toggleEnhancedSpeedDropdown()" style="background:none;border:none;color:white;font-size:12px;cursor:pointer;">1x</button>
-                <button id="evp-volume-btn" onclick="toggleEnhancedMute()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">🔊</button>
-                <button onclick="togglePictureInPicture()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">📺</button>
-                <button onclick="toggleEnhancedFullscreen()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">⛶</button>
-                <button onclick="closeEnhancedVideoPlayer()" style="background:none;border:none;color:white;font-size:18px;cursor:pointer;">✕</button>
+                <button id="evp-volume-btn" onclick="toggleEnhancedMute()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;">🔊</button>
+                <button onclick="togglePictureInPicture()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;">📺</button>
+                <button onclick="toggleEnhancedFullscreen()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;">⛶</button>
+                <button onclick="closeEnhancedVideoPlayer()" style="background:none;border:none;color:white;font-size:26px;cursor:pointer;">✕</button>
             </div>
         </div>
     </div>
@@ -800,7 +900,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 </div>
 <style>
 @keyframes spin {
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}.modal-overlay.show{display:flex !important;animation:fadeIn 0.2s;z-index:9999}.modal-content{background:white;border-radius:20px;padding:24px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}.modal-title{font-size:18px;font-weight:700;margin-bottom:16px;text-align:center}.modal-close{background:#f5f5f5;color:#666;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;width:100%}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #eee}.modal-body{padding:0}.modal-footer{margin-top:20px;padding-top:15px;border-top:1px solid #eee;text-align:center}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px}.modal-overlay.show{display:flex !important;animation:fadeIn 0.2s;z-index:9999}.modal-content{background:white;border-radius:20px;padding:24px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto}.modal-title{font-size:26px;font-weight:700;margin-bottom:16px;text-align:center}.modal-close{background:#f5f5f5;color:#666;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;width:100%}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #eee}.modal-body{padding:0}.modal-footer{margin-top:20px;padding-top:15px;border-top:1px solid #eee;text-align:center}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
     from { transform: translate(-50%,-50%) rotate(0deg); }
     to { transform: translate(-50%,-50%) rotate(360deg); }
 }
@@ -857,29 +957,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <div id="metacognitive-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:6000;display:none;align-items:center;justify-content:center;">
   <div style="background:white;border-radius:20px;padding:28px 24px;width:90%;max-width:360px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);animation:slideIn 0.3s ease;">
     <div style="font-size:40px;margin-bottom:12px;">🧠</div>
-    <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:4px;">元认知预测</div>
+    <div style="font-size:26px;font-weight:700;color:#333;margin-bottom:4px;">元认知预测</div>
     <div id="meta-game-name" style="font-size:14px;color:#667eea;margin-bottom:20px;">游戏名称</div>
-    <div id="meta-first-time-tip" style="background:#fff8e1;border-radius:10px;padding:10px;margin-bottom:16px;font-size:13px;color:#f57c00;display:none;">🎯 首次挑战，大胆预测！</div>
+    <div id="meta-first-time-tip" style="background:#fff8e1;border-radius:10px;padding:10px;margin-bottom:16px;font-size:11px;color:#f57c00;display:none;">🎯 首次挑战，大胆预测！</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
       <div style="background:#f0f4ff;border-radius:10px;padding:10px 8px;">
         <div style="font-size:11px;color:#999;">最高分</div>
-        <div id="meta-best-score" style="font-size:18px;font-weight:700;color:#667eea;">0</div>
+        <div id="meta-best-score" style="font-size:26px;font-weight:700;color:#667eea;">0</div>
       </div>
       <div style="background:#f0fff4;border-radius:10px;padding:10px 8px;">
         <div style="font-size:11px;color:#999;">平均分</div>
-        <div id="meta-avg-score" style="font-size:18px;font-weight:700;color:#43e97b;">-</div>
+        <div id="meta-avg-score" style="font-size:26px;font-weight:700;color:#43e97b;">-</div>
       </div>
       <div style="background:#fff0f6;border-radius:10px;padding:10px 8px;">
         <div style="font-size:11px;color:#999;">已玩</div>
-        <div id="meta-game-count" style="font-size:18px;font-weight:700;color:#fa709a;">0次</div>
+        <div id="meta-game-count" style="font-size:26px;font-weight:700;color:#fa709a;">0次</div>
       </div>
     </div>
     <div style="margin-bottom:24px;">
-      <div style="font-size:13px;color:#666;margin-bottom:10px;">预测你这次能得多少分？</div>
+      <div style="font-size:11px;color:#666;margin-bottom:10px;">预测你这次能得多少分？</div>
       <input type="range" id="meta-prediction-input" min="0" max="500" value="50" oninput="updatePredictionDisplay(this.value)" style="width:100%;height:6px;-webkit-appearance:none;background:linear-gradient(90deg,#667eea,#fa709a);border-radius:3px;outline:none;">
       <div style="display:flex;justify-content:space-between;margin-top:6px;">
         <span style="font-size:11px;color:#999;">0</span>
-        <span id="meta-prediction-value" style="font-size:20px;font-weight:700;color:#667eea;">50</span>
+        <span id="meta-prediction-value" style="font-size:26px;font-weight:700;color:#667eea;">50</span>
         <span style="font-size:11px;color:#999;">500</span>
       </div>
     </div>
@@ -897,9 +997,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <div id="game-level-badge" style="background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:12px;font-size:12px;color:white;margin-right:8px;">关卡 1</div>
     </div>
     <div style="padding:12px;background:rgba(0,0,0,0.2);display:flex;justify-content:space-around;">
-        <div style="text-align:center;"><div style="color:rgba(255,255,255,0.7);font-size:10px;">得分</div><div id="game-score" style="color:white;font-size:20px;font-weight:bold;">0</div></div>
-        <div style="text-align:center;"><div style="color:rgba(255,255,255,0.7);font-size:10px;">最高分</div><div id="game-best-score" style="color:#FFD700;font-size:20px;font-weight:bold;">0</div></div>
-        <div style="text-align:center;"><div style="color:rgba(255,255,255,0.7);font-size:10px;">用时</div><div id="game-timer" style="color:white;font-size:20px;font-weight:bold;">0s</div></div>
+        <div style="text-align:center;"><div style="color:rgba(255,255,255,0.7);font-size:8px;">得分</div><div id="game-score" style="color:white;font-size:26px;font-weight:bold;">0</div></div>
+        <div style="text-align:center;"><div style="color:rgba(255,255,255,0.7);font-size:8px;">最高分</div><div id="game-best-score" style="color:#FFD700;font-size:26px;font-weight:bold;">0</div></div>
+        <div style="text-align:center;"><div style="color:rgba(255,255,255,0.7);font-size:8px;">用时</div><div id="game-timer" style="color:white;font-size:26px;font-weight:bold;">0s</div></div>
     </div>
     <div id="game-fullscreen" style="flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px;"></div>
     <div id="game-board" style="flex:1;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;min-height:0;max-height:calc(100vh - 200px);"></div>
@@ -908,8 +1008,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
-<div style="text-align:center;padding:10px;margin-bottom:60px;">
-<a href="https://beian.mps.gov.cn/#/query/webSearch?code=42098102000156" rel="noreferrer" target="_blank" style="font-size:12px;color:#999;text-decoration:none;">鄂公网安备42098102000156号</a>
-</div>
+<script defer src="js/config.js?v=417"></script>
+<script defer src="js/ctm.js?v=417"></script>
+<script defer src="js/db.js?v=417"></script>
+<script defer src="js/utils.js?v=417"></script>
+<script defer src="js/storage.js?v=417"></script>
+<script defer src="js/user.js?v=417"></script>
+<script defer src="js/audio.js?v=417"></script>
+<script defer src="js/data/podcasts.js?v=417"></script>
+<script defer src="js/data/videos.js?v=417"></script>
+<script defer src="js/data/games-config.js?v=417"></script>
+<script defer src="js/data/topics.js?v=417"></script>
+<script defer src="js/ui-pet.js?v=417"></script>
+<script defer src="js/modules/ui.js?v=417"></script>
+<script defer src="js/modules/week-plans.js?v=417"></script>
+<script defer src="js/modules/data-sync.js?v=417"></script>
+<script defer src="js/modules/pet.js?v=417"></script>
+<script defer src="js/modules/topics.js?v=417"></script>
+<script defer src="js/modules/practice.js?v=417"></script>
+<script defer src="js/modules/deepseek.js?v=417"></script>
+<script defer src="js/modules/wrongbook.js?v=417"></script>
+<script defer src="js/modules/games.js?v=417"></script>
+<script defer src="js/modules/podcast.js?v=417"></script>
+<script defer src="js/modules/video.js?v=417"></script>
+<script defer src="js/modules/player.js?v=417"></script>
+<script defer src="js/modules/thinking.js?v=417"></script>
+<script defer src="js/modules/method.js?v=417"></script>
+<script defer src="js/modules/self-drive.js?v=417"></script>
+<script defer src="js/modules/map.js?v=417"></script>
+<script defer src="js/modules/my-page.js?v=417"></script>
+<script defer src="js/modules/pomodoro.js?v=417"></script>
+<script defer src="js/modules/library.js?v=417"></script>
+<script defer src="js/modules/notepad.js?v=417"></script>
+<script defer src="js/modules/exam.js?v=417"></script>
+<script defer src="js/modules/paper-tool.js?v=417"></script>
+<script defer src="js/modules/mindmap.js?v=417"></script>
+<script defer src="js/modules/calculator.js?v=417"></script>
+<script defer src="js/modules/plan.js?v=417"></script>
+<script defer src="js/modules/local-db.js?v=417"></script>
+<script defer src="js/modules/cloud-sync.js?v=417"></script>
+<script defer src="js/modules/stats.js?v=417"></script>
+<script defer src="js/modules/parent-dashboard.js?v=417"></script>
+<script defer src="js/modules/admin-dashboard.js?v=417"></script>
 </body>
-</html>
+</html> 

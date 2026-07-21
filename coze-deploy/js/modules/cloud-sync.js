@@ -27,6 +27,7 @@ window.CloudSync = {
         }
 
         this.openid = params.openid || '';
+        this.phone = params.phone || this.phone || '';  // 微信授权手机号
         this.envId = params.env || '';
 
         if (!this.openid) {
@@ -36,10 +37,11 @@ window.CloudSync = {
         }
 
         console.log('[CloudSync] 微信环境，openid:', this.openid);
+        // 微信授权手机号自动绑定\n        if (this.phone) { this._doBindPhone(this.phone); }
         this._wxAutoLogin();
 
         // CloudBase云同步（环境ID有效时才启用）
-        if (this.envId && this.envId !== 'cognitive-training-12345') {
+        if (this.envId) {
             this._initCloudBase();
         }
     },
@@ -199,21 +201,42 @@ window.CloudSync = {
         var isBound = currentUser && currentUser.phone;
         var phoneDisplay = isBound ? currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '未绑定';
 
+        // 检测是否在微信小程序web-view中
+        var isWxMini = /miniProgram/i.test(navigator.userAgent) || (window.__wxjs_environment === 'miniprogram');
+
         var modal = document.createElement('div');
         modal.id = 'wx-phone-bind-modal';
         modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:10000;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
 
-        modal.innerHTML = [
-            '<div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;">',
-            '  <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:8px;">📱 手机号绑定</div>',
-            '  <div style="font-size:13px;color:#666;margin-bottom:16px;">绑定后可跨设备同步学习数据</div>',
-            isBound ? (
+        var modalContent = '';
+        if (isBound) {
+            // 已绑定状态
+            modalContent = '<div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;">' +
+                '  <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:8px;">📱 手机号绑定</div>' +
+                '  <div style="font-size:13px;color:#666;margin-bottom:16px;">绑定后可跨设备同步学习数据</div>' +
                 '  <div style="background:#f0fff4;border-radius:10px;padding:14px;margin-bottom:16px;text-align:center;">' +
                 '    <div style="font-size:13px;color:#43e97b;margin-bottom:4px;">已绑定</div>' +
                 '    <div style="font-size:18px;font-weight:600;color:#333;">' + phoneDisplay + '</div>' +
                 '  </div>' +
-                '  <button onclick="document.getElementById(\'wx-phone-bind-modal\').remove()" style="width:100%;padding:12px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>'
-            ) : (
+                '  <button onclick="document.getElementById(\'wx-phone-bind-modal\').remove()" style="width:100%;padding:12px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>' +
+                '</div>';
+        } else if (isWxMini) {
+            // 微信小程序环境：一键授权
+            modalContent = '<div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;">' +
+                '  <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:8px;">📱 手机号绑定</div>' +
+                '  <div style="font-size:13px;color:#666;margin-bottom:16px;">绑定后可跨设备同步学习数据</div>' +
+                '  <div style="text-align:center;padding:20px 0 16px;">' +
+                '    <div style="font-size:40px;margin-bottom:12px;">🔐</div>' +
+                '    <div style="font-size:14px;color:#666;line-height:1.6;">使用微信授权快速绑定手机号<br>无需输入验证码</div>' +
+                '  </div>' +
+                '  <button id="wx-quick-bind-btn" style="width:100%;padding:14px;background:linear-gradient(135deg,#07c160,#06ad56);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:8px;">微信一键授权</button>' +
+                '  <button onclick="document.getElementById(\'wx-phone-bind-modal\').remove()" style="width:100%;padding:10px;background:none;border:none;color:#999;font-size:13px;cursor:pointer;">取消</button>' +
+                '</div>';
+        } else {
+            // 非微信环境：短信验证码（测试码888888）
+            modalContent = '<div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;">' +
+                '  <div style="font-size:18px;font-weight:700;color:#333;margin-bottom:8px;">📱 手机号绑定</div>' +
+                '  <div style="font-size:13px;color:#666;margin-bottom:16px;">绑定后可跨设备同步学习数据</div>' +
                 '  <div style="margin-bottom:12px;">' +
                 '    <input id="wx-modal-phone" type="tel" maxlength="11" placeholder="请输入手机号" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px;outline:none;box-sizing:border-box;">' +
                 '  </div>' +
@@ -224,15 +247,30 @@ window.CloudSync = {
                 '    </div>' +
                 '  </div>' +
                 '  <button id="wx-modal-bind-btn" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;">确认绑定</button>' +
-                '  <button onclick="document.getElementById(\'wx-phone-bind-modal\').remove()" style="width:100%;padding:10px;background:none;border:none;color:#999;font-size:13px;cursor:pointer;margin-top:6px;">取消</button>'
-            ),
-            '</div>'
-        ].join('');
+                '  <button onclick="document.getElementById(\'wx-phone-bind-modal\').remove()" style="width:100%;padding:10px;background:none;border:none;color:#999;font-size:13px;cursor:pointer;margin-top:6px;">取消</button>' +
+                '</div>';
+        }
 
+        modal.innerHTML = modalContent;
         document.body.appendChild(modal);
 
-        // 绑定事件（仅在未绑定时）
-        if (!isBound) {
+        // 绑定事件
+        if (!isBound && isWxMini) {
+            // 微信一键授权
+            var quickBtn = document.getElementById('wx-quick-bind-btn');
+            if (quickBtn) {
+                quickBtn.onclick = function() {
+                    // 通知小程序跳转到绑定页面
+                    if (window.wx && window.wx.miniProgram) {
+                        window.wx.miniProgram.postMessage({ data: { action: 'bindPhone' } });
+                        window.wx.miniProgram.navigateBack();
+                    } else {
+                        window.showToast && window.showToast('请在微信小程序中使用此功能');
+                    }
+                };
+            }
+        } else if (!isBound) {
+            // 短信验证码流程（测试码888888）
             var sendBtn = document.getElementById('wx-modal-send-btn');
             var bindBtn = document.getElementById('wx-modal-bind-btn');
 
@@ -244,12 +282,10 @@ window.CloudSync = {
                         window.showToast && window.showToast('请输入正确的11位手机号');
                         return;
                     }
-                    // 验证码模拟（后续对接短信API）
                     window._wxVerifyCode = '888888';
                     window._wxVerifyPhone = phone;
                     window.showToast && window.showToast('验证码已发送（测试码：888888）');
 
-                    // 倒计时
                     sendBtn.disabled = true;
                     sendBtn.style.opacity = '0.5';
                     var count = 60;

@@ -4,7 +4,7 @@
 var currentPodcastId = null;
 
 // 播客课程数据 - 默认空数组，加载后自动填充
-var podcastCourses = [];
+var podcastCourses = window.podcastList || [];
 
 // 播放状态
 var podcastPlayerState = {
@@ -86,7 +86,7 @@ function renderPodcast(container) {
     html += '<span>📋 播客列表</span>';
     html += '<span id="podcast-list-toggle">▼</span>';
     html += '</div>';
-    html += '<div id="podcast-list-container" class="podcast-list-container">';
+    html += '<div id="podcast-list-container" class="podcast-list-container" style="display:none;">';
     html += '<div class="podcast-list-grid" id="podcast-list">';
     html += renderPodcastListItems(podcastCourses);
     html += '</div>';
@@ -129,7 +129,7 @@ function renderPodcastListItems(podcasts) {
         isPlayingNow = isActive && podcastPlayerState.isPlaying;
         indicator = isPlayingNow ? '<span class="podcast-playing-indicator">🔊</span>' : '<span class="podcast-play-icon">▶</span>';
         
-        itemHtml = '<div class="podcast-list-item' + (isActive ? ' active' : '') + '" onclick="playPodcastById(\'' + p.id + '\')">';
+        itemHtml = '<div class="podcast-list-item' + (isActive ? ' active' : '') + '" data-podcast-id="' + p.id + '" onclick="playPodcastById(\'' + p.id + '\')">';
         itemHtml += '<span class="podcast-list-icon" style="background:' + p.gradient + ';">' + p.icon + '</span>';
         itemHtml += '<div class="podcast-list-info">';
         itemHtml += '<div class="podcast-list-title">' + p.title + '</div>';
@@ -176,7 +176,7 @@ function onPodcastSelectChange(podcastId) {
 function playPodcastById(podcastId) {
     var i, podcast;
     for (i = 0; i < podcastCourses.length; i++) {
-        if (podcastCourses[i].id === podcastId) {
+        if (podcastCourses[i].id == podcastId) {
             podcast = podcastCourses[i];
             break;
         }
@@ -213,7 +213,7 @@ function podcastPlay(podcast) {
                 podcastPlayerState.isPlaying = true;
                 updatePodcastUI();
                 if (typeof showToast === 'function') {
-                    showToast('正在播放: ' + podcast.title);
+                    window.showToast('正在播放: ' + podcast.title);
                 }
             }).catch(function(e) {
                 // 自动播放被阻止，等待用户交互
@@ -221,7 +221,7 @@ function podcastPlay(podcast) {
                 btn = document.getElementById('podcast-play-btn');
                 if (btn) btn.textContent = '▶';
                 if (typeof showToast === 'function') {
-                    showToast('点击播放按钮开始收听');
+                    window.showToast('点击播放按钮开始收听');
                 }
             });
         }
@@ -230,11 +230,11 @@ function podcastPlay(podcast) {
         audio.onerror = function() {
             podcastPlayerState.isPlaying = false;
             updatePodcastUI();
-            showToast('音频加载失败，请稍后重试');
+            window.showToast('音频加载失败，请稍后重试');
         };
     } else if (!podcast.url) {
         if (typeof showToast === 'function') {
-            showToast('该播客暂无音频');
+            window.showToast('该播客暂无音频');
         }
     }
     
@@ -266,10 +266,8 @@ function updatePodcastUI() {
         if (progressEl) progressEl.style.display = 'block';
         if (timeEl) timeEl.textContent = podcast.duration;
         
-        // 更新列表
-        if (list) {
-            list.innerHTML = renderPodcastListItems(podcastCourses);
-        }
+        // V397: 轻量更新列表
+        updatePodcastListActive();
         
         // 更新下拉选择
         if (select) select.value = podcast.id;
@@ -304,7 +302,7 @@ function podcastTogglePlay() {
     
     if (!audio || !podcastPlayerState.currentPodcast) {
         if (typeof showToast === 'function') {
-            showToast('请先选择播客');
+            window.showToast('请先选择播客');
         }
         return;
     }
@@ -319,10 +317,8 @@ function podcastTogglePlay() {
         if (btn) btn.textContent = '⏸';
     }
     
-    // 更新列表图标
-    if (list) {
-        list.innerHTML = renderPodcastListItems(podcastCourses);
-    }
+    // V397: 轻量更新
+    updatePodcastListActive();
 }
 
 // ============================================================
@@ -333,7 +329,7 @@ function podcastPrev() {
     
     if (!podcastPlayerState.currentPodcast) {
         if (typeof showToast === 'function') {
-            showToast('请先选择播客');
+            window.showToast('请先选择播客');
         }
         return;
     }
@@ -357,7 +353,7 @@ function podcastNext() {
     
     if (!podcastPlayerState.currentPodcast) {
         if (typeof showToast === 'function') {
-            showToast('请先选择播客');
+            window.showToast('请先选择播客');
         }
         return;
     }
@@ -398,13 +394,39 @@ function podcastCycleSpeed() {
     if (btn) btn.textContent = speeds[nextIndex] + 'x';
     
     if (typeof showToast === 'function') {
-        showToast('播放速度: ' + speeds[nextIndex] + 'x');
+        window.showToast('播放速度: ' + speeds[nextIndex] + 'x');
     }
 }
 
 // ============================================================
 // 初始化音频元素
 // ============================================================
+// V397: 轻量更新播客列表活跃状态（不全量重建DOM）
+function updatePodcastListActive() {
+    if (!podcastPlayerState.currentPodcast) return;
+    var items = document.querySelectorAll('.podcast-list-item');
+    for (var i = 0; i < items.length; i++) {
+        var itemId = items[i].getAttribute('data-podcast-id');
+        var isActive = itemId == podcastPlayerState.currentPodcast.id;
+        if (isActive && !items[i].classList.contains('active')) {
+            items[i].classList.add('active');
+        } else if (!isActive && items[i].classList.contains('active')) {
+            items[i].classList.remove('active');
+        }
+        // Update play indicator
+        var indicator = items[i].querySelector('.podcast-playing-indicator, .podcast-play-icon');
+        if (indicator) {
+            if (isActive && podcastPlayerState.isPlaying) {
+                indicator.className = 'podcast-playing-indicator';
+                indicator.textContent = '🔊';
+            } else if (isActive) {
+                indicator.className = 'podcast-play-icon';
+                indicator.textContent = '▶';
+            }
+        }
+    }
+}
+
 function initPodcastAudio() {
     var audio = document.getElementById('hidden-audio');
     
@@ -415,24 +437,22 @@ function initPodcastAudio() {
         document.body.appendChild(audio);
     }
     
-    // 播放开始
+    // 播放开始 - V397: 轻量更新而非全量重建
     audio.onplay = function() {
-        var playBtn, list;
+        var playBtn;
         podcastPlayerState.isPlaying = true;
         playBtn = document.getElementById('podcast-play-btn');
         if (playBtn) playBtn.textContent = '⏸';
-        list = document.getElementById('podcast-list');
-        if (list) list.innerHTML = renderPodcastListItems(podcastCourses);
+        updatePodcastListActive();
     };
     
-    // 暂停
+    // 暂停 - V397: 轻量更新
     audio.onpause = function() {
-        var playBtn, list;
+        var playBtn;
         podcastPlayerState.isPlaying = false;
         playBtn = document.getElementById('podcast-play-btn');
         if (playBtn) playBtn.textContent = '▶';
-        list = document.getElementById('podcast-list');
-        if (list) list.innerHTML = renderPodcastListItems(podcastCourses);
+        updatePodcastListActive();
     };
     
     // 时间更新
@@ -585,7 +605,7 @@ async function askPodcastAI() {
     
     var msg = input.value.trim();
     if (!msg) {
-        showToast('请输入问题');
+        window.showToast('请输入问题');
         return;
     }
     
@@ -639,7 +659,7 @@ async function askPodcastAI() {
         var aiMsgHtml = '<div style="display:flex;justify-content:flex-start;margin-bottom:8px;">';
         aiMsgHtml += '<div style="background:#f0f0f0;color:#333;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:85%;font-size:13px;line-height:1.6;">';
         aiMsgHtml += result.content.replace(/\n/g, '<br>');
-        aiMsgHtml += '<div style="margin-top:4px;text-align:right;"><button onclick="speakText(this.parentElement.previousElementSibling ? this.parentElement.parentElement.innerText : \'\')" style="padding:2px 6px;background:#667eea;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">🔊</button></div>';
+        aiMsgHtml += '<div style="margin-top:4px;text-align:right;"><button onclick="window.speakText(this.parentElement.previousElementSibling ? this.parentElement.parentElement.innerText : \'\')" style="padding:2px 6px;background:#667eea;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;">🔊</button></div>';
         aiMsgHtml += '</div></div>';
         
         if (loadingEl) {
@@ -665,7 +685,7 @@ function togglePodcastVoice() {
         var btn = document.getElementById('podcast-voice-btn');
         toggleVoiceInput(btn, 'podcast-chat-input');
     } else {
-        showToast('语音输入未就绪');
+        window.showToast('语音输入未就绪');
     }
 }
 
@@ -758,7 +778,6 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-export {
     renderPodcast,
     playPodcastById,
     podcastTogglePlay,
@@ -766,4 +785,3 @@ export {
     podcastNext,
     podcastCycleSpeed,
     stopPodcastAudio
-};

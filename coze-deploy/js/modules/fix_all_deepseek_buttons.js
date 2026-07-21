@@ -21,7 +21,7 @@
         
         window.openDeepseekHelpModal = function() {
             const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
+            modal.className = 'modal-overlay show';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             
             modal.innerHTML = `
@@ -170,7 +170,7 @@
             if (window.UsageStatsModule) {
                 window.UsageStatsModule.openUsageStatsModal();
             } else {
-                showToast('使用统计模块加载中，请稍后再试');
+                window.showToast('使用统计模块加载中，请稍后再试');
             }
         };
         
@@ -231,12 +231,6 @@
 })();
 
 // ============================================================
-// ES6 Module 导出
+// ES6 Module 导出（已通过window挂载，此处仅作标记）
 // ============================================================
-export const DeepSeekButtonFix = {
-    ensureDeepSeekHelpModal: window.ensureDeepSeekHelpModal,
-    openDeepseekHelpModal: window.openDeepseekHelpModal,
-    openDeepSeekHelpModal: window.openDeepSeekHelpModal,
-    renderUsageStats: window.renderUsageStats,
-    openUsageStats: window.openUsageStats
-};
+// All functions are exported via window.*

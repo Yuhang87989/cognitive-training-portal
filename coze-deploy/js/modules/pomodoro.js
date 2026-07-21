@@ -36,17 +36,17 @@ function renderPomodoro(container) {
                 <div style="font-size:14px;color:#666;margin-bottom:8px;">今日专注统计</div>
                 <div style="display:flex;justify-content:center;gap:24px;">
                     <div>
-                        <div style="font-size:24px;font-weight:bold;color:#FF6B6B;" id="pomodoro-count">${getCurrentUserData()?.pomodoroCount || 0}</div>
+                        <div style="font-size:24px;font-weight:bold;color:#FF6B6B;" id="pomodoro-count">${window.getCurrentUserData()?.pomodoroCount || 0}</div>
                         <div style="font-size:12px;color:#666;">番茄数</div>
                     </div>
                     <div>
-                        <div style="font-size:24px;font-weight:bold;color:#667eea;" id="pomodoro-minutes">${getCurrentUserData()?.pomodoroMinutes || 0}</div>
+                        <div style="font-size:24px;font-weight:bold;color:#667eea;" id="pomodoro-minutes">${window.getCurrentUserData()?.pomodoroMinutes || 0}</div>
                         <div style="font-size:12px;color:#666;">专注分钟</div>
                     </div>
                 </div>
             </div>
             
-            <button onclick="closeFullscreenPage()" style="margin-top:20px;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+            <button onclick="history.back()" style="margin-top:20px;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
         </div>
     `;
 }
@@ -82,9 +82,9 @@ function togglePomodoro() {
                 if (typeof SoundEffects !== 'undefined' && SoundEffects.playComplete) {
                     SoundEffects.playComplete();
                 }
-                showToast('🍅 番茄时间到！休息一下吧~');
+                window.showToast('🍅 番茄时间到！休息一下吧~');
                 // 更新统计
-                const user = getCurrentUserData();
+                const user = window.getCurrentUserData();
                 if (user) {
                     user.pomodoroCount = (user.pomodoroCount || 0) + 1;
                     user.pomodoroMinutes = (user.pomodoroMinutes || 0) + 25;
@@ -126,9 +126,7 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-export {
     renderPomodoro,
     resetPomodoro,
     setPomodoroTime,
     togglePomodoro
-};

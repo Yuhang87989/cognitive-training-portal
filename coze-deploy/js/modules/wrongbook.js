@@ -7,7 +7,7 @@
 // ============================================================
 
 function renderWrongbook(container) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const photoCount = user?.uploadedImages?.length || 0;
     
@@ -153,13 +153,13 @@ function openWrongPhotoCapture() {
     const content = document.getElementById('detail-content');
     modal.classList.add('show');
     
-    const photoCount = getCurrentUserData()?.uploadedImages?.length || 0;
+    const photoCount = window.getCurrentUserData()?.uploadedImages?.length || 0;
     
     content.innerHTML = `
         <div class="modal-header">
             <button class="back-btn" onclick="backToWrongbook()">← 返回</button>
             <div class="modal-title">📝 添加错题</div>
-            <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
+            <button class="close-btn" onclick="window.closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div class="capture-container">
             <div class="capture-icon">📝</div>
@@ -222,7 +222,7 @@ function manualInputWrongNote() {
         <div class="modal-header">
             <button class="back-btn" onclick="openWrongPhotoCapture()">← 返回</button>
             <div class="modal-title">✏️ 手动输入题目</div>
-            <button class="close-btn" onclick="closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
+            <button class="close-btn" onclick="window.closeModal()" style="margin-left:auto;background:#f5f5f5;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#666;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div style="padding:4px 0;">
             <div style="margin-bottom:12px;">
@@ -243,7 +243,7 @@ async function submitManualWrongNote() {
     var questionInput = document.getElementById('manual-question-input');
     var answerInput = document.getElementById('manual-answer-input');
     if (!questionInput || !questionInput.value.trim()) {
-        showToast('请输入题目内容');
+        window.showToast('请输入题目内容');
         return;
     }
     var questionText = questionInput.value.trim();
@@ -254,7 +254,7 @@ async function submitManualWrongNote() {
     
     if (questionData.error) {
         // AI解析失败，直接保存原始文字
-        var user = getCurrentUserData() || {};
+        var user = window.getCurrentUserData() || {};
         user.wrongNotes = user.wrongNotes || [];
         var wrongNote = {
             wrongKey: 'manual-' + Date.now(),
@@ -272,13 +272,13 @@ async function submitManualWrongNote() {
         };
         user.wrongNotes.push(wrongNote);
         syncUserData(user);
-        showToast('✅ 已保存到错题本');
+        window.showToast('✅ 已保存到错题本');
         backToWrongbook();
         return;
     }
     
     // AI解析成功，保存结构化题目
-    var user = getCurrentUserData() || {};
+    var user = window.getCurrentUserData() || {};
     user.wrongNotes = user.wrongNotes || [];
     var wrongKey = 'manual-' + Date.now();
     if (!user.wrongNotes.find(function(n) { return n.wrongKey === wrongKey; })) {
@@ -301,7 +301,7 @@ async function submitManualWrongNote() {
         user.wrongNotes.push(wrongNote);
         syncUserData(user);
     }
-    showToast('✅ AI分析完成，已保存到错题本');
+    window.showToast('✅ AI分析完成，已保存到错题本');
     backToWrongbook();
 }
 
@@ -365,7 +365,7 @@ async function uploadWrongPhotoWithAI(input) {
             await saveImageFile(photoId, file);
             
             // 记录到用户数据（只存元信息，不存base64）
-            const user = getCurrentUserData() || {};
+            const user = window.getCurrentUserData() || {};
             user.uploadedImages = user.uploadedImages || [];
             user.uploadedImages.push({
                 id: photoId,
@@ -593,11 +593,11 @@ function showOcrFailedUI(photoId, imageData, message) {
 
 // 从照片做题目
 async function doWrongQuestionFromPhoto(photoId) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const note = user?.wrongNotes?.find(n => n.photoId === photoId);
     
     if (!note) {
-        showToast('题目不存在');
+        window.showToast('题目不存在');
         return;
     }
     
@@ -613,7 +613,7 @@ async function doWrongQuestionFromPhoto(photoId) {
 // ============================================================
 
 function showWrongPhotoGallery() {
-    const user = getCurrentUserData() || {};
+    const user = window.getCurrentUserData() || {};
     const photos = user.uploadedImages || [];
     const modal = document.getElementById('detail-modal');
     const content = document.getElementById('detail-content');
@@ -735,14 +735,14 @@ async function deleteWrongPhotoWithCleanup(photoId) {
     }
     
     // 从用户数据删除
-    const user = getCurrentUserData() || {};
+    const user = window.getCurrentUserData() || {};
     user.uploadedImages = user.uploadedImages || [];
     user.uploadedImages = user.uploadedImages.filter(function(p) { 
         return (p.imageId || p.id) !== photoId; 
     });
     syncUserData(user);
     
-    showToast('已删除');
+    window.showToast('已删除');
     showWrongPhotoGallery();
 }
 
@@ -789,7 +789,7 @@ async function analyzePhotoWithAI(photoId) {
         
         // 尝试从用户数据获取旧格式
         if (!imageUrl) {
-            const user = getCurrentUserData() || {};
+            const user = window.getCurrentUserData() || {};
             const photo = user.uploadedImages?.find(p => (p.imageId || p.id) === photoId);
             if (photo && photo.image) {
                 imageUrl = photo.image;
@@ -858,7 +858,7 @@ async function analyzePhotoWithAI(photoId) {
         
         // 4. 添加到错题本
         const wrongKey = 'photo-' + photoId;
-        const user = getCurrentUserData();
+        const user = window.getCurrentUserData();
         
         // 检查是否已存在
         if (!user.wrongNotes) user.wrongNotes = [];
@@ -988,10 +988,10 @@ function backToWrongbook() {
 // ============================================================
 
 function retryWrongNote(index) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const note = wrongNotes[index];
-    if (!note) { showToast('错题不存在'); return; }
+    if (!note) { window.showToast('错题不存在'); return; }
     
     const modal = document.getElementById('detail-modal');
     const content = document.getElementById('detail-content');
@@ -1108,11 +1108,11 @@ function selectRetryOption(el, noteIndex, optionIndex) {
 function submitRetryChoiceAnswer(noteIndex) {
     const selectedOption = parseInt(document.getElementById('retry-selected-option').value);
     if (selectedOption < 0) {
-        showToast('请选择一个答案');
+        window.showToast('请选择一个答案');
         return;
     }
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const note = wrongNotes[noteIndex];
     if (!note) return;
@@ -1137,7 +1137,7 @@ function submitRetryChoiceAnswer(noteIndex) {
     note.userAnswer = String.fromCharCode(65 + selectedOption) + '. ' + note.options[selectedOption];
     if (isCorrect) {
         note.reviewed = true;
-        showToast('太棒了！回答正确！');
+        window.showToast('太棒了！回答正确！');
     }
     syncUserData(user);
     
@@ -1166,11 +1166,11 @@ async function submitRetryTextAnswer(noteIndex) {
     const userAns = textarea ? textarea.value.trim() : '';
     
     if (!userAns) {
-        showToast('请输入答案');
+        window.showToast('请输入答案');
         return;
     }
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const note = wrongNotes[noteIndex];
     if (!note) return;
@@ -1249,7 +1249,7 @@ async function submitRetryTextAnswer(noteIndex) {
         note.userAnswer = userAns;
         if (isCorrect) {
             note.reviewed = true;
-            showToast('太棒了！回答正确！');
+            window.showToast('太棒了！回答正确！');
         }
         syncUserData(user);
         // V145修复：记录练习数据
@@ -1332,10 +1332,10 @@ function fuzzyMatch(userAns, correctAns) {
 // ============================================================
 
 async function analyzeWrongNoteWithAI(index) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const note = wrongNotes[index];
-    if (!note) { showToast('错题不存在'); return; }
+    if (!note) { window.showToast('错题不存在'); return; }
     
     const modal = document.getElementById('detail-modal');
     const content = document.getElementById('detail-content');
@@ -1425,7 +1425,7 @@ ${note.explanation || '无'}
                     ${analysisContent}
                 </div>
                 
-                <button class="speak-btn" onclick="speakText(this.previousElementSibling.textContent)">🔊 朗读</button>
+                <button class="speak-btn" onclick="window.speakText(this.previousElementSibling.textContent)">🔊 朗读</button>
             </div>
             
             <button class="back-btn-full" onclick="backToWrongbook()">← 返回错题本</button>
@@ -1473,11 +1473,11 @@ ${note.explanation || '无'}
 // ============================================================
 
 function markWrongNoteReviewed(index) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user || !user.wrongNotes || !user.wrongNotes[index]) return;
     user.wrongNotes[index].reviewed = true;
     syncUserData(user);
-    showToast('✅ 已标记为已复习');
+    window.showToast('✅ 已标记为已复习');
     
     // 刷新显示
     const modal = document.getElementById('detail-modal');
@@ -1490,11 +1490,11 @@ function markWrongNoteReviewed(index) {
 function removeWrongNote(index) {
     if (!confirm('确定要删除这道错题吗？')) return;
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user && user.wrongNotes) {
         user.wrongNotes.splice(index, 1);
         syncUserData(user);
-        showToast('已移除错题');
+        window.showToast('已移除错题');
         
         // 刷新显示
         const modal = document.getElementById('detail-modal');
@@ -1506,12 +1506,12 @@ function removeWrongNote(index) {
 }
 
 function reviewAllWrongNotes() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const wrongNotes = user?.wrongNotes || [];
     const unreviewed = wrongNotes.filter(n => !n.reviewed);
     
     if (unreviewed.length === 0) {
-        showToast('所有错题已复习完毕！');
+        window.showToast('所有错题已复习完毕！');
         return;
     }
     
@@ -1525,11 +1525,11 @@ function reviewAllWrongNotes() {
 function clearWrongNotes() {
     if (!confirm('确定要清空所有错题记录吗？')) return;
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (user) {
         user.wrongNotes = [];
         syncUserData(user);
-        showToast('错题本已清空');
+        window.showToast('错题本已清空');
         
         // 刷新显示
         const modal = document.getElementById('detail-modal');
@@ -1604,11 +1604,11 @@ function openFeedback() {
 function submitFeedback() {
     const text = document.getElementById('feedback-text').value.trim();
     if (!text) {
-        showToast('请输入反馈内容');
+        window.showToast('请输入反馈内容');
         return;
     }
     closeDetail();
-    showToast('感谢您的反馈！我们会认真处理');
+    window.showToast('感谢您的反馈！我们会认真处理');
 }
 
 // ============================================================
@@ -1616,34 +1616,12 @@ function submitFeedback() {
 // ============================================================
 
 // 错题本模块对象
-export const wrongbookModule = {
+const wrongbookModule = {
     name: 'wrongbook',
     icon: '📒',
     render: typeof renderWrongbook !== 'undefined' ? renderWrongbook : null
 };
 
 // 导出主要函数
-export {
-    renderWrongbook,
-    saveWrongNote,
-    viewWrongNote,
-    editWrongNote,
-    retryWrongNote,
-    selectRetryOption,
-    submitRetryChoiceAnswer,
-    submitRetryTextAnswer,
-    analyzeWrongNoteWithAI,
-    markWrongNoteReviewed,
-    removeWrongNote,
-    clearWrongNotes,
-    reviewAllWrongNotes,
-    openWrongPhotoCapture,
-    showWrongPhotoGallery,
-    analyzeWrongPhoto,
-    deleteWrongPhotoWithCleanup,
-    viewWrongNotes,
-    openFeedback,
-    submitFeedback
-};
 
 console.log('[ES6 Module] wrongbook.js 模块加载完成');

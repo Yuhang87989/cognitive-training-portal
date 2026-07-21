@@ -1,7 +1,7 @@
 // 版本: V226 - ES6 Module
 // AI精准练模块
 
-export const practiceModule = {
+const practiceModule = {
     name: 'practice',
     icon: '🎯',
     render: renderPractice
@@ -13,7 +13,7 @@ if (typeof CTM !== 'undefined' && CTM.registerModule) {
 }
 
 function renderPractice(container) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const stats = user?.practiceStats || {total: 0, correct: 0, weakPoints: 0};
     const wrongNotes = user?.wrongNotes || [];
     
@@ -89,7 +89,7 @@ function handlePracticePhoto(input) {
     };
     
     reader.onerror = function() {
-        showToast('图片读取失败，请重试');
+        window.showToast('图片读取失败，请重试');
     };
     
     reader.readAsDataURL(file);
@@ -112,7 +112,7 @@ function showPracticePhotoModal(imageData) {
             <textarea id="practice-photo-question" placeholder="请描述你想问的问题（可选）..." style="width:100%;height:60px;padding:10px;border:1px solid #ddd;border-radius:10px;font-size:13px;resize:none;"></textarea>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
                 <button onclick="analyzePracticePhoto('${imageData.replace(/'/g, "\\'")}')" style="padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">🤖 AI分析</button>
-                <button onclick="closeModal()" style="padding:12px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">取消</button>
+                <button onclick="window.closeModal()" style="padding:12px;background:#f5f5f5;color:#666;border:none;border-radius:10px;font-size:14px;cursor:pointer;">取消</button>
             </div>
         </div>
         <div id="practice-photo-result" style="margin-top:12px;"></div>
@@ -147,7 +147,7 @@ async function analyzePracticePhoto(imageData) {
         
         if (result.error) {
             if (result.type === 'balance') {
-                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
             } else {
                 resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">❌ 分析失败：' + escapeHtml(result.message) + '</div>';
             }
@@ -158,7 +158,7 @@ async function analyzePracticePhoto(imageData) {
             resultDiv.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;max-height:300px;overflow-y:auto;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
                 '<span style="font-size:12px;color:#667eea;font-weight:600;">🤖 AI分析结果</span>' +
-                '<button onclick="speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#667eea;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
+                '<button onclick="window.speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#667eea;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
                 '<div style="font-size:14px;line-height:1.8;color:#333;">' + result.content.replace(/\n/g, '<br>') + '</div>' +
                 '</div>';
         }
@@ -188,11 +188,11 @@ function handleQuestionPhoto(input, resultContainerId) {
         
         // 存储当前图片数据供后续分析使用
         window.currentQuestionPhoto = imageData;
-        showToast('图片已上传，可点击AI分析按钮');
+        window.showToast('图片已上传，可点击AI分析按钮');
     };
     
     reader.onerror = function() {
-        showToast('图片读取失败');
+        window.showToast('图片读取失败');
     };
     
     reader.readAsDataURL(file);
@@ -213,7 +213,7 @@ async function submitPracticeQuestion() {
     
     const question = input.value.trim();
     if (!question) {
-        showToast('请输入你的问题');
+        window.showToast('请输入你的问题');
         return;
     }
     
@@ -237,7 +237,7 @@ async function submitPracticeQuestion() {
         
         if (result.error) {
             if (result.type === 'balance') {
-                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
             } else {
                 resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 解答失败：' + escapeHtml(result.message) + '</div>';
             }
@@ -246,7 +246,7 @@ async function submitPracticeQuestion() {
             resultDiv.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;margin-top:12px;max-height:300px;overflow-y:auto;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
                 '<span style="font-size:12px;color:#3377FF;font-weight:600;">🤖 AI解答</span>' +
-                '<button onclick="speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#3377FF;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
+                '<button onclick="window.speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#3377FF;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
                 '<div style="font-size:14px;line-height:1.8;color:#333;">' + result.content.replace(/\n/g, '<br>') + '</div>' +
                 '</div>';
         }
@@ -265,7 +265,7 @@ async function askPracticeAI() {
     
     const question = input.value.trim();
     if (!question) {
-        showToast('请输入你的问题');
+        window.showToast('请输入你的问题');
         return;
     }
     
@@ -289,7 +289,7 @@ async function askPracticeAI() {
         
         if (result.error) {
             if (result.type === 'balance') {
-                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
+                resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;text-align:center;">⚠️ DeepSeek余额不足<br><button onclick="window.showAPIRechargeModal()" style="margin-top:8px;padding:6px 12px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;cursor:pointer;">前往充值</button></div>';
             } else {
                 resultDiv.innerHTML = '<div style="padding:12px;background:#fff3f3;border-radius:8px;color:#ff6b6b;font-size:13px;">❌ 解说失败：' + escapeHtml(result.message) + '</div>';
             }
@@ -298,7 +298,7 @@ async function askPracticeAI() {
             resultDiv.innerHTML = '<div style="padding:16px;background:linear-gradient(135deg,#f5f7ff,#eef1ff);border-radius:12px;margin-top:12px;max-height:300px;overflow-y:auto;">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
                 '<span style="font-size:12px;color:#667eea;font-weight:600;">🤖 AI解说</span>' +
-                '<button onclick="speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#667eea;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
+                '<button onclick="window.speakText(this.parentElement.nextElementSibling.textContent)" style="padding:4px 8px;background:#667eea;color:white;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🔊 朗读</button></div>' +
                 '<div style="font-size:14px;line-height:1.8;color:#333;">' + result.content.replace(/\n/g, '<br>') + '</div>' +
                 '</div>';
         }
@@ -319,7 +319,7 @@ window.askPracticeAI = askPracticeAI;
 async function handlePhotoToQuestion(imageData) {
     // 复用photoToQuestion
     if (typeof photoToQuestion === 'function') { photoToQuestion(imageData); }
-    else { showToast('拍照出题功能加载中，请稍后再试'); }
+    else { window.showToast('拍照出题功能加载中，请稍后再试'); }
 }
 window.handlePhotoToQuestion = handlePhotoToQuestion;
 
@@ -327,15 +327,5 @@ window.handlePhotoToQuestion = handlePhotoToQuestion;
 // ES6 Module 导出
 // ============================================================
 
-export {
-    renderPractice,
-    handlePracticePhoto,
-    showPracticePhotoModal,
-    analyzePracticePhoto,
-    handleQuestionPhoto,
-    submitPracticeQuestion,
-    askPracticeAI,
-    handlePhotoToQuestion
-};
 
 console.log('[ES6 Module] practice.js 模块加载完成');

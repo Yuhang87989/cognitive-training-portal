@@ -1,7 +1,7 @@
 // 版本: V151
 
 function renderThinking(container) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const stats = user?.thinkingStats || {};
     
     let totalCompleted = 0;
@@ -65,7 +65,7 @@ function renderThinking(container) {
             <div id="thinking-notes-list"></div>
         </div>
     
-        <button onclick="closeFullscreenPage()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
+        <button onclick="history.back()" style="width:100%;margin-top:16px;padding:14px;background:#f5f5f5;color:#666;border:none;border-radius:12px;font-size:14px;cursor:pointer;">← 返回首页</button>
 `;
     
     renderThinkingNotes();
@@ -362,9 +362,9 @@ function showThinkingType(type) {
     
     const questions = window.thinkingQuestions[type];
     
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     
     content.innerHTML = `
         <div class="modal-title">${typeIcons[type]} ${typeNames[type]}训练</div>
@@ -376,7 +376,7 @@ function showThinkingType(type) {
             <div style="font-size:13px;color:#666;line-height:1.6;">${typeDescs[type]}</div>
         </div>
         <button onclick="startThinkingQuiz('${type}', 0)" class="login-btn login-btn-primary" style="margin-bottom:8px;">开始练习</button>
-        <button class="modal-close" onclick="closeModal()">返回</button>
+        <button class="modal-close" onclick="window.closeModal()">返回</button>
     `;
 }
 
@@ -384,7 +384,7 @@ function showThinkingType(type) {
 function startThinkingQuiz(type, page = 0) {
     const questions = window.thinkingQuestions[type];
     if (!questions || questions.length === 0) {
-        showToast('暂无练习题');
+        window.showToast('暂无练习题');
         return;
     }
     
@@ -402,9 +402,9 @@ function startThinkingQuiz(type, page = 0) {
         abstract: '抽象思维'
     };
     
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     
     content.innerHTML = `
         <div class="modal-title">📝 ${typeNames[type]} - 练习</div>
@@ -445,7 +445,7 @@ function startThinkingQuiz(type, page = 0) {
             ${currentPage > 0 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${currentPage < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${currentPage + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()" style="margin-top:8px;">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()" style="margin-top:8px;">关闭</button>
     `;
 }
 
@@ -455,7 +455,7 @@ async function analyzeThinkingPhotoWithAI() {
     const imageData = window.currentQuestionPhoto;
     
     if (!imageData) {
-        showToast('请先上传图片');
+        window.showToast('请先上传图片');
         return;
     }
     
@@ -495,7 +495,7 @@ function submitThinkingAnswers(type, page) {
     
     const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
     
-    const content = document.getElementById('detail-content');
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     content.innerHTML = `
         <div class="modal-title">📝 ${typeNames[type]} - 答案对比</div>
         <div style="font-size:12px;color:#666;margin-bottom:12px;text-align:center;">第 ${page + 1} / ${totalPages} 页</div>
@@ -543,7 +543,7 @@ function submitThinkingAnswers(type, page) {
             ${page > 0 ? `<button onclick="startThinkingQuiz('${type}', ${page - 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">上一页</button>` : ''}
             ${page < totalPages - 1 ? `<button onclick="startThinkingQuiz('${type}', ${page + 1})" style="flex:1;padding:10px;background:#f5f5f5;border:none;border-radius:8px;font-size:14px;cursor:pointer;">下一页</button>` : ''}
         </div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()">关闭</button>
     `;
 }
 
@@ -556,7 +556,7 @@ function rateThinkingAnswer(type, isCorrect, questionIdx) {
         SoundEffects.playWrong();
     }
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user.thinkingStats) user.thinkingStats = {};
     if (!user.thinkingStats[type]) user.thinkingStats[type] = { completed: 0, correct: 0, answeredQuestions: [] };
     
@@ -597,14 +597,14 @@ function rateThinkingAnswer(type, isCorrect, questionIdx) {
     
     syncUserData(user);
     updateThinkingStats();
-    showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
+    window.showToast(isCorrect ? '回答正确！' : '已加入错题本，继续加油！');
     // V145修复：记录练习数据
     if (window.recordPractice) window.recordPractice(1, isCorrect ? 1 : 0, 1);
 }
 
 // 更新统计
 function updateThinkingStats() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const stats = user?.thinkingStats || {};
     
     let totalCompleted = 0;
@@ -625,11 +625,11 @@ function handleThinkingNoteUpload(input) {
     const file = input.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-        showToast('请上传图片文件');
+        window.showToast('请上传图片文件');
         return;
     }
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user.thinkingNotes) user.thinkingNotes = [];
     
     const imageUrl = URL.createObjectURL(file);
@@ -640,13 +640,13 @@ function handleThinkingNoteUpload(input) {
         uploadTime: new Date().toLocaleString()
     });
     syncUserData(user);
-    showToast('笔记上传成功！');
+    window.showToast('笔记上传成功！');
     renderThinkingNotes();
 }
 
 // 渲染笔记
 function renderThinkingNotes() {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const notes = user?.thinkingNotes || [];
     const listEl = document.getElementById('thinking-notes-list');
     if (!listEl) return;
@@ -671,28 +671,28 @@ function renderThinkingNotes() {
 
 // 查看/删除笔记
 function viewThinkingNote(noteId) {
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     const note = user?.thinkingNotes?.find(n => n.id === noteId);
     if (!note) return;
     
+    const content = (typeof window.ensureDetailModal === 'function') ? window.ensureDetailModal() : document.getElementById('detail-content');
     const modal = document.getElementById('detail-modal');
-    const content = document.getElementById('detail-content');
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     content.innerHTML = `
         <div class="modal-title">📝 思维训练笔记</div>
         <img src="${note.image}" style="width:100%;border-radius:8px;margin-bottom:16px;">
         <div style="font-size:12px;color:#999;margin-bottom:16px;">上传时间：${note.uploadTime}</div>
-        <button class="modal-close" onclick="closeModal()">关闭</button>
+        <button class="modal-close" onclick="window.closeModal()">关闭</button>
     `;
 }
 
 function deleteThinkingNote(noteId) {
     if (!confirm('确定删除这个笔记吗？')) return;
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     user.thinkingNotes = user.thinkingNotes.filter(n => n.id !== noteId);
     syncUserData(user);
     renderThinkingNotes();
-    showToast('笔记已删除');
+    window.showToast('笔记已删除');
 }
 
 
@@ -753,7 +753,7 @@ async function analyzeThinkingWithAI(type, questionIndex) {
     }
 }
 
-function closeDetail() { document.getElementById('detail-modal').classList.remove('show'); }
+function closeDetail() { var m = document.getElementById('detail-modal'); if (m) m.classList.remove('show'); }
 
 function closeModal(modalId) {
     if (!modalId) {
@@ -788,7 +788,7 @@ async function photoToQuestion(imageData) {
             '<img src="' + imageData + '" style="max-width:200px;max-height:150px;border-radius:8px;margin-bottom:12px;"/>' +
             '<div id="photo-ocr-status" style="font-size:13px;color:#666;">🔍 正在识别图片文字...</div>' +
         '</div>';
-    modal.classList.add('show');
+    if (modal) modal.classList.add('show');
     
     try {
         var ocrText = '';
@@ -830,7 +830,7 @@ async function photoToQuestion(imageData) {
             '<div style="padding:10px;font-size:13px;line-height:1.8;max-height:400px;overflow-y:auto;">' +
                 formatAIResponse(dsResult.content) +
             '</div>' +
-            '<button onclick="closeModal()" class="login-btn login-btn-secondary" style="margin-top:8px;">关闭</button>';
+            '<button onclick="window.closeModal()" class="login-btn login-btn-secondary" style="margin-top:8px;">关闭</button>';
         
     } catch(e) {
         if (document.getElementById('photo-ocr-status')) {
@@ -862,9 +862,7 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-export {
     renderThinking,
     showThinkingType,
     startThinkingQuiz,
     submitThinkingAnswers
-};

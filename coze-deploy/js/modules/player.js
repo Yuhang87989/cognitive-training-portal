@@ -1,4 +1,4 @@
-// 版本: V226 - ES6 Module
+// 版本: V403n - 播客+视频修复
 // 视频播放器模块
 
 
@@ -12,7 +12,17 @@ window.videoCtx = {
     isInitialized: false
 };
 
-function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } showToast('播放: ' + title); }
+// ========== 播客播放器全局状态 ==========
+window.audioCtx = {
+    isPlaying: false,
+    playbackSpeed: 1,
+    volume: 0.8,
+    lastVolume: 0.8,
+    currentTrack: null,
+    currentIndex: -1
+};
+
+function playPodcast(title, id) { if (id) { for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].id === id) { playPodcastCourse(id); return; } } } for (var i = 0; i < podcastCourses.length; i++) { if (podcastCourses[i].title === title) { playPodcastCourse(podcastCourses[i].id); return; } } window.showToast('播放: ' + title); }
 
 function playVideo(title, url) {
     document.getElementById('vp-title').textContent = title;
@@ -34,7 +44,7 @@ function playVideo(title, url) {
 function playPodcastCourse(courseId) {
     var audioEl = document.getElementById('hidden-audio');
     if (!audioEl) {
-        showToast('播放器初始化失败，请刷新页面');
+        window.showToast('播放器初始化失败，请刷新页面');
         return;
     }
     var course = null;
@@ -52,8 +62,10 @@ function playPodcastCourse(courseId) {
     if (courseTitleEl) courseTitleEl.textContent = course.title;
     if (courseTeacherEl) courseTeacherEl.textContent = course.teacher + ' · ' + course.category;
     
-    if (!course.shareUrl) {
-        showToast('该播客暂不可用');
+    // V403e: 兼容没有shareUrl的播客数据，用url字段直接播放
+    var podcastSourceUrl = course.shareUrl || course.url;
+    if (!podcastSourceUrl) {
+        window.showToast('该播客暂不可用');
         return;
     }
     
@@ -65,48 +77,68 @@ function playPodcastCourse(courseId) {
     if (coverPlayingEl) coverPlayingEl.classList.add('playing');
     updatePodcastListState(courseId);
     
-    // 尝试获取播客数据（包含字幕文本）
-    showToast('正在加载播客...');
-    fetch(course.shareUrl, {redirect: 'follow'}).then(function(resp) {
+    // V403m: 判断URL是否是直接音频文件（.mp3等），直接播放而非fetch解析JSON
+    var isDirectAudio = /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(podcastSourceUrl);
+    
+    if (isDirectAudio) {
+        // 直接音频文件：设置src直接播放
+        audioEl.src = podcastSourceUrl;
+        if (typeof savedPositions !== 'undefined' && savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
+        audioEl.playbackRate = audioCtx.playbackSpeed;
+        audioEl.volume = audioCtx.volume;
+        window.showToast('正在加载: ' + course.title);
+        audioEl.play().then(function() {
+            audioCtx.isPlaying = true;
+            updatePlayButtons();
+            window.showToast('正在播放: ' + course.title);
+        }).catch(function(e) {
+            console.warn('自动播放被阻止:', e);
+            audioCtx.isPlaying = false;
+            updatePlayButtons();
+            window.showToast('点击播放按钮开始收听');
+        });
+        return;
+    }
+    
+    // 非直接音频URL：尝试获取播客JSON数据（含字幕）
+    window.showToast('正在加载播客...');
+    fetch(podcastSourceUrl, {redirect: 'follow'}).then(function(resp) {
         if (!resp.ok) throw new Error('fetch failed');
         return resp.json();
     }).then(function(podcastData) {
-        // 保存字幕数据供TTS使用
-        if (podcastData.captions) {
-            window._currentPodcastCaptions = podcastData.captions;
-        }
-        // 保存audio_uri
+        if (podcastData.captions) window._currentPodcastCaptions = podcastData.captions;
         var audioUri = podcastData.audio_uri;
-        if (audioUri) {
-            window._currentAudioUri = audioUri;
-        }
-        
-        // 尝试获取签名音频URL
+        if (audioUri) window._currentAudioUri = audioUri;
         return tryGetSignedAudioUrl(audioUri, courseId, audioEl);
     }).then(function(signedUrl) {
         if (signedUrl) {
-            // 有签名URL，直接播放原声
             audioEl.src = signedUrl;
-            if (savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
+            if (typeof savedPositions !== 'undefined' && savedPositions[courseId]) audioEl.currentTime = savedPositions[courseId];
             audioEl.playbackRate = audioCtx.playbackSpeed;
             audioEl.volume = audioCtx.volume;
             audioEl.play().then(function() {
                 audioCtx.isPlaying = true;
                 updatePlayButtons();
-                showToast('正在播放: ' + course.title);
-            }).catch(function(e) {
-                showToast('播放失败，尝试语音朗读模式');
-                startPodcastTTS();
-            });
+                window.showToast('正在播放: ' + course.title);
+            }).catch(function() { window.showToast('播放失败'); });
         } else {
-            // 没有签名URL，使用TTS朗读模式
-            showToast('使用语音朗读模式播放');
-            startPodcastTTS();
+            var fallbackUrl = course.url || podcastSourceUrl;
+            if (fallbackUrl && /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(fallbackUrl)) {
+                audioEl.src = fallbackUrl;
+                audioEl.playbackRate = audioCtx.playbackSpeed;
+                audioEl.volume = audioCtx.volume;
+                audioEl.play().then(function() {
+                    audioCtx.isPlaying = true;
+                    updatePlayButtons();
+                    window.showToast('正在播放: ' + course.title);
+                }).catch(function() { window.showToast('播放失败'); });
+            } else {
+                window.showToast('该播客暂不可用');
+            }
         }
     }).catch(function(e) {
         console.error('播客加载失败:', e);
-        showToast('加载失败，尝试语音朗读');
-        startPodcastTTS();
+        window.showToast('播客加载失败');
     });
 }
 
@@ -114,41 +146,32 @@ function playVideoCourse(courseId) {
     var course = null;
     for (var i = 0; i < videoCourses.length; i++) { if (videoCourses[i].id === courseId) { course = videoCourses[i]; break; } }
     if (!course) return;
-    videoCtx.currentVideo = course;
-    var titleEl = document.getElementById('evp-title');
-    if (titleEl) titleEl.textContent = course.title;
-    evpVideo.src = course.url;
-    evpVideo.playbackRate = videoCtx.playbackSpeed;
-    evpVideo.volume = videoCtx.volume;
-    var playerEl = document.getElementById('enhanced-video-player');
-    var bigPlayEl = document.getElementById('evp-big-play');
-    if (playerEl) playerEl.style.display = 'flex';
-    if (bigPlayEl) bigPlayEl.style.display = 'none';
+    // 直接调用增强播放器，统一走canplay事件驱动
+    openEnhancedVideoPlayer(course.title, course.url, course.id);
     updateVideoListState(courseId);
-    evpVideo.play().then(function() { videoCtx.isPlaying = true; showToast('正在播放: ' + course.title); }).catch(function(e) { videoCtx.isPlaying = false; });
 }
 
 function playLocalAudio(audioId) {
-    const user = getCurrentUserData();
-    const audio = user?.localAudios?.find(a => a.id === audioId);
+    const user = window.getCurrentUserData();
+    const audio = (user && user.localAudios) ? user.localAudios.find(a => a.id === audioId) : null;
     if (!audio) return;
 
     // 播放音频
     const tempAudio = new Audio(audio.url);
     tempAudio.play();
-    showToast('正在播放: ' + audio.title);
+    window.showToast('正在播放: ' + audio.title);
 }
 
 function playLocalVideo(videoId) {
-    const user = getCurrentUserData();
-    const video = user?.localVideos?.find(v => v.id === videoId);
+    const user = window.getCurrentUserData();
+    const video = (user && user.localVideos) ? user.localVideos.find(v => v.id === videoId) : null;
     if (!video) {
-        showToast('视频信息不存在');
+        window.showToast('视频信息不存在');
         return;
     }
     
     // 显示加载提示
-    showToast('正在加载视频...');
+    window.showToast('正在加载视频...');
     
     // 从 IndexedDB 读取视频文件
     getVideoFile(videoId).then(function(blob) {
@@ -158,11 +181,11 @@ function playLocalVideo(videoId) {
             openEnhancedVideoPlayer(video.title, videoUrl, videoId);
         } else {
             // 视频文件已丢失
-            showToast('视频文件已丢失，请重新上传');
+            window.showToast('视频文件已丢失，请重新上传');
         }
     }).catch(function(e) {
         console.error('读取视频失败:', e);
-        showToast('视频加载失败，请检查网络或重新上传');
+        window.showToast('视频加载失败，请检查网络或重新上传');
     });
 }
 
@@ -224,7 +247,7 @@ function playMediaCourse(courseId) {
     // 更新列表状态
     updateMediaListState(courseId);
     
-    showToast('正在播放: ' + course.title);
+    window.showToast('正在播放: ' + course.title);
 }
 
 function playAudioPos(pos) {
@@ -387,23 +410,6 @@ function closeEnhancedVideoPlayer() {
 function toggleAudioPlay() {
     // 如果正在TTS朗读，控制TTS
     if (window._currentPodcastCaptions && !currentAudio.src) {
-window.closeEnhancedVideoPlayer = closeEnhancedVideoPlayer;
-window.closeVideoPlayer = closeVideoPlayer;
-window.seekEnhancedVideo = seekEnhancedVideo;
-window.seekEnhancedVideoBackward = seekEnhancedVideoBackward;
-window.seekEnhancedVideoForward = seekEnhancedVideoForward;
-window.seekVideo = seekVideo;
-window.toggleEnhancedFullscreen = toggleEnhancedFullscreen;
-window.toggleEnhancedMute = toggleEnhancedMute;
-window.toggleEnhancedSpeedDropdown = toggleEnhancedSpeedDropdown;
-window.toggleEnhancedVideoPlay = toggleEnhancedVideoPlay;
-window.togglePictureInPicture = togglePictureInPicture;
-window.toggleVolume = toggleVolume;
-window.toggleVpPlay = toggleVpPlay;
-window.onEnhancedVideoError = onEnhancedVideoError;
-window.onEnhancedVideoWaiting = onEnhancedVideoWaiting;
-window.onEnhancedVideoCanPlay = onEnhancedVideoCanPlay;
-window.initEnhancedVideoPlayer = initEnhancedVideoPlayer;
         if (audioCtx.isPlaying) { stopPodcastTTS(); }
         else { audioCtx.isPlaying = true; updatePlayButtons(); speakNextCaption(); }
         return;
@@ -421,8 +427,23 @@ function toggleMediaPlay() {
 
 function toggleEnhancedVideoPlay() {
     if (!evpVideo) return;
-    if (videoCtx.isPlaying) { evpVideo.pause(); var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'flex'; }
-    else { evpVideo.play(); var bigPlayEl = document.getElementById('evp-big-play'); if (bigPlayEl) bigPlayEl.style.display = 'none'; }
+    var loadingEl = document.getElementById('evp-loading');
+    if (videoCtx.isPlaying) { 
+        evpVideo.pause(); 
+        var bigPlayEl = document.getElementById('evp-big-play'); 
+        if (bigPlayEl) bigPlayEl.style.display = 'flex'; 
+        if (loadingEl) loadingEl.style.display = 'none';
+    } else { 
+        if (loadingEl) loadingEl.style.display = 'flex';
+        evpVideo.play().then(function() {
+            var bigPlayEl = document.getElementById('evp-big-play'); 
+            if (bigPlayEl) bigPlayEl.style.display = 'none'; 
+            if (loadingEl) loadingEl.style.display = 'none';
+        }).catch(function(e) {
+            if (loadingEl) loadingEl.style.display = 'none';
+            window.showToast('播放失败，请重试');
+        });
+    }
 }
 
 function togglePlayPause() {
@@ -573,7 +594,7 @@ function openEnhancedVideoPlayer(title, url, videoId) {
                     const savedTime = (record.progress / 100) * videoEl.duration;
                     if (savedTime > 0 && !isNaN(savedTime)) {
                         videoEl.currentTime = savedTime;
-                        showToast('已恢复到上次观看位置');
+                        window.showToast('已恢复到上次观看位置');
                     }
                 }
             }
@@ -588,14 +609,14 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         
         // 检查URL是否有效
         if (!url || url === '' || url.indexOf('undefined') !== -1 || url.indexOf('null') !== -1) {
-            showToast('视频地址无效');
+            window.showToast('视频地址无效');
             if (loadingEl) loadingEl.style.display = 'none';
             if (bigPlayEl) bigPlayEl.style.display = 'flex';
             return;
         }
         
         // 设置视频兼容性属性
-        videoEl.preload = 'metadata';
+        videoEl.preload = 'metadata';  // V403n: 先只加载元数据（快速），播放时浏览器自动缓冲
         videoEl.setAttribute('playsinline', '');
         videoEl.setAttribute('webkit-playsinline', '');
         videoEl.setAttribute('x5-video-player-type', 'h5');
@@ -607,29 +628,12 @@ function openEnhancedVideoPlayer(title, url, videoId) {
             videoEl.removeChild(videoEl.firstChild);
         }
         
-        // 优先使用本地缓存（减少网络请求，解决卡顿）
-        var finalUrl = url;
+        // V403h: 先设置视频源，再尝试播放（修复getCachedVideo异步导致play()时src为空）
+        setVideoSourceFromUrl(videoEl, url);
+        
+        // 后台缓存视频供下次使用
         if (url && url.indexOf('http') === 0 && url.indexOf('blob:') === -1) {
-            getCachedVideo(url).then(function(cachedBlob) {
-                if (cachedBlob) {
-                    var cachedUrl = URL.createObjectURL(cachedBlob);
-                    var sourceEl = document.createElement('source');
-                    sourceEl.src = cachedUrl;
-                    sourceEl.type = 'video/mp4';
-                    videoEl.appendChild(sourceEl);
-                    videoEl.src = cachedUrl;
-                    console.log('使用缓存视频:', title);
-                } else {
-                    setVideoSourceFromUrl(videoEl, url);
-                    // 播放后缓存视频
-                    cacheVideoFromUrl(url);
-                }
-            }).catch(function() {
-                setVideoSourceFromUrl(videoEl, url);
-                cacheVideoFromUrl(url);
-            });
-        } else {
-            setVideoSourceFromUrl(videoEl, url);
+            cacheVideoFromUrl(url);
         }
         
         // 重置错误状态和重试计数
@@ -643,22 +647,25 @@ function openEnhancedVideoPlayer(title, url, videoId) {
         // 确保视频元素引用是最新的
         evpVideo = videoEl;
         
-        // 尝试播放，处理自动播放限制（移动端）
-        const attemptPlay = function() {
+        // V403m: 等视频canplay后再播放，不设时间限制
+        var autoPlayOnCanPlay = function() {
+            videoEl.removeEventListener('canplay', autoPlayOnCanPlay);
             videoEl.play().then(function() {
                 videoCtx.isPlaying = true;
                 if (bigPlayEl) bigPlayEl.style.display = 'none';
-                showToast('正在播放: ' + title);
+                if (loadingEl) loadingEl.style.display = 'none';
             }).catch(function(e) {
                 // 自动播放被阻止（常见于移动端），显示大播放按钮等待用户点击
                 videoCtx.isPlaying = false;
                 if (bigPlayEl) bigPlayEl.style.display = 'flex';
-                console.log('自动播放被阻止，等待用户交互:', e.message);
+                if (loadingEl) loadingEl.style.display = 'none';
             });
         };
-        
-        // 延迟执行播放尝试，确保 loadedmetadata 已触发
-        setTimeout(attemptPlay, 100);
+        videoEl.addEventListener('canplay', autoPlayOnCanPlay);
+        // 如果视频已经可以播放（缓存等情况），直接触发
+        if (videoEl.readyState >= 3) {
+            autoPlayOnCanPlay();
+        }
     }
 }
 
@@ -666,7 +673,7 @@ function toggleMiniPlayer() { if (!currentAudio) return; if (audioCtx.isPlaying)
 
 function toggleEnhancedFullscreen() { var playerEl = document.getElementById('enhanced-video-player'); if (!playerEl) return; if (document.fullscreenElement) { document.exitFullscreen().catch(function(e) {}); } else { playerEl.requestFullscreen().catch(function(e) {}); } }
 
-function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { showToast('画中画模式不支持'); }); } }
+function togglePictureInPicture() { if (!evpVideo) return; if (document.pictureInPictureElement) { document.exitPictureInPicture().catch(function(e) {}); } else { evpVideo.requestPictureInPicture().catch(function(e) { window.showToast('画中画模式不支持'); }); } }
 
 function updateMediaProgress() {
     var mediaEl = getCurrentMediaElement();
@@ -808,7 +815,7 @@ function onEnhancedVideoError(e) {
         videoEl.dataset.videoRetryCount = '0';
     }
     
-    showToast(errorMsg);
+    window.showToast(errorMsg);
     if (videoEl && videoEl.error) {
         console.error('视频加载错误:', videoEl.error);
     }
@@ -818,12 +825,30 @@ function onEnhancedVideoError(e) {
 function onEnhancedVideoWaiting() {
     var loadingEl = document.getElementById('evp-loading');
     if (loadingEl) loadingEl.style.display = 'flex';
+    // V403g: 显示缓冲进度
+    var videoEl = document.getElementById('evp-video');
+    if (videoEl && videoEl.buffered.length > 0) {
+        var buffered = videoEl.buffered.end(videoEl.buffered.length - 1);
+        var duration = videoEl.duration || 1;
+        var percent = Math.round((buffered / duration) * 100);
+        var progressEl = document.getElementById('evp-buffer-progress');
+        if (!progressEl && loadingEl) {
+            progressEl = document.createElement('div');
+            progressEl.id = 'evp-buffer-progress';
+            progressEl.style.cssText = 'margin-top:8px;font-size:12px;color:#fff;text-align:center;';
+            loadingEl.appendChild(progressEl);
+        }
+        if (progressEl) progressEl.textContent = '缓冲中... ' + percent + '%';
+    }
 }
 
 // 视频可以播放状态
 function onEnhancedVideoCanPlay() {
     var loadingEl = document.getElementById('evp-loading');
     if (loadingEl) loadingEl.style.display = 'none';
+    // V403g: 清除缓冲进度文字
+    var progressEl = document.getElementById('evp-buffer-progress');
+    if (progressEl) progressEl.remove();
 }
 
 function onMediaLoaded() {
@@ -864,17 +889,17 @@ function handleAudioUpload(input) {
 
     // 检查文件类型
     if (!file.type.startsWith('audio/')) {
-        showToast('请上传音频文件');
+        window.showToast('请上传音频文件');
         return;
     }
 
     // 检查文件大小（限制50MB）
     if (file.size > 50 * 1024 * 1024) {
-        showToast('音频文件不能超过50MB');
+        window.showToast('音频文件不能超过50MB');
         return;
     }
 
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user.localAudios) user.localAudios = [];
 
     // 创建音频URL
@@ -905,27 +930,20 @@ function handleAudioUpload(input) {
         renderLocalAudioList();
     };
 
-    showToast('音频上传成功！');
+    window.showToast('音频上传成功！');
     renderLocalAudioList();
 }
 
 
 function setVideoSourceFromUrl(videoEl, url) {
-    var sourceEl = document.createElement('source');
-    sourceEl.src = url;
-    sourceEl.type = 'video/mp4';
-    videoEl.appendChild(sourceEl);
+    // V403k: 只设videoEl.src，不再同时添加source标签（避免双重加载冲突）
     videoEl.src = url;
 }
 
 function cacheVideoFromUrl(url) {
-    if (!url || url.indexOf('http') !== 0) return;
-    fetch(url).then(function(r) {
-        if (r.ok) return r.blob();
-        throw new Error('fetch failed');
-    }).then(function(blob) {
-        cacheVideo(url, blob);
-    }).catch(function() {});
+    // V403n: 不再后台fetch整个视频（抢带宽），改为利用浏览器原生缓冲
+    // 浏览器在video播放时会自动缓冲，无需额外fetch
+    return;
 }
 
 // ========== 视频压缩功能 ==========
@@ -943,7 +961,7 @@ function compressVideo(file, callback) {
         return;
     }
     
-    showToast('正在压缩视频，请稍候...');
+    window.showToast('正在压缩视频，请稍候...');
     
     var compressDiv = document.createElement('div');
     compressDiv.id = 'compress-progress';
@@ -959,7 +977,7 @@ function compressVideo(file, callback) {
     
     var timeoutId = setTimeout(function() {
         cleanup();
-        showToast('压缩超时，使用原视频');
+        window.showToast('压缩超时，使用原视频');
         callback(file);
     }, VIDEO_COMPRESS_CONFIG.timeout);
     
@@ -1005,7 +1023,7 @@ function compressVideo(file, callback) {
             });
         } catch(e) {
             cleanup();
-            showToast('浏览器不支持压缩，使用原视频');
+            window.showToast('浏览器不支持压缩，使用原视频');
             callback(file);
             return;
         }
@@ -1027,10 +1045,10 @@ function compressVideo(file, callback) {
             setTimeout(function() {
                 cleanup();
                 if (compressed.size < file.size * 0.9) {
-                    showToast('压缩完成：' + (file.size/1024/1024).toFixed(1) + 'MB → ' + (compressed.size/1024/1024).toFixed(1) + 'MB');
+                    window.showToast('压缩完成：' + (file.size/1024/1024).toFixed(1) + 'MB → ' + (compressed.size/1024/1024).toFixed(1) + 'MB');
                     callback(compressed);
                 } else {
-                    showToast('压缩效果不明显，使用原视频');
+                    window.showToast('压缩效果不明显，使用原视频');
                     callback(file);
                 }
             }, 500);
@@ -1071,7 +1089,7 @@ function compressVideo(file, callback) {
     
     video.onerror = function() {
         cleanup();
-        showToast('视频读取失败，使用原文件');
+        window.showToast('视频读取失败，使用原文件');
         callback(file);
     };
 }
@@ -1107,17 +1125,17 @@ function handleVideoUpload(input) {
     
     // 检查文件类型
     if (!file.type.startsWith('video/')) {
-        showToast('请上传视频文件');
+        window.showToast('请上传视频文件');
         return;
     }
     
     // 检查文件大小（限制100MB）
     if (file.size > 100 * 1024 * 1024) {
-        showToast('视频文件不能超过100MB');
+        window.showToast('视频文件不能超过100MB');
         return;
     }
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user.localVideos) user.localVideos = [];
     
     // 生成视频ID（不存储 blob URL）
@@ -1164,30 +1182,30 @@ function handleVideoUpload(input) {
             console.log('视频文件已持久化存储:', videoId, '大小:', (processedFile.size/1024/1024).toFixed(1) + 'MB');
         }).catch(function(e) {
             console.error('视频持久化存储失败:', e);
-            showToast('视频存储可能不稳定，请刷新重试');
+            window.showToast('视频存储可能不稳定，请刷新重试');
         });
     });
     
-    showToast('视频上传成功！' + (file.size > 5*1024*1024 ? ' 大视频将自动压缩' : ''));
+    window.showToast('视频上传成功！' + (file.size > 5*1024*1024 ? ' 大视频将自动压缩' : ''));
     renderLocalVideoList();
 }
 
 function deleteLocalAudio(audioId) {
     if (!confirm('确定要删除这个音频吗？')) return;
 
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     if (!user.localAudios) return;
 
     user.localAudios = user.localAudios.filter(a => a.id !== audioId);
     syncUserData(user);
     renderLocalAudioList();
-    showToast('音频已删除');
+    window.showToast('音频已删除');
 }
 
 function deleteLocalVideo(videoId) {
     if (!confirm('确定删除这个视频吗？')) return;
     
-    const user = getCurrentUserData();
+    const user = window.getCurrentUserData();
     user.localVideos = user.localVideos.filter(v => v.id !== videoId);
     syncUserData(user);
     
@@ -1199,7 +1217,7 @@ function deleteLocalVideo(videoId) {
     });
     
     renderLocalVideoList();
-    showToast('视频已删除');
+    window.showToast('视频已删除');
 }
 
 function initMediaCourses() {
@@ -1325,7 +1343,7 @@ window.startAudioSeq = startAudioSeq;
 // ========== 视频观看记录功能 ==========
 function getVideoWatchRecord(videoId) {
     try {
-        const user = getCurrentUserData();
+        const user = window.getCurrentUserData();
         if (!user || !user.videoWatchRecords) return null;
         return user.videoWatchRecords[videoId] || null;
     } catch (e) {
@@ -1335,7 +1353,7 @@ function getVideoWatchRecord(videoId) {
 
 function saveVideoWatchRecord(videoId, progress, duration) {
     try {
-        const user = getCurrentUserData();
+        const user = window.getCurrentUserData();
         if (!user) return;
         if (!user.videoWatchRecords) user.videoWatchRecords = {};
         user.videoWatchRecords[videoId] = {
@@ -1357,6 +1375,26 @@ function updateVideoProgress() {
     } catch (e) {}
 }
 
+// ========== 视频播放器核心函数导出 ==========
+window.closeEnhancedVideoPlayer = closeEnhancedVideoPlayer;
+window.closeVideoPlayer = closeVideoPlayer;
+window.openEnhancedVideoPlayer = openEnhancedVideoPlayer;
+window.initEnhancedVideoPlayer = initEnhancedVideoPlayer;
+window.seekEnhancedVideo = seekEnhancedVideo;
+window.seekEnhancedVideoBackward = seekEnhancedVideoBackward;
+window.seekEnhancedVideoForward = seekEnhancedVideoForward;
+window.seekVideo = seekVideo;
+window.toggleEnhancedFullscreen = toggleEnhancedFullscreen;
+window.toggleEnhancedMute = toggleEnhancedMute;
+window.toggleEnhancedSpeedDropdown = toggleEnhancedSpeedDropdown;
+window.toggleEnhancedVideoPlay = toggleEnhancedVideoPlay;
+window.togglePictureInPicture = togglePictureInPicture;
+window.toggleVolume = toggleVolume;
+window.toggleVpPlay = toggleVpPlay;
+window.onEnhancedVideoError = onEnhancedVideoError;
+window.onEnhancedVideoWaiting = onEnhancedVideoWaiting;
+window.onEnhancedVideoCanPlay = onEnhancedVideoCanPlay;
+
 // ========== 本地视频相关函数导出 ==========
 window.playLocalVideo = playLocalVideo;
 window.handleVideoUpload = handleVideoUpload;
@@ -1367,41 +1405,3 @@ window.deleteLocalVideo = deleteLocalVideo;
 
 // ============================================================
 // ES6 Module 导出
-// ============================================================
-
-// 视频播放器模块对象
-export const playerModule = {
-    name: 'player',
-    icon: '🎬',
-    render: null
-};
-
-// 导出主要函数
-export {
-    playVideo,
-    playPodcast,
-    closeVideoPlayer,
-    toggleVpPlay,
-    seekVideo,
-    toggleVolume,
-    togglePictureInPicture,
-    closeEnhancedVideoPlayer,
-    toggleEnhancedVideoPlay,
-    seekEnhancedVideo,
-    seekEnhancedVideoBackward,
-    seekEnhancedVideoForward,
-    toggleEnhancedMute,
-    toggleEnhancedFullscreen,
-    toggleEnhancedSpeedDropdown,
-    onEnhancedVideoError,
-    playLocalVideo,
-    handleVideoUpload,
-    compressVideo,
-    cacheVideo,
-    getCachedVideo,
-    deleteLocalVideo,
-    saveVideoWatchRecord,
-    updateVideoProgress
-};
-
-console.log('[ES6 Module] player.js 模块加载完成');

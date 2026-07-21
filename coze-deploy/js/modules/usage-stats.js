@@ -496,18 +496,18 @@ var UsageStatsModule = {
       if (confirm('确定要清空所有使用记录吗？此操作不可恢复！')) {
         self.clearAllRecords();
         window.refreshUsageStats();
-        showToast('记录已清空');
+        window.showToast('记录已清空');
       }
     };
     
     window.exportUsageJSON = function() {
       self.downloadJSON();
-      showToast('JSON导出成功');
+      window.showToast('JSON导出成功');
     };
     
     window.exportUsageCSV = function() {
       self.downloadCSV();
-      showToast('CSV导出成功');
+      window.showToast('CSV导出成功');
     };
     
     modal.innerHTML = `
