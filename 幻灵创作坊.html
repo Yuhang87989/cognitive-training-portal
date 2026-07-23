@@ -159,6 +159,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <body>
 <div class="top-bar">
 <div class="top-title">
+<button onclick="goBack()" style="background:none;border:none;color:#a78bfa;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;" aria-label="返回">←</button>
 <h1>✨ 幻灵创作坊</h1>
 <span>v6 · 免费无限</span>
 </div>
@@ -428,6 +429,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="draft-badge" id="draftBadge">💾 草稿已自动保存</div>
 
 <script>
+function goBack(){if(window.history.length>1){window.history.back()}else{window.location.href='index.html'}}
 /* ========== 风格定义 ========== */
 const STYLES=[
 {id:'anime',emoji:'🎀',name:'二次元偶像',en:'Anime Idol',pos:'anime style, idol aesthetic, vibrant colors, cel shading, Japanese animation quality, beautiful detailed eyes',neg:'realistic, photographic, 3d render'},
