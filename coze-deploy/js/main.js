@@ -22,6 +22,11 @@ window.SCRIPT_DIR = SCRIPT_DIR;
 
 console.log('[V231] 脚本目录:', SCRIPT_DIR);
 
+// ============================================================
+// V262 混合方案：大部分模块预先import，只留3个做ES6动态import测试
+// ============================================================
+
+// 导入核心模块 - 各模块会自行将关键函数挂载到window
 import './config.js';
 import './ctm.js';
 import './db.js';
@@ -30,6 +35,8 @@ import './utils.js';
 import './user.js';
 import './audio.js';
 import './modules/ui.js';
+import './modules/pet.js';
+import './ui-pet.js';
 
 // 数据模块 - 这些是配置数据，需要预先加载
 import './data/topics.js';
@@ -38,36 +45,41 @@ import './data/podcasts.js';
 import './data/videos.js';
 import './data/games-config.js';
 
-console.log('[ES6 Module] 核心模块 + 数据模块加载完成！');
+// ============================================================
+// 大部分业务模块直接预先import，确保渲染函数挂载到window
+// ============================================================
+import './modules/practice.js';      // 母题训练
+import './modules/deepseek.js';      // DeepSeek
+import './modules/wrongbook.js';     // 错题本
+import './modules/games.js';         // 训练游戏
+import './modules/podcast.js';       // 播客课堂
+import './modules/video.js';         // 视频课程
+import './modules/thinking.js';      // 思维训练
+import './modules/method.js';        // 学霸方法
+import './modules/map.js';           // 认知地图
+import './modules/my-page.js';       // 我的页面
+import './modules/pomodoro.js';      // 番茄钟
+import './modules/notepad.js';       // 记事本
+import './modules/parent-dashboard.js'; // 家长看板
+import './modules/admin-dashboard.js';  // 管理员看板
+
+console.log('[V262] 核心模块 + 业务模块 + 数据模块全部预先加载完成！');
 
 // ============================================================
-// 模块懒加载映射配置 - V231 使用绝对路径修复子目录部署问题
+// V262: 只留3个模块做ES6动态import测试，其余都预先加载
+// 
+// ES6测试模块（3个）：
+//   1. calculator - 计算器
+//   2. mindmap - 思维导图
+//   3. selfdrive - 自驱力训练
 // ============================================================
 window.MODULE_LAZY_LOAD_MAP = {
-    // 业务模块 - 点击时动态加载
-    'practice':   { path: resolveModulePath('./modules/practice.js'),   render: 'renderPractice' },
-    'plan':       { path: resolveModulePath('./modules/plan.js'),       render: 'renderPlan' },
-    'games':      { path: resolveModulePath('./modules/games.js'),      render: 'renderGames' },
-    'deepseek':   { path: resolveModulePath('./modules/deepseek.js'),   render: 'renderDeepseek' },
-    'wrongbook':  { path: resolveModulePath('./modules/wrongbook.js'),  render: 'renderWrongbook' },
-    'podcast':    { path: resolveModulePath('./modules/podcast.js'),    render: 'renderPodcast' },
-    'video':      { path: resolveModulePath('./modules/video.js'),      render: 'renderVideo' },
-    'thinking':   { path: resolveModulePath('./modules/thinking.js'),   render: 'renderThinking' },
-    'topics':     { path: resolveModulePath('./modules/topics.js'),     render: 'renderTopics' },
-    'method':     { path: resolveModulePath('./modules/method.js'),     render: 'renderMethod' },
-    'pomodoro':   { path: resolveModulePath('./modules/pomodoro.js'),   render: 'renderPomodoro' },
     'calculator': { path: resolveModulePath('./modules/calculator.js'), render: 'renderCalculator' },
-    'notepad':    { path: resolveModulePath('./modules/notepad.js'),    render: 'renderNotepad' },
-    'map':        { path: resolveModulePath('./modules/map.js'),        render: 'renderMap' },
+    'mindmap':    { path: resolveModulePath('./modules/mindmap.js'),    render: 'renderMindMap' },
     'selfdrive':  { path: resolveModulePath('./modules/self-drive.js'), render: 'renderSelfDrive' },
-    'weekly':     { path: resolveModulePath('./modules/stats.js'),      render: 'renderWeeklyReview' },
-    'progress':   { path: resolveModulePath('./modules/stats.js'),      render: 'renderProgressChart' },
-    'my':         { path: resolveModulePath('./modules/my-page.js'),    render: 'renderMyPage' },
-    'usage-stats':{ path: resolveModulePath('./modules/my-page.js'),    render: 'renderUsageStats' },
-    'backup':     { path: resolveModulePath('./modules/local-db.js'),   render: 'renderBackupManager' },
-    
-    // player.js 由其他模块依赖，不单独懒加载
 };
+
+console.log('[V262] ES6测试模块配置完成：calculator, mindmap, selfdrive');
 
 // 已加载的模块缓存
 window.LOADED_MODULES = new Set();
@@ -209,3 +221,80 @@ if (window.dispatchEvent) {
 }
 
 console.log('[ES6 Module V229] 动态懒加载系统初始化完成！');
+
+// ============================================================
+// 创建默认用户
+// ============================================================
+function createDefaultUser() {
+    const data = window.loadData ? window.loadData() : { users: [], currentUser: null };
+    
+    // 如果已经有用户了，不需要创建
+    if (data.users && data.users.length > 0) {
+        console.log('[V233] 已有用户，无需创建默认用户');
+        return data.users[0];
+    }
+    
+    // 创建默认用户
+    const defaultUser = {
+        id: 'user_' + Date.now(),
+        name: '学习者',
+        grade: 7,
+        difficulty: 1,
+        points: 1000,
+        createdAt: new Date().toISOString(),
+        stats: {
+            totalQuestions: 0,
+            correctAnswers: 0,
+            totalMinutes: 0,
+            streakDays: 0,
+            lastActiveDate: null
+        },
+        topicStats: {},
+        weeklyProgress: {},
+        wrongNotes: [],
+        completedTopics: [],
+        methodStats: {},
+        thinkingStats: {},
+        gameScores: {},
+        gameCounts: {},
+        gameTimes: {}
+    };
+    
+    data.users = [defaultUser];
+    data.currentUser = defaultUser.id;
+    
+    if (window.saveData) {
+        window.saveData(data);
+    }
+    
+    console.log('[V233] 默认用户创建成功:', defaultUser.name);
+    return defaultUser;
+}
+
+// ============================================================
+// 首页初始化函数 - V233修复
+// ============================================================
+window.initPortal = function() {
+    console.log('[V233] 开始初始化门户...');
+    
+    try {
+        // 先确保有默认用户
+        createDefaultUser();
+        
+        // 获取当前用户数据
+        const userData = window.getCurrentUserData ? window.getCurrentUserData() : null;
+        
+        // 更新首页用户信息
+        if (window.updateHomeUserInfo) {
+            window.updateHomeUserInfo(userData);
+        }
+        
+        console.log('[V233] 门户初始化完成！');
+    } catch (error) {
+        console.error('[V233] 初始化出错:', error);
+    }
+};
+
+// 标记main.js加载完成
+window.mainJsLoaded = true;
+console.log('[V232] ES6 Module入口加载完成！');

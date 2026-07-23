@@ -1,126 +1,61 @@
-// Service Worker for 认知训练门户 V151
-// 缓存策略: Network First + Stale-while-revalidate (podcast-data.json)
+// Service Worker for 认知训练门户 V397
+// 缓存策略: Network First (确保最新代码) + 离线回退
 
-var CACHE_NAME = 'cognitive-training-v151';
+var CACHE_NAME = 'ct-v422n';
 var OFFLINE_URL = './index.html';
 
-// 关键文件列表
-var PRECACHE_URLS = [
-    './',
-    './index.html',
-    './manifest.json',
-    './podcast-data.json',
-    './icon-192.png',
-    './icon-512x512.png',
-    './apple-touch-icon.png'
-];
-
-// JS模块文件
-var JS_FILES = [
-    './js/main.js'
-];
-
-// 安装事件 - 预缓存关键文件
 self.addEventListener('install', function(event) {
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(function(cache) {
-                console.log('[SW] 预缓存关键文件');
-                return cache.addAll(PRECACHE_URLS);
-            })
-            .then(function() {
-                return self.skipWaiting();
-            })
-            .catch(function(err) {
-                console.warn('[SW] 预缓存失败:', err);
-            })
+        caches.open(CACHE_NAME).then(function(cache) {
+            return cache.addAll(['./', './index.html']).catch(function(){});
+        }).then(function() {
+            return self.skipWaiting();
+        })
     );
 });
 
-// 激活事件 - 清理旧缓存
 self.addEventListener('activate', function(event) {
     event.waitUntil(
-        caches.keys()
-            .then(function(cacheNames) {
-                return Promise.all(
-                    cacheNames.map(function(cacheName) {
-                        if (cacheName !== CACHE_NAME) {
-                            console.log('[SW] 删除旧缓存:', cacheName);
-                            return caches.delete(cacheName);
-                        }
-                    })
-                );
-            })
-            .then(function() {
-                return self.clients.claim();
-            })
+        caches.keys().then(function(names) {
+            return Promise.all(names.filter(function(n) {
+                return n !== CACHE_NAME;
+            }).map(function(n) {
+                return caches.delete(n);
+            }));
+        }).then(function() {
+            return self.clients.claim();
+        })
     );
 });
 
-// 获取事件 - 智能缓存策略
 self.addEventListener('fetch', function(event) {
     var request = event.request;
     var url = new URL(request.url);
-
-    // 只处理同源请求
-    if (url.origin !== location.origin) {
-        return;
-    }
-
-    // podcast-data.json 使用 stale-while-revalidate 策略
-    if (url.pathname.indexOf('podcast-data.json') !== -1) {
-        event.respondWith(staleWhileRevalidate(request));
-        return;
-    }
-
-    // 其他文件使用 Network First 策略
-    event.respondWith(networkFirst(request));
-});
-
-// Network First 策略
-function networkFirst(request) {
-    return fetch(request)
-        .then(function(response) {
+    
+    // 只处理同源GET请求
+    if (url.origin !== location.origin || request.method !== 'GET') return;
+    
+    // Network First: 优先网络，确保最新代码
+    event.respondWith(
+        fetch(request).then(function(response) {
             if (response && response.ok) {
-                var responseClone = response.clone();
-                caches.open(CACHE_NAME)
-                    .then(function(cache) {
-                        cache.put(request, responseClone);
-                    });
+                var clone = response.clone();
+                caches.open(CACHE_NAME).then(function(cache) {
+                    cache.put(request, clone).catch(function(e){ console.warn("[SW] cache.put failed:", e); });
+                });
             }
             return response;
-        })
-        .catch(function() {
-            return caches.match(request)
-                .then(function(response) {
-                    if (response) {
-                        return response;
-                    }
-                    // 离线回退
+        }).catch(function() {
+            // 网络不通，回退缓存
+            return caches.match(request).then(function(cached) {
+                if (cached) return cached;
+                // 只有页面导航请求才回退到离线页面，JS/CSS/图片不要回退HTML
+                if (request.mode === 'navigate') {
                     return caches.match(OFFLINE_URL);
-                });
-        });
-}
-
-// Stale-while-revalidate 策略
-function staleWhileRevalidate(request) {
-    return caches.match(request)
-        .then(function(response) {
-            var fetchPromise = fetch(request)
-                .then(function(networkResponse) {
-                    if (networkResponse && networkResponse.ok) {
-                        caches.open(CACHE_NAME)
-                            .then(function(cache) {
-                                cache.put(request, networkResponse.clone());
-                            });
-                    }
-                    return networkResponse;
-                })
-                .catch(function(err) {
-                    console.warn('[SW] stale-while-revalidate 失败:', err);
-                });
-
-            // 立即返回缓存，后台更新
-            return response || fetchPromise;
-        });
-}
+                }
+                // 其他资源返回空响应，避免HTML被当作JS解析
+                return new Response('', { status: 404, statusText: 'Not Found' });
+            });
+        })
+    );
+});

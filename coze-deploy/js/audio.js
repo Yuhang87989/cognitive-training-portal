@@ -246,7 +246,7 @@ function toggleDeepSeekVoice() {
     
     var hasSR = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
     if (!hasSR) {
-        showToast('🎤 浏览器不支持语音，请手动输入');
+        window.showToast('🎤 浏览器不支持语音，请手动输入');
         return;
     }
     
@@ -271,7 +271,7 @@ function toggleDeepSeekVoice() {
     deepseekRecognition.onstart = function() {
         isRecording = true;
         if (btn) btn.textContent = '⏺';
-        showToast('🎤 请说话...', 3000);
+        window.showToast('🎤 请说话...', 3000);
     };
     
     deepseekRecognition.onresult = function(event) {
@@ -291,11 +291,11 @@ function toggleDeepSeekVoice() {
         isRecording = false;
         if (btn) btn.textContent = '🎤';
         if (event.error === 'no-speech') {
-            showToast('未听到语音，请再试');
+            window.showToast('未听到语音，请再试');
         } else if (event.error === 'not-allowed') {
-            showToast('请允许麦克风权限');
+            window.showToast('请允许麦克风权限');
         } else if (event.error !== 'aborted') {
-            showToast('语音识别失败: ' + event.error);
+            window.showToast('语音识别失败: ' + event.error);
         }
     };
     
@@ -303,7 +303,7 @@ function toggleDeepSeekVoice() {
         isRecording = false;
         if (btn) btn.textContent = '🎤';
         if (gotText) {
-            showToast('✅ ' + gotText);
+            window.showToast('✅ ' + gotText);
         }
     };
     
@@ -311,7 +311,7 @@ function toggleDeepSeekVoice() {
     try {
         deepseekRecognition.start();
     } catch(e) {
-        showToast('语音启动失败，请重试');
+        window.showToast('语音启动失败，请重试');
         isRecording = false;
     }
 }
@@ -331,7 +331,7 @@ let currentVoiceInputId = null; // 当前语音输入的目标inputId
 function toggleVoiceInput(btn, inputId) {
     const input = document.getElementById(inputId);
     if (!input) {
-        showToast('输入框未找到');
+        window.showToast('输入框未找到');
         return;
     }
     
@@ -341,7 +341,7 @@ function toggleVoiceInput(btn, inputId) {
     var hasSpeechRecognition = ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window);
     
     if (!hasSpeechRecognition) {
-        showToast('🎤 请点击输入框，使用键盘的语音输入功能', 4000);
+        window.showToast('🎤 请点击输入框，使用键盘的语音输入功能', 4000);
         input.focus();
         return;
     }
@@ -355,7 +355,7 @@ function toggleVoiceInput(btn, inputId) {
         voiceInputRecognition.interimResults = true; // V151: 开启实时转录
         voiceInputRecognition.maxAlternatives = 1;
     } catch(initErr) {
-        showToast('🎤 语音识别初始化失败');
+        window.showToast('🎤 语音识别初始化失败');
         return;
     }
     
@@ -365,7 +365,7 @@ function toggleVoiceInput(btn, inputId) {
     voiceInputRecognition.onstart = function() {
         isRecording = true;
         if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '⏺';
-        showToast('🎤 正在聆听，请说话...', 5000);
+        window.showToast('🎤 正在聆听，请说话...', 5000);
     };
     
     voiceInputRecognition.onresult = function(event) {
@@ -400,11 +400,11 @@ function toggleVoiceInput(btn, inputId) {
         if (currentVoiceInputBtn) currentVoiceInputBtn.textContent = '🎤';
         if (viGotResult && viFinalText) return; // 有结果就忽略错误
         if (event.error === 'not-allowed') {
-            showToast('⚠️ 请允许麦克风权限后重试');
+            window.showToast('⚠️ 请允许麦克风权限后重试');
         } else if (event.error === 'no-speech') {
-            showToast('未检测到语音，请再试一次');
+            window.showToast('未检测到语音，请再试一次');
         } else if (event.error !== 'aborted') {
-            showToast('🎤 语音识别出错，请重试');
+            window.showToast('🎤 语音识别出错，请重试');
         }
     };
     
@@ -422,10 +422,10 @@ function toggleVoiceInput(btn, inputId) {
                 targetInput.value = val;
                 targetInput.dispatchEvent(new Event('input', { bubbles: true }));
                 targetInput.focus();
-                showToast('✅ 已识别: ' + viFinalText);
+                window.showToast('✅ 已识别: ' + viFinalText);
             }
         } else if (!viGotResult) {
-            showToast('🎤 未识别到内容，请再试一次');
+            window.showToast('🎤 未识别到内容，请再试一次');
         }
     };
     
@@ -438,11 +438,11 @@ function toggleVoiceInput(btn, inputId) {
             try { voiceInputRecognition.stop(); } catch(e2) {}
             setTimeout(function() {
                 try { voiceInputRecognition.start(); } catch(e3) {
-                    showToast('🎤 语音识别启动失败，请刷新后重试');
+                    window.showToast('🎤 语音识别启动失败，请刷新后重试');
                 }
             }, 500);
         } else {
-            showToast('🎤 语音识别启动失败');
+            window.showToast('🎤 语音识别启动失败');
         }
     }
 }
@@ -453,11 +453,9 @@ window.toggleVoiceInput = toggleVoiceInput;
 // ============================================================
 // ES6 Module 导出
 // ============================================================
-export {
     SoundEffects,
     speakText,
     stopTTSSpeech,
     toggleDeepSeekVoice,
     isWeChatBrowser,
     toggleVoiceInput
-};

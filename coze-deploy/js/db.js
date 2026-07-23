@@ -3,4 +3,3 @@
 // ES6 Module Export - V225 ES6改造
 // ============================================================
 const DB = window.DB;
-export { DB };
