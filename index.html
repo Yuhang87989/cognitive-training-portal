@@ -343,7 +343,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-name">错题本</div>
                 <div class="module-desc">错题复习</div>
             </button>
-            <button class="module-btn gradient-orange" onclick="openFullscreenPage('ai')">
+            <button class="module-btn gradient-orange" onclick="openFullscreenPage('ai')" style="display:none">
                 <span class="module-tag">AI</span>
                 <div class="module-icon">🎯</div>
                 <div class="module-name">AI精准练</div>
@@ -366,7 +366,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <div class="nav-icon">🧠</div>
         <div class="nav-label">认知</div>
     </div>
-    <div class="nav-item" onclick="openFullscreenPage('deepseek')">
+    <div class="nav-item" onclick="openFullscreenPage('deepseek')" style="display:none">
         <div class="nav-icon">🤖</div>
         <div class="nav-label">AI</div>
     </div>
@@ -466,7 +466,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         </div>
         
         <!-- 🤖 AI能力 -->
-        <div id="group-ai" class="settings-group">
+        <div id="group-ai" class="settings-group" style="display:none">
             <div class="settings-group-header" onclick="toggleSettingsGroup('ai')">
                 <div class="settings-group-title">🤖 AI能力</div>
                 <div class="settings-group-arrow">▼</div>
@@ -531,7 +531,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(event)"/>
         
         <!-- 🔧 API配置 -->
-        <div id="group-api" class="settings-group">
+        <div id="group-api" class="settings-group" style="display:none">
             <div class="settings-group-header" onclick="toggleSettingsGroup('api')">
                 <div class="settings-group-title">🔧 API配置</div>
                 <div class="settings-group-arrow">▼</div>
@@ -836,7 +836,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <div class="fp-nav-item" onclick="openFullscreenPage('map')">
             <div class="fp-nav-icon">🧠</div><div>认知</div>
         </div>
-        <div class="fp-nav-item" onclick="openFullscreenPage('deepseek')">
+        <div class="fp-nav-item" onclick="openFullscreenPage('deepseek')" style="display:none">
             <div class="fp-nav-icon">🤖</div><div>AI</div>
         </div>
         <div class="fp-nav-item" onclick="openFullscreenPage('my')">
