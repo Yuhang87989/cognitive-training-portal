@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>清缓存</title></head>
+<body>
+<h2>清除所有缓存和服务 worker</h2>
+<p id="status">处理中...</p>
+<script>
+(async function() {
+    var log = [];
+    
+    // 注销所有 SW（包括根目录的和子目录的）
+    if ('serviceWorker' in navigator) {
+        var regs = await navigator.serviceWorker.getRegistrations();
+        log.push('发现 ' + regs.length + ' 个 SW');
+        for (var i = 0; i < regs.length; i++) {
+            var ok = await regs[i].unregister();
+            log.push('注销 ' + regs[i].scope + ': ' + (ok ? 'OK' : 'FAIL'));
+        }
+    }
+    
+    // 清除所有缓存
+    if ('caches' in window) {
+        var keys = await caches.keys();
+        log.push('发现 ' + keys.length + ' 个缓存: ' + keys.join(', '));
+        for (var i = 0; i < keys.length; i++) {
+            await caches.delete(keys[i]);
+            log.push('已删除: ' + keys[i]);
+        }
+    }
+    
+    // 清除存储
+    localStorage.clear();
+    sessionStorage.clear();
+    log.push('已清除 localStorage 和 sessionStorage');
+    
+    document.getElementById('status').innerHTML = log.join('<br>') + '<br><br><strong>完成！</strong>';
+    
+    // 3秒后跳转
+    setTimeout(function() {
+        window.location.href = 'https://yuhang87989.github.io/cognitive-training-portal/no-ai/?_=' + Date.now();
+    }, 3000);
+})();
+</script>
+</body></html>
