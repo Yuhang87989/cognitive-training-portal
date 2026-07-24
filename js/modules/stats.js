@@ -230,7 +230,3 @@ window.renderWeeklyReview = renderWeeklyReview;
 window.renderProgressChart = renderProgressChart;
 
 console.log('V201 - 学习统计模块已加载');
-
-// ============================================================
-// ES6 Module 导出
-// ============================================================

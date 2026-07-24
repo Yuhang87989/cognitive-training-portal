@@ -1049,7 +1049,3 @@ window._doSwitchRole = function(role) {
     // 角色切换后刷新首页模块显示
     if (window._applyRoleModules) window._applyRoleModules();
 };
-
-// ============================================================
-// ES6 Module 导出
-// ============================================================

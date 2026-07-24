@@ -137,11 +137,10 @@ function checkInToday() {
 
 // 目标页面
 function renderGoalPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
+    const container = document.getElementById('fullscreen-content') || document.getElementById('main-content') || document.body;
+    // 全屏模式下不需要modal
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.closeModal();var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="var p=document.getElementById(\'fullscreen-content\')||document.getElementById(\'main-content\');if(p)window.renderSelfDrive(p);" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">🎯 我的目标</h3>
@@ -203,11 +202,10 @@ function deleteGoal(index) {
 
 // 习惯追踪页面
 function renderHabitPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
+    const container = document.getElementById('fullscreen-content') || document.getElementById('main-content') || document.body;
+    // 全屏模式下不需要modal
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.closeModal();var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="var p=document.getElementById(\'fullscreen-content\')||document.getElementById(\'main-content\');if(p)window.renderSelfDrive(p);" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">📅 习惯追踪</h3>
@@ -295,9 +293,8 @@ function deleteHabit(index) {
 
 // 成就墙页面
 function renderAchievementPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
+    const container = document.getElementById('fullscreen-content') || document.getElementById('main-content') || document.body;
+    // 全屏模式下不需要modal
     
     // 预设成就
     const presetAchievements = [
@@ -323,7 +320,7 @@ function renderAchievementPage() {
     });
     SelfDrive.save();
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.closeModal();var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="var p=document.getElementById(\'fullscreen-content\')||document.getElementById(\'main-content\');if(p)window.renderSelfDrive(p);" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <h3 style="margin:0 0 20px 0;font-size:18px;">🏆 成就墙</h3>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
@@ -344,11 +341,10 @@ function renderAchievementPage() {
 
 // 每日反思页面
 function renderDiaryPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
+    const container = document.getElementById('fullscreen-content') || document.getElementById('main-content') || document.body;
+    // 全屏模式下不需要modal
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.closeModal();var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="var p=document.getElementById(\'fullscreen-content\')||document.getElementById(\'main-content\');if(p)window.renderSelfDrive(p);" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h3 style="margin:0;font-size:18px;">📝 每日反思</h3>
@@ -399,9 +395,8 @@ function deleteDiary(index) {
 
 // 训练方法库页面
 function renderMethodPage() {
-    const container = document.getElementById('detail-content') || document.body;
-    const modal = document.getElementById('detail-modal');
-    if (modal) modal.classList.add('show');
+    const container = document.getElementById('fullscreen-content') || document.getElementById('main-content') || document.body;
+    // 全屏模式下不需要modal
     
     const methods = [
         {
@@ -469,7 +464,7 @@ function renderMethodPage() {
         }
     ];
     
-    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="window.closeModal();var c=document.getElementById(\'detail-content\');if(c)c.innerHTML=\'\';" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
+    container.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 20px;"><button onclick="var p=document.getElementById(\'fullscreen-content\')||document.getElementById(\'main-content\');if(p)window.renderSelfDrive(p);" style="padding:8px 16px;background:#f0f0f0;color:#666;border:none;border-radius:8px;font-size:13px;cursor:pointer;">← 返回</button></div>
     <div style="padding:20px;">
         <h3 style="margin:0 0 20px 0;font-size:18px;">📚 自驱力科学训练方法</h3>
         <div style="font-size:12px;color:#666;margin-bottom:16px;">核心：由内在需求或兴趣驱动的行动力，而非依赖外部奖励或压力</div>
@@ -498,32 +493,6 @@ if (typeof CTM !== 'undefined') {
         render: renderSelfDrive
     });
 }
-
-// ============================================================
-// ES6 Module 导出
-// ============================================================
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        SelfDrive: window.SelfDrive,
-        renderSelfDrive,
-        calculateStreakDays,
-        hasCheckedInToday,
-        checkInToday,
-        renderGoalPage,
-        addGoal,
-        toggleGoal,
-        deleteGoal,
-        renderHabitPage,
-        addHabit,
-        checkHabit,
-        deleteHabit,
-        renderAchievementPage,
-        renderDiaryPage,
-        renderMethodPage
-    };
-}
-
-
 // V255: 将函数挂载到window，确保全局可访问
 window.renderGoalPage = renderGoalPage;
 window.renderHabitPage = renderHabitPage;
