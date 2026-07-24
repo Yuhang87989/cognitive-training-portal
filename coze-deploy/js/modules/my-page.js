@@ -817,10 +817,10 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="openFullscreenPage('notepad')">
                         <span>📝</span> 学习日记
                     </button>
-                    <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')" style="display:none">
+                    <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')">
                         <span>📊</span> AI使用统计
                     </button>
-                    <button class="foldable-btn" onclick="window.open('幻灵创作坊.html', '_blank')" style="display:none">
+                    <button class="foldable-btn" onclick="window.open('幻灵创作坊.html', '_blank')">
                         <span>🎨</span> 幻灵创作坊
                     </button>
                 </div>
@@ -898,13 +898,13 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="showAbout()">
                         <span>📋</span> 版本信息
                     </button>
-                    <button class="foldable-btn" onclick="openHelp()" style="display:none">
+                    <button class="foldable-btn" onclick="openHelp()">
                         <span>❓</span> 使用帮助
                     </button>
                     <button class="foldable-btn" onclick="openFeedback()">
                         <span>💬</span> 意见反馈
                     </button>
-                    <button class="foldable-btn" onclick="openDeepseekHelpModal()" style="display:none">
+                    <button class="foldable-btn" onclick="openDeepseekHelpModal()">
                         <span>🔮</span> DeepSeek帮助文档
                     </button>
                     <div class="setting-row">
