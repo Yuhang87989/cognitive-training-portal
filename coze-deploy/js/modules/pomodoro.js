@@ -10,7 +10,7 @@ let pomodoroMode = 'work'; // work, break
 
 function renderPomodoro(container) {
     const minutes = Math.floor(window.pomodoroTime / 60);
-    const seconds = pomodoroTime % 60;
+    const seconds = window.pomodoroTime % 60;
     
     container.innerHTML = `
         <div class="card" style="text-align:center;">
@@ -97,7 +97,7 @@ function togglePomodoro() {
             const display = document.getElementById('pomodoro-display');
             if (display) {
                 const m = Math.floor(window.pomodoroTime / 60);
-                const s = pomodoroTime % 60;
+                const s = window.pomodoroTime % 60;
                 display.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }
         }, 1000);
@@ -125,8 +125,3 @@ if (typeof module !== 'undefined' && module.exports) {
         pomodoroTime: window.pomodoroTime
     };
 }
-
-    renderPomodoro,
-    resetPomodoro,
-    setPomodoroTime,
-    togglePomodoro
