@@ -178,8 +178,3 @@ if (typeof module !== 'undefined' && module.exports) {
         renderCognitiveMap
     };
 }
-
-    renderMap,
-    renderCognitiveRadar,
-    renderCognitiveDetails,
-    renderStatItems

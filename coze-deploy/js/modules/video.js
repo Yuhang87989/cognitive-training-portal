@@ -169,8 +169,3 @@ if (typeof module !== 'undefined' && module.exports) {
         videoCourses: window.videoCourses
     };
 }
-
-    renderVideo,
-    renderLocalVideoList,
-    filterVideoCourse,
-    playVideoFromList

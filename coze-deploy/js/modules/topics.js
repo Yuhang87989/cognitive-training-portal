@@ -383,10 +383,3 @@ if (typeof module !== 'undefined' && module.exports) {
         currentTopicsPage
     };
 }
-
-    renderTopics,
-    selectTopicsGrade,
-    selectTopicsSubject,
-    loadTopicsList,
-    openTopicQuestion,
-    checkTopicAnswer

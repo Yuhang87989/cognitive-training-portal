@@ -234,7 +234,3 @@ console.log('V201 - 学习统计模块已加载');
 // ============================================================
 // ES6 Module 导出
 // ============================================================
-    renderWeeklyReview,
-    renderProgressChart,
-    getEncouragement,
-    getProgressAnalysis

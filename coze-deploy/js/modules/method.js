@@ -1149,7 +1149,3 @@ if (typeof module !== 'undefined' && module.exports) {
         methodTrainingQuestions: window.methodTrainingQuestions
     };
 }
-
-    startMethodQuiz,
-    rateMethodAnswer,
-    analyzeMethodWithAI

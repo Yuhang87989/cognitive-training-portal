@@ -861,8 +861,3 @@ if (typeof module !== 'undefined' && module.exports) {
         thinkingQuestions: window.thinkingQuestions
     };
 }
-
-    renderThinking,
-    showThinkingType,
-    startThinkingQuiz,
-    submitThinkingAnswers

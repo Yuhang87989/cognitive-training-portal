@@ -603,9 +603,3 @@ window.openManageUserModal = openManageUserModal;
 // ============================================================
 // ES6 Module Export - V225 ES6改造
 // ============================================================
-    toggleUserMenu,
-    closeUserMenuOutside,
-    showUserSwitchModal,
-    showCreateUserModal,
-    quickLogin,
-    openManageUserModal

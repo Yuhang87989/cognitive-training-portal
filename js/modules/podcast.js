@@ -777,11 +777,3 @@ if (typeof module !== 'undefined' && module.exports) {
         podcastPlayerState
     };
 }
-
-    renderPodcast,
-    playPodcastById,
-    podcastTogglePlay,
-    podcastPrev,
-    podcastNext,
-    podcastCycleSpeed,
-    stopPodcastAudio
