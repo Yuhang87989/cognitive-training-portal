@@ -3,6 +3,24 @@
 <head>
 <script>
 // V371: 自动版本号 - 基于发布日期，无需手动维护
+// 立即注销所有 Service Worker（最高优先级）
+if(typeof navigator !== 'undefined' && navigator.serviceWorker){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    var had = regs.length > 0;
+    regs.forEach(function(reg){ reg.unregister(); });
+    if(had) {
+      // 有旧SW被注销，3秒后自动刷新以获取最新内容
+      if(!sessionStorage.getItem('_sw_cleared')) {
+        sessionStorage.setItem('_sw_cleared', '1');
+        setTimeout(function(){ location.reload(); }, 3000);
+      }
+    }
+  }).catch(function(){});
+}
+if(typeof caches !== 'undefined'){
+  caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); }).catch(function(){});
+}
+
 var SITE_VERSION = '421e';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
