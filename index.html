@@ -3,7 +3,7 @@
 <head>
 <script>
 // V371: 自动版本号 - 基于发布日期，无需手动维护
-var SITE_VERSION = '425';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '425c';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
@@ -972,9 +972,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             window.initPortal();
             console.log("[初始化] 门户加载完成");
             if (typeof window.recordPetProgress === 'function') window.recordPetProgress('login');
+            // V425c: 暂时禁用Service Worker，直接用HTTP缓存+URL版本号控制缓存刷新
+            // 旧SW可能缓存了旧版页面内容，导致用户看到空白/AI按钮未隐藏
+            // 所有JS/CSS已有?v=425版本号，浏览器会正确处理缓存
+            /*
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register('./sw-v425.js').catch(function(err) {});
+                navigator.serviceWorker.register('./sw-v425.js?t=' + Date.now()).catch(function(err) {
+                    console.warn('[SW] 注册失败:', err);
+                });
             }
+            */
         } else if (retries < 50) {
             setTimeout(function() { safeInitPortal(retries + 1); }, 100);
         } else {
