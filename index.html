@@ -3,40 +3,24 @@
 <head>
 <script>
 // V371: 自动版本号 - 基于发布日期，无需手动维护
-var SITE_VERSION = '425c';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '420';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
   if(STORED_VER !== SITE_VERSION){
     localStorage.setItem('_site_ver', SITE_VERSION);
-    // V425b: 版本变更时，必须等旧SW注销+缓存清空完成后再reload，否则旧SW继续拦截请求返回旧内容
-    var pending = 0;
-    function doReload(){
-      pending--;
-      if(pending <= 0){
-        if(!sessionStorage.getItem('_v425_refreshed')){
-          sessionStorage.setItem('_v425_refreshed', '1');
-          location.reload();
-        }
-      }
-    }
+    // V395: 版本变更时注销旧Service Worker并清空缓存
     if(typeof navigator !== 'undefined' && navigator.serviceWorker){
-      pending++;
       navigator.serviceWorker.getRegistrations().then(function(regs){
-        return Promise.all(regs.map(function(reg){ return reg.unregister(); }));
-      }).then(doReload, doReload);
+        regs.forEach(function(reg){ reg.unregister(); });
+      });
     }
     if(typeof caches !== 'undefined'){
-      pending++;
-      caches.keys().then(function(names){
-        return Promise.all(names.map(function(k){ return caches.delete(k); }));
-      }).then(doReload, doReload);
+      caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); });
     }
-    if(pending === 0){
-      if(!sessionStorage.getItem('_v425_refreshed')){
-        sessionStorage.setItem('_v425_refreshed', '1');
-        location.reload();
-      }
+    if(!sessionStorage.getItem('_v396_refreshed')){
+      sessionStorage.setItem('_v396_refreshed', '1');
+      location.reload();
     }
   }
 })();
@@ -209,7 +193,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .nav-icon{font-size:16px;margin-bottom:2px}
 .nav-label{font-size:8px}
 </style>
-<link rel="stylesheet" href="css/style.css?v=425"/>
+<link rel="stylesheet" href="css/style.css?v=403"/>
 <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js"></script>
 <script>if(/MicroMessenger/i.test(navigator.userAgent)){document.addEventListener("DOMContentLoaded",function(){twemoji.parse(document.body,{base:"https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/",ext:".svg",size:""})})}</script>
 <script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
@@ -359,11 +343,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                 <div class="module-name">错题本</div>
                 <div class="module-desc">错题复习</div>
             </button>
-            <button class="module-btn gradient-orange" onclick="openFullscreenPage('pomodoro')">
-                <span class="module-tag">专注</span>
-                <div class="module-icon">🍅</div>
-                <div class="module-name">番茄闹钟</div>
-                <div class="module-desc">专注计时</div>
+            <button class="module-btn gradient-orange" onclick="openFullscreenPage('ai')">
+                <span class="module-tag">AI</span>
+                <div class="module-icon">🎯</div>
+                <div class="module-name">AI精准练</div>
+                <div class="module-desc">薄弱点诊断</div>
             </button>
         </div>
     </div>
@@ -382,7 +366,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <div class="nav-icon">🧠</div>
         <div class="nav-label">认知</div>
     </div>
-    <div class="nav-item" onclick="openFullscreenPage('deepseek')" style="display:none">
+    <div class="nav-item" onclick="openFullscreenPage('deepseek')">
         <div class="nav-icon">🤖</div>
         <div class="nav-label">AI</div>
     </div>
@@ -482,7 +466,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         </div>
         
         <!-- 🤖 AI能力 -->
-        <div id="group-ai" class="settings-group" style="display:none">
+        <div id="group-ai" class="settings-group">
             <div class="settings-group-header" onclick="toggleSettingsGroup('ai')">
                 <div class="settings-group-title">🤖 AI能力</div>
                 <div class="settings-group-arrow">▼</div>
@@ -547,7 +531,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(event)"/>
         
         <!-- 🔧 API配置 -->
-        <div id="group-api" class="settings-group" style="display:none">
+        <div id="group-api" class="settings-group">
             <div class="settings-group-header" onclick="toggleSettingsGroup('api')">
                 <div class="settings-group-title">🔧 API配置</div>
                 <div class="settings-group-arrow">▼</div>
@@ -568,7 +552,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                         </div>
                         <button onclick="openApiConfigModal('peerjs')" style="background:#4facfe;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">配置</button>
                     </div>
-                    <div class="settings-item" style="display:none;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0;">
                         <div>
                             <div style="font-size:14px;color:#333;">DeepSeek帮助文档</div>
                             <div style="font-size:12px;color:#999;">查看API使用说明和模式对比</div>
@@ -614,7 +598,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
                         <div style="font-size:14px;color:#333;">反馈建议</div>
                         <div style="font-size:11px;color:#1A6BFF;cursor:pointer;" onclick="openFeedback()">点击反馈</div>
                     </div>
-                    <div class="settings-item" style="display:none;justify-content:space-between;align-items:center;padding:12px 0;">
+                    <div class="settings-item" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
                         <div style="font-size:14px;color:#333;">使用帮助</div>
                         <div style="font-size:11px;color:#1A6BFF;cursor:pointer;" onclick="openHelp()">查看帮助</div>
                     </div>
@@ -972,16 +956,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             window.initPortal();
             console.log("[初始化] 门户加载完成");
             if (typeof window.recordPetProgress === 'function') window.recordPetProgress('login');
-            // V425c: 暂时禁用Service Worker，直接用HTTP缓存+URL版本号控制缓存刷新
-            // 旧SW可能缓存了旧版页面内容，导致用户看到空白/AI按钮未隐藏
-            // 所有JS/CSS已有?v=425版本号，浏览器会正确处理缓存
-            /*
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register('./sw-v425.js?t=' + Date.now()).catch(function(err) {
-                    console.warn('[SW] 注册失败:', err);
-                });
+                navigator.serviceWorker.register('./sw.js').catch(function(err) {});
             }
-            */
         } else if (retries < 50) {
             setTimeout(function() { safeInitPortal(retries + 1); }, 100);
         } else {
@@ -1046,47 +1023,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
-<script defer src="js/config.js?v=425"></script>
-<script defer src="js/ctm.js?v=425"></script>
-<script defer src="js/db.js?v=425"></script>
-<script defer src="js/utils.js?v=425"></script>
-<script defer src="js/storage.js?v=425"></script>
-<script defer src="js/user.js?v=425"></script>
-<script defer src="js/audio.js?v=425"></script>
-<script defer src="js/data/podcasts.js?v=425"></script>
-<script defer src="js/data/videos.js?v=425"></script>
-<script defer src="js/data/games-config.js?v=425"></script>
-<script defer src="js/data/topics.js?v=425"></script>
-<script defer src="js/ui-pet.js?v=425"></script>
-<script defer src="js/modules/ui.js?v=425"></script>
-<script defer src="js/modules/week-plans.js?v=425"></script>
-<script defer src="js/modules/data-sync.js?v=425"></script>
-<script defer src="js/modules/pet.js?v=425"></script>
-<script defer src="js/modules/topics.js?v=425"></script>
-<script defer src="js/modules/practice.js?v=425"></script>
-<script defer src="js/modules/deepseek.js?v=425"></script>
-<script defer src="js/modules/wrongbook.js?v=425"></script>
-<script defer src="js/modules/games.js?v=425"></script>
-<script defer src="js/modules/podcast.js?v=425"></script>
-<script defer src="js/modules/video.js?v=425"></script>
-<script defer src="js/modules/player.js?v=425"></script>
-<script defer src="js/modules/thinking.js?v=425"></script>
-<script defer src="js/modules/method.js?v=425"></script>
-<script defer src="js/modules/self-drive.js?v=425"></script>
-<script defer src="js/modules/map.js?v=425"></script>
-<script defer src="js/modules/my-page.js?v=425"></script>
-<script defer src="js/modules/pomodoro.js?v=425"></script>
-<script defer src="js/modules/library.js?v=425"></script>
-<script defer src="js/modules/notepad.js?v=425"></script>
-<script defer src="js/modules/exam.js?v=425"></script>
-<script defer src="js/modules/paper-tool.js?v=425"></script>
-<script defer src="js/modules/mindmap.js?v=425"></script>
-<script defer src="js/modules/calculator.js?v=425"></script>
-<script defer src="js/modules/plan.js?v=425"></script>
-<script defer src="js/modules/local-db.js?v=425"></script>
-<script defer src="js/modules/cloud-sync.js?v=425"></script>
-<script defer src="js/modules/stats.js?v=425"></script>
-<script defer src="js/modules/parent-dashboard.js?v=425"></script>
-<script defer src="js/modules/admin-dashboard.js?v=425"></script>
+<script defer src="js/config.js?v=420"></script>
+<script defer src="js/ctm.js?v=420"></script>
+<script defer src="js/db.js?v=420"></script>
+<script defer src="js/utils.js?v=420"></script>
+<script defer src="js/storage.js?v=420"></script>
+<script defer src="js/user.js?v=420"></script>
+<script defer src="js/audio.js?v=420"></script>
+<script defer src="js/data/podcasts.js?v=420"></script>
+<script defer src="js/data/videos.js?v=420"></script>
+<script defer src="js/data/games-config.js?v=420"></script>
+<script defer src="js/data/topics.js?v=420"></script>
+<script defer src="js/ui-pet.js?v=420"></script>
+<script defer src="js/modules/ui.js?v=420"></script>
+<script defer src="js/modules/week-plans.js?v=420"></script>
+<script defer src="js/modules/data-sync.js?v=420"></script>
+<script defer src="js/modules/pet.js?v=420"></script>
+<script defer src="js/modules/topics.js?v=420"></script>
+<script defer src="js/modules/practice.js?v=420"></script>
+<script defer src="js/modules/deepseek.js?v=420"></script>
+<script defer src="js/modules/wrongbook.js?v=420"></script>
+<script defer src="js/modules/games.js?v=420"></script>
+<script defer src="js/modules/podcast.js?v=420"></script>
+<script defer src="js/modules/video.js?v=420"></script>
+<script defer src="js/modules/player.js?v=420"></script>
+<script defer src="js/modules/thinking.js?v=420"></script>
+<script defer src="js/modules/method.js?v=420"></script>
+<script defer src="js/modules/self-drive.js?v=420"></script>
+<script defer src="js/modules/map.js?v=420"></script>
+<script defer src="js/modules/my-page.js?v=420"></script>
+<script defer src="js/modules/pomodoro.js?v=420"></script>
+<script defer src="js/modules/library.js?v=420"></script>
+<script defer src="js/modules/notepad.js?v=420"></script>
+<script defer src="js/modules/exam.js?v=420"></script>
+<script defer src="js/modules/paper-tool.js?v=420"></script>
+<script defer src="js/modules/mindmap.js?v=420"></script>
+<script defer src="js/modules/calculator.js?v=420"></script>
+<script defer src="js/modules/plan.js?v=420"></script>
+<script defer src="js/modules/local-db.js?v=420"></script>
+<script defer src="js/modules/cloud-sync.js?v=420"></script>
+<script defer src="js/modules/stats.js?v=420"></script>
+<script defer src="js/modules/parent-dashboard.js?v=420"></script>
+<script defer src="js/modules/admin-dashboard.js?v=420"></script>
 </body>
 </html> 
