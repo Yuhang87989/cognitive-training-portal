@@ -114,3 +114,13 @@ window.calcInput = calcInput;
 // ============================================================
 // V270: 传统方式加载，移除ES6 export
 // ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderCalculator,
+        calcInput,
+        calculatorDisplay,
+        calculatorFirstNum,
+        calculatorOperator,
+        calculatorWaitingForSecondNum
+    };
+}

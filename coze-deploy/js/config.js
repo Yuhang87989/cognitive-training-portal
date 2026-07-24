@@ -43,7 +43,7 @@ window.AVATAR_LIST = AVATAR_LIST;
 // 方案1: 硅基流动(推荐，国内速度快，支持Qwen3-VL)
 // 注册地址: https://cloud.siliconflow.com
 // 获取API Key后填入下方
-const VISION_SILICONFLOW_KEY = '';  // 硅基流动Key已移除，需迁移到后端
+const VISION_SILICONFLOW_KEY = 'sk-upymyvbtqdunkmmksrmtqugootqqysvgevwkllyomqcvskrw';  // 硅基流动Key已移除，需迁移到后端
 const VISION_SILICONFLOW_URL = 'https://api.siliconflow.cn/v1/chat/completions';
 const VISION_SILICONFLOW_MODEL = 'Qwen/Qwen3-VL-30B-A3B-Instruct';  // 高性价比视觉模型
 

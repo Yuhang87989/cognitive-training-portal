@@ -1404,3 +1404,4 @@ window.getCachedVideo = getCachedVideo;
 window.deleteLocalVideo = deleteLocalVideo;
 
 // ============================================================
+// ES6 Module 导出

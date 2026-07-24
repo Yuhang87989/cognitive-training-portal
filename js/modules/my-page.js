@@ -898,13 +898,13 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="showAbout()">
                         <span>📋</span> 版本信息
                     </button>
-                    <button class="foldable-btn" onclick="openHelp()">
+                    <button class="foldable-btn" onclick="openHelp()" style="display:none">
                         <span>❓</span> 使用帮助
                     </button>
                     <button class="foldable-btn" onclick="openFeedback()">
                         <span>💬</span> 意见反馈
                     </button>
-                    <button class="foldable-btn" onclick="openDeepseekHelpModal()">
+                    <button class="foldable-btn" onclick="openDeepseekHelpModal()" style="display:none">
                         <span>🔮</span> DeepSeek帮助文档
                     </button>
                     <div class="setting-row">
@@ -1049,3 +1049,7 @@ window._doSwitchRole = function(role) {
     // 角色切换后刷新首页模块显示
     if (window._applyRoleModules) window._applyRoleModules();
 };
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================

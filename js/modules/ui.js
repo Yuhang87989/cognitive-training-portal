@@ -1755,25 +1755,7 @@ function updateTodayStats() {
     if (streakEl) streakEl.textContent = streak;
 }
 
-function initPortal() {
-    try {
-        const userData = window.getCurrentUserData ? window.getCurrentUserData() : null;
-        if (userData && userData.name) {
-            updateHomeUserInfo(userData);
-        } else {
-            updateHomeUserInfo(null);
-        }
-        const homePage = document.getElementById('page-home');
-        if (homePage) {
-            homePage.style.display = 'block';
-            homePage.classList.add('active');
-        }
-        console.log('[V424e] Portal initialized');
-    } catch(e) {
-        console.error('[V424e] initPortal error:', e);
-    }
-}
-window.initPortal = initPortal;
+// 注意：initPortal函数现在在main.js中定义，这里不再重复定义
 
 // ============================================================
 
@@ -2240,3 +2222,8 @@ if (document.readyState === 'loading') {
 } else {
     setTimeout(window._applyRoleModules, 500);
 }
+
+// ============================================================
+// ES6 Module Export - V225 ES6改造
+// ============================================================
+

@@ -1134,3 +1134,22 @@ function showGameOver(score, total) {
     if(modal) modal.classList.add('show');
 }
 window.showGameOver = showGameOver;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        startMethodQuiz,
+        rateMethodAnswer,
+        analyzeMethodWithAI,
+        conserveAnswer,
+        photoToQuestion,
+        showGameOver,
+        methodTrainingQuestions: window.methodTrainingQuestions
+    };
+}
+
+    startMethodQuiz,
+    rateMethodAnswer,
+    analyzeMethodWithAI

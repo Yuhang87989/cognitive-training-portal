@@ -2222,3 +2222,8 @@ if (document.readyState === 'loading') {
 } else {
     setTimeout(window._applyRoleModules, 500);
 }
+
+// ============================================================
+// ES6 Module Export - V225 ES6改造
+// ============================================================
+

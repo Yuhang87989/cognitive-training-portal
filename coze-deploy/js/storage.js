@@ -740,3 +740,17 @@ if (document.readyState === 'loading') {
 } else {
     initVideoDB();
 }
+
+// ============================================================
+// ES6 Module Export - V225 ES6改造
+// ============================================================
+    loadData,
+    saveData,
+    saveUserData,
+    getCurrentUserData,
+    migrateData,
+    saveImageFile,
+    getImageFile,
+    getImageFileAsDataUrl,
+    deleteImageFile,
+    clearAllImageFiles

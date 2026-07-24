@@ -1,3 +1,4 @@
+// 版本: V226 - ES6 Module
 // AI精准练模块
 
 const practiceModule = {
@@ -323,6 +324,7 @@ async function handlePhotoToQuestion(imageData) {
 window.handlePhotoToQuestion = handlePhotoToQuestion;
 
 // ============================================================
+// ES6 Module 导出
 // ============================================================
 
 

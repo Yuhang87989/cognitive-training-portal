@@ -839,3 +839,30 @@ async function photoToQuestion(imageData) {
     }
 }
 window.photoToQuestion = photoToQuestion;
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderThinking,
+        showThinkingType,
+        startThinkingQuiz,
+        selectThinkingOpt,
+        submitThinkingAnswers,
+        renderThinkingNotes,
+        handleThinkingNoteUpload,
+        deleteThinkingNote,
+        updateThinkingStats,
+        rateThinkingAnswer,
+        viewThinkingNote,
+        analyzeThinkingWithAI,
+        photoToQuestion,
+        thinkingQuestions: window.thinkingQuestions
+    };
+}
+
+    renderThinking,
+    showThinkingType,
+    startThinkingQuiz,
+    submitThinkingAnswers

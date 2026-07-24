@@ -1,9 +1,2 @@
-[project]
-entrypoint = "index.html"
-requires = []
-
-[dev]
-run = ["python3", "-m", "http.server", "5000"]
-
-[deploy]
-run = ["python3", "-m", "http.server", "5000"]
+runtime = "static"
+index = "index.html"

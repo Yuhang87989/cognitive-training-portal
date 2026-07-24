@@ -153,3 +153,24 @@ window.filterVideoCourse = filterVideoCourse;
 window.playVideoFromList = playVideoFromList;
 if (typeof playLocalVideo !== 'undefined') window.playLocalVideo = playLocalVideo;
 if (typeof deleteLocalVideo !== "undefined") window.deleteLocalVideo = deleteLocalVideo;
+
+
+// ============================================================
+// ES6 Module 导出
+// ============================================================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        renderVideo,
+        renderLocalVideoList,
+        filterVideoCourse,
+        playVideoFromList,
+        // playLocalVideo defined in player.js
+        deleteLocalVideo,
+        videoCourses: window.videoCourses
+    };
+}
+
+    renderVideo,
+    renderLocalVideoList,
+    filterVideoCourse,
+    playVideoFromList
