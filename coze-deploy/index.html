@@ -3,7 +3,7 @@
 <head>
 <script>
 // V371: 自动版本号 - 基于发布日期，无需手动维护
-var SITE_VERSION = '421';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '421e';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
@@ -27,13 +27,19 @@ var SITE_VERSION = '421';  // 发布时更新这一个数字即可，其他地�
 
 // V232: 占位函数 - 确保ES6 Module加载完成前点击有响应
 window._openFullscreenPagePlaceholder = function(module) {
-    console.log('[占位函数被调用，模块正在加载中...');
-    // 检查是否已经加载完成
+    console.log('[占位函数被调用，模块:', module, '加载中...');
     if (window.openFullscreenPage && window.openFullscreenPage !== window._openFullscreenPagePlaceholder) {
         return window.openFullscreenPage(module);
     }
-    // 还在加载中，显示提示
-    alert('模块正在加载中，请稍候再试...');
+    // V421e: 不再弹alert，改为延迟重试
+    console.warn('模块尚未就绪，自动重试...');
+    setTimeout(function() {
+        if (window.openFullscreenPage && window.openFullscreenPage !== window._openFullscreenPagePlaceholder) {
+            window.openFullscreenPage(module);
+        } else {
+            console.error('模块加载失败: ' + module);
+        }
+    }, 1000);
 };
 
 // 初始化占位函数
@@ -957,7 +963,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             console.log("[初始化] 门户加载完成");
             if (typeof window.recordPetProgress === 'function') window.recordPetProgress('login');
             if ("serviceWorker" in navigator) {
-                navigator.serviceWorker.register('./sw.js').catch(function(err) {});
+                // [V421c] 禁用SW注册，避免缓存劫持 /* navigator.serviceWorker.register('./sw.js?v=421e').catch(function(err) {}); */
             }
         } else if (retries < 50) {
             setTimeout(function() { safeInitPortal(retries + 1); }, 100);
@@ -1023,48 +1029,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
-<script defer src="js/config.js?v=421"></script>
-<script defer src="js/ctm.js?v=421"></script>
-<script defer src="js/db.js?v=421"></script>
-<script defer src="js/utils.js?v=421"></script>
-<script defer src="js/storage.js?v=421"></script>
-<script defer src="js/user.js?v=421"></script>
-<script defer src="js/audio.js?v=421"></script>
-<script defer src="js/data/podcasts.js?v=421"></script>
-<script defer src="js/data/videos.js?v=421"></script>
-<script defer src="js/data/games-config.js?v=421"></script>
-<script defer src="js/data/topics.js?v=421"></script>
-<script defer src="js/ui-pet.js?v=421"></script>
-<script defer src="js/modules/ui.js?v=421"></script>
-<script defer src="js/modules/week-plans.js?v=421"></script>
-<script defer src="js/modules/data-sync.js?v=421"></script>
-<script defer src="js/modules/pet.js?v=421"></script>
-<script defer src="js/modules/topics.js?v=421"></script>
-<script defer src="js/modules/practice.js?v=421"></script>
-<script defer src="js/modules/deepseek.js?v=421"></script>
-<script defer src="js/modules/wrongbook.js?v=421"></script>
-<script defer src="js/modules/games.js?v=421"></script>
-<script defer src="js/modules/podcast.js?v=421"></script>
-<script defer src="js/modules/video.js?v=421"></script>
-<script defer src="js/modules/player.js?v=421"></script>
-<script defer src="js/modules/thinking.js?v=421"></script>
-<script defer src="js/modules/method.js?v=421"></script>
-<script defer src="js/modules/self-drive.js?v=421"></script>
-<script defer src="js/modules/map.js?v=421"></script>
-<script defer src="js/modules/my-page.js?v=421"></script>
-<script defer src="js/modules/pomodoro.js?v=421"></script>
-<script defer src="js/modules/library.js?v=421"></script>
-<script defer src="js/modules/notepad.js?v=421"></script>
-<script defer src="js/modules/exam.js?v=421"></script>
-<script defer src="js/modules/paper-tool.js?v=421"></script>
-<script defer src="js/modules/mindmap.js?v=421"></script>
-<script defer src="js/modules/calculator.js?v=421"></script>
-<script defer src="js/modules/plan.js?v=421"></script>
-<script defer src="js/modules/local-db.js?v=421"></script>
-<script defer src="js/modules/cloud-sync.js?v=421"></script>
-<script defer src="js/modules/stats.js?v=421"></script>
-<script defer src="js/modules/usage-stats.js?v=421"></script>
-<script defer src="js/modules/parent-dashboard.js?v=421"></script>
-<script defer src="js/modules/admin-dashboard.js?v=421"></script>
+<script defer src="js/config.js?v=421e"></script>
+<script defer src="js/ctm.js?v=421e"></script>
+<script defer src="js/db.js?v=421e"></script>
+<script defer src="js/utils.js?v=421e"></script>
+<script defer src="js/storage.js?v=421e"></script>
+<script defer src="js/user.js?v=421e"></script>
+<script defer src="js/audio.js?v=421e"></script>
+<script defer src="js/data/podcasts.js?v=421e"></script>
+<script defer src="js/data/videos.js?v=421e"></script>
+<script defer src="js/data/games-config.js?v=421e"></script>
+<script defer src="js/data/topics.js?v=421e"></script>
+<script defer src="js/ui-pet.js?v=421e"></script>
+<script defer src="js/modules/ui.js?v=421e"></script>
+<script defer src="js/modules/week-plans.js?v=421e"></script>
+<script defer src="js/modules/data-sync.js?v=421e"></script>
+<script defer src="js/modules/pet.js?v=421e"></script>
+<script defer src="js/modules/topics.js?v=421e"></script>
+<script defer src="js/modules/practice.js?v=421e"></script>
+<script defer src="js/modules/deepseek.js?v=421e"></script>
+<script defer src="js/modules/wrongbook.js?v=421e"></script>
+<script defer src="js/modules/games.js?v=421e"></script>
+<script defer src="js/modules/podcast.js?v=421e"></script>
+<script defer src="js/modules/video.js?v=421e"></script>
+<script defer src="js/modules/player.js?v=421e"></script>
+<script defer src="js/modules/thinking.js?v=421e"></script>
+<script defer src="js/modules/method.js?v=421e"></script>
+<script defer src="js/modules/self-drive.js?v=421e"></script>
+<script defer src="js/modules/map.js?v=421e"></script>
+<script defer src="js/modules/my-page.js?v=421e"></script>
+<script defer src="js/modules/pomodoro.js?v=421e"></script>
+<script defer src="js/modules/library.js?v=421e"></script>
+<script defer src="js/modules/notepad.js?v=421e"></script>
+<script defer src="js/modules/exam.js?v=421e"></script>
+<script defer src="js/modules/paper-tool.js?v=421e"></script>
+<script defer src="js/modules/mindmap.js?v=421e"></script>
+<script defer src="js/modules/calculator.js?v=421e"></script>
+<script defer src="js/modules/plan.js?v=421e"></script>
+<script defer src="js/modules/local-db.js?v=421e"></script>
+<script defer src="js/modules/cloud-sync.js?v=421e"></script>
+<script defer src="js/modules/stats.js?v=421e"></script>
+<script defer src="js/modules/usage-stats.js?v=421e"></script>
+<script defer src="js/modules/parent-dashboard.js?v=421e"></script>
+<script defer src="js/modules/admin-dashboard.js?v=421e"></script>
 </body>
 </html> 
