@@ -1079,8 +1079,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <script defer src="js/modules/local-db.js?v=421e"></script>
 <script defer src="js/modules/cloud-sync.js?v=421e"></script>
 <script defer src="js/modules/stats.js?v=421e"></script>
-<script defer src="js/modules/usage-stats.js?v=421e"></script>
 <script defer src="js/modules/parent-dashboard.js?v=421e"></script>
 <script defer src="js/modules/admin-dashboard.js?v=421e"></script>
+<script>
+// no-ai: 强制移除AI相关按钮（无论JS缓存版本如何）
+(function(){
+  function removeAiButtons(){
+    var btns = document.querySelectorAll('.foldable-btn');
+    btns.forEach(function(btn){
+      var text = btn.textContent || '';
+      if(text.indexOf('AI使用统计')>=0 || text.indexOf('幻灵创作坊')>=0 || text.indexOf('AI统计')>=0){
+        btn.remove();
+      }
+    });
+  }
+  // 多次尝试，确保在my-page.js渲染后执行
+  if(document.readyState==='complete'){ removeAiButtons(); }
+  window.addEventListener('load', function(){ setTimeout(removeAiButtons,500); setTimeout(removeAiButtons,2000); });
+})();
+</script>
 </body>
 </html> 
