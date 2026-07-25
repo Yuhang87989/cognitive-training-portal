@@ -230,13 +230,10 @@
     }
     
     // 获取宠物图片URL
-    // [V426] 检测页面是否在子目录中（如 /no-ai/），自动调整图片路径
-    const _petImgBase = (typeof location !== 'undefined' && location.pathname.indexOf('/no-ai/') >= 0) ? '../' : '';
-
     function getPetImageUrl(skinId, expression) {
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
-        if (skin.img && skin.img[expression]) return _petImgBase + skin.img[expression];
-        if (skin.img && skin.img.idle) return _petImgBase + skin.img.idle;
+        if (skin.img && skin.img[expression]) return skin.img[expression];
+        if (skin.img && skin.img.idle) return skin.img.idle;
         return '';
     }
     

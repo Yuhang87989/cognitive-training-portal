@@ -1,4 +1,4 @@
-// Self-unregistering SW - replaces old sw-v425.js
+// Self-unregistering SW - 临时版本，清除旧缓存后恢复
 self.addEventListener('install', function(e) { self.skipWaiting(); });
 self.addEventListener('activate', function(e) {
   e.waitUntil(
