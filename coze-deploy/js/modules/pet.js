@@ -54,6 +54,16 @@
                 if (!data.quizDone) data.quizDone = 0;
                 if (!data.thinkingDone) data.thinkingDone = 0;
                 if (!data.gamesPlayed) data.gamesPlayed = 0;
+                // [V429] 补充缺失的状态字段迁移
+                if (data.mood === undefined) data.mood = 50;
+                if (data.hunger === undefined) data.hunger = 50;
+                if (data.energy === undefined) data.energy = 50;
+                if (data.health === undefined) data.health = 100;
+                if (data.level === undefined) data.level = 1;
+                if (data.exp === undefined) data.exp = 0;
+                if (data.expToNext === undefined) data.expToNext = 100;
+                if (data.totalInteractions === undefined) data.totalInteractions = 0;
+                if (data.birthDate === undefined) data.birthDate = Date.now();
                 return data;
             }
         } catch(e) {}
@@ -230,16 +240,8 @@
     }
     
     // 获取宠物图片URL
-    // [V427] 自动检测图片路径前缀，兼容根目录和子目录部署
-    var _petImgBase = (function() {
-        try {
-            var path = location.pathname;
-            if (path.indexOf('/no-ai/') >= 0 || path.endsWith('/no-ai')) return '../';
-            // 检测 imgs/ 目录是否在当前路径下
-            var testPath = path.replace(/\/$/, '') + '/imgs/pets/pet-cat.jpg';
-            return '';
-        } catch(e) { return ''; }
-    })();
+    // [V429] 宠物图片使用 COS 绝对地址，避免子目录路径问题
+    var _petImgBase = 'https://cognitive-portal-1444210630.cos.ap-guangzhou.myqcloud.com/';
 
     function getPetImageUrl(skinId, expression) {
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
