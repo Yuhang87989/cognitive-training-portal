@@ -384,7 +384,7 @@ window.addEventListener('popstate', function(event) {
 function openFullscreenPage(module) {
     window._fullscreenOpen = true;
     window._lastFullscreenModule = module;
-    history.pushState({fullscreen: true, module: module}, "", "");
+    history.pushState({fullscreen: true, module: module}, "", location.pathname + location.search);
     window.cleanupModuleState();
     closeUserMenu();
     var container = document.getElementById('fullscreen-container');
