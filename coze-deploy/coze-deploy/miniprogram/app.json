@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/bind-phone/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "认知训练门户",
+    "navigationBarBackgroundColor": "#4facfe",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "cloud": true,
+  "sitemapLocation": "sitemap.json"
+}

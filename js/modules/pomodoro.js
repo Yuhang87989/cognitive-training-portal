@@ -36,11 +36,11 @@ function renderPomodoro(container) {
                 <div style="font-size:14px;color:#666;margin-bottom:8px;">今日专注统计</div>
                 <div style="display:flex;justify-content:center;gap:24px;">
                     <div>
-                        <div style="font-size:24px;font-weight:bold;color:#FF6B6B;" id="pomodoro-count">${window.getCurrentUserData()?.pomodoroCount || 0}</div>
+                        <div style="font-size:24px;font-weight:bold;color:#FF6B6B;" id="pomodoro-count">${(window.getCurrentUserData() || {}).pomodoroCount || 0}</div>
                         <div style="font-size:12px;color:#666;">番茄数</div>
                     </div>
                     <div>
-                        <div style="font-size:24px;font-weight:bold;color:#667eea;" id="pomodoro-minutes">${window.getCurrentUserData()?.pomodoroMinutes || 0}</div>
+                        <div style="font-size:24px;font-weight:bold;color:#667eea;" id="pomodoro-minutes">${(window.getCurrentUserData() || {}).pomodoroMinutes || 0}</div>
                         <div style="font-size:12px;color:#666;">专注分钟</div>
                     </div>
                 </div>
@@ -125,8 +125,3 @@ if (typeof module !== 'undefined' && module.exports) {
         pomodoroTime: window.pomodoroTime
     };
 }
-
-    renderPomodoro,
-    resetPomodoro,
-    setPomodoroTime,
-    togglePomodoro

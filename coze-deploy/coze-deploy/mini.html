@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>认知训练</title>
+<style>
+body{font-family:sans-serif;background:#f5f6fa;margin:0;padding:0}
+.header{background:#3377FF;color:white;padding:20px}
+.modules{padding:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.btn{background:white;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.btn:active{transform:scale(0.95)}
+.icon{font-size:28px}
+.name{font-size:12px;color:#333;margin-top:8px}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:white;z-index:100}
+.modal.show{display:block}
+.modal-header{padding:16px;border-bottom:1px solid #eee}
+.back{font-size:24px;cursor:pointer}
+.modal-title{font-weight:bold;text-align:center}
+.modal-body{padding:16px}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🧠 认知训练</h1>
+<p>邱宇菲，今天也要加油哦</p>
+</div>
+<div class="modules">
+<div class="btn" onclick="show('AI数字分身')"><div class="icon">🎓</div><div class="name">AI数字分身</div></div>
+<div class="btn" onclick="show('在线课堂')"><div class="icon">🎥</div><div class="name">在线课堂</div></div>
+<div class="btn" onclick="show('AI精准练')"><div class="icon">🎯</div><div class="name">AI精准练</div></div>
+<div class="btn" onclick="show('认知地图')"><div class="icon">🧠</div><div class="name">认知地图</div></div>
+<div class="btn" onclick="show('学习计划')"><div class="icon">📅</div><div class="name">学习计划</div></div>
+<div class="btn" onclick="show('母题训练')"><div class="icon">📚</div><div class="name">母题训练</div></div>
+<div class="btn" onclick="show('学霸方法')"><div class="icon">💡</div><div class="name">学霸方法</div></div>
+<div class="btn" onclick="show('思维训练')"><div class="icon">🧩</div><div class="name">思维训练</div></div>
+<div class="btn" onclick="show('训练游戏')"><div class="icon">🎮</div><div class="name">训练游戏</div></div>
+</div>
+<div class="modal" id="m">
+<div class="modal-header"><span class="back" onclick="hide()">←</span><span class="modal-title" id="t">标题</span></div>
+<div class="modal-body"><p id="c">内容</p></div>
+</div>
+<script>
+function show(n){document.getElementById('t').textContent=n;document.getElementById('c').textContent=n+'模块';document.getElementById('m').classList.add('show')}
+function hide(){document.getElementById('m').classList.remove('show')}
+</script>
+</body>
+</html>
