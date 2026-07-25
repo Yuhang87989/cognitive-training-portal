@@ -948,15 +948,19 @@ window.renderMyPage = function(container) {
         <div style="height: 80px;"></div>
     </div>`;
     
-    // ✅ 确保 DeepSeek 帮助文档按钮样式与其他按钮完全一致
+    // [V430] 确保按钮样式一致，但保留 display:none（避免恢复被隐藏的AI按钮）
     setTimeout(() => {
         const buttons = container.querySelectorAll('button.foldable-btn');
         buttons.forEach(btn => {
-            // 移除所有内联样式，确保 class 样式生效
+            const isHidden = btn.style.display === 'none';
             btn.removeAttribute('style');
             btn.disabled = false;
             
-            // 确保按钮样式与其他按钮完全一致
+            // [V430] 恢复 display:none 防止AI按钮被误显示
+            if (isHidden) {
+                btn.style.display = 'none';
+            }
+            
             btn.style.background = '#f8f9fa';
             btn.style.color = '#333';
             btn.style.opacity = '1';

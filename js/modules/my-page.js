@@ -907,7 +907,7 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="openDeepseekHelpModal()" style="display:none">
                         <span>🔮</span> DeepSeek帮助文档
                     </button>
-                    <div class="setting-row">
+                    <div class="setting-row" style="display:none">
                         <div>
                             <div class="setting-label">DeepSeek模式</div>
                             <div class="setting-desc">平衡速度和质量</div>
@@ -917,7 +917,7 @@ window.renderMyPage = function(container) {
                             <button class="mode-btn ${deepseekMode === 'expert' ? 'active' : ''}" onclick="toggleDeepSeekMode('expert')">专家</button>
                         </div>
                     </div>
-                    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:12px;">
+                    <div class="setting-row" style="display:none;flex-direction:column;align-items:flex-start;gap:12px;">
                         <div>
                             <div class="setting-label">DeepSeek API Key</div>
                             <div class="setting-desc">使用自己的API Key（留空使用默认）</div>
@@ -948,15 +948,19 @@ window.renderMyPage = function(container) {
         <div style="height: 80px;"></div>
     </div>`;
     
-    // ✅ 确保 DeepSeek 帮助文档按钮样式与其他按钮完全一致
+    // [V430] 确保按钮样式一致，但保留 display:none（避免恢复被隐藏的AI按钮）
     setTimeout(() => {
         const buttons = container.querySelectorAll('button.foldable-btn');
         buttons.forEach(btn => {
-            // 移除所有内联样式，确保 class 样式生效
+            const isHidden = btn.style.display === 'none';
             btn.removeAttribute('style');
             btn.disabled = false;
             
-            // 确保按钮样式与其他按钮完全一致
+            // [V430] 恢复 display:none 防止AI按钮被误显示
+            if (isHidden) {
+                btn.style.display = 'none';
+            }
+            
             btn.style.background = '#f8f9fa';
             btn.style.color = '#333';
             btn.style.opacity = '1';
