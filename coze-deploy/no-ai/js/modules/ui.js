@@ -343,8 +343,15 @@ window.cleanupModuleState = function() {
         window._petInterval = null;
     }
     
-    // 清理所有模态框
-    document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(el => el.remove());
+    // 清理动态创建的模态框（保留HTML中的持久模态框）
+    document.querySelectorAll('.modal-backdrop, .modal-overlay').forEach(el => {
+        if (el.id && (el.id === 'avatar-modal' || el.id === 'api-config-modal' ||
+            el.id === 'create-user-modal' || el.id === 'user-switch-modal' ||
+            el.id === 'delete-user-modal' || el.id === 'difficulty-modal' ||
+            el.id === 'edit-profile-modal' || el.id === 'change-password-modal' ||
+            el.id === 'detail-modal' || el.id === 'metacognitive-modal')) return;
+        el.remove();
+    });
     
     console.log('[DataSync] 模块状态已清理');
 };

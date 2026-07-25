@@ -230,10 +230,21 @@
     }
     
     // 获取宠物图片URL
+    // [V427] 自动检测图片路径前缀，兼容根目录和子目录部署
+    var _petImgBase = (function() {
+        try {
+            var path = location.pathname;
+            if (path.indexOf('/no-ai/') >= 0 || path.endsWith('/no-ai')) return '../';
+            // 检测 imgs/ 目录是否在当前路径下
+            var testPath = path.replace(/\/$/, '') + '/imgs/pets/pet-cat.jpg';
+            return '';
+        } catch(e) { return ''; }
+    })();
+
     function getPetImageUrl(skinId, expression) {
         const skin = PET_SKINS.find(s => s.id === skinId) || PET_SKINS[0];
-        if (skin.img && skin.img[expression]) return skin.img[expression];
-        if (skin.img && skin.img.idle) return skin.img.idle;
+        if (skin.img && skin.img[expression]) return _petImgBase + skin.img[expression];
+        if (skin.img && skin.img.idle) return _petImgBase + skin.img.idle;
         return '';
     }
     

@@ -10,7 +10,7 @@ let pomodoroMode = 'work'; // work, break
 
 function renderPomodoro(container) {
     const minutes = Math.floor(window.pomodoroTime / 60);
-    const seconds = pomodoroTime % 60;
+    const seconds = window.pomodoroTime % 60;
     
     container.innerHTML = `
         <div class="card" style="text-align:center;">
@@ -36,17 +36,17 @@ function renderPomodoro(container) {
                 <div style="font-size:14px;color:#666;margin-bottom:8px;">今日专注统计</div>
                 <div style="display:flex;justify-content:center;gap:24px;">
                     <div>
-                        <div style="font-size:24px;font-weight:bold;color:#FF6B6B;" id="pomodoro-count">${window.getCurrentUserData()?.pomodoroCount || 0}</div>
+                        <div style="font-size:24px;font-weight:bold;color:#FF6B6B;" id="pomodoro-count">${(window.getCurrentUserData() || {}).pomodoroCount || 0}</div>
                         <div style="font-size:12px;color:#666;">番茄数</div>
                     </div>
                     <div>
-                        <div style="font-size:24px;font-weight:bold;color:#667eea;" id="pomodoro-minutes">${window.getCurrentUserData()?.pomodoroMinutes || 0}</div>
+                        <div style="font-size:24px;font-weight:bold;color:#667eea;" id="pomodoro-minutes">${(window.getCurrentUserData() || {}).pomodoroMinutes || 0}</div>
                         <div style="font-size:12px;color:#666;">专注分钟</div>
                     </div>
                 </div>
             </div>
             
-            <button onclick="history.back()" style="margin-top:20px;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
+            <button onclick="closeFullscreenPage()" style="margin-top:20px;padding:12px 24px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">← 返回</button>
         </div>
     `;
 }
@@ -97,7 +97,7 @@ function togglePomodoro() {
             const display = document.getElementById('pomodoro-display');
             if (display) {
                 const m = Math.floor(window.pomodoroTime / 60);
-                const s = pomodoroTime % 60;
+                const s = window.pomodoroTime % 60;
                 display.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }
         }, 1000);
@@ -125,8 +125,3 @@ if (typeof module !== 'undefined' && module.exports) {
         pomodoroTime: window.pomodoroTime
     };
 }
-
-    renderPomodoro,
-    resetPomodoro,
-    setPomodoroTime,
-    togglePomodoro
