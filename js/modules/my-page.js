@@ -817,10 +817,10 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="openFullscreenPage('notepad')">
                         <span>📝</span> 学习日记
                     </button>
-                    <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')" style="display:none">
+                    <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')">
                         <span>📊</span> AI使用统计
                     </button>
-                    <button class="foldable-btn" onclick="window.open('幻灵创作坊.html', '_blank')" style="display:none">
+                    <button class="foldable-btn" onclick="window.open('幻灵创作坊.html', '_blank')">
                         <span>🎨</span> 幻灵创作坊
                     </button>
                 </div>
@@ -898,16 +898,16 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="showAbout()">
                         <span>📋</span> 版本信息
                     </button>
-                    <button class="foldable-btn" onclick="openHelp()" style="display:none">
+                    <button class="foldable-btn" onclick="openHelp()">
                         <span>❓</span> 使用帮助
                     </button>
                     <button class="foldable-btn" onclick="openFeedback()">
                         <span>💬</span> 意见反馈
                     </button>
-                    <button class="foldable-btn" onclick="openDeepseekHelpModal()" style="display:none">
+                    <button class="foldable-btn" onclick="openDeepseekHelpModal()">
                         <span>🔮</span> DeepSeek帮助文档
                     </button>
-                    <div class="setting-row" style="display:none">
+                    <div class="setting-row">
                         <div>
                             <div class="setting-label">DeepSeek模式</div>
                             <div class="setting-desc">平衡速度和质量</div>
@@ -917,7 +917,7 @@ window.renderMyPage = function(container) {
                             <button class="mode-btn ${deepseekMode === 'expert' ? 'active' : ''}" onclick="toggleDeepSeekMode('expert')">专家</button>
                         </div>
                     </div>
-                    <div class="setting-row" style="display:none;flex-direction:column;align-items:flex-start;gap:12px;">
+                    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:12px;">
                         <div>
                             <div class="setting-label">DeepSeek API Key</div>
                             <div class="setting-desc">使用自己的API Key（留空使用默认）</div>
@@ -948,19 +948,12 @@ window.renderMyPage = function(container) {
         <div style="height: 80px;"></div>
     </div>`;
     
-    // [V430] 确保按钮样式一致，但保留 display:none（避免恢复被隐藏的AI按钮）
+    // 确保按钮样式一致
     setTimeout(() => {
         const buttons = container.querySelectorAll('button.foldable-btn');
         buttons.forEach(btn => {
-            const isHidden = btn.style.display === 'none';
             btn.removeAttribute('style');
             btn.disabled = false;
-            
-            // [V430] 恢复 display:none 防止AI按钮被误显示
-            if (isHidden) {
-                btn.style.display = 'none';
-            }
-            
             btn.style.background = '#f8f9fa';
             btn.style.color = '#333';
             btn.style.opacity = '1';

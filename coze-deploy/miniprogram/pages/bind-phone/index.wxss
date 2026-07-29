@@ -1,0 +1,47 @@
+.bind-phone-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+.bind-card {
+  background: white;
+  border-radius: 24rpx;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  width: 100%;
+  box-shadow: 0 20rpx 60rpx rgba(0,0,0,0.15);
+}
+.bind-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+.bind-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+.bind-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 48rpx;
+}
+.bind-btn {
+  background: linear-gradient(135deg, #07c160, #06ad56);
+  color: white;
+  border: none;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  padding: 24rpx 0;
+  width: 100%;
+}
+.bind-btn::after { border: none; }
+.bind-tip {
+  font-size: 22rpx;
+  color: #bbb;
+  margin-top: 32rpx;
+}

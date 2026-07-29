@@ -1,0 +1,9 @@
+<view class="bind-phone-page">
+  <view class="bind-card">
+    <view class="bind-icon">📱</view>
+    <view class="bind-title">绑定手机号</view>
+    <view class="bind-desc">使用微信授权快速绑定，无需验证码</view>
+    <button class="bind-btn" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">微信一键授权</button>
+    <view class="bind-tip">您的手机号仅用于账号安全，不会泄露给第三方</view>
+  </view>
+</view>
