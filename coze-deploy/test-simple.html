@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ES6简单测试</title>
+    <style>body { font-family: Arial; padding: 20px; }</style>
+</head>
+<body>
+    <h1>🧪 ES6 Modules 简单测试</h1>
+    <div id="result" style="padding: 20px; background: #f5f5f5; border-radius: 8px;"></div>
+    
+    <script type="module">
+        console.log('🚀 开始导入ES6模块...');
+        
+        import { hello, VERSION } from './src/test-module.js';
+        
+        console.log('✅ 导入成功!');
+        console.log('hello():', hello());
+        console.log('VERSION:', VERSION);
+        
+        const result = document.getElementById('result');
+        result.innerHTML = `
+            <h2 style="color: #4caf50;">✅ ES6 模块导入成功！</h2>
+            <p>函数调用结果: <strong>${hello()}</strong></p>
+            <p>版本号: <strong>${VERSION}</strong></p>
+        `;
+    </script>
+</body>
+</html>

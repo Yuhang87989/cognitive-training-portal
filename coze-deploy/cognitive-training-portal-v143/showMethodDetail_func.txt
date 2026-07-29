@@ -1,0 +1,33 @@
+
+// ====== 学霸方法详情 ======
+function showMethodDetail(index) {
+    const methods = [
+        { title: '番茄工作法', icon: '⏱', content: '学习25分钟，休息5分钟，循环4个周期后长休息。提高专注力，避免疲劳。', steps: ['设定25分钟计时器', '专注学习，不看手机', '时间到后休息5分钟', '完成4个番茄后长休息15-30分钟'], tips: ['选择安静的学习环境', '一次只做一件事', '休息时远离屏幕'] },
+        { title: '艾宾浩斯记忆法', icon: '🧠', content: '按照遗忘曲线复习：5分钟、30分钟、12小时、1天、2天、4天、7天、15天。', steps: ['学习新知识后立即复习', '5分钟后第一次复习', '30分钟后第二次复习', '按时间节点持续复习'], tips: ['使用间隔重复APP辅助', '复习时主动回忆而非被动阅读', '重点内容增加复习次数'] },
+        { title: '康奈尔笔记法', icon: '📝', content: '将笔记分为：右侧主栏（记录）、左侧副栏（线索）、底部总结栏（思考）。', steps: ['右侧记录课堂主要内容', '左侧提炼关键词和问题', '底部写总结和思考', '定期回顾笔记'], tips: ['使用自己的语言记录', '不要照抄原文', '用不同颜色标注重点'] },
+        { title: '费曼学习法', icon: '🎯', content: '选择一个概念，用自己的话教给别人，发现不足重新学习，直到能用简单语言解释清楚。', steps: ['选择一个要学习的概念', '用自己的话解释给别人听', '发现解释不清楚的地方', '回去重新学习直到清晰'], tips: ['假设听众是小学生', '使用比喻和例子', '记录学习过程中的疑惑'] },
+        { title: '思维导图法', icon: '🗺️', content: '以中心主题发散，用关键词和图形将知识点串联起来，形成知识网络。', steps: ['在中心写下主题', '向外发散主要分支', '每个分支添加子内容', '用颜色和图形增强记忆'], tips: ['关键词优于长句子', '使用颜色区分不同分支', '定期更新和完善导图'] }
+    ];
+    
+    const method = methods[index];
+    const container = document.getElementById('detail-content');
+    if (container) {
+        container.innerHTML = `
+            <div style="text-align:center;margin-bottom:20px;">
+                <span style="font-size:48px;">${method.icon}</span>
+                <h3 style="margin:10px 0;">${method.title}</h3>
+                <p style="color:#666;">${method.content}</p>
+            </div>
+            <div style="background:#f5f5f5;border-radius:12px;padding:16px;margin-bottom:16px;">
+                <h4 style="margin:0 0 12px 0;color:#333;">📋 实施步骤</h4>
+                ${method.steps.map((s, i) => `<div style="margin:8px 0;padding:8px;background:white;border-radius:8px;">${i+1}. ${s}</div>`).join('')}
+            </div>
+            <div style="background:#fff3e0;border-radius:12px;padding:16px;">
+                <h4 style="margin:0 0 12px 0;color:#e65100;">💡 实用技巧</h4>
+                ${method.tips.map(t => `<div style="margin:6px 0;">• ${t}</div>`).join('')}
+            </div>
+        `;
+        document.getElementById('detail-actions').innerHTML = `<button onclick="closeDetailModal()" style="flex:1;padding:12px;background:var(--gradient-blue);border:none;border-radius:10px;color:white;font-size:14px;cursor:pointer;">关闭</button>`;
+        document.getElementById('topic-detail-modal').classList.add('show');
+    }
+}

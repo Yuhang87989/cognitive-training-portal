@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>调试页面</title>
+<style>
+body { font-family: sans-serif; padding: 20px; }
+.error { color: red; }
+.success { color: green; }
+</style>
+</head>
+<body>
+<h1>认知训练门户 - 调试页面</h1>
+<div id="log"></div>
+<script>
+function log(msg, isError) {
+    const div = document.createElement('div');
+    div.className = isError ? 'error' : 'success';
+    div.textContent = new Date().toLocaleTimeString() + ' - ' + msg;
+    document.getElementById('log').appendChild(div);
+    console.log(msg);
+}
+
+try {
+    log('开始加载...');
+    
+    // 测试localStorage
+    const STORAGE_KEY = 'cognitive_training_v49';
+    log('STORAGE_KEY: ' + STORAGE_KEY);
+    
+    const raw = localStorage.getItem(STORAGE_KEY);
+    log('localStorage数据: ' + (raw ? '存在' : '不存在'));
+    
+    if (raw) {
+        try {
+            const data = JSON.parse(raw);
+            log('数据解析成功: users=' + (data.users ? data.users.length : 0));
+        } catch(e) {
+            log('数据解析失败: ' + e.message, true);
+            localStorage.removeItem(STORAGE_KEY);
+            log('已清除损坏的数据');
+        }
+    }
+    
+    // 创建测试用户
+    const testUser = {
+        id: 'user_' + Date.now(),
+        name: '测试用户',
+        grade: 7,
+        difficulty: 1
+    };
+    
+    const data = { users: [testUser], currentUser: testUser.id };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    log('创建测试用户成功');
+    
+    // 跳转到主页面
+    log('3秒后跳转到主页面...');
+    setTimeout(() => {
+        window.location.href = 'https://yuhang87989.github.io/cognitive-training-portal/';
+    }, 3000);
+    
+} catch(e) {
+    log('错误: ' + e.message, true);
+}
+</script>
+</body>
+</html>

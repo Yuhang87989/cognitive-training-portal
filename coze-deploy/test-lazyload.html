@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V229 懒加载测试</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; background: #f5f5f5; }
+        .test-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .test-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .test-result { padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 12px; }
+        .success { background: #e8f5e9; color: #2e7d32; }
+        .error { background: #ffebee; color: #c62828; }
+        .info { background: #e3f2fd; color: #1565c0; }
+        button { padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; }
+        button:hover { opacity: 0.9; }
+        .log-area { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <h1 style="text-align:center; color: #333;">🔄 V229 动态懒加载测试</h1>
+    
+    <div class="test-card">
+        <div class="test-title">📋 测试概述</div>
+        <ul>
+            <li>验证 main.js 中移除了业务模块静态 import</li>
+            <li>验证 MODULE_LAZY_LOAD_MAP 配置正确</li>
+            <li>验证 lazyLoadModule 函数正常工作</li>
+            <li>验证 openFullscreenPage 使用动态加载</li>
+        </ul>
+    </div>
+    
+    <div class="test-card">
+        <div class="test-title">🧪 功能测试</div>
+        <button onclick="testModuleMap()">1. 测试模块映射配置</button>
+        <button onclick="testLoadModule('games')">2. 加载游戏模块</button>
+        <button onclick="testLoadModule('deepseek')">3. 加载AI对话模块</button>
+        <button onclick="testLoadModule('wrongbook')">4. 加载错题本模块</button>
+        <button onclick="testLoadModule('podcast')">5. 加载播客模块</button>
+        <button onclick="testAllModules()">6. 测试所有模块</button>
+        <button onclick="clearLog()">清空日志</button>
+        
+        <div id="test-result"></div>
+    </div>
+    
+    <div class="test-card">
+        <div class="test-title">📊 加载统计</div>
+        <div id="load-stats">点击按钮开始测试...</div>
+    </div>
+    
+    <div class="log-area" id="log-area">
+        日志区域<br>
+        ================<br>
+    </div>
+
+    <script type="module">
+        // 先加载main.js初始化环境
+        import './js/main.js';
+        
+        window.log = function(msg, type = 'info') {
+            const area = document.getElementById('log-area');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#43e97b' : type === 'error' ? '#ff6b6b' : '#667eea';
+            area.innerHTML += `<span style="color:#888;">[${time}]</span> <span style="color:${color};">${msg}</span><br>`;
+            area.scrollTop = area.scrollHeight;
+        };
+        
+        window.testModuleMap = function() {
+            const result = document.getElementById('test-result');
+            const map = window.MODULE_LAZY_LOAD_MAP;
+            
+            if (!map) {
+                result.innerHTML = '<div class="test-result error">❌ MODULE_LAZY_LOAD_MAP 未定义</div>';
+                log('MODULE_LAZY_LOAD_MAP 未找到', 'error');
+                return;
+            }
+            
+            const keys = Object.keys(map);
+            let html = `<div class="test-result success">✅ 找到 ${keys.length} 个模块配置</div>`;
+            html += '<ul style="margin-top:10px;">';
+            keys.forEach(key => {
+                html += `<li><b>${key}</b>: ${map[key].path} → ${map[key].render}</li>`;
+            });
+            html += '</ul>';
+            result.innerHTML = html;
+            
+            log(`MODULE_LAZY_LOAD_MAP 包含 ${keys.length} 个模块`, 'success');
+            keys.forEach(k => log(`  - ${k}: ${map[k].path}`, 'info'));
+        };
+        
+        window.testLoadModule = async function(moduleKey) {
+            const result = document.getElementById('test-result');
+            const map = window.MODULE_LAZY_LOAD_MAP;
+            
+            if (!map || !map[moduleKey]) {
+                result.innerHTML = `<div class="test-result error">❌ 模块 ${moduleKey} 未配置</div>`;
+                return;
+            }
+            
+            log(`开始加载模块: ${moduleKey}`, 'info');
+            const startTime = Date.now();
+            
+            try {
+                const renderFunc = await window.lazyLoadModule(moduleKey);
+                const loadTime = Date.now() - startTime;
+                
+                if (typeof renderFunc === 'function') {
+                    result.innerHTML = `<div class="test-result success">✅ ${moduleKey} 加载成功！耗时: ${loadTime}ms</div>`;
+                    log(`${moduleKey} 加载成功，耗时 ${loadTime}ms`, 'success');
+                    updateStats();
+                } else {
+                    result.innerHTML = `<div class="test-result error">❌ ${moduleKey} 渲染函数异常</div>`;
+                    log(`${moduleKey} 渲染函数不是 function`, 'error');
+                }
+            } catch (e) {
+                result.innerHTML = `<div class="test-result error">❌ ${moduleKey} 加载失败: ${e.message}</div>`;
+                log(`${moduleKey} 加载失败: ${e.message}`, 'error');
+            }
+        };
+        
+        window.testAllModules = async function() {
+            const map = window.MODULE_LAZY_LOAD_MAP;
+            if (!map) return;
+            
+            const keys = Object.keys(map);
+            log(`开始测试所有 ${keys.length} 个模块...`, 'info');
+            
+            let success = 0;
+            let failed = 0;
+            
+            for (const key of keys) {
+                try {
+                    const renderFunc = await window.lazyLoadModule(key);
+                    if (typeof renderFunc === 'function') {
+                        success++;
+                        log(`✅ ${key}`, 'success');
+                    } else {
+                        failed++;
+                        log(`❌ ${key} - 渲染函数异常`, 'error');
+                    }
+                } catch (e) {
+                    failed++;
+                    log(`❌ ${key} - ${e.message}`, 'error');
+                }
+            }
+            
+            log(`测试完成: ${success} 成功, ${failed} 失败`, success > failed ? 'success' : 'error');
+            updateStats();
+        };
+        
+        window.updateStats = function() {
+            const stats = document.getElementById('load-stats');
+            const loaded = window.LOADED_MODULES ? window.LOADED_MODULES.size : 0;
+            const total = window.MODULE_LAZY_LOAD_MAP ? Object.keys(window.MODULE_LAZY_LOAD_MAP).length : 0;
+            
+            stats.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;text-align:center;">
+                    <div style="background:#e8f5e9;padding:15px;border-radius:8px;">
+                        <div style="font-size:24px;font-weight:bold;color:#2e7d32;">${loaded}</div>
+                        <div style="font-size:12px;color:#666;">已加载模块</div>
+                    </div>
+                    <div style="background:#e3f2fd;padding:15px;border-radius:8px;">
+                        <div style="font-size:24px;font-weight:bold;color:#1565c0;">${total}</div>
+                        <div style="font-size:12px;color:#666;">总模块数</div>
+                    </div>
+                    <div style="background:#fff8e1;padding:15px;border-radius:8px;">
+                        <div style="font-size:24px;font-weight:bold;color:#f57c00;">${Math.round(loaded/total*100)}%</div>
+                        <div style="font-size:12px;color:#666;">加载进度</div>
+                    </div>
+                </div>
+            `;
+        };
+        
+        window.clearLog = function() {
+            document.getElementById('log-area').innerHTML = '日志区域<br>================<br>';
+        };
+        
+        log('main.js 加载完成，测试环境已就绪', 'success');
+        updateStats();
+    </script>
+</body>
+</html>
