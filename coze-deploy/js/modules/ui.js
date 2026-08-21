@@ -357,11 +357,8 @@ window.cleanupModuleState = function() {
 };
 
 // 监听浏览器返回按钮
-window.addEventListener('popstate', function(event) {
-    if (window._fullscreenOpen) {
-        // 判断退出的是否是播客模块，只在播客退出时清理播放器
-        var exitingModule = (event.state && event.state.module) || (history.state && history.state.module);
-        // 从pushState记录中获取上一次打开的模块
+window.addEventListener('hashchange', function(event) {
+    if (window._fullscreenOpen && location.hash.indexOf('#fs=') === -1) {
         var lastModule = window._lastFullscreenModule;
         if (lastModule === 'podcast') {
             // 停止播客音频
@@ -384,7 +381,7 @@ window.addEventListener('popstate', function(event) {
 function openFullscreenPage(module) {
     window._fullscreenOpen = true;
     window._lastFullscreenModule = module;
-    history.pushState({fullscreen: true, module: module}, "", "");
+    location.hash = '#fs=' + module;
     window.cleanupModuleState();
     closeUserMenu();
     var container = document.getElementById('fullscreen-container');
@@ -467,7 +464,13 @@ function openFullscreenPage(module) {
 // 关闭全屏页面 - 使用历史记录返回
 function closeFullscreenPage() {
     if (window._fullscreenOpen) {
-        history.back();
+        window._fullscreenOpen = false;
+        window._lastFullscreenModule = null;
+        var container = document.getElementById('fullscreen-container');
+        if (container) container.classList.remove('active');
+        var contentEl = document.getElementById('fullscreen-content');
+        if (contentEl) contentEl.innerHTML = '';
+        location.hash = '';
     }
 }
 
@@ -1488,7 +1491,7 @@ function openAbout() {
         <div style="background:#e8f5e9;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">👨‍💻 开发团队</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                Coze AI Agent 智能开发团队<br>
+                宇航智荟开发团队<br>
             </div>
         </div>
         <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">
@@ -2154,7 +2157,7 @@ window._applyRoleModules = function() {
     }
 
     // 模块按角色分类：学生可见全部学习模块，家长看家长看板，管理员看管理看板
-    var studentModules = ['exam', 'mindmap', 'practice', 'method', 'thinking', 'podcast', 'video', 'library', 'selfdrive', 'pet', 'wrongbook', 'ai'];
+    var studentModules = ['exam', 'mindmap', 'practice', 'method', 'thinking', 'podcast', 'video', 'library', 'selfdrive', 'pet', 'wrongbook', 'pomodoro', 'ai'];
     var parentModules = ['parent-dashboard'];
     var adminModules = ['admin-dashboard'];
 

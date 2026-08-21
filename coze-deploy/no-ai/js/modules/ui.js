@@ -1491,7 +1491,7 @@ function openAbout() {
         <div style="background:#e8f5e9;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">👨‍💻 开发团队</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                Coze AI Agent 智能开发团队<br>
+                宇航智荟开发团队<br>
             </div>
         </div>
         <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>清缓存</title></head>
+<body>
+<h2>正在清除旧缓存...</h2>
+<p id="status">处理中...</p>
+<script>
+(async function() {
+    var log = [];
+    // 1. 注销所有 Service Worker
+    if ('serviceWorker' in navigator) {
+        var regs = await navigator.serviceWorker.getRegistrations();
+        for (var i = 0; i < regs.length; i++) {
+            var ok = await regs[i].unregister();
+            log.push('SW注销[' + regs[i].scope + ']: ' + (ok ? '成功' : '失败'));
+        }
+        if (regs.length === 0) log.push('无已注册SW');
+    }
+    // 2. 清除所有缓存
+    if ('caches' in window) {
+        var keys = await caches.keys();
+        for (var i = 0; i < keys.length; i++) {
+            await caches.delete(keys[i]);
+            log.push('缓存删除: ' + keys[i]);
+        }
+        if (keys.length === 0) log.push('无缓存');
+    }
+    // 3. 清除 localStorage 版本
+    localStorage.removeItem('_site_ver');
+    log.push('localStorage版本已清除');
+    // 4. 清除 sessionStorage
+    sessionStorage.clear();
+    log.push('sessionStorage已清除');
+    
+    document.getElementById('status').innerHTML = log.join('<br>') + '<br><br><strong>✓ 清除完成！2秒后跳转到主页...</strong>';
+    setTimeout(function() { window.location.href = './?_=' + Date.now(); }, 2000);
+})();
+</script>
+</body></html>
