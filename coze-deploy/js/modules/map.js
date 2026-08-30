@@ -7,17 +7,69 @@ CTM.registerModule('map', {
 });
 
 function renderMap(container) {
+    let assess = null;
+    try { assess = JSON.parse(localStorage.getItem('cognitive_assessment') || 'null'); } catch(e) { assess = null; }
+    let banner = '';
+    if (assess) {
+        const d = new Date(assess.date);
+        banner = `<div style="background:linear-gradient(135deg,#eef2ff,#f5f3ff);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:24px;">🧩</span>
+            <div style="flex:1;font-size:13px;color:#4b5563;">已建立能力基线（${d.getMonth()+1}月${d.getDate()}日 · 第${assess.times||1}次测评）</div>
+            <button onclick="openFullscreenPage('assessment')" style="border:none;background:#667eea;color:#fff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;">重新测评</button>
+        </div>`;
+    } else {
+        banner = `<div style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1px solid #fdba74;border-radius:12px;padding:14px;margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:800;color:#9a3412;margin-bottom:4px;">🎉 第一次使用？花 5 分钟做个能力测评</div>
+            <div style="font-size:12px;color:#9a3412;opacity:.85;margin-bottom:10px;">测出孩子六维能力基线，获得专属训练推荐，比盲练更有效</div>
+            <button onclick="openFullscreenPage('assessment')" style="border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;">开始能力测评 🧩</button>
+        </div>`;
+    }
     container.innerHTML = `
+        ${banner}
         <div class="card">
             <h3 style="margin-bottom:12px;">🧠 认知地图 - 六维能力分析</h3>
-            <p style="color:#666;font-size:13px;margin-bottom:16px;">基于你的学习数据，绘制专属认知能力雷达图</p>
+            <p style="color:#666;font-size:13px;margin-bottom:16px;">基于测评基线与学习数据，绘制专属认知能力雷达图</p>
             <div id="radar-container"></div>
+            <div id="as-recommend-box" style="margin-top:16px;"></div>
         </div>
     `;
     setTimeout(() => {
         const radarContainer = document.getElementById('radar-container');
         if (radarContainer) renderCognitiveRadar(radarContainer);
+        renderRecommendBox(document.getElementById('as-recommend-box'));
     }, 100);
+}
+
+// 弱项推荐卡片（由 assessment.js 提供 window.getWeakRecommendations）
+function renderRecommendBox(box) {
+    if (!box) return;
+    if (typeof window.getWeakRecommendations !== 'function') { box.innerHTML = ''; return; }
+    const recs = window.getWeakRecommendations();
+    if (!recs || recs.length === 0) {
+        box.innerHTML = `<div style="background:#f5f6fb;border-radius:12px;padding:14px;text-align:center;font-size:13px;color:#6b7280;">
+            先完成「能力测评」建立基线，这里会根据最弱的两项能力推荐训练
+        </div>`;
+        return;
+    }
+    let html = `<div style="border-top:1px solid #f0f0f0;padding-top:14px;margin-top:6px;">
+        <h4 style="font-size:15px;font-weight:800;margin-bottom:4px;">🎯 为你推荐</h4>
+        <div style="font-size:12px;color:#999;margin-bottom:10px;">优先练最弱的两项能力，进步最明显</div>`;
+    recs.forEach(r => {
+        html += `<div style="margin-bottom:14px;">
+            <div style="font-weight:700;font-size:14px;color:${r.color};">${r.icon} ${r.label} <span style="font-weight:800;">${r.score}</span> 分</div>
+            <div style="font-size:12px;color:#999;margin:2px 0 6px;">${r.advice}</div>`;
+        r.games.forEach(g => {
+            html += `<div onclick="window.startGame && window.startGame('${g.id}')" style="display:flex;align-items:center;gap:10px;background:#f5f6fb;border-radius:12px;padding:10px 12px;margin-bottom:6px;cursor:pointer;">
+                <span style="font-size:20px;">🎮</span>
+                <div style="flex:1;"><div style="font-weight:700;font-size:14px;color:#1f2937;">${g.name}</div>
+                <div style="font-size:11px;color:#9ca3af;">${g.reason}</div></div>
+                <span style="color:#667eea;font-size:18px;">›</span>
+            </div>`;
+        });
+        html += `</div>`;
+    });
+    html += `</div>`;
+    box.innerHTML = html;
 }
 
 function renderCognitiveRadar(container) {

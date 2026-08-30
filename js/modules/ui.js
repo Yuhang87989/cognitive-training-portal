@@ -393,6 +393,7 @@ function openFullscreenPage(module) {
         'ai': '🎯 AI精准练',
         'practice': '📚 母题训练',
         'map': '🧠 认知地图',
+        'assessment': '🧩 能力测评',
         'plan': '📅 学习计划',
         'topics': '📚 母题训练',
         'method': '💡 学霸方法',
@@ -432,6 +433,7 @@ function openFullscreenPage(module) {
         case 'practice': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'topics': if (typeof window.renderTopics === 'function') window.renderTopics(contentEl); break;
         case 'map': if (typeof window.renderMap === 'function') window.renderMap(contentEl); break;
+        case 'assessment': if (typeof window.renderAssessment === 'function') window.renderAssessment(contentEl); break;
         case 'plan': if (typeof window.renderPlan === 'function') window.renderPlan(contentEl); break;
         case 'method': if (typeof window.renderMethod === 'function') window.renderMethod(contentEl); break;
         case 'thinking': if (typeof window.renderThinking === 'function') window.renderThinking(contentEl); break;
