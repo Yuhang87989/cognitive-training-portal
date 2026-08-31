@@ -1193,7 +1193,7 @@ function calculateCognitiveData() {
 
 // ====== 1. 专注力计算 ======
 // V449：舒尔特/视觉搜索/快速点击/注意力追踪/听音辨位/Stroop冲突抑制/母题训练
-    const attentionGames = ['schulte', 'visual', 'tap', 'attention', 'audio', 'stroop'];
+    const attentionGames = ['schulte', 'visual', 'tap', 'attention', 'audio', 'stroop', 'emotion'];
     let attentionScore = _gameDimScore(50, attentionGames, gameScores, gameCounts, 10, 15, 2, 8);
     // 母题训练贡献专注力
     const topicStats = user.topicStats || {};
@@ -1204,13 +1204,9 @@ function calculateCognitiveData() {
 
 
 // ====== 2. 记忆力计算 ======
-// 来源：数字记忆、图形记忆、学霸方法记忆训练、母题训练
-    let memoryScore = 50;
-    const memoryGames = ['digit', 'pattern'];
-    memoryGames.forEach(g => {
-        if (gameScores[g]) memoryScore += Math.min(gameScores[g] / 8, 15);
-        if (gameCounts[g]) memoryScore += Math.min(gameCounts[g] * 3, 8);
-    });
+// V449：数字记忆/图案匹配/文字记忆/记忆宫殿 + 学霸方法记忆训练、母题训练
+    const memoryGames = ['digit', 'pattern', 'text', 'palace'];
+    let memoryScore = _gameDimScore(50, memoryGames, gameScores, gameCounts, 8, 16, 3, 10);
     // 母题训练正确率贡献记忆力
     if (topicCount > 0) {
         const topicAccuracy = topicCorrect / topicCount;
@@ -1225,13 +1221,9 @@ function calculateCognitiveData() {
 
 
 // ====== 3. 思维力计算 ======
-// 来源：图形推理、找不同、思维训练（逻辑、批判、系统、逆向、抽象）
-    let thinkingScore = 50;
-    const thinkingGames = ['reason', 'diff'];
-    thinkingGames.forEach(g => {
-        if (gameScores[g]) thinkingScore += Math.min(gameScores[g] / 10, 12);
-        if (gameCounts[g]) thinkingScore += Math.min(gameCounts[g] * 2, 6);
-    });
+// V449：逻辑/找不同/图形/速算/空间/词汇/分类/数形/守恒/网络/逆向/实验 + 社交情景/生活排序康复游戏 + 思维训练
+    const thinkingGames = ['reason', 'diff', 'shape', 'math', 'space', 'word', 'classify', 'numshape', 'conserve', 'network', 'reverse', 'experiment', 'social', 'routine'];
+    let thinkingScore = _gameDimScore(50, thinkingGames, gameScores, gameCounts, 10, 14, 2, 8);
     // 思维训练统计 (type: logic, critical, system, reverse, abstract)
     const thinkingTypes = ['logic', 'critical', 'system', 'reverse', 'abstract'];
     thinkingTypes.forEach(t => {
