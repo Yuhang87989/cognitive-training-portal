@@ -94,6 +94,13 @@ function quickLogin(userId) {
     if (typeof updateUI === 'function') updateUI();
     if (typeof syncTodayStats === 'function') syncTodayStats();
     if (typeof renderUserList === 'function') renderUserList();
+    
+    // 云同步：切换到该用户绑定的云账号（V447）
+    if (window.portalSync && user.phone && user.password) {
+        window.portalSync.login(user.phone, user.password, user.name).then(function () {
+            if (window.portalSync.syncNow) window.portalSync.syncNow();
+        }).catch(function () { /* 静默失败，不影响本地切换 */ });
+    }
 }
 
 function openEditProfileModal() {
@@ -177,10 +184,14 @@ function createNewUser() {
     var nameEl = document.getElementById('create-name');
     var gradeEl = document.getElementById('create-grade');
     var diffEl = document.getElementById('create-difficulty');
+    var phoneEl = document.getElementById('create-phone');
+    var pwdEl = document.getElementById('create-password');
     
     var name = nameEl ? nameEl.value.trim() : '';
     var grade = gradeEl ? parseInt(gradeEl.value) : 7;
     var difficulty = diffEl ? parseInt(diffEl.value) : 1;
+    var phone = phoneEl ? phoneEl.value.trim() : '';
+    var password = pwdEl ? pwdEl.value : '';
     
     if (!name) {
         window.showToast('请输入名字');
@@ -195,9 +206,28 @@ function createNewUser() {
         return;
     }
     
+    // 云同步账号校验（填了手机号就要填密码，格式校验）
+    var wantCloud = phone || password;
+    if (wantCloud) {
+        if (!/^1[3-9]\d{9}$/.test(phone)) {
+            window.showToast('请输入正确的手机号');
+            return;
+        }
+        if (!password || password.length < 6) {
+            window.showToast('云同步密码至少6位');
+            return;
+        }
+        if (data.users.some(function(u) { return u.phone === phone; })) {
+            window.showToast('该手机号已在本机其他账号使用');
+            return;
+        }
+    }
+    
     var newUser = {
         id: 'user_' + Date.now(),
         name: name,
+        phone: wantCloud ? phone : '',
+        password: wantCloud ? password : '',
         grade: grade,
         difficulty: difficulty,
         points: 1000,
@@ -251,9 +281,29 @@ function createNewUser() {
     
     // 清空表单
     if (nameEl) nameEl.value = '';
+    if (phoneEl) phoneEl.value = '';
+    if (pwdEl) pwdEl.value = '';
+    
+    // 云同步：自动注册并登录新账号（填了手机号才执行）
+    if (wantCloud && window.portalSync) {
+        window.portalSync.login(phone, password, name).then(function () {
+            window.showToast('☁️ ' + name + ' 的云同步已开通');
+            // 立即把当前数据推送到云端
+            if (window.portalSync.syncNow) window.portalSync.syncNow();
+        }).catch(function (e) {
+            window.showToast('本地账号已创建，云同步开通失败：' + (e.message || '网络异常'));
+        });
+    }
 }
 
-function closeCreateUserModal() { document.getElementById('create-user-modal').classList.remove('show'); document.getElementById('create-name').value = ''; }
+function closeCreateUserModal() {
+    var m = document.getElementById('create-user-modal');
+    if (m) m.classList.remove('show');
+    ['create-name', 'create-phone', 'create-password'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
 
 function closeUserSwitchModal() { document.getElementById('user-switch-modal').classList.remove('show'); }
 

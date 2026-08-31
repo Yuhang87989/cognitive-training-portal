@@ -809,7 +809,14 @@ function openChangePasswordModal() {
     document.getElementById('change-password-modal').classList.add('show');
 }
 
-function closeCreateUserModal() { document.getElementById('create-user-modal').classList.remove('show'); document.getElementById('create-name').value = ''; }
+function closeCreateUserModal() {
+    var m = document.getElementById('create-user-modal');
+    if (m) m.classList.remove('show');
+    ['create-name', 'create-phone', 'create-password'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
 
 function showCreateUserModal() { document.getElementById('create-user-modal').classList.add('show'); }
 

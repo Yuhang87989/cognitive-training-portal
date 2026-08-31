@@ -20,7 +20,7 @@ if(typeof caches !== 'undefined'){
   caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); }).catch(function(){});
 }
 
-var SITE_VERSION = '446';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '447';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
@@ -640,6 +640,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             <input type="text" id="create-name" placeholder="请输入姓名" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;" />
         </div>
         <div style="margin-bottom:16px;">
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">☁️ 手机号（云同步账号，选填）</label>
+            <input type="tel" id="create-phone" placeholder="填写后自动开通云同步备份" maxlength="11" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">🔒 云同步密码（至少6位）</label>
+            <input type="password" id="create-password" placeholder="设置云同步密码" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:16px;">
             <label style="font-size:11px;color:#666;display:block;margin-bottom:6px;">年级</label>
             <select id="create-grade" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
                 <option value="5">五年级</option>
@@ -1078,7 +1086,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 <script defer src="js/modules/my-page.js?v=445"></script>
 <script defer src="js/modules/pomodoro.js?v=445"></script>
 <script defer src="js/modules/library.js?v=445"></script>
-<script defer src="js/modules/notepad.js?v=446"></script>
+<script defer src="js/modules/notepad.js?v=447"></script>
 <script defer src="js/modules/sync.js?v=445"></script>
 <script defer src="js/modules/exam.js?v=445"></script>
 <script defer src="js/modules/paper-tool.js?v=445"></script>
