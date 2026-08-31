@@ -1160,6 +1160,23 @@ function drawRadarChart(data) {
     svg.innerHTML = svgContent;
 }
 
+// V449: 统一游戏能力分计算——康复场景全游戏覆盖，按已玩游戏的平均表现计分
+// （玩的款数多不刷分，表现好/熟练度高才加分；分数表现与训练次数双重封顶）
+function _gameDimScore(base, gameIds, scores, counts, scoreDiv, scoreCap, countWeight, countCap) {
+    let s = base;
+    const played = gameIds.filter(g => scores[g] || counts[g]);
+    if (played.length > 0) {
+        let scoreSum = 0, countSum = 0;
+        played.forEach(g => {
+            if (scores[g]) scoreSum += scores[g] / scoreDiv;
+            if (counts[g]) countSum += counts[g] * countWeight;
+        });
+        s += Math.min(scoreSum / played.length, scoreCap);
+        s += Math.min(countSum / played.length, countCap);
+    }
+    return s;
+}
+
 function calculateCognitiveData() {
     const user = window.getCurrentUserData();
     if (!user) {
@@ -1175,13 +1192,9 @@ function calculateCognitiveData() {
 
 
 // ====== 1. 专注力计算 ======
-// 来源：舒尔特方格、视觉搜索、快速点击、母题训练
-    let attentionScore = 50; // 基础分
-    const attentionGames = ['schulte', 'visual', 'tap'];
-    attentionGames.forEach(g => {
-        if (gameScores[g]) attentionScore += Math.min(gameScores[g] / 10, 12);
-        if (gameCounts[g]) attentionScore += Math.min(gameCounts[g] * 2, 6);
-    });
+// V449：舒尔特/视觉搜索/快速点击/注意力追踪/听音辨位/Stroop冲突抑制/母题训练
+    const attentionGames = ['schulte', 'visual', 'tap', 'attention', 'audio', 'stroop'];
+    let attentionScore = _gameDimScore(50, attentionGames, gameScores, gameCounts, 10, 15, 2, 8);
     // 母题训练贡献专注力
     const topicStats = user.topicStats || {};
     const topicCount = Object.keys(topicStats).length;
@@ -1229,13 +1242,9 @@ function calculateCognitiveData() {
 
 
 // ====== 4. 反应力计算 ======
-// 来源：快速点击、颜色识别、反应速度游戏
-    let reactionScore = 50;
-    const reactionGames = ['tap', 'color', 'schulte'];
-    reactionGames.forEach(g => {
-        if (gameScores[g]) reactionScore += Math.min(gameScores[g] / 10, 15);
-        if (gameCounts[g]) reactionScore += Math.min(gameCounts[g] * 3, 10);
-    });
+// V449：快速点击/色彩识别/舒尔特方格/Stroop冲突抑制
+    const reactionGames = ['tap', 'color', 'schulte', 'stroop'];
+    let reactionScore = _gameDimScore(50, reactionGames, gameScores, gameCounts, 10, 16, 3, 10);
     // 快速反应训练 (type: quick)
     if (thinkingStats['quick']) {
         reactionScore += Math.min(thinkingStats['quick'].completed * 4, 12);
