@@ -2159,7 +2159,7 @@ window._applyRoleModules = function() {
     }
 
     // 模块按角色分类：学生可见全部学习模块，家长看家长看板，管理员看管理看板
-    var studentModules = ['exam', 'mindmap', 'practice', 'method', 'thinking', 'podcast', 'video', 'library', 'selfdrive', 'pet', 'wrongbook', 'pomodoro', 'ai'];
+    var studentModules = ['assessment', 'exam', 'mindmap', 'practice', 'method', 'thinking', 'podcast', 'video', 'library', 'selfdrive', 'pet', 'wrongbook', 'pomodoro', 'ai'];
     var parentModules = ['parent-dashboard'];
     var adminModules = ['admin-dashboard'];
 
