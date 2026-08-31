@@ -13,7 +13,7 @@
     var NICK_KEY  = 'portal_nickname';     // 昵称
 
     // API地址：同域名走相对路径，跨域走绝对路径
-    var API_BASE = '/portal-api';
+    var API_BASE = 'https://erp.qiuyhang1688.com.cn/portal-api';
 
     // 要同步的localStorage key
     var SYNC_KEYS = [
