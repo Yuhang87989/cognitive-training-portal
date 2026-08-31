@@ -3646,3 +3646,37 @@ window.renderGames = renderGames;
         if (typeof window.recordPetProgress === 'function') window.recordPetProgress('game');
     };
 })();
+
+// V449: 康复进步快照——每次成绩保存后记录六维能力快照，存用户档案随云同步
+// （force=true 时无视间隔强制记录；供认知地图打开时补记首条快照）
+window.recordAbilitySnapshot = function(force) {
+    try {
+        if (typeof window.calculateCognitiveData !== 'function' || typeof getCurrentUserData !== 'function') return;
+        var user = getCurrentUserData();
+        if (!user) return;
+        var d = window.calculateCognitiveData();
+        var snap = {
+            t: Date.now(),
+            a: d.attention, m: d.memory, th: d.thinking,
+            r: d.reaction, p: d.persistence, me: d.metacognition,
+            avg: Math.round((d.attention + d.memory + d.thinking + d.reaction + d.persistence + d.metacognition) / 6)
+        };
+        user.abilitySnapshots = user.abilitySnapshots || [];
+        var last = user.abilitySnapshots[user.abilitySnapshots.length - 1];
+        if (!force && last && (Date.now() - last.t) < 6 * 3600 * 1000) return; // 6小时内不重复
+        user.abilitySnapshots.push(snap);
+        if (user.abilitySnapshots.length > 90) user.abilitySnapshots = user.abilitySnapshots.slice(-90);
+        var data = window.loadData();
+        var idx = data.users.findIndex(function(u){ return u.id === user.id; });
+        if (idx >= 0) { data.users[idx] = user; window.saveData(data); }
+    } catch(e) { console.warn('[V449] snapshot failed:', e); }
+};
+(function(){
+    var _origSync = window.syncUserData;
+    if (typeof _origSync === 'function') {
+        window.syncUserData = function(u) {
+            _origSync(u);
+            window.recordAbilitySnapshot(false);
+        };
+    }
+})();
