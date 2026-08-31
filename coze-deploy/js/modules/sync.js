@@ -16,9 +16,12 @@
     var API_BASE = 'https://erp.qiuyhang1688.com.cn/portal-api';
 
     // 要同步的localStorage key
+    var MASTER_KEY = 'cognitive_training_v137';  // 主档案：多用户账号、积分、错题本、训练进度
     var SYNC_KEYS = [
+        MASTER_KEY,
         'cognitive_user',
         'cognitive_assessment',
+        'cognitive_training_data',
         'learning_diary',
         'learning_diary_data',
         'virtual_pet_data',
@@ -26,7 +29,15 @@
         'learning_plan_tasks',
         'exam_data',
         'learning_stats',
-        'learning_library_data'
+        'learning_library_data',
+        'self_drive_goals',
+        'self_drive_habits',
+        'self_drive_achievements',
+        'self_drive_diary',
+        'self_drive_checkins',
+        'parent_bindings',
+        'parent_messages',
+        'parent_settings'
     ];
 
     // -------- 工具 --------
@@ -105,7 +116,42 @@
                 var localRaw = localStorage.getItem(key);
                 var localChanged = localRaw !== null && localRaw !== (m.localJson || null);
 
-                if (!localChanged) {
+                if (key === MASTER_KEY) {
+                    // 主档案合并策略（V448）：多孩子设备间不互相覆盖
+                    var serverData = sItem.data;
+                    if (!localRaw) {
+                        // 新设备/新浏览器：直接使用云端档案
+                        localStorage.setItem(key, JSON.stringify(serverData));
+                    } else {
+                        try {
+                            var localData = JSON.parse(localRaw);
+                            if (localData && serverData && Array.isArray(serverData.users)) {
+                                serverData.users.forEach(function (su) {
+                                    var matchedIdx = -1;
+                                    for (var i = 0; i < localData.users.length; i++) {
+                                        var lu = localData.users[i];
+                                        if (lu.id === su.id || (su.phone && lu.phone === su.phone)) { matchedIdx = i; break; }
+                                    }
+                                    if (matchedIdx >= 0) {
+                                        // 同一用户：云端进度合并进来，本地密码保留
+                                        var localPwd = localData.users[matchedIdx].password;
+                                        var merged = Object.assign({}, localData.users[matchedIdx], su);
+                                        if (localPwd) merged.password = localPwd;
+                                        localData.users[matchedIdx] = merged;
+                                    } else {
+                                        // 云端的新用户（如另一个孩子）加入本机
+                                        localData.users.push(su);
+                                    }
+                                });
+                                // currentUser 不被云端覆盖，避免切换孩子后被冲回
+                                var curExists = localData.users.some(function (u) { return u.id === localData.currentUser; });
+                                if (!curExists && serverData.currentUser) localData.currentUser = serverData.currentUser;
+                                localStorage.setItem(key, JSON.stringify(localData));
+                            }
+                        } catch (e) {}
+                    }
+                    meta.keys[key] = { updated: sItem.updated, localJson: localStorage.getItem(key) };
+                } else if (!localChanged) {
                     // 本地没改，覆盖为服务端版本
                     localStorage.setItem(key, JSON.stringify(sItem.data));
                     meta.keys[key] = { updated: sItem.updated, localJson: JSON.stringify(sItem.data) };
@@ -129,7 +175,17 @@
                 // 本地有改动
                 var now = Date.now();
                 try {
-                    pushItems[key] = { data: JSON.parse(localRaw), updated: now };
+                    var parsed = JSON.parse(localRaw);
+                    // 主档案脱敏：密码不上传云端
+                    if (key === MASTER_KEY && parsed && Array.isArray(parsed.users)) {
+                        parsed = JSON.parse(localRaw);
+                        parsed.users = parsed.users.map(function (u) {
+                            var copy = Object.assign({}, u);
+                            delete copy.password;
+                            return copy;
+                        });
+                    }
+                    pushItems[key] = { data: parsed, updated: now };
                 } catch (e) {}
             }
         });
@@ -144,7 +200,7 @@
                 Object.keys(pushItems).forEach(function (key) {
                     meta.keys[key] = {
                         updated: pushItems[key].updated,
-                        localJson: JSON.stringify(pushItems[key].data)
+                        localJson: key === MASTER_KEY ? localStorage.getItem(key) : JSON.stringify(pushItems[key].data)
                     };
                 });
                 setMeta(meta);

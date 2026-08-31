@@ -279,7 +279,23 @@ window.saveApiKey = function() {
 
 // 清除缓存
 window.clearAppCache = function() {
-    if (confirm('确定要清除所有缓存吗？这会重置应用状态。')) {
+    var cloudOn = window.portalSync && window.portalSync.isLoggedIn && window.portalSync.isLoggedIn();
+    var tip = cloudOn
+        ? '确定要清除所有缓存吗？\n\n已开通云同步，清除前会先自动备份一次到云端，数据可通过手机号+密码恢复。'
+        : '确定要清除所有缓存吗？这会重置应用状态。\n\n⚠️ 未开通云同步，清除后数据无法恢复！建议先到「我的→云同步」绑定手机号。';
+    if (confirm(tip)) {
+        if (cloudOn) {
+            window.showToast('正在备份到云端...');
+            window.portalSync.syncNow().then(function () {
+                localStorage.clear();
+                if (typeof caches !== 'undefined') {
+                    caches.keys().then(function(names) { names.forEach(function(name) { caches.delete(name); }); });
+                }
+                window.showToast('已备份并清除，即将刷新');
+                setTimeout(function() { location.reload(); }, 1500);
+            });
+            return;
+        }
         localStorage.clear();
         if (typeof caches !== 'undefined') {
             caches.keys().then(function(names) {
