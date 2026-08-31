@@ -844,24 +844,31 @@ window.renderMyPage = function(container) {
                         <b id="sync-status-text">状态检测中…</b>
                     </div>
                     <div style="background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#888;word-break:break-all;">
-                        🔑 本机设备码：<span id="sync-device-code" style="color:#667eea;font-weight:600;">-</span>
+                        🔑 设备码：<span id="sync-device-code" style="color:#667eea;font-weight:600;">-</span>
                     </div>
                     <div class="setting-row">
                         <div>
-                            <div class="setting-label">📱 IMEI/设备标识（选填）</div>
-                            <div class="setting-desc">填手机IMEI码，换机时填同一码可找回数据</div>
+                            <div class="setting-label">📱 手机号</div>
+                            <div class="setting-desc">用手机号作为账号，换设备登录即可恢复数据</div>
                         </div>
                     </div>
-                    <input type="text" id="sync-imei-input" class="input-field" placeholder="如 865349084439574" style="margin-bottom:10px;font-size:14px;">
+                    <input type="tel" id="sync-phone-input" class="input-field" placeholder="请输入11位手机号" style="margin-bottom:10px;font-size:14px;" maxlength="11">
+                    <div class="setting-row">
+                        <div>
+                            <div class="setting-label">🔒 密码</div>
+                            <div class="setting-desc">首次注册时设置（4位以上），登录时需输入</div>
+                        </div>
+                    </div>
+                    <input type="password" id="sync-password-input" class="input-field" placeholder="请输入密码" style="margin-bottom:10px;font-size:14px;">
                     <div class="setting-row" style="margin-bottom:0;">
                         <div>
-                            <div class="setting-label">🏷️ 设备昵称（选填）</div>
-                            <div class="setting-desc">如：大宝的荣耀</div>
+                            <div class="setting-label">🏷️ 昵称（选填）</div>
+                            <div class="setting-desc">如：大宝</div>
                         </div>
                     </div>
-                    <input type="text" id="sync-nick-input" class="input-field" placeholder="给这台设备起个名字" style="margin-bottom:12px;font-size:14px;">
+                    <input type="text" id="sync-nick-input" class="input-field" placeholder="给孩子起个名字" style="margin-bottom:12px;font-size:14px;">
                     <button class="foldable-btn" onclick="cloudSaveBinding()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:600;">
-                        <span>💾</span> 保存绑定并立即同步
+                        <span>💾</span> 登录/注册并同步
                     </button>
                     <button class="foldable-btn" onclick="cloudManualSync()">
                         <span>🔄</span> 立即同步
@@ -1110,28 +1117,52 @@ window._doSwitchRole = function(role) {
 window.cloudRefreshPanel = function () {
     if (!window.portalSync) return;
     var codeEl = document.getElementById('sync-device-code');
-    if (codeEl) codeEl.textContent = window.portalSync.getDeviceCode();
-    var info = window.portalSync.getDeviceInfo() || {};
-    var imeiEl = document.getElementById('sync-imei-input');
+    if (codeEl) codeEl.textContent = window.portalSync.getDeviceCode() || '未登录';
+    var phoneEl = document.getElementById('sync-phone-input');
     var nickEl = document.getElementById('sync-nick-input');
-    if (imeiEl && !imeiEl.value) imeiEl.value = info.imei || '';
-    if (nickEl && !nickEl.value) nickEl.value = info.nickname || '';
+    if (phoneEl && !phoneEl.value) phoneEl.value = window.portalSync.getPhone() || '';
+    if (nickEl && !nickEl.value) nickEl.value = window.portalSync.getNickname() || '';
+    // 如果已登录，显示密码占位符提示
+    var pwdEl = document.getElementById('sync-password-input');
+    if (pwdEl && window.portalSync.isLoggedIn()) {
+        pwdEl.placeholder = '已登录，留空则直接同步';
+    }
 };
 
 window.cloudSaveBinding = function () {
     if (!window.portalSync) { window.showToast && window.showToast('同步模块未加载'); return; }
-    var imei = (document.getElementById('sync-imei-input').value || '').trim();
+    var phone = (document.getElementById('sync-phone-input').value || '').trim();
+    var pwd = (document.getElementById('sync-password-input').value || '').trim();
     var nick = (document.getElementById('sync-nick-input').value || '').trim();
-    if (imei && !/^[A-Za-z0-9-]{6,32}$/.test(imei)) {
-        window.showToast && window.showToast('IMEI格式不对，一般是15位数字');
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+        window.showToast && window.showToast('请输入正确的11位手机号');
         return;
     }
-    window.portalSync.setDeviceInfo({ imei: imei, nickname: nick }).then(function (ok) {
-        if (ok) {
-            window.showToast && window.showToast('✅ 绑定成功，数据已同步');
-        } else {
-            window.showToast && window.showToast('☁️ 服务器未连接，绑定信息暂存本机');
+    if (!pwd) {
+        // 检查是否已登录（已登录可免密直接同步）
+        if (!window.portalSync.isLoggedIn()) {
+            window.showToast && window.showToast('首次使用请设置密码（4位以上）');
+            return;
         }
+    } else if (pwd.length < 4) {
+        window.showToast && window.showToast('密码至少4位');
+        return;
+    }
+    window.showToast && window.showToast('正在登录…');
+    window.portalSync.login(phone, pwd || undefined, nick).then(function (data) {
+        if (data.is_new) {
+            window.showToast && window.showToast('✅ 注册成功，开始同步数据');
+        } else {
+            window.showToast && window.showToast('✅ 登录成功，正在同步…');
+        }
+        // 刷新面板显示
+        window.cloudRefreshPanel();
+        // 登录成功后立即同步
+        return window.portalSync.syncNow();
+    }).then(function (ok) {
+        if (ok) window.showToast && window.showToast('✅ 数据同步完成');
+    }).catch(function (e) {
+        window.showToast && window.showToast('❌ ' + (e.message || '登录失败'));
     });
 };
 
