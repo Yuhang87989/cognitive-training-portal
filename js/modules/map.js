@@ -30,15 +30,108 @@ function renderMap(container) {
             <h3 style="margin-bottom:12px;">🧠 认知地图 - 六维能力分析</h3>
             <p style="color:#666;font-size:13px;margin-bottom:16px;">基于测评基线与学习数据，绘制专属认知能力雷达图</p>
             <div id="radar-container"></div>
+            <div id="rehab-progress-box" style="margin-top:16px;"></div>
             <div id="as-recommend-box" style="margin-top:16px;"></div>
         </div>
     `;
     setTimeout(() => {
         const radarContainer = document.getElementById('radar-container');
         if (radarContainer) renderCognitiveRadar(radarContainer);
+        renderRehabProgress(document.getElementById('rehab-progress-box'));
         renderRecommendBox(document.getElementById('as-recommend-box'));
     }, 100);
 }
+
+// V449: 康复进步区块——六维快照趋势（快照随主档案云同步，换设备不丢）
+function renderRehabProgress(box) {
+    if (!box) return;
+    if (typeof window.recordAbilitySnapshot === 'function') window.recordAbilitySnapshot(true);
+    var user = null;
+    try { user = window.getCurrentUserData && window.getCurrentUserData(); } catch(e) {}
+    var snaps = (user && user.abilitySnapshots) || [];
+    if (!snaps.length) {
+        box.innerHTML = `<div style="background:#f5f6fb;border-radius:12px;padding:16px;text-align:center;font-size:13px;color:#6b7280;">
+            🌱 完成一次训练游戏后，这里会开始记录能力进步曲线</div>`;
+        return;
+    }
+    var first = snaps[0], last = snaps[snaps.length - 1];
+    var dAvg = last.avg - first.avg;
+    var dims = [
+        {k:'a', name:'专注力', icon:'🎯'}, {k:'m', name:'记忆力', icon:'🧠'},
+        {k:'th', name:'思维力', icon:'💡'}, {k:'r', name:'反应力', icon:'⚡'},
+        {k:'p', name:'坚持力', icon:'🏃'}, {k:'me', name:'元认知', icon:'🔮'}
+    ];
+    var counts = (user && user.gameCounts) || {};
+    var times = (user && user.gameTimes) || {};
+    var totalGames = Object.keys(counts).reduce(function(s,k){return s+counts[k];},0);
+    var totalMin = Math.round(Object.keys(times).reduce(function(s,k){return s+(times[k]||0);},0)/60);
+    var daySet = {};
+    snaps.forEach(function(s){ daySet[new Date(s.t).toDateString()] = 1; });
+    var days = Object.keys(daySet).length;
+
+    // 趋势折线（内联SVG）
+    var W = 320, H = 110, pad = 26;
+    var linePts = '', areaPts = '';
+    if (snaps.length === 1) {
+        var cx = W/2, cy = H/2;
+        linePts = '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#667eea"/>';
+    } else {
+        var vals = snaps.map(function(s){return s.avg;});
+        var minV = Math.min.apply(null, vals), maxV = Math.max.apply(null, vals);
+        if (maxV - minV < 6) { minV -= 3; maxV += 3; }
+        var pts = snaps.map(function(s, i) {
+            var x = pad + i * (W - 2*pad) / (snaps.length - 1);
+            var y = H - pad - (s.avg - minV) / (maxV - minV) * (H - 2*pad);
+            return [x, y];
+        });
+        var pstr = pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ');
+        linePts = '<polyline points="'+pstr+'" fill="none" stroke="#667eea" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
+            + pts.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="#fff" stroke="#667eea" stroke-width="2"/>';}).join('');
+        areaPts = '<polygon points="'+pts[0][0].toFixed(1)+','+(H-pad)+' '+pstr+' '+pts[pts.length-1][0].toFixed(1)+','+(H-pad)+'" fill="url(#rehabGrad)" opacity="0.25"/>';
+    }
+
+    var dimHtml = dims.map(function(d) {
+        var diff = last[d.k] - first[d.k];
+        var color = diff > 0 ? '#16a34a' : (diff < 0 ? '#dc2626' : '#9ca3af');
+        var txt = (diff > 0 ? '+' : '') + diff;
+        return `<div style="background:#f8f9ff;border-radius:10px;padding:8px 6px;text-align:center;">
+            <div style="font-size:16px;">${d.icon}</div>
+            <div style="font-size:11px;color:#6b7280;margin:2px 0;">${d.name}</div>
+            <div style="font-size:14px;font-weight:800;color:${color};">${txt}</div>
+        </div>`;
+    }).join('');
+
+    var cheer;
+    if (snaps.length === 1) cheer = '📍 已记录能力起点，接下来每次训练都会画出进步曲线';
+    else if (dAvg >= 10) cheer = '🌟 进步非常明显！康复训练效果显著，继续保持';
+    else if (dAvg >= 4) cheer = '💪 稳中有进，坚持每天训练，变化会越来越明显';
+    else if (dAvg >= -2) cheer = '🌱 刚开始积累，坚持训练一到两周再看趋势';
+    else cheer = '🔄 能力有波动很正常，关注长期趋势、保证训练频率';
+
+    box.innerHTML = `<div style="border:1px solid #e5e7eb;border-radius:14px;padding:14px;background:linear-gradient(180deg,#fafbff,#fff);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:16px;">📈</span>
+            <b style="font-size:15px;">康复进步追踪</b>
+            <span style="margin-left:auto;font-size:13px;font-weight:800;color:${dAvg>0?'#16a34a':(dAvg<0?'#dc2626':'#6b7280')};">
+                综合 ${dAvg>0?'+':''}${dAvg} 分</span>
+        </div>
+        <div style="font-size:11px;color:#9ca3af;margin-bottom:10px;">${cheer}</div>
+        <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
+            <defs><linearGradient id="rehabGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#667eea" stop-opacity="0"/>
+            </linearGradient></defs>
+            ${[0.25,0.5,0.75].map(function(r){var y=(pad+(H-2*pad)*r).toFixed(1);return '<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="#f0f0f5" stroke-width="1"/>';}).join('')}
+            ${areaPts}${linePts}
+        </svg>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:12px 0 10px;">${dimHtml}</div>
+        <div style="display:flex;gap:8px;font-size:12px;color:#4b5563;">
+            <span style="background:#eef2ff;border-radius:8px;padding:4px 10px;">🗓️ 记录 ${days} 天</span>
+            <span style="background:#eef2ff;border-radius:8px;padding:4px 10px;">🎮 训练 ${totalGames} 次</span>
+            <span style="background:#eef2ff;border-radius:8px;padding:4px 10px;">⏱️ 累计 ${totalMin} 分钟</span>
+        </div>
+    </div>`;
+}
+window.renderRehabProgress = renderRehabProgress;
 
 // 弱项推荐卡片（由 assessment.js 提供 window.getWeakRecommendations）
 function renderRecommendBox(box) {
