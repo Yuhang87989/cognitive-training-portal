@@ -8,6 +8,7 @@ window.accordionState = {
     'study': true,      // 默认展开第一个
     'data': false,
     'tools': false,
+    'cloud': false,
     'user': false,
     'about': false
 };
@@ -827,7 +828,49 @@ window.renderMyPage = function(container) {
             </div>
         </div>
         
-        <!-- 折叠分区4: 👥 用户设置 -->
+        <!-- 折叠分区4: ☁️ 云同步 -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('cloud')">
+                <div class="accordion-title">
+                    <span>☁️</span>
+                    <span>云同步（成长档案）</span>
+                </div>
+                <span id="accordion-icon-cloud" class="accordion-icon" style="transform:rotate(${window.accordionState.cloud ? 180 : 0}deg);">▼</span>
+            </div>
+            <div id="accordion-cloud" class="accordion-content" style="max-height:${window.accordionState.cloud ? '700px' : '0'};opacity:${window.accordionState.cloud ? 1 : 0};">
+                <div class="accordion-content-inner">
+                    <div style="background:linear-gradient(135deg,#eef2ff,#f5f0ff);border-radius:12px;padding:14px;margin-bottom:10px;font-size:13px;color:#555;line-height:1.7;">
+                        测评结果、训练记录、日记自动备份到云服务器，换手机、重装小程序也不丢。<br>
+                        <b id="sync-status-text">状态检测中…</b>
+                    </div>
+                    <div style="background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#888;word-break:break-all;">
+                        🔑 本机设备码：<span id="sync-device-code" style="color:#667eea;font-weight:600;">-</span>
+                    </div>
+                    <div class="setting-row">
+                        <div>
+                            <div class="setting-label">📱 IMEI/设备标识（选填）</div>
+                            <div class="setting-desc">填手机IMEI码，换机时填同一码可找回数据</div>
+                        </div>
+                    </div>
+                    <input type="text" id="sync-imei-input" class="input-field" placeholder="如 865349084439574" style="margin-bottom:10px;font-size:14px;">
+                    <div class="setting-row" style="margin-bottom:0;">
+                        <div>
+                            <div class="setting-label">🏷️ 设备昵称（选填）</div>
+                            <div class="setting-desc">如：大宝的荣耀</div>
+                        </div>
+                    </div>
+                    <input type="text" id="sync-nick-input" class="input-field" placeholder="给这台设备起个名字" style="margin-bottom:12px;font-size:14px;">
+                    <button class="foldable-btn" onclick="cloudSaveBinding()" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-weight:600;">
+                        <span>💾</span> 保存绑定并立即同步
+                    </button>
+                    <button class="foldable-btn" onclick="cloudManualSync()">
+                        <span>🔄</span> 立即同步
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 折叠分区5: 👥 用户设置 -->
         <div class="accordion-section">
             <div class="accordion-header" onclick="toggleAccordion('user')">
                 <div class="accordion-title">
@@ -967,6 +1010,9 @@ window.renderMyPage = function(container) {
             btn.style.cursor = 'pointer';
         });
     }, 10);
+
+    // 填充云同步面板（设备码/IMEI/昵称）
+    setTimeout(window.cloudRefreshPanel, 60);
 };
 
 // 注册备份页面全屏显示
@@ -1057,3 +1103,55 @@ window._doSwitchRole = function(role) {
 // ============================================================
 // ES6 Module 导出
 // ============================================================
+
+// ============================================================
+// ☁️ 云同步面板交互（V440）
+// ============================================================
+window.cloudRefreshPanel = function () {
+    if (!window.portalSync) return;
+    var codeEl = document.getElementById('sync-device-code');
+    if (codeEl) codeEl.textContent = window.portalSync.getDeviceCode();
+    var info = window.portalSync.getDeviceInfo() || {};
+    var imeiEl = document.getElementById('sync-imei-input');
+    var nickEl = document.getElementById('sync-nick-input');
+    if (imeiEl && !imeiEl.value) imeiEl.value = info.imei || '';
+    if (nickEl && !nickEl.value) nickEl.value = info.nickname || '';
+};
+
+window.cloudSaveBinding = function () {
+    if (!window.portalSync) { window.showToast && window.showToast('同步模块未加载'); return; }
+    var imei = (document.getElementById('sync-imei-input').value || '').trim();
+    var nick = (document.getElementById('sync-nick-input').value || '').trim();
+    if (imei && !/^[A-Za-z0-9-]{6,32}$/.test(imei)) {
+        window.showToast && window.showToast('IMEI格式不对，一般是15位数字');
+        return;
+    }
+    window.portalSync.setDeviceInfo({ imei: imei, nickname: nick }).then(function (ok) {
+        if (ok) {
+            window.showToast && window.showToast('✅ 绑定成功，数据已同步');
+        } else {
+            window.showToast && window.showToast('☁️ 服务器未连接，绑定信息暂存本机');
+        }
+    });
+};
+
+window.cloudManualSync = function () {
+    if (!window.portalSync) { window.showToast && window.showToast('同步模块未加载'); return; }
+    window.showToast && window.showToast('正在同步…');
+    window.portalSync.syncNow().then(function (ok) {
+        if (ok) window.showToast && window.showToast('✅ 同步完成');
+    });
+};
+
+// 同步状态回调：面板打开时也能实时看到
+setTimeout(function () {
+    if (window.portalSync && window.portalSync.onStatus) {
+        window.portalSync.onStatus(function (state) {
+            var el = document.getElementById('sync-status-text');
+            if (!el) return;
+            if (state === 'syncing') el.textContent = '🔄 正在同步…';
+            else if (state === 'ok') el.textContent = '✅ 已连接，数据自动备份中';
+            else if (state === 'offline') el.textContent = '⚠️ 当前环境未连接服务器（GitHub Pages预览时正常），数据暂存本机';
+        });
+    }
+}, 2000);
