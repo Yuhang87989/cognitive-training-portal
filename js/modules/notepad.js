@@ -75,9 +75,58 @@ function ensureNotebookCSS() {
         '.nb-btn{width:44px;height:44px;border:none;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:18px;cursor:pointer;box-shadow:0 3px 8px rgba(102,126,234,0.35);}',
         '.nb-btn:disabled{background:#d5d2e8;box-shadow:none;cursor:default;}',
         '.nb-auto{width:auto;padding:0 18px;height:40px;border-radius:20px;font-size:14px;}',
-        '.nb-page-num{font-size:14px;color:#8a7f5f;min-width:64px;text-align:center;font-family:sans-serif;}'
+        '.nb-page-num{font-size:14px;color:#8a7f5f;min-width:64px;text-align:center;font-family:sans-serif;}',
+        // ===== 封面页样式（V445）=====
+        '.nb-cover{background:linear-gradient(160deg,#5b3a8c 0%,#7c4d9e 45%,#4a2d72 100%) !important;border:1px solid #d4af37 !important;box-shadow:0 6px 20px rgba(80,40,120,0.4),inset 0 0 30px rgba(212,175,55,0.15) !important;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 24px !important;}',
+        '.nb-cover::before,.nb-cover::after{display:none !important;}',
+        '.nb-cover-frame{position:absolute;inset:10px;border:1.5px solid rgba(212,175,55,0.55);border-radius:4px 10px 10px 4px;pointer-events:none;}',
+        '.nb-cover-frame::after{content:"";position:absolute;inset:3px;border:0.5px solid rgba(212,175,55,0.3);border-radius:inherit;}',
+        '.nb-cover-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;}',
+        '.nb-cover-deco{font-size:22px;color:#d4af37;margin-bottom:6px;letter-spacing:8px;}',
+        '.nb-cover-title{font-family:"STKaiti","KaiTi","楷体",serif;font-size:26px;font-weight:bold;color:#f5e6b8;letter-spacing:10px;margin-bottom:18px;text-shadow:0 2px 8px rgba(0,0,0,0.3);}',
+        '.nb-cover-poem{font-family:"STKaiti","KaiTi","楷体",serif;color:#f7edcf;}',
+        '.nb-cover-line{font-size:23px;letter-spacing:4px;line-height:2.1;text-shadow:0 1px 6px rgba(0,0,0,0.35);}',
+        '.nb-cover-author{font-size:14px;color:#d8c89a;margin-top:14px;letter-spacing:2px;font-family:"STKaiti","KaiTi","楷体",serif;}',
+        '.nb-cover-seal{margin-top:20px;width:46px;height:46px;border:2px solid #c94f4f;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#f8d9d9;font-family:"STKaiti","KaiTi","楷体",serif;font-size:12px;line-height:1.2;transform:rotate(-6deg);background:rgba(201,79,79,0.15);box-shadow:0 2px 6px rgba(0,0,0,0.3);}',
+        '.nb-cover-hint{margin-top:22px;font-size:12px;color:rgba(245,230,184,0.75);font-family:sans-serif;letter-spacing:1px;}'
     ].join('');
     document.head.appendChild(style);
+}
+
+// ============================================================
+// 封面页：每日轮换励志诗词（V445）
+// ============================================================
+var COVER_POEMS = [
+    { lines: ['长风破浪会有时', '直挂云帆济沧海'], author: '—— 李白《行路难》' },
+    { lines: ['千磨万击还坚劲', '任尔东西南北风'], author: '—— 郑燮《竹石》' },
+    { lines: ['宝剑锋从磨砺出', '梅花香自苦寒来'], author: '—— 《警世贤文》' },
+    { lines: ['路漫漫其修远兮', '吾将上下而求索'], author: '—— 屈原《离骚》' },
+    { lines: ['业精于勤荒于嬉', '行成于思毁于随'], author: '—— 韩愈《进学解》' },
+    { lines: ['少壮不努力', '老大徒伤悲'], author: '—— 《长歌行》' },
+    { lines: ['读书破万卷', '下笔如有神'], author: '—— 杜甫《奉赠韦左丞丈》' }
+];
+
+function todayPoem() {
+    var d = new Date();
+    var dayOfYear = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
+    return COVER_POEMS[dayOfYear % COVER_POEMS.length];
+}
+
+function noteCoverHTML() {
+    var poem = todayPoem();
+    return '<div class="nb-page nb-cover">' +
+        '<div class="nb-cover-frame"></div>' +
+        '<div class="nb-cover-content">' +
+            '<div class="nb-cover-deco">❖ ❖ ❖</div>' +
+            '<div class="nb-cover-title">学 习 日 记</div>' +
+            '<div class="nb-cover-poem">' +
+                poem.lines.map(function(l){ return '<div class="nb-cover-line">' + l + '</div>'; }).join('') +
+                '<div class="nb-cover-author">' + poem.author + '</div>' +
+            '</div>' +
+            '<div class="nb-cover-seal">学习<br>日记</div>' +
+            '<div class="nb-cover-hint">翻开下一页，记录今天的成长 ›</div>' +
+        '</div>' +
+    '</div>';
 }
 
 function notePageHTML(entry, index) {
@@ -99,18 +148,22 @@ function notePageHTML(entry, index) {
 function renderNotebook(diary) {
     ensureNotebookCSS();
     var n = diary.length;
-    var pagesHTML;
+    // 封面始终是第1页；无日记时追加1页空白提示
+    var innerHTML;
     if (n === 0) {
-        pagesHTML = '<div class="nb-empty"><div style="font-size:40px;">📖</div><div>日记本还是空白的<br>写下第一篇日记，它会变成书页自动翻阅</div></div>';
+        innerHTML = '<div class="nb-empty"><div style="font-size:40px;">📖</div><div>日记本还是空白的<br>写下第一篇日记，它会变成书页自动翻阅</div></div>';
     } else {
-        pagesHTML = diary.map(function(entry, i){ return notePageHTML(entry, i); }).join('');
+        innerHTML = diary.map(function(entry, i){ return notePageHTML(entry, i); }).join('');
     }
-    window._noteBook = { index: 0, total: n, timer: null };
+    // 结构：封面页 + （日记页 或 空白提示页）
+    var pagesHTML = noteCoverHTML() + innerHTML;
+    var total = Math.max(n, 0) + 1; // 封面 + 内容
+    window._noteBook = { index: 0, total: total, hasDiary: n > 0, diaryCount: n, timer: null };
     var html = '<div class="nb-stage" id="nbStage">' + pagesHTML + '</div>' +
         '<div class="nb-ctrl">' +
             '<button class="nb-btn" id="nbPrev" onclick="notePrev()">‹</button>' +
             '<button class="nb-btn nb-auto" id="nbAuto" onclick="noteToggleAuto()">▶ 自动翻页</button>' +
-            '<span class="nb-page-num" id="nbPageNum">' + (n > 0 ? '1 / ' + n : '0 / 0') + '</span>' +
+            '<span class="nb-page-num" id="nbPageNum">封面</span>' +
             '<button class="nb-btn" id="nbNext" onclick="noteNext()">›</button>' +
         '</div>';
     // 渲染后应用初始页状态
@@ -128,7 +181,13 @@ function applyNotePages() {
         pages[i].style.transform = (i < nb.index) ? 'rotateY(-180deg)' : 'rotateY(0deg)';
     }
     var num = document.getElementById('nbPageNum');
-    if (num) num.textContent = (nb.index + 1) + ' / ' + total;
+    if (num) {
+        if (nb.index === 0) {
+            num.textContent = '封面';
+        } else {
+            num.textContent = '第 ' + nb.index + ' / ' + (total - 1) + ' 页';
+        }
+    }
     var prev = document.getElementById('nbPrev');
     var next = document.getElementById('nbNext');
     if (prev) prev.disabled = nb.index <= 0;
