@@ -1072,7 +1072,10 @@ function renderGames(container) {
         {id:'conserve',icon:'⚖️',name:'守恒推理',desc:'守恒思维',gradient:'linear-gradient(135deg,#a18cd1,#fbc2eb)'},
         {id:'network',icon:'🕸️',name:'知识网络',desc:'系统思维',gradient:'linear-gradient(135deg,#667eea,#764ba2)'},
         {id:'reverse',icon:'🔄',name:'逆向推理',desc:'逆向思维',gradient:'linear-gradient(135deg,#f093fb,#f5576c)'},
-        {id:'experiment',icon:'🧪',name:'实验设计',desc:'科学探究',gradient:'linear-gradient(135deg,#89f7fe,#66a6ff)'}
+        {id:'experiment',icon:'🧪',name:'实验设计',desc:'科学探究',gradient:'linear-gradient(135deg,#89f7fe,#66a6ff)'},
+        {id:'emotion',icon:'😊',name:'表情识别',desc:'社交康复',gradient:'linear-gradient(135deg,#ff9a9e,#fad0c4)'},
+        {id:'social',icon:'🤝',name:'社交情景',desc:'社交康复',gradient:'linear-gradient(135deg,#43e97b,#38f9d7)'},
+        {id:'routine',icon:'🌅',name:'生活排序',desc:'生活康复',gradient:'linear-gradient(135deg,#fbc2eb,#a6c1ee)'}
 	    ];
     
     container.innerHTML = `
@@ -2321,6 +2324,9 @@ function startGame(type) {
             case 'network': startNetwork(); break;
             case 'reverse': startReverse(); break;
             case 'experiment': startExperiment(); break;
+            case 'emotion': startEmotion(); break;
+            case 'social': startSocial(); break;
+            case 'routine': startRoutine(); break;
             case 'snake': startSnake(); break;
             case 'tetris': startTetris(); break;
             case 'flipcard': startFlipCard(); break;
@@ -3680,3 +3686,308 @@ window.recordAbilitySnapshot = function(force) {
         };
     }
 })();
+
+// ============================================================
+// V450: 康复专用游戏（社交/生活场景）——表情识别、社交情景、生活排序
+// ============================================================
+
+// ---------- 游戏1：表情识别 ----------
+var EMOTION_QUESTIONS = [
+    {f:'😂', ans:['开心','高兴','快乐'], tip:'笑出眼泪，是特别开心的表情'},
+    {f:'😢', ans:['难过','伤心','委屈'], tip:'流眼泪，嘴角向下，是难过的样子'},
+    {f:'😡', ans:['生气','愤怒'], tip:'眉头皱起、嘴巴紧绷，是在生气'},
+    {f:'😨', ans:['害怕','恐惧','紧张'], tip:'眼睛睁大、嘴巴张开，是受到惊吓'},
+    {f:'😮', ans:['惊讶','吃惊'], tip:'嘴巴张成O形，是没想到的样子'},
+    {f:'😒', ans:['讨厌','不耐烦','嫌弃'], tip:'斜眼、嘴角一边翘，是不满意'},
+    {f:'😌', ans:['舒服','满足','放松'], tip:'轻轻闭眼微笑，是很放松满足'},
+    {f:'🥺', ans:['委屈','请求','可怜'], tip:'眼睛水汪汪，是在请求或感到委屈'},
+    {f:'😳', ans:['害羞','不好意思','尴尬'], tip:'脸红了，是不好意思'},
+    {f:'🤔', ans:['思考','疑惑','想问题'], tip:'手托下巴、眼睛看旁边，是在想事情'},
+    {f:'😴', ans:['困倦','想睡觉','疲惫'], tip:'眼睛闭着还有Zzz，是困了想睡觉'},
+    {f:'😇', ans:['友善','感激','乖'], tip:'微笑加光环，是友善、感谢的心情'},
+    {f:'😭', ans:['大哭','哭','伤心'], tip:'眼泪哗哗流，是哭得很厉害'},
+    {f:'😆', ans:['兴奋','开心','大笑'], tip:'眯眼张嘴大笑，是很兴奋开心'},
+    {f:'😔', ans:['失落','沮丧','难过'], tip:'眼神向下、嘴角下垂，是失落的样子'},
+    {f:'😅', ans:['尴尬','不好意思','苦笑'], tip:'笑着但额头冒汗，是有点尴尬'},
+    {f:'😎', ans:['得意','自信','酷'], tip:'戴墨镜微笑，是自信得意'},
+    {f:'🤩', ans:['崇拜','惊喜','兴奋'], tip:'眼睛变成星星，是非常喜欢和惊喜'}
+];
+
+function startEmotion() {
+    var config = gameConfig['emotion'];
+    var titleEl = document.getElementById('game-title');
+    if (titleEl) titleEl.textContent = config ? config.name : '😊 表情识别';
+    var board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px;min-height:200px;';
+    var user = getCurrentUserData() || {};
+    var diff = user.difficulty || 2;
+    var count = diff <= 1 ? 5 : diff <= 2 ? 6 : 8;
+    var pool = EMOTION_QUESTIONS.slice().sort(function(){return Math.random()-0.5;}).slice(0, count);
+    window._emo = {q: pool, i: 0, score: 0, total: count};
+    showEmotionQuestion();
+}
+
+function showEmotionQuestion() {
+    var d = window._emo;
+    var board = document.getElementById('game-board');
+    if (d.i >= d.total) {
+        gameScore = d.score;
+        endGame();
+        return;
+    }
+    var item = d.q[d.i];
+    var answers = ['开心','难过','生气','害怕','惊讶','讨厌','害羞','思考','困倦','委屈','得意','兴奋','尴尬','放松'];
+    var correct = item.ans[0];
+    var wrongs = answers.filter(function(a){
+        return item.ans.indexOf(a) === -1;
+    }).sort(function(){return Math.random()-0.5;}).slice(0, 3);
+    var opts = wrongs.concat([correct]).sort(function(){return Math.random()-0.5;});
+    board.innerHTML =
+        '<div style="width:100%;text-align:center;">' +
+            '<div style="font-size:13px;color:#999;margin-bottom:8px;">第 ' + (d.i+1) + ' / ' + d.total + ' 题 · 得分 ' + d.score + '</div>' +
+            '<div style="font-size:96px;line-height:1.2;margin:10px 0;">' + item.f + '</div>' +
+            '<div style="font-size:17px;font-weight:700;color:#333;margin-bottom:16px;">这个表情是什么心情？</div>' +
+            '<div id="emo-opts" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:340px;margin:0 auto;"></div>' +
+            '<div id="emo-tip" style="min-height:24px;margin-top:12px;font-size:13px;color:#16a34a;font-weight:700;"></div>' +
+        '</div>';
+    var box = document.getElementById('emo-opts');
+    opts.forEach(function(o){
+        var btn = document.createElement('button');
+        btn.textContent = o;
+        btn.style.cssText = 'padding:12px 8px;background:#fff;border:2px solid #f0c8d0;border-radius:12px;font-size:16px;font-weight:600;color:#555;cursor:pointer;';
+        btn.onclick = function(){ answerEmotion(o, btn); };
+        box.appendChild(btn);
+    });
+}
+
+function answerEmotion(o, btn) {
+    var d = window._emo;
+    var item = d.q[d.i];
+    var ok = item.ans.indexOf(o) !== -1;
+    var btns = document.getElementById('emo-opts').querySelectorAll('button');
+    btns.forEach(function(b){ b.disabled = true; b.style.opacity = '0.55'; });
+    var tipEl = document.getElementById('emo-tip');
+    if (ok) {
+        btn.style.background = '#dcfce7'; btn.style.borderColor = '#16a34a'; btn.style.opacity = '1';
+        d.score++;
+        document.getElementById('game-score').textContent = d.score;
+        try { SoundEffects.playCorrect(); } catch(e){}
+        tipEl.textContent = '✅ 答对啦！' + item.tip;
+        tipEl.style.color = '#16a34a';
+    } else {
+        btn.style.background = '#fee2e2'; btn.style.borderColor = '#dc2626'; btn.style.opacity = '1';
+        btns.forEach(function(b){
+            if (item.ans.indexOf(b.textContent) !== -1) { b.style.background = '#dcfce7'; b.style.borderColor = '#16a34a'; b.style.opacity = '1'; }
+        });
+        try { SoundEffects.playWrong(); } catch(e){}
+        tipEl.textContent = '❌ 应该是「' + item.ans[0] + '」。' + item.tip;
+        tipEl.style.color = '#dc2626';
+    }
+    setTimeout(function(){ d.i++; showEmotionQuestion(); }, 1800);
+}
+
+// ---------- 游戏2：社交情景判断 ----------
+var SOCIAL_QUESTIONS = [
+    {q:'见到熟悉的老师，应该怎么做？', opts:['低头赶紧走开','主动说"老师好"','假装没看见'], a:1, tip:'主动打招呼是礼貌的表现'},
+    {q:'同学不小心碰掉了你的文具，他说了对不起，你应该？', opts:['很生气地骂他','说"没关系"并一起捡起来','再也不理他'], a:2, tip:'对方不是故意的，宽容会让大家都开心'},
+    {q:'想借同学的橡皮，应该怎么说？', opts:['直接拿过来用','"请问可以借我橡皮用一下吗？"','等他不在时再拿'], a:1, tip:'借东西要先询问，经过同意才能用'},
+    {q:'别人正在说话，你也想说，应该？', opts:['马上打断抢着说','等对方说完再说','大声喊让大家听你的'], a:1, tip:'等别人说完再开口，是尊重对方'},
+    {q:'排队的时候有人插到你前面，你应该？', opts:['动手推他','好好说"请排队，大家都在等"','大声骂他'], a:1, tip:'遇到问题好好说，不用动手也不用骂'},
+    {q:'收到别人送的礼物，应该说？', opts:['什么也不说','"谢谢，我很喜欢！"','直接说不喜欢'], a:1, tip:'收到礼物要感谢，这是对送礼物人的礼貌'},
+    {q:'看到同学摔倒哭了，你应该？', opts:['笑他笨','走过去扶起来问疼不疼','当作没看见'], a:1, tip:'别人难过时，关心和帮助会让他温暖'},
+    {q:'在图书馆里，应该怎样说话？', opts:['大声聊天','轻轻说话保持安静','随便喊叫'], a:1, tip:'图书馆是安静的地方，要照顾别人'},
+    {q:'想加入同学们一起玩游戏，应该？', opts:['站在旁边不说话直接加入','"我可以和你们一起玩吗？"','把别人推开自己玩'], a:1, tip:'先询问再加入，大家会更欢迎你'},
+    {q:'别人帮助了你，应该说？', opts:['谢谢','什么都不说直接走','觉得理所当然'], a:0, tip:'得到帮助说谢谢，别人下次还愿意帮你'},
+    {q:'和同学约好时间见面，你应该？', opts:['准时到达','迟到很久也不解释','不去也不告诉对方'], a:0, tip:'守时和提前告知，是值得信任的表现'},
+    {q:'不小心做错了事情，应该？', opts:['撒谎否认','承认错误并道歉','怪到别人身上'], a:1, tip:'勇敢承认错误并改正，大家依然会信任你'},
+    {q:'别人在专心做作业，你想找他玩，应该？', opts:['一直打扰他','等他做完再邀请','把他的本子合上'], a:1, tip:'别人忙碌时先等待，是体贴的表现'},
+    {q:'电话接通时，应该先说？', opts:['喂，你好，请问找谁','不说话等对方讲','直接挂掉'], a:0, tip:'接电话先问好，对方会觉得很舒服'},
+    {q:'同学穿了新衣服问你好看吗，你觉得一般，应该？', opts:['直接说"好丑"','"挺好看的，很精神！"','不回答'], a:1, tip:'善意的鼓励比直接的挑剔更让人舒服'}
+];
+
+function startSocial() {
+    var config = gameConfig['social'];
+    var titleEl = document.getElementById('game-title');
+    if (titleEl) titleEl.textContent = config ? config.name : '🤝 社交情景';
+    var board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px;min-height:200px;';
+    var user = getCurrentUserData() || {};
+    var diff = user.difficulty || 2;
+    var count = diff <= 1 ? 5 : diff <= 2 ? 7 : 9;
+    var pool = SOCIAL_QUESTIONS.slice().sort(function(){return Math.random()-0.5;}).slice(0, count);
+    window._soc = {q: pool, i: 0, score: 0, total: count};
+    showSocialQuestion();
+}
+
+function showSocialQuestion() {
+    var d = window._soc;
+    var board = document.getElementById('game-board');
+    if (d.i >= d.total) {
+        gameScore = d.score;
+        endGame();
+        return;
+    }
+    var item = d.q[d.i];
+    board.innerHTML =
+        '<div style="width:100%;max-width:420px;margin:0 auto;">' +
+            '<div style="font-size:13px;color:#999;margin-bottom:8px;text-align:center;">第 ' + (d.i+1) + ' / ' + d.total + ' 题 · 得分 ' + d.score + '</div>' +
+            '<div style="background:#f0fdf4;border:2px solid #86efac;border-radius:14px;padding:16px;font-size:17px;font-weight:700;color:#166534;line-height:1.5;margin-bottom:16px;">💬 ' + item.q + '</div>' +
+            '<div id="soc-opts" style="display:flex;flex-direction:column;gap:10px;"></div>' +
+            '<div id="soc-tip" style="min-height:24px;margin-top:12px;font-size:13px;font-weight:700;text-align:center;"></div>' +
+        '</div>';
+    var box = document.getElementById('soc-opts');
+    item.opts.forEach(function(o, idx){
+        var btn = document.createElement('button');
+        btn.textContent = String.fromCharCode(65+idx) + '. ' + o;
+        btn.style.cssText = 'padding:13px 14px;background:#fff;border:2px solid #bbf7d0;border-radius:12px;font-size:15px;font-weight:600;color:#333;cursor:pointer;text-align:left;';
+        btn.onclick = function(){ answerSocial(idx, btn); };
+        box.appendChild(btn);
+    });
+}
+
+function answerSocial(idx, btn) {
+    var d = window._soc;
+    var item = d.q[d.i];
+    var btns = document.getElementById('soc-opts').querySelectorAll('button');
+    btns.forEach(function(b){ b.disabled = true; b.style.opacity = '0.6'; });
+    var tipEl = document.getElementById('soc-tip');
+    if (idx === item.a) {
+        btn.style.background = '#dcfce7'; btn.style.borderColor = '#16a34a'; btn.style.opacity = '1';
+        d.score++;
+        document.getElementById('game-score').textContent = d.score;
+        try { SoundEffects.playCorrect(); } catch(e){}
+        tipEl.textContent = '✅ 做得对！' + item.tip;
+        tipEl.style.color = '#16a34a';
+    } else {
+        btn.style.background = '#fee2e2'; btn.style.borderColor = '#dc2626'; btn.style.opacity = '1';
+        btns[item.a].style.background = '#dcfce7'; btns[item.a].style.borderColor = '#16a34a'; btns[item.a].style.opacity = '1';
+        try { SoundEffects.playWrong(); } catch(e){}
+        tipEl.textContent = '❌ 更好的做法是：' + item.opts[item.a] + '。' + item.tip;
+        tipEl.style.color = '#dc2626';
+    }
+    setTimeout(function(){ d.i++; showSocialQuestion(); }, 2200);
+}
+
+// ---------- 游戏3：生活流程排序 ----------
+var ROUTINE_TASKS = [
+    {name:'起床上学', icon:'🌅', steps:['听到闹钟起床','刷牙洗脸','吃早饭','背上书包出门']},
+    {name:'刷牙', icon:'🪥', steps:['拿起牙刷挤牙膏','用水打湿牙刷','上下刷动牙齿','漱口冲干净']},
+    {name:'洗手', icon:'🧼', steps:['打开水龙头冲手','打肥皂搓出泡','搓洗手心手背','冲干净擦手']},
+    {name:'过马路', icon:'🚦', steps:['走到斑马线前','看红绿灯变绿','左右看有没有车','快速走过去']},
+    {name:'煮面条', icon:'🍜', steps:['锅里加水烧开','放入面条','煮3到5分钟','捞出加调料']},
+    {name:'洗衣服', icon:'👕', steps:['把衣服放进洗衣机','加洗衣液','启动洗衣程序','晾到衣架上']},
+    {name:'整理书包', icon:'🎒', steps:['看课程表','装好课本作业本','放进文具盒水壶','拉好拉链检查']},
+    {name:'洗澡', icon:'🚿', steps:['拿好换洗衣服','放水调温度','打沐浴露冲洗','擦干穿衣服']},
+    {name:'睡觉准备', icon:'🌙', steps:['收拾好玩具书本','刷牙洗脸','换上睡衣','上床关灯睡觉']},
+    {name:'去超市购物', icon:'🛒', steps:['推购物车进店','挑选需要的商品','到收银台排队','扫码付钱离开']}
+];
+
+function startRoutine() {
+    var config = gameConfig['routine'];
+    var titleEl = document.getElementById('game-title');
+    if (titleEl) titleEl.textContent = config ? config.name : '🌅 生活排序';
+    var board = document.getElementById('game-board');
+    board.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px;min-height:200px;';
+    var user = getCurrentUserData() || {};
+    var diff = user.difficulty || 2;
+    var count = diff <= 1 ? 3 : diff <= 2 ? 4 : 6;
+    var pool = ROUTINE_TASKS.slice().sort(function(){return Math.random()-0.5;}).slice(0, count);
+    window._rou = {tasks: pool, ti: 0, score: 0, total: count, picked: []};
+    showRoutineTask();
+}
+
+function showRoutineTask() {
+    var d = window._rou;
+    var board = document.getElementById('game-board');
+    if (d.ti >= d.total) {
+        gameScore = d.score;
+        endGame();
+        return;
+    }
+    var task = d.tasks[d.ti];
+    d.picked = [];
+    var shuffled = task.steps.map(function(s, i){ return {t: s, order: i}; }).sort(function(){return Math.random()-0.5;});
+    window._rouShuffled = shuffled;
+    board.innerHTML =
+        '<div style="width:100%;max-width:420px;margin:0 auto;">' +
+            '<div style="font-size:13px;color:#999;margin-bottom:8px;text-align:center;">第 ' + (d.ti+1) + ' / ' + d.total + ' 关 · 得分 ' + d.score + '</div>' +
+            '<div style="background:#eff6ff;border:2px solid #93c5fd;border-radius:14px;padding:14px;text-align:center;margin-bottom:12px;">' +
+                '<div style="font-size:36px;">' + task.icon + '</div>' +
+                '<div style="font-size:17px;font-weight:800;color:#1e40af;margin-top:4px;">按正确顺序排一排：' + task.name + '</div>' +
+            '</div>' +
+            '<div style="font-size:13px;color:#666;margin-bottom:6px;">👇 按先后顺序点击下面的步骤：</div>' +
+            '<div id="rou-order" style="display:flex;flex-wrap:wrap;gap:6px;min-height:40px;background:#f8fafc;border-radius:10px;padding:8px;margin-bottom:12px;"></div>' +
+            '<div id="rou-opts" style="display:flex;flex-direction:column;gap:8px;"></div>' +
+            '<div id="rou-tip" style="min-height:24px;margin-top:10px;font-size:13px;font-weight:700;text-align:center;"></div>' +
+        '</div>';
+    var box = document.getElementById('rou-opts');
+    shuffled.forEach(function(s, idx){
+        var btn = document.createElement('button');
+        btn.textContent = s.t;
+        btn.dataset.idx = idx;
+        btn.style.cssText = 'padding:11px 12px;background:#fff;border:2px solid #c7d2fe;border-radius:10px;font-size:15px;color:#333;cursor:pointer;text-align:left;';
+        btn.onclick = function(){ pickRoutine(idx, btn); };
+        box.appendChild(btn);
+    });
+    renderRoutinePicked();
+}
+
+function renderRoutinePicked() {
+    var d = window._rou;
+    var el = document.getElementById('rou-order');
+    if (!el) return;
+    if (!d.picked.length) {
+        el.innerHTML = '<span style="color:#bbb;font-size:13px;padding:4px;">（点击下方步骤，按顺序排在这里）</span>';
+        return;
+    }
+    el.innerHTML = d.picked.map(function(p, i){
+        return '<span style="background:#dbeafe;color:#1e40af;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700;">' + (i+1) + '. ' + p.t + '</span>';
+    }).join('');
+}
+
+function pickRoutine(idx, btn) {
+    var d = window._rou;
+    var task = d.tasks[d.ti];
+    var shuffled = window._rouShuffled;
+    var step = shuffled[idx];
+    var expectedOrder = d.picked.length;
+    btn.disabled = true;
+    btn.style.opacity = '0.45';
+    if (step.order === expectedOrder) {
+        d.picked.push(step);
+        btn.style.background = '#dcfce7'; btn.style.borderColor = '#16a34a';
+        try { SoundEffects.playCorrect(); } catch(e){}
+        renderRoutinePicked();
+        if (d.picked.length === task.steps.length) {
+            d.score++;
+            document.getElementById('game-score').textContent = d.score;
+            var tipEl = document.getElementById('rou-tip');
+            tipEl.textContent = '✅ 顺序完全正确！';
+            tipEl.style.color = '#16a34a';
+            setTimeout(function(){ d.ti++; showRoutineTask(); }, 1400);
+        }
+    } else {
+        btn.style.background = '#fee2e2'; btn.style.borderColor = '#dc2626'; btn.style.opacity = '1';
+        try { SoundEffects.playWrong(); } catch(e){}
+        var tipEl2 = document.getElementById('rou-tip');
+        tipEl2.textContent = '❌ 顺序不对哦，想想第一步应该做什么？重新点一次';
+        tipEl2.style.color = '#dc2626';
+        setTimeout(function(){
+            d.picked = [];
+            var btns = document.getElementById('rou-opts').querySelectorAll('button');
+            btns.forEach(function(b){ b.disabled = false; b.style.opacity = '1'; b.style.background = '#fff'; b.style.borderColor = '#c7d2fe'; });
+            renderRoutinePicked();
+            tipEl2.textContent = '';
+        }, 1400);
+    }
+}
+
+window.startEmotion = startEmotion;
+window.showEmotionQuestion = showEmotionQuestion;
+window.answerEmotion = answerEmotion;
+window.startSocial = startSocial;
+window.showSocialQuestion = showSocialQuestion;
+window.answerSocial = answerSocial;
+window.startRoutine = startRoutine;
+window.showRoutineTask = showRoutineTask;
+window.pickRoutine = pickRoutine;
