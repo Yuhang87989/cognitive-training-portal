@@ -818,10 +818,10 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="openFullscreenPage('notepad')">
                         <span>📝</span> 学习日记
                     </button>
-                    <button class="foldable-btn" onclick="openFullscreenPage('usage-stats')" style="display:none">
-                        <span>📊</span> AI使用统计
+                    <button class="foldable-btn" onclick="openFullscreenPage('assessment')">
+                        <span>🧩</span> 能力测评
                     </button>
-                    <button class="foldable-btn" onclick="window.open('幻灵创作坊.html', '_blank')">
+                    <button class="foldable-btn" onclick="window.location.href='幻灵创作坊.html'">
                         <span>🎨</span> 幻灵创作坊
                     </button>
                 </div>
