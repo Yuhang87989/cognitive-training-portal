@@ -3,276 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>幻灵创作坊 v6</title>
+<title>幻灵创作坊 v7</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0c0518;color:#f0e8ff;min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse at 20% 0%,rgba(139,92,246,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(236,72,153,.06) 0%,transparent 50%)}
-:root{--pri:#8b5cf6;--pri2:#7c3aed;--pri3:#6366f1;--pink:#ec4899;--cyan:#22d3ee;--gold:#f59e0b;--bg:#0c0518;--card:rgba(139,92,246,.07);--card2:rgba(139,92,246,.18);--border:rgba(139,92,246,.22);--text:#f0e8ff;--text2:#b4a0d4}
-.top-bar{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,rgba(12,5,24,.98) 0%,rgba(12,5,24,.92) 100%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px 0}
-.top-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.top-title h1{font-size:18px;background:linear-gradient(135deg,#a78bfa,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
-.top-title span{font-size:11px;color:var(--text2);background:rgba(139,92,246,.12);padding:3px 10px;border-radius:12px;border:1px solid rgba(139,92,246,.15)}
-.tab-bar{display:flex;gap:3px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tab-btn{flex:1;min-width:0;padding:9px 6px;border:none;background:transparent;color:var(--text2);font-size:11.5px;font-weight:600;border-radius:10px 10px 0 0;cursor:pointer;transition:.25s;position:relative;white-space:nowrap}
-.tab-btn.active{background:linear-gradient(180deg,rgba(139,92,246,.15),rgba(139,92,246,.05));color:#a78bfa}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0a0612;color:#f0e8ff;min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse at 15% 0%,rgba(139,92,246,.1) 0%,transparent 50%),radial-gradient(ellipse at 85% 100%,rgba(236,72,153,.07) 0%,transparent 50%)}
+:root{--pri:#8b5cf6;--pri2:#7c3aed;--pri3:#6366f1;--pink:#ec4899;--cyan:#22d3ee;--gold:#f59e0b;--green:#10b981;--bg:#0a0612;--card:rgba(139,92,246,.06);--card2:rgba(139,92,246,.15);--border:rgba(139,92,246,.2);--text:#f0e8ff;--text2:#a594c0}
+/* === 顶栏 === */
+.top-bar{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,rgba(10,6,18,.98) 0%,rgba(10,6,18,.94) 100%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px 14px 0}
+.top-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.top-title h1{font-size:17px;background:linear-gradient(135deg,#a78bfa,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800;letter-spacing:.5px}
+.top-title span{font-size:10px;color:var(--text2);background:rgba(139,92,246,.1);padding:2px 8px;border-radius:10px;border:1px solid rgba(139,92,246,.12)}
+/* === 探索页功能入口 === */
+.explore-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px 14px 6px}
+.explore-card{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;aspect-ratio:1.6/1;border:1px solid rgba(255,255,255,.06);transition:.3s}
+.explore-card:active{transform:scale(.96)}
+.explore-card .ec-bg{position:absolute;inset:0;background:linear-gradient(135deg,var(--c1),var(--c2));opacity:.85}
+.explore-card .ec-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);font-size:36px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.explore-card .ec-info{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+.explore-card .ec-name{font-size:14px;font-weight:700;color:#fff}
+.explore-card .ec-desc{font-size:10px;color:rgba(255,255,255,.7);margin-top:2px}
+.explore-card .ec-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:var(--gold);font-size:9px;padding:2px 6px;border-radius:8px;backdrop-filter:blur(4px)}
+/* === Tab栏 === */
+.tab-bar{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 2px}
+.tab-btn{flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text2);font-size:11px;font-weight:600;border-radius:10px 10px 0 0;cursor:pointer;transition:.25s;position:relative;white-space:nowrap}
+.tab-btn.active{background:linear-gradient(180deg,rgba(139,92,246,.12),rgba(139,92,246,.03));color:#a78bfa}
 .tab-btn.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:linear-gradient(90deg,var(--pri),var(--pink));border-radius:1px}
-.main{padding:16px;max-width:800px;margin:0 auto}
+/* === 主体 === */
+.main{padding:14px;max-width:800px;margin:0 auto}
 .panel{display:none}.panel.active{display:block}
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:14px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.card-title{font-size:13px;font-weight:700;color:#c4b5fd;margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.5px}
-.prompt-box textarea{width:100%;min-height:80px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:14px;resize:vertical;outline:none;transition:.2s}
-.prompt-box textarea:focus{border-color:var(--pri);box-shadow:0 0 0 2px rgba(168,85,247,.15)}
-.prompt-box textarea::placeholder{color:var(--text2)}
-.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
-.style-chip{padding:8px 4px;border-radius:12px;border:1px solid rgba(139,92,246,.12);background:rgba(139,92,246,.04);text-align:center;cursor:pointer;transition:.25s;font-size:12px;user-select:none}
+/* === 卡片 === */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.card-title{font-size:13px;font-weight:700;color:#c4b5fd;margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.3px}
+/* === 输入框 === */
+.prompt-box textarea,.prompt-input{width:100%;min-height:80px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:14px;resize:vertical;outline:none;transition:.2s}
+.prompt-box textarea:focus,.prompt-input:focus{border-color:var(--pri);box-shadow:0 0 0 2px rgba(168,85,247,.12)}
+.prompt-box textarea::placeholder,.prompt-input::placeholder{color:var(--text2)}
+/* === 风格选择 === */
+.style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:7px}
+.style-chip{padding:7px 3px;border-radius:12px;border:1px solid rgba(139,92,246,.1);background:rgba(139,92,246,.03);text-align:center;cursor:pointer;transition:.25s;font-size:11px;user-select:none}
 .style-chip:active{transform:scale(.95)}
-.style-chip.selected{border-color:#8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.1));box-shadow:0 0 12px rgba(139,92,246,.25);transform:scale(1.02)}
-.style-chip .emoji{font-size:20px;display:block;margin-bottom:4px}
-.style-chip .name{color:var(--text);font-weight:500;font-size:11px}
-.multi-hint{font-size:11px;color:var(--text2);margin-top:8px;text-align:center}
-.size-row{display:flex;gap:8px;flex-wrap:wrap}
-.size-btn{padding:6px 14px;border-radius:10px;border:1px solid rgba(139,92,246,.12);background:rgba(139,92,246,.04);color:var(--text2);font-size:12px;cursor:pointer;transition:.25s}
-.size-btn.active{border-color:#8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(99,102,241,.1));color:#c4b5fd;box-shadow:0 0 8px rgba(139,92,246,.2)}
+.style-chip.selected{border-color:#8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(236,72,153,.08));box-shadow:0 0 10px rgba(139,92,246,.2);transform:scale(1.02)}
+.style-chip .emoji{font-size:18px;display:block;margin-bottom:3px}
+.style-chip .name{color:var(--text);font-weight:500;font-size:10px}
+/* === 尺寸/按钮行 === */
+.size-row,.opt-row{display:flex;gap:7px;flex-wrap:wrap}
+.size-btn,.opt-btn{padding:6px 12px;border-radius:10px;border:1px solid rgba(139,92,246,.1);background:rgba(139,92,246,.03);color:var(--text2);font-size:12px;cursor:pointer;transition:.25s}
+.size-btn.active,.opt-btn.active{border-color:#8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(99,102,241,.08));color:#c4b5fd;box-shadow:0 0 6px rgba(139,92,246,.15)}
+/* === 开关 === */
 .switch-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0}
 .switch-row label{font-size:13px;color:var(--text)}
-.switch{position:relative;width:44px;height:24px;cursor:pointer}
+.switch{position:relative;width:42px;height:22px;cursor:pointer;flex-shrink:0}
 .switch input{display:none}
-.switch .slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:12px;transition:.3s}
-.switch .slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#666;border-radius:50%;transition:.3s}
+.switch .slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:11px;transition:.3s}
+.switch .slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#666;border-radius:50%;transition:.3s}
 .switch input:checked+.slider{background:var(--pri)}
 .switch input:checked+.slider::before{transform:translateX(20px);background:#fff}
-.wm-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.wm-shape{padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--text2);font-size:12px;cursor:pointer;transition:.2s}
-.wm-shape.active{border-color:var(--pink);background:rgba(236,72,153,.15);color:var(--pink)}
-.wm-colors{display:flex;gap:6px;margin-top:8px}
-.wm-color{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s}
-.wm-color.active{border-color:#fff;transform:scale(1.15)}
-.wm-mode-row{display:flex;gap:8px;margin-top:10px}
-.wm-mode{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--text2);font-size:11px;cursor:pointer;transition:.2s}
-.wm-mode.active{border-color:var(--cyan);background:rgba(34,211,238,.15);color:var(--cyan)}
+/* === 水印 === */
+.wm-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.wm-shape{padding:5px 9px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--text2);font-size:12px;cursor:pointer;transition:.2s}
+.wm-shape.active{border-color:var(--pink);background:rgba(236,72,153,.12);color:var(--pink)}
+.wm-colors{display:flex;gap:5px;margin-top:7px}
+.wm-color{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s}
+.wm-color.active{border-color:#fff;transform:scale(1.12)}
+.wm-mode-row{display:flex;gap:6px;margin-top:8px}
+.wm-mode{padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--text2);font-size:11px;cursor:pointer;transition:.2s}
+.wm-mode.active{border-color:var(--cyan);background:rgba(34,211,238,.12);color:var(--cyan)}
+/* === 生成按钮 === */
 .gen-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:.2s;margin-top:4px;box-shadow:0 4px 20px rgba(139,92,246,.3);letter-spacing:.5px}
 .gen-btn:active{transform:scale(.97);box-shadow:0 2px 10px rgba(139,92,246,.2)}
 .gen-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
-.num-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.num-row span{font-size:13px;color:var(--text2);margin-right:4px}
-.num-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--text2);font-size:14px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
-.num-btn.active{border-color:var(--pri);background:rgba(168,85,247,.2);color:var(--pri)}
-.result-area{margin-top:16px}
-.gen-card{position:relative;border-radius:10px;overflow:hidden;background:rgba(0,0,0,.3);aspect-ratio:1/1;min-height:200px}
+/* === 批量 === */
+.num-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.num-row span{font-size:13px;color:var(--text2);margin-right:3px}
+.num-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:rgba(0,0,0,.2);color:var(--text2);font-size:13px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+.num-btn.active{border-color:var(--pri);background:rgba(168,85,247,.15);color:var(--pri)}
+/* === 结果区 === */
+.result-area{margin-top:14px}
+.gen-card{position:relative;border-radius:10px;overflow:hidden;background:rgba(0,0,0,.3);aspect-ratio:1/1;min-height:180px}
 .gen-card img{width:100%;height:100%;object-fit:cover;display:block}
 .gen-card .loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.4)}
-.gen-card .loading .spin{font-size:28px;animation:spin 1.5s linear infinite}
+.gen-card .loading .spin{font-size:26px;animation:spin 1.5s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.gen-card .loading span{font-size:11px;color:var(--text2);margin-top:6px}
-.gen-card .actions{position:relative;bottom:auto;left:auto;right:auto;padding:8px;background:rgba(139,92,246,.08);display:flex;gap:6px;justify-content:center;flex-wrap:wrap;border-radius:0 0 10px 10px;border-top:1px solid var(--border);opacity:1;transition:none}
-.gen-card .act-btn{padding:4px 10px;border-radius:6px;border:none;font-size:11px;cursor:pointer;color:#fff}
+.gen-card .loading span{font-size:11px;color:var(--text2);margin-top:5px}
+.gen-card .actions{padding:7px;background:rgba(139,92,246,.06);display:flex;gap:5px;justify-content:center;flex-wrap:wrap;border-radius:0 0 10px 10px;border-top:1px solid var(--border)}
+.gen-card .act-btn{padding:4px 9px;border-radius:6px;border:none;font-size:11px;cursor:pointer;color:#fff}
 .act-save{background:var(--pri)}.act-wm{background:var(--pink)}.act-copy{background:var(--cyan)}.act-dl{background:var(--gold)}
-.gallery-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+/* === 进度条 === */
+.progress-wrap{margin-top:10px;display:none}
+.progress-wrap.show{display:block}
+.progress-bar{height:5px;background:rgba(139,92,246,.1);border-radius:3px;overflow:hidden}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899,#f59e0b);border-radius:3px;transition:width .3s;width:0;box-shadow:0 0 6px rgba(139,92,246,.3)}
+.progress-text{font-size:11px;color:var(--text2);margin-top:5px;text-align:center}
+/* === 上传区域 === */
+.upload-area{border:2px dashed var(--border);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:.3s;background:rgba(0,0,0,.15)}
+.upload-area:active{border-color:var(--pri);background:rgba(139,92,246,.05)}
+.upload-area .ua-icon{font-size:36px;margin-bottom:8px}
+.upload-area .ua-text{font-size:13px;color:var(--text2)}
+.upload-area .ua-hint{font-size:11px;color:var(--text2);opacity:.6;margin-top:4px}
+.upload-preview{position:relative;border-radius:12px;overflow:hidden;margin-bottom:12px}
+.upload-preview img{width:100%;max-height:240px;object-fit:cover;display:block;border-radius:12px}
+.upload-preview .up-del{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#f88;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+/* === 分镜列表 === */
+.scene-list{display:flex;flex-direction:column;gap:10px}
+.scene-item{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:12px;padding:12px;position:relative}
+.scene-item .sc-num{position:absolute;top:8px;right:10px;font-size:10px;color:var(--pri);background:rgba(139,92,246,.1);padding:2px 8px;border-radius:8px}
+.scene-item .sc-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.scene-item .sc-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.scene-item .sc-frame{width:100%;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:rgba(0,0,0,.3);margin-bottom:8px}
+.scene-item .sc-frame img{width:100%;height:100%;object-fit:cover}
+.scene-item textarea{width:100%;min-height:50px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-size:12px;resize:vertical;outline:none}
+/* === 视频播放器 === */
+.vid-player{position:relative;width:100%;max-width:560px;margin:0 auto;aspect-ratio:var(--ar,16/9);border-radius:14px;overflow:hidden;background:#000;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.vid-player .vid-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease-in-out}
+.vid-player .vid-frame.active{opacity:1}
+.vid-controls{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,0,0,.4);border-radius:12px;margin-top:10px}
+.vid-controls .vc-btn{width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.vid-controls .vc-btn:active{background:rgba(255,255,255,.25)}
+.vid-controls .vc-progress{flex:1;height:4px;background:rgba(255,255,255,.1);border-radius:2px;position:relative;cursor:pointer}
+.vid-controls .vc-progress .vc-fill{height:100%;background:linear-gradient(90deg,var(--pri),var(--pink));border-radius:2px;transition:width .3s}
+.vid-controls .vc-time{font-size:11px;color:var(--text2);min-width:40px;text-align:right}
+/* === 作品画廊 === */
+.gallery-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .gallery-header h3{font-size:14px;color:var(--pri)}
 .gallery-badge{background:var(--pri);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px}
-.gal-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.gal-grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 .gal-item{position:relative;border-radius:10px;overflow:hidden;background:rgba(0,0,0,.3);aspect-ratio:1/1;cursor:pointer}
 .gal-item img{width:100%;height:100%;object-fit:cover;display:block;transition:.2s}
 .gal-item:active img{transform:scale(.95)}
-.gal-item .gal-prompt{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gal-item .gal-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#f88;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s}
+.gal-item .gal-prompt{position:absolute;bottom:0;left:0;right:0;padding:5px 7px;background:linear-gradient(transparent,rgba(0,0,0,.8));font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gal-item .gal-del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);border:none;color:#f88;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s}
 .gal-item:hover .gal-del{opacity:1}
-@keyframes kenburns_0{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-1%,-1%)}}
-@keyframes kenburns_1{0%{transform:scale(1.05) translate(0,0)}100%{transform:scale(1) translate(1%,1%)}}
-@keyframes kenburns_2{0%{transform:scale(1) translate(1%,0)}100%{transform:scale(1.06) translate(-1%,1%)}}
-@keyframes kenburns_3{0%{transform:scale(1.03) translate(-1%,1%)}100%{transform:scale(1) translate(1%,-1%)}}
+.gal-item .gal-type{position:absolute;top:3px;left:3px;font-size:9px;padding:1px 5px;border-radius:6px;background:rgba(0,0,0,.6);color:var(--cyan)}
+/* === 全屏预览 === */
 .fullscreen{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.95);display:none;flex-direction:column;align-items:center;justify-content:center}
 .fullscreen.show{display:flex}
-.fullscreen img{max-width:95%;max-height:80vh;border-radius:8px;object-fit:contain}
-.fullscreen .fs-bar{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:12px 16px;background:rgba(0,0,0,.6);border-radius:14px}
-.fullscreen .fs-btn{padding:8px 18px;border-radius:20px;border:none;font-size:13px;cursor:pointer;color:#fff}
-.fs-back{background:rgba(255,255,255,.25);font-weight:600;min-width:80px}
+.fullscreen img{max-width:95%;max-height:78vh;border-radius:8px;object-fit:contain}
+.fullscreen .fs-bar{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:10px 14px;background:rgba(0,0,0,.6);border-radius:12px}
+.fullscreen .fs-btn{padding:7px 16px;border-radius:18px;border:none;font-size:13px;cursor:pointer;color:#fff}
+.fs-back{background:rgba(255,255,255,.2);font-weight:600;min-width:70px}
 .fs-save{background:var(--pri)}
-.progress-wrap{margin-top:12px;display:none}
-.progress-wrap.show{display:block}
-.progress-bar{height:6px;background:rgba(139,92,246,.1);border-radius:3px;overflow:hidden}
-.progress-bar .fill{height:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899,#f59e0b);border-radius:3px;transition:width .3s;width:0;box-shadow:0 0 8px rgba(139,92,246,.4)}
-.progress-text{font-size:11px;color:var(--text2);margin-top:6px;text-align:center}
-.vid-style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
-.vid-style-chip{padding:10px 8px;border-radius:12px;border:1px solid rgba(34,211,238,.1);background:rgba(34,211,238,.04);text-align:center;cursor:pointer;transition:.25s;font-size:12px}
-.vid-style-chip .emoji{font-size:22px;display:block;margin-bottom:4px}
-.vid-style-chip.selected{border-color:#22d3ee;background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(139,92,246,.1));box-shadow:0 0 12px rgba(34,211,238,.2);transform:scale(1.02)}
-.empty{text-align:center;padding:30px 10px;color:var(--text2);font-size:13px}
-.empty .emoji{font-size:36px;margin-bottom:8px;display:block}
-.safety-badge{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;font-size:11px;color:var(--text2);opacity:.6}
-/* === 角色锁定 === */
-.ref-upload{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.ref-preview{width:80px;height:80px;border-radius:12px;border:2px dashed var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(0,0,0,.2);flex-shrink:0}
-.ref-preview img{width:100%;height:100%;object-fit:cover}
-.ref-preview span{font-size:24px;opacity:.4}
-.ref-info{flex:1;font-size:12px;color:var(--text2);line-height:1.6}
-.ref-info b{color:var(--text);font-size:13px}
-/* === 导出格式 === */
-.fmt-row{display:flex;gap:8px;flex-wrap:wrap}
-.fmt-btn{padding:6px 14px;border-radius:10px;border:1px solid rgba(139,92,246,.12);background:rgba(139,92,246,.04);color:var(--text2);font-size:12px;cursor:pointer;transition:.25s}
-.fmt-btn.active{border-color:var(--gold);background:rgba(245,158,11,.15);color:var(--gold);box-shadow:0 0 8px rgba(245,158,11,.2)}
+/* === Ken Burns === */
+@keyframes kb0{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-1%,-1%)}}
+@keyframes kb1{0%{transform:scale(1.05) translate(0,0)}100%{transform:scale(1) translate(1%,1%)}}
+@keyframes kb2{0%{transform:scale(1) translate(1%,0)}100%{transform:scale(1.06) translate(-1%,1%)}}
+@keyframes kb3{0%{transform:scale(1.03) translate(-1%,1%)}100%{transform:scale(1) translate(1%,-1%)}}
+@keyframes kbZoomIn{0%{transform:scale(1)}100%{transform:scale(1.15)}}
+@keyframes kbZoomOut{0%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes kbPanLeft{0%{transform:scale(1.1) translateX(3%)}100%{transform:scale(1.1) translateX(-3%)}}
+@keyframes kbPanRight{0%{transform:scale(1.1) translateX(-3%)}100%{transform:scale(1.1) translateX(3%)}}
 /* === 安全级别 === */
-.safe-row{display:flex;gap:8px;flex-wrap:wrap}
-.safe-btn{padding:6px 12px;border-radius:10px;border:1px solid rgba(139,92,246,.12);background:rgba(139,92,246,.04);color:var(--text2);font-size:11px;cursor:pointer;transition:.2s;text-align:center}
-.safe-btn.active{border-color:var(--pri);background:rgba(139,92,246,.15);color:#c4b5fd}
-/* === 配乐助手 === */
-.music-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.music-tag{padding:4px 10px;border-radius:16px;border:1px solid rgba(236,72,153,.15);background:rgba(236,72,153,.06);color:var(--pink);font-size:11px;cursor:pointer;transition:.2s}
+.safe-row{display:flex;gap:6px;flex-wrap:wrap}
+.safe-btn{padding:5px 10px;border-radius:10px;border:1px solid rgba(139,92,246,.1);background:rgba(139,92,246,.03);color:var(--text2);font-size:11px;cursor:pointer;transition:.2s;text-align:center;flex:1}
+.safe-btn.active{border-color:var(--pri);background:rgba(139,92,246,.12);color:#c4b5fd}
+/* === 格式 === */
+.fmt-row{display:flex;gap:6px;flex-wrap:wrap}
+.fmt-btn{padding:5px 12px;border-radius:10px;border:1px solid rgba(139,92,246,.1);background:rgba(139,92,246,.03);color:var(--text2);font-size:12px;cursor:pointer;transition:.25s}
+.fmt-btn.active{border-color:var(--gold);background:rgba(245,158,11,.12);color:var(--gold)}
+/* === 音乐标签 === */
+.music-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.music-tag{padding:4px 9px;border-radius:14px;border:1px solid rgba(236,72,153,.12);background:rgba(236,72,153,.05);color:var(--pink);font-size:11px;cursor:pointer;transition:.2s}
 .music-tag:active{transform:scale(.95)}
-.music-tag.selected{background:rgba(236,72,153,.2);border-color:var(--pink);box-shadow:0 0 8px rgba(236,72,153,.3)}
-/* === 档案卡 === */
-.profile-card{position:relative;width:100%;max-width:360px;margin:0 auto;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(236,72,153,.08));border:1px solid var(--border);backdrop-filter:blur(10px)}
-.profile-img-wrap{width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;background:rgba(0,0,0,.3)}
-.profile-img-wrap img{width:100%;height:100%;object-fit:cover}
-.profile-overlay{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff}
-.profile-name{font-size:20px;font-weight:800;margin-bottom:4px;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.profile-title{font-size:12px;color:var(--cyan);margin-bottom:6px}
-.profile-quote{font-size:11px;color:rgba(255,255,255,.7);font-style:italic;line-height:1.5}
-.profile-info{padding:12px 16px;font-size:11px;color:var(--text2);line-height:1.8}
-.profile-stats{display:flex;gap:12px;padding:0 16px 12px}
-.profile-stat{flex:1;text-align:center}
-.profile-stat .val{font-size:16px;font-weight:800;color:var(--pri)}
-.profile-stat .lbl{font-size:10px;color:var(--text2)}
-/* === 分镜模板 === */
-.storyboard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
-.sb-card{padding:12px 10px;border-radius:12px;border:1px solid rgba(34,211,238,.1);background:rgba(34,211,238,.04);text-align:center;cursor:pointer;transition:.25s;font-size:12px}
-.sb-card .emoji{font-size:24px;display:block;margin-bottom:6px}
-.sb-card .name{color:var(--text);font-weight:600;font-size:12px}
-.sb-card .desc{color:var(--text2);font-size:10px;margin-top:4px}
-.sb-card.selected{border-color:#22d3ee;background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(139,92,246,.1));box-shadow:0 0 12px rgba(34,211,238,.2)}
-/* === 草稿提示 === */
-.draft-badge{position:fixed;bottom:20px;right:20px;background:rgba(139,92,246,.9);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;z-index:150;opacity:0;transition:.3s;pointer-events:none}
-.draft-badge.show{opacity:1}
+.music-tag.selected{background:rgba(236,72,153,.18);border-color:var(--pink);box-shadow:0 0 6px rgba(236,72,153,.2)}
+/* === 模板选择（一键成片） === */
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.tpl-card{padding:14px 10px;border-radius:14px;border:1px solid rgba(139,92,246,.1);background:rgba(139,92,246,.03);text-align:center;cursor:pointer;transition:.25s}
+.tpl-card .emoji{font-size:28px;display:block;margin-bottom:6px}
+.tpl-card .name{color:var(--text);font-weight:600;font-size:13px}
+.tpl-card .desc{color:var(--text2);font-size:10px;margin-top:4px;line-height:1.4}
+.tpl-card.selected{border-color:#8b5cf6;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(236,72,153,.06));box-shadow:0 0 12px rgba(139,92,246,.15)}
+/* === 空状态 === */
+.empty{text-align:center;padding:28px 10px;color:var(--text2);font-size:13px}
+.empty .emoji{font-size:34px;margin-bottom:8px;display:block}
+.safety-badge{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;font-size:11px;color:var(--text2);opacity:.5}
+/* === 时长选择器 === */
+.dur-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.dur-btn{padding:6px 14px;border-radius:10px;border:1px solid rgba(34,211,238,.1);background:rgba(34,211,238,.03);color:var(--text2);font-size:12px;cursor:pointer;transition:.25s}
+.dur-btn.active{border-color:var(--cyan);background:rgba(34,211,238,.12);color:var(--cyan);box-shadow:0 0 6px rgba(34,211,238,.15)}
+/* === select === */
+.styled-select{width:100%;padding:10px 32px 10px 12px;background:rgba(0,0,0,.3) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a594c0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .2s}
+.styled-select:focus{border-color:var(--pri);box-shadow:0 0 0 2px rgba(168,85,247,.12)}
+.styled-select option{background:#1a1028;color:var(--text);padding:8px}
 /* === 响应式 === */
 @media(max-width:480px){
 .style-grid{grid-template-columns:repeat(3,1fr)}
-.gen-grid{grid-template-columns:repeat(2,1fr)}
 .gal-grid{grid-template-columns:repeat(2,1fr)}
-.vid-style-grid{grid-template-columns:repeat(2,1fr)}
-.storyboard-grid{grid-template-columns:repeat(2,1fr)}
+.template-grid{grid-template-columns:repeat(2,1fr)}
+.explore-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(min-width:481px){
 .style-grid{grid-template-columns:repeat(4,1fr)}
+.explore-grid{grid-template-columns:repeat(4,1fr)}
 }
+/* === 过渡动画 === */
+.fade-in{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
+<!-- ===== 顶栏 ===== -->
 <div class="top-bar">
 <div class="top-title">
-<button onclick="goBack()" style="background:none;border:none;color:#a78bfa;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px;" aria-label="返回">←</button>
+<button onclick="goBack()" style="background:none;border:none;color:#a78bfa;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:8px" aria-label="返回">←</button>
 <h1>✨ 幻灵创作坊</h1>
-<span>v6 · 免费无限</span>
+<span>v7 · 免费无限</span>
 </div>
+<!-- 探索页入口 -->
+<div class="explore-grid" id="exploreGrid">
+<div class="explore-card" style="--c1:#7c3aed;--c2:#4f46e5" onclick="switchTab('draw')">
+<div class="ec-bg"></div>
+<div class="ec-icon">🎨</div>
+<div class="ec-info"><div class="ec-name">AI绘图</div><div class="ec-desc">文字生图 · 12种画风</div></div>
+<div class="ec-badge">HOT</div>
+</div>
+<div class="explore-card" style="--c1:#0891b2;--c2:#6366f1" onclick="switchTab('img2vid')">
+<div class="ec-bg"></div>
+<div class="ec-icon">🖼️</div>
+<div class="ec-info"><div class="ec-name">图生视频</div><div class="ec-desc">图片变动态 · 最长30s</div></div>
+<div class="ec-badge">NEW</div>
+</div>
+<div class="explore-card" style="--c1:#be185d;--c2:#9333ea" onclick="switchTab('drama')">
+<div class="ec-bg"></div>
+<div class="ec-icon">🎬</div>
+<div class="ec-info"><div class="ec-name">AI短剧</div><div class="ec-desc">剧本→分镜→成片</div></div>
+<div class="ec-badge">PRO</div>
+</div>
+<div class="explore-card" style="--c1:#b45309;--c2:#dc2626" onclick="switchTab('oneclick')">
+<div class="ec-bg"></div>
+<div class="ec-icon">⚡</div>
+<div class="ec-info"><div class="ec-name">一键成片</div><div class="ec-desc">选择模板即刻生成</div></div>
+</div>
+</div>
+<!-- Tab栏 -->
 <div class="tab-bar">
-<button class="tab-btn active" onclick="switchTab('img')">🎨 图片</button>
-<button class="tab-btn" onclick="switchTab('vid')">🎬 视频</button>
-<button class="tab-btn" onclick="switchTab('profile')">📋 档案卡</button>
+<button class="tab-btn" onclick="switchTab('explore')">🏠 探索</button>
+<button class="tab-btn active" onclick="switchTab('draw')">🎨 绘图</button>
+<button class="tab-btn" onclick="switchTab('img2vid')">🖼️ 图生视频</button>
+<button class="tab-btn" onclick="switchTab('drama')">🎬 短剧</button>
+<button class="tab-btn" onclick="switchTab('oneclick')">⚡ 一键</button>
 <button class="tab-btn" onclick="switchTab('gal')">🖼️ 作品</button>
 </div>
-<!-- 全局设置行 -->
-<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;margin-bottom:4px">
-<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)">
-<label class="switch"><input type="checkbox" id="autoClearOn"><span class="slider"></span></label>
-<span>生成后自动清空提示词</span>
 </div>
-</div>
-</div>
+
 <div class="main">
-<!-- ===== 图片生成 ===== -->
-<div id="panel-img" class="panel active">
-<div class="card">
+<!-- ===== 探索页 ===== -->
+<div id="panel-explore" class="panel">
+<div class="card fade-in">
+<div class="card-title">🌟 欢迎来到幻灵创作坊</div>
+<div style="font-size:13px;color:var(--text2);line-height:1.7">
+选择一个创作模式开始你的AI创作之旅。<br>
+支持AI绘图、图生视频、AI短剧制作和一键成片。<br>
+所有功能<b style="color:var(--gold)">免费无限</b>使用，作品自动保存到本地。
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div class="card" style="text-align:center;cursor:pointer" onclick="switchTab('draw')">
+<div style="font-size:32px;margin-bottom:6px">🎨</div>
+<div style="font-size:13px;font-weight:700;color:var(--text)">AI绘图</div>
+<div style="font-size:11px;color:var(--text2);margin-top:4px">输入文字描述<br>生成精美图片</div>
+</div>
+<div class="card" style="text-align:center;cursor:pointer" onclick="switchTab('img2vid')">
+<div style="font-size:32px;margin-bottom:6px">🖼️</div>
+<div style="font-size:13px;font-weight:700;color:var(--text)">图生视频</div>
+<div style="font-size:11px;color:var(--text2);margin-top:4px">上传静态图片<br>生成动态视频</div>
+</div>
+<div class="card" style="text-align:center;cursor:pointer" onclick="switchTab('drama')">
+<div style="font-size:32px;margin-bottom:6px">🎬</div>
+<div style="font-size:13px;font-weight:700;color:var(--text)">AI短剧</div>
+<div style="font-size:11px;color:var(--text2);margin-top:4px">输入故事大纲<br>自动生成分镜短片</div>
+</div>
+<div class="card" style="text-align:center;cursor:pointer" onclick="switchTab('oneclick')">
+<div style="font-size:32px;margin-bottom:6px">⚡</div>
+<div style="font-size:13px;font-weight:700;color:var(--text)">一键成片</div>
+<div style="font-size:11px;color:var(--text2);margin-top:4px">选择模板<br>一键生成完整视频</div>
+</div>
+</div>
+</div>
+
+<!-- ===== AI绘图 ===== -->
+<div id="panel-draw" class="panel">
+<div class="card fade-in">
 <div style="display:flex;justify-content:space-between;align-items:center">
-<div class="card-title" style="margin:0">✏️ 描述你的角色/场景</div>
-<button class="act-btn" style="padding:4px 12px;font-size:12px;border-radius:6px" onclick="document.getElementById('imgPrompt').value=''">🗑️ 清空</button>
+<div class="card-title" style="margin:0">✏️ 描述你想画的画面</div>
+<button class="act-btn" style="padding:4px 10px;font-size:12px;border-radius:6px" onclick="document.getElementById('drawPrompt').value=''">🗑️</button>
 </div>
 <div class="prompt-box">
-<textarea id="imgPrompt" placeholder="例如：白狼兽耳少女，银色长发，手持水晶法杖，星空下的魔法森林&#10;&#10;描述越详细效果越好～"></textarea>
+<textarea id="drawPrompt" placeholder="例如：白狼兽耳少女，银色长发，手持水晶法杖，星空下的魔法森林&#10;&#10;描述越详细效果越好～"></textarea>
 </div>
 </div>
-<!-- 角色锁定 -->
-<div class="card">
-<div class="card-title">🔒 角色形象锁定（可选）</div>
-<div class="ref-upload">
-<div class="ref-preview" id="refPreview" onclick="document.getElementById('refInput').click()">
-<span>+</span>
-</div>
-<input type="file" id="refInput" accept="image/*" style="display:none" onchange="handleRefUpload(this)">
-<div class="ref-info">
-<b>上传角色原图锁定形象</b><br>
-上传后生成时会固定seed并参考形象特征，保持人物一致性。<br>
-<span id="refStatus" style="color:var(--cyan)">未上传</span>
-</div>
-</div>
-<div style="margin-top:10px" class="switch-row">
-<label>锁定seed（同一角色seed不变）</label>
-<label class="switch"><input type="checkbox" id="lockSeed"><span class="slider"></span></label>
-</div>
-</div>
-<!-- 风格 -->
-<div class="card">
+<div class="card fade-in">
 <div class="card-title">🎭 选择画风（可多选融合）</div>
-<div class="style-grid" id="styleGrid"></div>
-<div class="multi-hint">💡 多选可融合不同画风，创造独特风格</div>
+<div class="style-grid" id="drawStyleGrid"></div>
+<div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center">💡 多选可融合不同画风，创造独特风格</div>
 </div>
-<!-- 尺寸 -->
-<div class="card">
+<div class="card fade-in">
 <div class="card-title">📐 画面尺寸</div>
-<div class="size-row" id="sizeRow">
-<div class="size-btn active" data-w="1024" data-h="1024" onclick="pickSize(this)">1:1 方图</div>
-<div class="size-btn" data-w="768" data-h="1344" onclick="pickSize(this)">9:16 竖屏</div>
-<div class="size-btn" data-w="1344" data-h="768" onclick="pickSize(this)">16:9 横屏</div>
-<div class="size-btn" data-w="1024" data-h="1280" onclick="pickSize(this)">4:5 肖像</div>
+<select class="styled-select" id="drawSizeSelect" onchange="pickDrawSize(this)">
+<option value="1024x1024" selected>1:1 方图（1024×1024）</option>
+<option value="768x1344">9:16 竖屏（768×1344）</option>
+<option value="1344x768">16:9 横屏（1344×768）</option>
+<option value="1024x1280">4:5 肖像（1024×1280）</option>
+</select>
 </div>
+<div class="card fade-in">
+<div class="card-title">🔢 批量生成</div>
+<select class="styled-select" id="drawNumSelect" onchange="pickDrawNum(this)">
+<option value="1" selected>1 张</option>
+<option value="2">2 张</option>
+<option value="3">3 张</option>
+<option value="4">4 张</option>
+<option value="6">6 张</option>
+<option value="8">8 张</option>
+<option value="12">12 张</option>
+</select>
 </div>
-<!-- 批量生成 -->
-<div class="card">
-<div class="card-title">🔢 批量生成（成套系列图）</div>
-<div class="num-row" id="numRow">
-<span>张数：</span>
-<div class="num-btn active" data-n="1" onclick="pickNum(this)">1</div>
-<div class="num-btn" data-n="2" onclick="pickNum(this)">2</div>
-<div class="num-btn" data-n="4" onclick="pickNum(this)">4</div>
-<div class="num-btn" data-n="6" onclick="pickNum(this)">6</div>
-<div class="num-btn" data-n="12" onclick="pickNum(this)">12</div>
-</div>
-<div class="multi-hint">💡 4张以上自动生成同系列统一色调</div>
-</div>
-<!-- 导出格式 -->
-<div class="card">
+<div class="card fade-in">
 <div class="card-title">📦 导出格式</div>
-<div class="fmt-row" id="fmtRow">
-<div class="fmt-btn active" data-fmt="jpg" onclick="pickFmt(this)">JPG（通用）</div>
-<div class="fmt-btn" data-fmt="png" onclick="pickFmt(this)">PNG（透明底）</div>
-<div class="fmt-btn" data-fmt="webp" onclick="pickFmt(this)">WebP（高清小）</div>
+<select class="styled-select" id="fmtSelect" onchange="pickFmt(this)">
+<option value="jpg" selected>JPG</option>
+<option value="png">PNG</option>
+<option value="webp">WebP</option>
+</select>
 </div>
-</div>
-<!-- 安全级别 -->
-<div class="card">
-<div class="card-title">🛡️ 内容安全级别</div>
-<div class="safe-row" id="safeRow">
-<div class="safe-btn" data-level="strict" onclick="pickSafe(this)">🔒 严格<br><span style="font-size:9px">仅清纯治愈</span></div>
-<div class="safe-btn active" data-level="normal" onclick="pickSafe(this)">⚖️ 标准<br><span style="font-size:9px">允许哥特/轻暗黑</span></div>
-<div class="safe-btn" data-level="relaxed" onclick="pickSafe(this)">🔓 宽松<br><span style="font-size:9px">仅屏蔽血腥暴力</span></div>
-</div>
-</div>
-<!-- 水印 -->
-<div class="card">
-<div class="card-title">💎 专属防盗水印</div>
-<div class="switch-row" style="margin-bottom:10px">
+<div class="card fade-in">
+<div class="card-title">💎 水印</div>
+<div class="switch-row" style="margin-bottom:8px">
 <label>添加专属水印</label>
 <label class="switch"><input type="checkbox" id="wmOn" checked><span class="slider"></span></label>
 </div>
 <div class="wm-mode-row">
-<div class="wm-mode active" data-mode="corner" onclick="pickWmMode(this)">📌 角落角标</div>
-<div class="wm-mode" data-mode="tile" onclick="pickWmMode(this)">🔲 半透铺满</div>
+<div class="wm-mode active" data-mode="corner" onclick="pickWmMode(this)">📌 角标</div>
+<div class="wm-mode" data-mode="tile" onclick="pickWmMode(this)">🔲 铺满</div>
 </div>
-<div class="wm-row" id="wmShapes" style="margin-top:10px">
-<div class="wm-shape active" data-s="🐾" onclick="pickWmShape(this)">🐾 兽爪</div>
-<div class="wm-shape" data-s="🌙" onclick="pickWmShape(this)">🌙 月牙</div>
-<div class="wm-shape" data-s="🌸" onclick="pickWmShape(this)">🌸 花瓣</div>
-<div class="wm-shape" data-s="⭐" onclick="pickWmShape(this)">⭐ 星星</div>
-<div class="wm-shape" data-s="🦋" onclick="pickWmShape(this)">🦋 蝴蝶</div>
-<div class="wm-shape" data-s="💎" onclick="pickWmShape(this)">💎 宝石</div>
+<div class="wm-row" id="wmShapes" style="margin-top:8px">
+<div class="wm-shape active" data-s="🐾" onclick="pickWmShape(this)">🐾</div>
+<div class="wm-shape" data-s="🌙" onclick="pickWmShape(this)">🌙</div>
+<div class="wm-shape" data-s="🌸" onclick="pickWmShape(this)">🌸</div>
+<div class="wm-shape" data-s="⭐" onclick="pickWmShape(this)">⭐</div>
+<div class="wm-shape" data-s="🦋" onclick="pickWmShape(this)">🦋</div>
+<div class="wm-shape" data-s="💎" onclick="pickWmShape(this)">💎</div>
 </div>
 <div class="wm-colors" id="wmColors">
 <div class="wm-color active" style="background:#a855f7" data-c="rgba(168,85,247,0.6)" onclick="pickWmColor(this)"></div>
@@ -280,132 +348,188 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="wm-color" style="background:#06b6d4" data-c="rgba(6,182,212,0.6)" onclick="pickWmColor(this)"></div>
 <div class="wm-color" style="background:#f59e0b" data-c="rgba(245,158,11,0.6)" onclick="pickWmColor(this)"></div>
 <div class="wm-color" style="background:#10b981" data-c="rgba(16,185,129,0.6)" onclick="pickWmColor(this)"></div>
-<div class="wm-color" style="background:#ffffff" data-c="rgba(255,255,255,0.5)" onclick="pickWmColor(this)"></div>
 </div>
 </div>
-<!-- 生成按钮 -->
-<button class="gen-btn" id="imgGenBtn" onclick="genImages()">✨ 开始生成</button>
-<div class="progress-wrap" id="imgProgress">
-<div class="progress-bar"><div class="fill" id="imgProgressFill"></div></div>
-<div class="progress-text" id="imgProgressText">准备中...</div>
-</div>
-<div class="result-area" id="imgResult">
-</div>
-</div>
-
-<!-- ===== 视频生成 ===== -->
-<div id="panel-vid" class="panel">
-<div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<div class="card-title" style="margin:0">✏️ 描述视频内容</div>
-<button class="act-btn" style="padding:4px 12px;font-size:12px;border-radius:6px" onclick="document.getElementById('vidPrompt').value=''">🗑️ 清空</button>
-</div>
-<div class="prompt-box">
-<textarea id="vidPrompt" placeholder="例如：花妖少女在月光下翩翩起舞，花瓣随风飘落&#10;&#10;描述角色动作和场景，自动生成三段式分镜"></textarea>
-</div>
-</div>
-<!-- 分镜模板 -->
-<div class="card">
-<div class="card-title">🎬 分镜模板（一键套用）</div>
-<div class="storyboard-grid" id="sbGrid"></div>
-</div>
-<!-- 配乐关键词 -->
-<div class="card">
-<div class="card-title">🎵 配乐氛围（点击添加到描述）</div>
-<div class="music-tags" id="musicTags"></div>
-</div>
-<!-- 视频风格 -->
-<div class="card">
-<div class="card-title">🎨 视频画风</div>
-<div class="vid-style-grid" id="vidStyleGrid"></div>
-</div>
-<!-- 视频尺寸 -->
-<div class="card">
-<div class="card-title">📐 视频比例</div>
-<div class="size-row" id="vidSizeRow">
-<div class="size-btn active" data-w="16" data-h="9" onclick="pickVidSize(this)">16:9 横屏</div>
-<div class="size-btn" data-w="9" data-h="16" onclick="pickVidSize(this)">9:16 竖屏</div>
-<div class="size-btn" data-w="1" data-h="1" onclick="pickVidSize(this)">1:1 方形</div>
-</div>
-</div>
-<!-- 安全 -->
-<div class="card">
-<div class="card-title">🛡️ 内容安全级别</div>
-<div class="safe-row" id="vidSafeRow">
-<div class="safe-btn" data-level="strict" onclick="pickVidSafe(this)">🔒 严格</div>
-<div class="safe-btn active" data-level="normal" onclick="pickVidSafe(this)">⚖️ 标准</div>
-<div class="safe-btn" data-level="relaxed" onclick="pickVidSafe(this)">🔓 宽松</div>
-</div>
-</div>
-<!-- 水印 -->
-<div class="card">
-<div class="switch-row">
-<label>💎 添加专属水印</label>
-<label class="switch"><input type="checkbox" id="vidWmOn" checked><span class="slider"></span></label>
-</div>
-</div>
-<!-- 分镜数量 -->
-<div class="card">
-<div class="card-title">🎞️ 分镜数量</div>
-<select id="frameCount" style="width:100%;padding:10px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none">
-<option value="2">2 帧</option>
-<option value="3">3 帧</option>
-<option value="4" selected>4 帧（默认）</option>
-<option value="6">6 帧</option>
-<option value="8">8 帧</option>
-<option value="10">10 帧</option>
-<option value="12">12 帧</option>
+<div class="card fade-in">
+<div class="card-title">🛡️ 安全级别</div>
+<select class="styled-select" id="safeSelect" onchange="pickSafe(this)">
+<option value="strict">🔒 严格</option>
+<option value="normal" selected>⚖️ 标准</option>
+<option value="relaxed">🔓 宽松</option>
 </select>
 </div>
-<button class="gen-btn" id="vidGenBtn" onclick="genVideo()">🎬 生成视频</button>
-<div class="progress-wrap" id="vidProgress">
-<div class="progress-bar"><div class="fill" id="vidProgressFill"></div></div>
-<div class="progress-text" id="vidProgressText">准备中...</div>
+<button class="gen-btn" id="drawGenBtn" onclick="genDrawImages()">✨ 开始生成</button>
+<div class="progress-wrap" id="drawProgress">
+<div class="progress-bar"><div class="fill" id="drawProgressFill"></div></div>
+<div class="progress-text" id="drawProgressText">准备中...</div>
 </div>
-<div class="video-result" id="vidResult"></div>
+<div class="result-area" id="drawResult"></div>
 </div>
 
-<!-- ===== 档案卡 ===== -->
-<div id="panel-profile" class="panel">
-<div class="card">
+<!-- ===== 图生视频 ===== -->
+<div id="panel-img2vid" class="panel">
+<div class="card fade-in">
+<div class="card-title">📷 上传源图片</div>
+<div class="upload-area" id="i2vUploadArea" onclick="document.getElementById('i2vFileInput').click()">
+<div class="ua-icon">🖼️</div>
+<div class="ua-text">点击上传一张图片</div>
+<div class="ua-hint">支持 JPG / PNG / WebP</div>
+</div>
+<input type="file" id="i2vFileInput" accept="image/*" style="display:none" onchange="handleI2VUpload(this)">
+<div id="i2vPreview" style="display:none"></div>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎬 动态效果</div>
+<div class="template-grid" id="i2vEffects">
+<div class="tpl-card selected" data-fx="kenburns" onclick="pickI2VEffect(this)"><div class="emoji">🎥</div><div class="name">Ken Burns</div><div class="desc">经典缓慢推拉+平移</div></div>
+<div class="tpl-card" data-fx="zoom-in" onclick="pickI2VEffect(this)"><div class="emoji">🔍</div><div class="name">推进聚焦</div><div class="desc">从远到近缓缓推进</div></div>
+<div class="tpl-card" data-fx="zoom-out" onclick="pickI2VEffect(this)"><div class="emoji">🌐</div><div class="name">拉远全景</div><div class="desc">从特写缓缓拉远</div></div>
+<div class="tpl-card" data-fx="pan-left" onclick="pickI2VEffect(this)"><div class="emoji">👈</div><div class="name">向左平移</div><div class="desc">镜头缓慢左移</div></div>
+<div class="tpl-card" data-fx="pan-right" onclick="pickI2VEffect(this)"><div class="emoji">👉</div><div class="name">向右平移</div><div class="desc">镜头缓慢右移</div></div>
+<div class="tpl-card" data-fx="rotate" onclick="pickI2VEffect(this)"><div class="emoji">🔄</div><div class="name">微旋环绕</div><div class="desc">轻微旋转环绕效果</div></div>
+<div class="tpl-card" data-fx="parallax" onclick="pickI2VEffect(this)"><div class="emoji">🏔️</div><div class="name">视差纵深</div><div class="desc">前后景差速运动</div></div>
+<div class="tpl-card" data-fx="dream" onclick="pickI2VEffect(this)"><div class="emoji">💫</div><div class="name">梦幻呼吸</div><div class="desc">柔和缩放呼吸感</div></div>
+</div>
+</div>
+<div class="card fade-in">
+<div class="card-title">⏱️ 视频时长</div>
+<select class="styled-select" id="i2vDurSelect" onchange="pickI2VDur(this)">
+<option value="5">5秒</option>
+<option value="10">10秒</option>
+<option value="15" selected>15秒</option>
+<option value="20">20秒</option>
+<option value="30">30秒</option>
+</select>
+</div>
+<div class="card fade-in">
+<div class="card-title">📐 视频比例</div>
+<select class="styled-select" id="i2vSizeSelect" onchange="pickI2VSize(this)">
+<option value="16x9" selected>16:9 横屏</option>
+<option value="9x16">9:16 竖屏</option>
+<option value="1x1">1:1 方形</option>
+</select>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎵 配乐氛围</div>
+<div class="music-tags" id="i2vMusicTags"></div>
+</div>
+<button class="gen-btn" id="i2vGenBtn" onclick="genI2VVideo()">🖼️ 生成视频</button>
+<div class="progress-wrap" id="i2vProgress">
+<div class="progress-bar"><div class="fill" id="i2vProgressFill"></div></div>
+<div class="progress-text" id="i2vProgressText">准备中...</div>
+</div>
+<div id="i2vResult"></div>
+</div>
+
+<!-- ===== AI短剧 ===== -->
+<div id="panel-drama" class="panel">
+<div class="card fade-in">
+<div class="card-title">📝 故事大纲</div>
+<div class="prompt-box">
+<textarea id="dramaPrompt" placeholder="输入你的短剧故事大纲...&#10;&#10;例如：一位少女在森林中遇到了受伤的小龙，她悉心照料它。小龙康复后带她飞向天空中的浮岛，两人在云端展开了一段奇幻冒险..." style="min-height:100px"></textarea>
+</div>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎭 短剧类型</div>
+<div class="template-grid" id="dramaGenreGrid">
+<div class="tpl-card selected" data-genre="fantasy" onclick="pickDramaGenre(this)"><div class="emoji">🧚</div><div class="name">奇幻冒险</div><div class="desc">魔法世界、异世界探索</div></div>
+<div class="tpl-card" data-genre="romance" onclick="pickDramaGenre(this)"><div class="emoji">💕</div><div class="name">浪漫爱情</div><div class="desc">甜蜜邂逅、心动瞬间</div></div>
+<div class="tpl-card" data-genre="action" onclick="pickDramaGenre(this)"><div class="emoji">⚔️</div><div class="name">热血战斗</div><div class="desc">激烈对战、华丽技能</div></div>
+<div class="tpl-card" data-genre="scifi" onclick="pickDramaGenre(this)"><div class="emoji">🚀</div><div class="name">科幻未来</div><div class="desc">太空探索、未来都市</div></div>
+<div class="tpl-card" data-genre="slice" onclick="pickDramaGenre(this)"><div class="emoji">🌸</div><div class="name">日常治愈</div><div class="desc">温馨日常、治愈故事</div></div>
+<div class="tpl-card" data-genre="mystery" onclick="pickDramaGenre(this)"><div class="emoji">🔮</div><div class="name">悬疑推理</div><div class="desc">烧脑解谜、暗黑氛围</div></div>
+</div>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎞️ 分镜数量（决定视频时长）</div>
+<select class="styled-select" id="dramaFrameSelect" onchange="pickDramaFrames(this)">
+<option value="4">4帧 (~12秒)</option>
+<option value="6">6帧 (~18秒)</option>
+<option value="8" selected>8帧 (~24秒)</option>
+<option value="12">12帧 (~36秒)</option>
+<option value="16">16帧 (~48秒)</option>
+<option value="20">20帧 (~60秒)</option>
+</select>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎨 画风</div>
+<div class="style-grid" id="dramaStyleGrid"></div>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎵 配乐</div>
+<div class="music-tags" id="dramaMusicTags"></div>
+</div>
+<button class="gen-btn" id="dramaGenBtn" onclick="genDrama()">🎬 生成分镜短片</button>
+<div class="progress-wrap" id="dramaProgress">
+<div class="progress-bar"><div class="fill" id="dramaProgressFill"></div></div>
+<div class="progress-text" id="dramaProgressText">准备中...</div>
+</div>
+<!-- 分镜预览区 -->
+<div id="dramaScenes" style="margin-top:14px"></div>
+<!-- 最终视频播放器 -->
+<div id="dramaResult" style="margin-top:14px"></div>
+</div>
+
+<!-- ===== 一键成片 ===== -->
+<div id="panel-oneclick" class="panel">
+<div class="card fade-in">
+<div class="card-title">⚡ 选择视频模板</div>
+<div class="template-grid" id="ocTemplateGrid">
+<div class="tpl-card selected" data-tpl="character" onclick="pickOCTemplate(this)"><div class="emoji">👤</div><div class="name">角色展示</div><div class="desc">多角度展示角色形象，含特写、全身、动态</div></div>
+<div class="tpl-card" data-tpl="album" onclick="pickOCTemplate(this)"><div class="emoji">📸</div><div class="name">图集轮播</div><div class="desc">多张图片自动轮播，配过渡动效</div></div>
+<div class="tpl-card" data-tpl="product" onclick="pickOCTemplate(this)"><div class="emoji">🛍️</div><div class="name">产品展示</div><div class="desc">产品特写+使用场景展示</div></div>
+<div class="tpl-card" data-tpl="landscape" onclick="pickOCTemplate(this)"><div class="emoji">🏞️</div><div class="name">风景大片</div><div class="desc">壮美风景Ken Burns式动态展示</div></div>
+<div class="tpl-card" data-tpl="story" onclick="pickOCTemplate(this)"><div class="emoji">📖</div><div class="name">故事叙述</div><div class="desc">起承转合四幕式故事动画</div></div>
+<div class="tpl-card" data-tpl="idol" onclick="pickOCTemplate(this)"><div class="emoji">🎤</div><div class="name">偶像舞台</div><div class="desc">舞台表演风格，灯光特效</div></div>
+</div>
+</div>
+<div class="card fade-in">
 <div style="display:flex;justify-content:space-between;align-items:center">
-<div class="card-title" style="margin:0">📋 角色档案卡生成器</div>
-<button class="act-btn" style="padding:4px 12px;font-size:12px;border-radius:6px" onclick="['pfName','pfTitle','pfQuote','pfStat1','pfStat2','pfStat3','pfDesc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})">🗑️ 清空</button>
+<div class="card-title" style="margin:0">✏️ 描述内容</div>
+<button class="act-btn" style="padding:4px 10px;font-size:12px;border-radius:6px" onclick="document.getElementById('ocPrompt').value=''">🗑️</button>
 </div>
-<div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.6">
-填写角色信息，生成专属OC档案卡。先生成角色图片，再叠加档案信息。
-</div>
-<div style="display:grid;gap:10px">
-<input id="pfName" placeholder="角色名称（如：白狼歌姬· Luna）" style="width:100%;padding:10px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;outline:none">
-<input id="pfTitle" placeholder="角色定位（如：十二星座花妖 · 白羊宫守护者）" style="width:100%;padding:10px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none">
-<textarea id="pfQuote" placeholder="角色台词/名言（如：月光之下，万物皆为我歌）" style="width:100%;min-height:60px;padding:10px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;resize:vertical;outline:none"></textarea>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-<input id="pfStat1" placeholder="战力 ★8" style="padding:8px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none">
-<input id="pfStat2" placeholder="魅力 ★9" style="padding:8px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none">
-<input id="pfStat3" placeholder="智慧 ★7" style="padding:8px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none">
-</div>
-<textarea id="pfDesc" placeholder="角色描述（用于生成角色图片，如：银发狼耳少女，白色礼服，手持月光法杖）" style="width:100%;min-height:60px;padding:10px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;resize:vertical;outline:none"></textarea>
+<div class="prompt-box">
+<textarea id="ocPrompt" placeholder="描述你想要的内容...&#10;&#10;例如：银发狼耳少女，白色魔法袍，在月光森林中施展魔法" style="min-height:70px"></textarea>
 </div>
 </div>
-<div class="card">
-<div class="card-title">🎭 角色画风</div>
-<div class="style-grid" id="pfStyleGrid"></div>
+<div class="card fade-in">
+<div class="card-title">⏱️ 视频时长</div>
+<select class="styled-select" id="ocDurSelect" onchange="pickOCDur(this)">
+<option value="10">10秒</option>
+<option value="15">15秒</option>
+<option value="20" selected>20秒</option>
+<option value="30">30秒</option>
+<option value="45">45秒</option>
+<option value="60">60秒</option>
+</select>
 </div>
-<button class="gen-btn" onclick="genProfile()">📋 生成档案卡</button>
-<div class="progress-wrap" id="pfProgress">
-<div class="progress-bar"><div class="fill" id="pfProgressFill"></div></div>
-<div class="progress-text" id="pfProgressText">准备中...</div>
+<div class="card fade-in">
+<div class="card-title">📐 视频比例</div>
+<select class="styled-select" id="ocSizeSelect" onchange="pickOCSize(this)">
+<option value="16x9" selected>16:9 横屏</option>
+<option value="9x16">9:16 竖屏</option>
+<option value="1x1">1:1 方形</option>
+</select>
 </div>
-<div id="pfResult" style="margin-top:16px"></div>
+<div class="card fade-in">
+<div class="card-title">🎵 配乐</div>
+<div class="music-tags" id="ocMusicTags"></div>
+</div>
+<button class="gen-btn" id="ocGenBtn" onclick="genOneClick()">⚡ 一键生成</button>
+<div class="progress-wrap" id="ocProgress">
+<div class="progress-bar"><div class="fill" id="ocProgressFill"></div></div>
+<div class="progress-text" id="ocProgressText">准备中...</div>
+</div>
+<div id="ocResult" style="margin-top:14px"></div>
 </div>
 
 <!-- ===== 作品 ===== -->
 <div id="panel-gal" class="panel">
 <div class="gallery-header">
 <h3>🖼️ 我的作品</h3>
-<div style="display:flex;gap:8px;align-items:center">
+<div style="display:flex;gap:6px;align-items:center">
 <span class="gallery-badge" id="galCount">0</span>
-<button onclick="clearGallery()" style="padding:4px 10px;border-radius:8px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.1);color:#f87171;font-size:11px;cursor:pointer">清空</button>
+<button onclick="clearGallery()" style="padding:3px 8px;border-radius:8px;border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.08);color:#f87171;font-size:11px;cursor:pointer">清空</button>
 </div>
 </div>
 <div id="galGrid" class="gal-grid"></div>
@@ -425,738 +549,777 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 </div>
 
-<!-- 草稿提示 -->
-<div class="draft-badge" id="draftBadge">💾 草稿已自动保存</div>
-
 <script>
-function goBack(){if(window.history.length>1){window.history.back()}else{window.location.href='index.html'}}
-/* ========== 风格定义 ========== */
+function goBack(){if(window.history.length>1)window.history.back();else window.location.href='index.html'}
+
+/* ========== 全局数据 ========== */
 const STYLES=[
-{id:'anime',emoji:'🎀',name:'二次元偶像',en:'Anime Idol',pos:'anime style, idol aesthetic, vibrant colors, cel shading, Japanese animation quality, beautiful detailed eyes',neg:'realistic, photographic, 3d render'},
-{id:'guofeng',emoji:'🏯',name:'国风仙侠',en:'Chinese Fantasy',pos:'Chinese ink painting style, xianxia fantasy, elegant hanfu, ethereal misty atmosphere, traditional Chinese aesthetics',neg:'modern, western, realistic photo'},
-{id:'gothic',emoji:'🖤',name:'哥特甜酷',en:'Gothic Sweet',pos:'gothic sweet lolita, dark roses, gemstone crown, elegant dark aesthetic, rich jewel tones, dramatic lighting, beautiful mysterious',neg:'horror, scary, bloody, grotesque'},
-{id:'healing',emoji:'🌿',name:'治愈童话',en:'Healing Fairy',pos:'soft pastel colors, cute chibi, fairy tale illustration, warm gentle lighting, watercolor texture, dreamy atmosphere, kawaii',neg:'dark, scary, violent, realistic'},
-{id:'cyber',emoji:'🤖',name:'赛博科幻',en:'Cyber Sci-Fi',pos:'cyberpunk aesthetic, neon lights, futuristic technology, holographic effects, mechanical details, sci-fi concept art, dramatic rim lighting',neg:'medieval, rustic, natural, vintage'},
-{id:'oil',emoji:'🎨',name:'油画厚涂',en:'Oil Painting',pos:'oil painting, impasto technique, rich texture, masterful brushwork, classical composition, museum quality, Rembrandt lighting',neg:'flat, digital, pixel, cartoon'},
-{id:'watercolor',emoji:'💧',name:'水彩插画',en:'Watercolor',pos:'watercolor illustration, soft color bleeding, delicate washes, paper texture, artistic splashes, light and airy',neg:'photographic, 3d, digital hard edge'},
-{id:'3d',emoji:'💎',name:'3D渲染',en:'3D Render',pos:'3D render, octane render, subsurface scattering, volumetric lighting, hyper detailed, CGI quality, Pixar style',neg:'flat, 2d, sketch, hand drawn'},
-{id:'korean',emoji:'🌟',name:'韩系偶像',en:'K-style Idol',pos:'Korean illustration style, soft gradient shading, glass skin, idol portrait, clean beauty aesthetic, studio lighting',neg:'rough, dark, horror, messy'},
-{id:'european',emoji:'👑',name:'欧式宫廷',en:'European Court',pos:'Renaissance painting style, baroque elegance, ornate details, golden light, royal portrait, velvet textures',neg:'modern, casual, street, anime'},
-{id:'xianyun',emoji:'⚔️',name:'3D国漫',en:'3D Guoman',pos:'Chinese 3D animation style, donghua quality, spiritual qi effects, flowing robes, ethereal beauty, detailed armor',neg:'western cartoon, realistic, photo'},
-{id:'mengchong',emoji:'🐱',name:'Q版萌宠',en:'Chibi Pet',pos:'super cute chibi, kawaii animal character, big sparkly eyes, soft fur texture, adorable expression, pastel background',neg:'realistic, scary, dark, violent'}
-];
-const VID_STYLES=[
-{id:'dance',emoji:'💃',name:'舞台唱跳',desc:'华丽舞台表演，灯光特效'},
-{id:'transform',emoji:'✨',name:'变装变身',desc:'华丽变身动画，特效转场'},
-{id:'mv',emoji:'🎵',name:'MV风格',desc:'音乐MV质感，多场景切换'},
-{id:'story',emoji:'📖',name:'童话故事',desc:'梦幻童话氛围，温暖治愈'},
-{id:'action',emoji:'⚡',name:'战斗特效',desc:'热血战斗场面，华丽技能'},
-{id:'daily',emoji:'🌸',name:'日常温馨',desc:'温柔日常场景，治愈氛围'}
+{id:'anime',emoji:'🎀',name:'二次元',pos:'anime style, vibrant colors, cel shading, beautiful detailed eyes',neg:'realistic, photographic, 3d render'},
+{id:'guofeng',emoji:'🏯',name:'国风仙侠',pos:'Chinese ink painting, xianxia, elegant hanfu, ethereal misty',neg:'modern, western, realistic'},
+{id:'gothic',emoji:'🖤',name:'哥特甜酷',pos:'gothic sweet lolita, dark roses, jewel tones, dramatic lighting',neg:'horror, scary, bloody'},
+{id:'healing',emoji:'🌿',name:'治愈童话',pos:'soft pastel, cute, fairy tale, warm lighting, watercolor, dreamy',neg:'dark, scary, violent'},
+{id:'cyber',emoji:'🤖',name:'赛博科幻',pos:'cyberpunk, neon lights, holographic, sci-fi concept art, rim lighting',neg:'medieval, rustic, vintage'},
+{id:'oil',emoji:'🎨',name:'油画厚涂',pos:'oil painting, impasto, rich texture, classical composition, Rembrandt lighting',neg:'flat, digital, pixel'},
+{id:'watercolor',emoji:'💧',name:'水彩插画',pos:'watercolor, soft color bleeding, paper texture, artistic, light and airy',neg:'photographic, 3d, digital'},
+{id:'3d',emoji:'💎',name:'3D渲染',pos:'3D render, octane, subsurface scattering, volumetric lighting, Pixar style',neg:'flat, 2d, sketch'},
+{id:'korean',emoji:'🌟',name:'韩系偶像',pos:'Korean illustration, soft gradient, glass skin, idol portrait, clean beauty',neg:'rough, dark, horror'},
+{id:'european',emoji:'👑',name:'欧式宫廷',pos:'Renaissance, baroque, ornate, golden light, royal, velvet textures',neg:'modern, casual, anime'},
+{id:'xianyun',emoji:'⚔️',name:'3D国漫',pos:'Chinese 3D animation, donghua, spiritual qi, flowing robes, detailed armor',neg:'western cartoon, realistic'},
+{id:'mengchong',emoji:'🐱',name:'Q版萌宠',pos:'super cute chibi, kawaii, big sparkly eyes, soft fur, pastel background',neg:'realistic, scary, dark'}
 ];
 
-/* ========== 分镜模板 ========== */
-const STORYBOARDS=[
-{id:'crystal',emoji:'💎',name:'晶石变身',desc:'水晶光芒中华丽变身',shots:['角色闭眼特写，水晶光芒从脚下升起','晶石环绕全身，服饰开始变化','变身完成全身亮相，华丽特效四射','定格pose，背景粒子飘落']},
-{id:'silhouette',emoji:'🌑',name:'暗场剪影',desc:'暗场灯光剪影转场',shots:['暗场中角色剪影轮廓，逆光','侧面剪影转场，灯光渐亮','正面特写逐渐清晰','完整亮相，舞台灯光全开']},
-{id:'stage',emoji:'🎤',name:'单人唱跳舞台',desc:'舞台聚光灯唱跳表演',shots:['聚光灯打在角色身上，开场pose','舞蹈动态，裙摆飞扬','高音部分，特效光芒四射','结尾定格，花瓣飘落']},
-{id:'flower',emoji:'🌸',name:'花海变身',desc:'花海中华丽变装',shots:['花海中角色背影，微风拂过','转身特写，花瓣遮住面部','花瓣散开，变装完成','全景花海中的华丽身影']},
-{id:'starlight',emoji:'⭐',name:'星光舞台',desc:'星空下的偶像舞台',shots:['星空下舞台全景，灯光闪烁','角色从光柱中走出','唱跳表演，星光粒子环绕','定格pose，星光汇聚成心形']},
-{id:'daily',emoji:'☀️',name:'日常换装',desc:'温馨日常换装展示',shots:['镜子前的角色，普通装扮','手触镜面，魔法光效','换装完成，满意微笑','全身展示，温馨房间背景']}
-];
-
-/* ========== 配乐关键词库 ========== */
 const MUSIC_TAGS=[
-{label:'🎵 偶像舞曲',kw:'idol dance music, upbeat J-pop, stage performance'},
-{label:'🌙 空灵月光',kw:'ethereal moonlight, ambient piano, dreamy atmosphere'},
-{label:'🏯 古风雅韵',kw:'Chinese traditional instruments, guzheng, flute, ancient melody'},
-{label:'🤪 沙雕搞怪',kw:'funny quirky music, comedic, playful bouncy rhythm'},
-{label:'⚡ 暗黑电音',kw:'dark electronic, bass drop, industrial EDM, powerful beat'},
-{label:'🌿 治愈轻音',kw:'healing gentle music, soft acoustic guitar, warm piano'},
-{label:'⚔️ 热血战斗',kw:'epic battle music, orchestral, powerful drums, heroic theme'},
-{label:'🌸 浪漫抒情',kw:'romantic ballad, emotional strings, gentle vocals, love theme'},
-{label:'🔮 神秘魔幻',kw:'mysterious fantasy, magical orchestra, enchanted forest ambience'},
-{label:'💃 拉丁热舞',kw:'Latin dance rhythm, salsa, passionate, vibrant percussion'},
-{label:'🎹 古典钢琴',kw:'classical piano solo, elegant, Chopin style, refined'},
-{label:'🌊 自然白噪音',kw:'nature ambience, ocean waves, gentle rain, peaceful stream'}
+{label:'🎵 偶像舞曲',kw:'idol dance, upbeat J-pop, stage'},
+{label:'🌙 空灵月光',kw:'ethereal, ambient piano, dreamy'},
+{label:'🏯 古风雅韵',kw:'Chinese traditional, guzheng, ancient'},
+{label:'🤪 沙雕搞怪',kw:'funny quirky, comedic, playful'},
+{label:'⚡ 暗黑电音',kw:'dark electronic, bass drop, EDM'},
+{label:'🌿 治愈轻音',kw:'healing, soft acoustic, warm piano'},
+{label:'⚔️ 热血战斗',kw:'epic battle, orchestral, heroic'},
+{label:'🌸 浪漫抒情',kw:'romantic ballad, strings, love theme'},
+{label:'🔮 神秘魔幻',kw:'mysterious fantasy, enchanted'},
+{label:'💃 拉丁热舞',kw:'Latin dance, salsa, vibrant'},
+{label:'🎹 古典钢琴',kw:'classical piano, elegant, Chopin'},
+{label:'🌊 自然白噪音',kw:'nature ambience, ocean, peaceful'}
 ];
 
-/* ========== 全局负面提示词 ========== */
-const GLOBAL_NEG='ugly, deformed, blurry, low quality, bad anatomy, bad hands, extra fingers, watermark, text, signature, distorted, dirty';
-
-/* ========== 安全级别配置 ========== */
 const SAFE_LEVELS={
-  strict:{block:['血腥','暴力','恐怖','猎奇','暗黑','哥特','死亡','尸体','裸体','色情','自杀','虐待','杀人','断肢','武器','枪械','毒品','吸烟','饮酒','脏话','辱骂','歧视','政治敏感','邪教','迷信','赌博','裸露','胸部','臀部','私密','性感','暴露','比基尼','泳装','内衣','浴巾','湿身','gore','bloody','violent','nude','naked','horror','death','kill','torture','sex','porn','dark','mysterious','weapon','gun','drug','smoke','alcohol','swear','racism','nazi','cult','gambling','nipple','breast','buttocks','bikini','swimsuit','underwear','lingerie','explicit','nsfw','lewd','erotic','hentai','topless','bare','obscene','vulgar','indecent','suggestive','provocative','risqué','fetish','bdsm','bondage','strip','pole dance','peep','voyeur','upskirt','downblouse','wardrobe','malfunction','flasher','exhibitionist','crotch','cleft','cleavage','armpit','thigh','stocking','garter','corset','negligee','camisole','teddy','bodysuit','leotard','fishnet','pantyhose','thong','g-string','pasties','chastity','orgasm','masturb','erection','ejacul','dildo','vibrat','sex toy','condom','lubric','prostit','escort','massage parlor','strip club','peep show','adult film','xxx','jail','prison','handcuff','chain','rope binding','struggle','suffocat','drown','hang','slit','slash','wound','scar','bruise','blood bath','dismember','decapitat','amputee','mutilat','corpse','skeleton','skull','zombie','vampire','werewolf','demon','possessed','haunted','cursed','ghost spirit','paranormal','occult','satanic','sacrifice','ritual','blood ritual'],add_neg:'dark, mysterious, gothic, scary, horror, weapon, gun, drug, nude, blood, skull, demon, occult, violence, explicit, nsfw'},
-  normal:{block:['血腥','暴力','恐怖','猎奇','死亡','尸体','裸体','色情','自杀','虐待','杀人','断肢','武器','枪械','毒品','赌博','裸露','性感','暴露','比基尼','内衣','gore','bloody','violent','nude','naked','horror','death','kill','torture','sex','porn','weapon','gun','drug','gambling','bikini','underwear','lingerie','explicit','nsfw','lewd','erotic','hentai','topless','bare','obscene','suggestive','cleavage','thigh','zombie','vampire','demon','skeleton','skull','blood','wound','suffocat','drown','hang','corpse','cursed','occult','satanic','sacrifice'],add_neg:'gore, bloody, violent, nude, horror, death, weapon, gun, drug, blood, skull, demon, explicit, nsfw'},
-  relaxed:{block:['裸体','色情','自杀','虐待','杀人','裸露','nude','naked','porn','sex','suicide','torture','murder','explicit','nsfw','lewd','erotic','hentai','topless','obscene','blood','corpse','skull'],add_neg:'nude, explicit, nsfw, blood, corpse'}
+strict:{block:['血腥','暴力','恐怖','猎奇','裸体','色情','自杀','虐待','杀人','nude','naked','horror','death','sex','porn'],add_neg:'dark, scary, horror, nude'},
+normal:{block:['血腥','暴力','恐怖','裸体','色情','自杀','虐待','nude','naked','horror','sex','porn'],add_neg:'gore, nude, horror'},
+relaxed:{block:['裸体','色情','自杀','nude','naked','porn','sex'],add_neg:'nude, explicit'}
+};
+
+const CN_EN_MAP={'少女':'young girl','少年':'young boy','女人':'woman','男人':'man','仙女':'fairy','精灵':'elf','天使':'angel','女神':'goddess','法师':'mage','骑士':'knight','公主':'princess','女王':'queen','歌手':'singer','偶像':'idol','舞者':'dancer','兽耳':'animal ears','猫耳':'cat ears','狐耳':'fox ears','兔耳':'rabbit ears','狼':'wolf','蛇':'snake','鹿':'deer','狐':'fox','猫':'cat','龙':'dragon','凤凰':'phoenix','拟人':'anthropomorphic','长发':'long flowing hair','短发':'short hair','双马尾':'twin tails','马尾':'ponytail','银发':'silver hair','白发':'white hair','金发':'blonde hair','黑发':'black hair','蓝发':'blue hair','粉发':'pink hair','紫发':'purple hair','红发':'red hair','汉服':'hanfu','旗袍':'cheongsam','婚纱':'wedding dress','校服':'school uniform','铠甲':'armor','斗篷':'cloak','机甲':'mecha suit','哥特装':'gothic dress','森林':'forest','花海':'flower field','星空':'starry sky','月亮':'moon','月光':'moonlight','樱花':'cherry blossoms','海边':'seaside','宫殿':'palace','舞台':'stage','微笑':'gentle smile','跳舞':'dancing','唱歌':'singing','飞翔':'flying','魔法':'magic','火焰':'flames','冰':'ice','雷电':'lightning','花瓣':'flower petals falling','蝴蝶':'butterflies','光点':'glowing particles','极光':'aurora','翅膀':'wings','法杖':'magic staff','剑':'sword','王冠':'crown','面具':'mask','唯美':'aesthetic','梦幻':'dreamy','治愈':'healing','神秘':'mysterious','优雅':'elegant','可爱':'cute','华丽':'gorgeous','霸气':'powerful'};
+
+const THEME_DETECT=[
+{keys:['偶像','歌手','舞者','舞台','女团'],add:'idol aesthetic, stage lighting, spotlight, dynamic pose'},
+{keys:['古风','仙侠','国风','汉服','修仙'],add:'Chinese fantasy, xianxia, ethereal, flowing silk'},
+{keys:['兽耳','猫耳','狐耳','兔耳','拟人'],add:'kemonomimi, animal ears, cute expression'},
+{keys:['机甲','科幻','赛博','机械'],add:'cyberpunk, sci-fi, neon glow, holographic'},
+{keys:['童话','治愈','Q版','萌宠'],add:'soft pastel, cute illustration, gentle lighting'},
+{keys:['哥特','玫瑰','暗黑'],add:'dark romantic, jewel tones, ornate'},
+{keys:['战斗','热血','技能','变身','魔法'],add:'dynamic action, energy aura, dramatic'}
+];
+
+const GLOBAL_NEG='ugly, deformed, blurry, low quality, bad anatomy, bad hands, extra fingers, watermark, text, signature, distorted';
+
+/* 短剧类型对应的分镜模板 */
+const DRAMA_TEMPLATES={
+fantasy:[
+'远景：神秘的世界全貌，魔法光芒闪烁',
+'近景：主角登场，目光坚定地望向远方',
+'中景：遇到关键角色/发现神秘物品',
+'特写：施展魔法/关键动作的华丽瞬间',
+'远景：踏上冒险旅程，壮阔的风景',
+'中景：面对挑战/敌人，紧张对峙',
+'特写：内心挣扎或决心的表情',
+'全景：高潮战斗/关键转折，特效四射',
+'中景：获得胜利/克服困难的喜悦',
+'远景：结局画面，角色在新世界的剪影'
+],
+romance:[
+'远景：美丽的相遇场景',
+'中景：两人初次邂逅，四目相对',
+'特写：心动的表情，微微泛红',
+'中景：甜蜜互动的日常',
+'近景：并肩漫步，温馨氛围',
+'特写：手指轻触/心形光影',
+'中景：小误会或考验',
+'近景：深情对望，情感升华',
+'全景：浪漫的告白场景',
+'远景：两人在一起的唯美剪影'
+],
+action:[
+'远景：战场/竞技场全貌',
+'中景：主角拔剑/准备战斗',
+'特写：锐利的眼神，能量聚集',
+'全景：激烈交锋，特效爆发',
+'中景：连击组合技，动作流畅',
+'近景：受伤但不服输的表情',
+'特写：觉醒/变身的关键瞬间',
+'全景：终极技能释放，毁天灭地',
+'中景：击败对手，收招站立',
+'远景：胜利后的英姿飒爽'
+],
+scifi:[
+'远景：未来都市/太空站全景',
+'中景：主角操控高科技设备',
+'特写：全息投影界面操作',
+'全景：星际穿越/飞船起飞',
+'中景：发现未知星球/文明遗迹',
+'近景：面对外星生物/AI的紧张',
+'特写：关键数据破解的瞬间',
+'全景：太空战斗/大规模特效',
+'中景：成功完成任务',
+'远景：驶向新未知的旅程'
+],
+slice:[
+'远景：温暖的小镇/房间全景',
+'中景：角色的日常起床/出门',
+'近景：与朋友/宠物的互动',
+'特写：料理/手工的细节',
+'中景：偶遇有趣的事情',
+'近景：午后悠闲时光',
+'特写：笑容/温馨小物件',
+'全景：夕阳下的归途',
+'中景：与家人/朋友共进晚餐',
+'远景：星空下的宁静夜晚'
+],
+mystery:[
+'远景：阴暗的城市/古堡全貌',
+'中景：主角发现线索',
+'特写：关键证据的细节',
+'近景：推理思考的表情',
+'全景：深入险境/追踪嫌疑人',
+'中景：遭遇意外/陷阱',
+'特写：惊人发现的表情',
+'全景：真相大白的震撼场景',
+'近景：对峙/揭露真相',
+'远景：案件结束，余韵未尽'
+]
+};
+
+/* 一键成片模板 */
+const OC_TEMPLATES={
+character:{shots:['角色全身亮相，站姿自信','角色面部特写，表情细腻','角色侧面45度，展示发型细节','角色动态姿势，技能释放','角色背面展示，披风/翅膀','角色3/4角度，光影对比','角色跳跃/飞行姿态','角色最终定格pose'],desc:'多角度全方位展示角色'},
+album:{shots:['开篇全景，大气构图','细节特写，质感呈现','侧面角度，层次分明','俯拍视角，全局一览','仰拍角度，气势恢宏','对称构图，秩序美感','黄金分割，视觉引导','留白意境，余韵悠长'],desc:'多视角轮播展示'},
+product:{shots:['产品正面特写，简洁背景','产品45度展示，材质质感','产品使用场景，生活化','产品细节，工艺展示','产品对比，尺寸感知','产品包装，开箱体验','产品动态展示，功能演示','产品氛围图，品牌调性'],desc:'产品全方位展示'},
+landscape:{shots:['日出金光洒满大地','山脉连绵，云海翻涌','湖泊倒影，宁静致远','森林深处，光束穿透','海岸线，浪花拍岸','星空银河，静谧夜空','草原辽阔，骏马奔驰','雪山巍峨，圣洁壮美'],desc:'壮美风景大片'},
+story:{shots:['故事开端：平静的世界','主角登场：日常的一天','突发事件：命运转折','踏上旅程：未知前方','遇到伙伴：并肩同行','面临挑战：黑暗降临','内心挣扎：抉择时刻','高潮对决：光芒绽放'],desc:'四幕式故事叙述'},
+idol:{shots:['舞台灯光亮起，角色登场','开场pose，聚光灯打亮','第一段舞蹈，活力四射','间奏特写，深情表情','高潮段落，特效全开','转身回眸，发丝飘扬','ending pose，花瓣飘落','谢幕鞠躬，观众欢呼'],desc:'偶像舞台表演秀'}
 };
 
 /* ========== 状态 ========== */
-let selectedStyles=new Set(['anime']);
-let imgW=1024,imgH=1024;
-let imgCount=1;
-let wmShape='🐾',wmColor='rgba(168,85,247,0.6)',wmMode='corner';
-let vidStyle='dance';
-let vidW=16,vidH=9;
 let gal=[];
-let isGenImg=false,isGenVid=false;
+let isGen=false;
 let genResults=[];
 let exportFmt='jpg';
 let safeLevel='normal';
-let vidSafeLevel='normal';
-let lockSeed=false;
-let fixedSeed=null;
-let refImgData=null;
-let selectedSB=null;
-let pfStyle=new Set(['anime']);
+// 水印
+let wmShape='🐾',wmColor='rgba(168,85,247,0.6)',wmMode='corner';
+// AI绘图
+let drawStyles=new Set(['anime']);
+let drawW=1024,drawH=1024,drawCount=1;
+// 图生视频
+let i2vImgData=null;
+let i2vEffect='kenburns';
+let i2vDur=15;
+let i2vW=16,i2vH=9;
+// AI短剧
+let dramaGenre='fantasy';
+let dramaFrames=8;
+let dramaStyles=new Set(['anime']);
+// 一键成片
+let ocTemplate='character';
+let ocDur=20;
+let ocW=16,ocH=9;
 
 /* ========== 初始化 ========== */
 function init(){
-  renderStyles();
-  renderVidStyles();
-  renderStoryboards();
-  renderMusicTags();
-  renderPfStyles();
-  loadGallery();
-  renderGallery();
-  loadDraft();
-  // 自动保存草稿
-  setInterval(saveDraft,5000);
-}
-
-/* ========== 草稿缓存 ========== */
-function saveDraft(){
-  const data={
-    imgPrompt:document.getElementById('imgPrompt')?.value||'',
-    vidPrompt:document.getElementById('vidPrompt')?.value||'',
-    styles:[...selectedStyles],
-    safeLevel,vidSafeLevel,exportFmt,wmMode,
-    imgW,imgH,imgCount,lockSeed,fixedSeed
-  };
-  try{localStorage.setItem('hl_draft',JSON.stringify(data))}catch(e){}
-}
-function loadDraft(){
-  try{
-    const d=JSON.parse(localStorage.getItem('hl_draft')||'null');
-    if(!d) return;
-    if(d.imgPrompt) document.getElementById('imgPrompt').value=d.imgPrompt;
-    if(d.vidPrompt) document.getElementById('vidPrompt').value=d.vidPrompt;
-    if(d.styles&&d.styles.length){selectedStyles=new Set(d.styles);renderStyles()}
-    if(d.safeLevel){safeLevel=d.safeLevel;document.querySelectorAll('#safeRow .safe-btn').forEach(b=>{b.classList.toggle('active',b.dataset.level===safeLevel)})}
-    if(d.exportFmt){exportFmt=d.exportFmt;document.querySelectorAll('#fmtRow .fmt-btn').forEach(b=>{b.classList.toggle('active',b.dataset.fmt===exportFmt)})}
-    if(d.lockSeed){lockSeed=true;document.getElementById('lockSeed').checked=true}
-    if(d.fixedSeed) fixedSeed=d.fixedSeed;
-  }catch(e){}
-}
-function showDraftBadge(){
-  const b=document.getElementById('draftBadge');
-  b.classList.add('show');
-  setTimeout(()=>b.classList.remove('show'),1500);
+renderDrawStyles();
+renderDramaStyles();
+renderMusicTags('i2vMusicTags');
+renderMusicTags('dramaMusicTags');
+renderMusicTags('ocMusicTags');
+loadGallery();
+renderGallery();
+// 默认显示探索页
+switchTab('explore');
 }
 
 /* ========== 渲染函数 ========== */
-function renderStyles(){
-  document.getElementById('styleGrid').innerHTML=STYLES.map(s=>`<div class="style-chip ${selectedStyles.has(s.id)?'selected':''}" data-id="${s.id}" onclick="toggleStyle(this,'${s.id}')"><span class="emoji">${s.emoji}</span><div class="name">${s.name}</div></div>`).join('');
+function renderDrawStyles(){
+document.getElementById('drawStyleGrid').innerHTML=STYLES.map(s=>`<div class="style-chip ${drawStyles.has(s.id)?'selected':''}" data-id="${s.id}" onclick="toggleDrawStyle(this,'${s.id}')"><span class="emoji">${s.emoji}</span><div class="name">${s.name}</div></div>`).join('');
 }
-function renderPfStyles(){
-  document.getElementById('pfStyleGrid').innerHTML=STYLES.map(s=>`<div class="style-chip ${pfStyle.has(s.id)?'selected':''}" data-id="${s.id}" onclick="togglePfStyle(this,'${s.id}')"><span class="emoji">${s.emoji}</span><div class="name">${s.name}</div></div>`).join('');
+function renderDramaStyles(){
+document.getElementById('dramaStyleGrid').innerHTML=STYLES.map(s=>`<div class="style-chip ${dramaStyles.has(s.id)?'selected':''}" data-id="${s.id}" onclick="toggleDramaStyle(this,'${s.id}')"><span class="emoji">${s.emoji}</span><div class="name">${s.name}</div></div>`).join('');
 }
-function renderVidStyles(){
-  document.getElementById('vidStyleGrid').innerHTML=VID_STYLES.map(s=>`<div class="vid-style-chip ${vidStyle===s.id?'selected':''}" data-id="${s.id}" onclick="pickVidStyle(this,'${s.id}')"><span class="emoji">${s.emoji}</span><div class="name">${s.name}</div><div style="color:var(--text2);font-size:10px;margin-top:2px">${s.desc}</div></div>`).join('');
-}
-function renderStoryboards(){
-  document.getElementById('sbGrid').innerHTML=STORYBOARDS.map(s=>`<div class="sb-card ${selectedSB===s.id?'selected':''}" data-id="${s.id}" onclick="pickSB(this,'${s.id}')"><span class="emoji">${s.emoji}</span><div class="name">${s.name}</div><div class="desc">${s.desc}</div></div>`).join('');
-}
-function renderMusicTags(){
-  document.getElementById('musicTags').innerHTML=MUSIC_TAGS.map((t,i)=>`<span class="music-tag" data-idx="${i}" onclick="toggleMusicTag(this,${i})">${t.label}</span>`).join('');
+function renderMusicTags(containerId){
+document.getElementById(containerId).innerHTML=MUSIC_TAGS.map((t,i)=>`<span class="music-tag" data-idx="${i}" onclick="toggleMusicTag(this,${i},'${containerId}')">${t.label}</span>`).join('');
 }
 
 /* ========== Tab切换 ========== */
 function switchTab(name){
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{b.classList.toggle('active',['img','vid','profile','gal'][i]===name)});
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(name==='gal') renderGallery();
+const tabs=['explore','draw','img2vid','drama','oneclick','gal'];
+document.querySelectorAll('.tab-btn').forEach((b,i)=>{b.classList.toggle('active',tabs[i]===name)});
+document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+const panel=document.getElementById('panel-'+name);
+if(panel){panel.classList.add('active');panel.querySelectorAll('.card').forEach((c,i)=>{c.style.animation='none';c.offsetHeight;c.style.animation=`fadeIn .4s ease ${i*0.05}s both`})}
+if(name==='gal') renderGallery();
 }
 
 /* ========== 选择函数 ========== */
-function toggleStyle(el,id){
-  if(selectedStyles.has(id)){if(selectedStyles.size<=1)return;selectedStyles.delete(id);el.classList.remove('selected')}
-  else{selectedStyles.add(id);el.classList.add('selected')}
+function toggleDrawStyle(el,id){
+if(drawStyles.has(id)){if(drawStyles.size<=1)return;drawStyles.delete(id);el.classList.remove('selected')}
+else{drawStyles.add(id);el.classList.add('selected')}
 }
-function togglePfStyle(el,id){
-  if(pfStyle.has(id)){if(pfStyle.size<=1)return;pfStyle.delete(id);el.classList.remove('selected')}
-  else{pfStyle.add(id);el.classList.add('selected')}
+function toggleDramaStyle(el,id){
+if(dramaStyles.has(id)){if(dramaStyles.size<=1)return;dramaStyles.delete(id);el.classList.remove('selected')}
+else{dramaStyles.add(id);el.classList.add('selected')}
 }
-function pickSize(el){document.querySelectorAll('#sizeRow .size-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');imgW=parseInt(el.dataset.w);imgH=parseInt(el.dataset.h)}
-function pickNum(el){document.querySelectorAll('#numRow .num-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');imgCount=parseInt(el.dataset.n)}
-function pickFmt(el){document.querySelectorAll('#fmtRow .fmt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');exportFmt=el.dataset.fmt}
-function pickSafe(el){document.querySelectorAll('#safeRow .safe-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');safeLevel=el.dataset.level}
-function pickVidSafe(el){document.querySelectorAll('#vidSafeRow .safe-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');vidSafeLevel=el.dataset.level}
+function pickDrawSize(el){const [w,h]=el.value.split('x');drawW=parseInt(w);drawH=parseInt(h)}
+function pickDrawNum(el){drawCount=parseInt(el.value)}
+function pickFmt(el){exportFmt=el.value}
+function pickSafe(el){safeLevel=el.value}
 function pickWmShape(el){document.querySelectorAll('#wmShapes .wm-shape').forEach(b=>b.classList.remove('active'));el.classList.add('active');wmShape=el.dataset.s}
 function pickWmColor(el){document.querySelectorAll('#wmColors .wm-color').forEach(b=>b.classList.remove('active'));el.classList.add('active');wmColor=el.dataset.c}
 function pickWmMode(el){document.querySelectorAll('.wm-mode').forEach(b=>b.classList.remove('active'));el.classList.add('active');wmMode=el.dataset.mode}
-function pickVidStyle(el,id){document.querySelectorAll('#vidStyleGrid .vid-style-chip').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');vidStyle=id}
-function pickVidSize(el){document.querySelectorAll('#vidSizeRow .size-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');vidW=parseInt(el.dataset.w);vidH=parseInt(el.dataset.h)}
-function pickSB(el,id){
-  document.querySelectorAll('.sb-card').forEach(b=>b.classList.remove('selected'));
-  if(selectedSB===id){selectedSB=null}else{el.classList.add('selected');selectedSB=id}
-}
-function toggleMusicTag(el,idx){
-  el.classList.toggle('selected');
-  const ta=document.getElementById('vidPrompt');
-  const kw=MUSIC_TAGS[idx].kw;
-  if(el.classList.contains('selected')){
-    ta.value=ta.value.trim()+(ta.value.trim()?', ':'')+kw;
-  }
-}
+function toggleMusicTag(el,idx,containerId){el.classList.toggle('selected')}
+// 图生视频
+function pickI2VEffect(el){document.querySelectorAll('#i2vEffects .tpl-card').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');i2vEffect=el.dataset.fx}
+function pickI2VDur(el){i2vDur=parseInt(el.value)}
+function pickI2VSize(el){const [w,h]=el.value.split('x');i2vW=parseInt(w);i2vH=parseInt(h)}
+// 短剧
+function pickDramaGenre(el){document.querySelectorAll('#dramaGenreGrid .tpl-card').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');dramaGenre=el.dataset.genre}
+function pickDramaFrames(el){dramaFrames=parseInt(el.value)}
+// 一键成片
+function pickOCTemplate(el){document.querySelectorAll('#ocTemplateGrid .tpl-card').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');ocTemplate=el.dataset.tpl}
+function pickOCDur(el){ocDur=parseInt(el.value)}
+function pickOCSize(el){const [w,h]=el.value.split('x');ocW=parseInt(w);ocH=parseInt(h)}
 
-/* ========== 角色参考图 ========== */
-function handleRefUpload(input){
-  const file=input.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    refImgData=e.target.result;
-    document.getElementById('refPreview').innerHTML=`<img src="${refImgData}">`;
-    document.getElementById('refStatus').textContent='✅ 已上传，生成时将参考此形象';
-    document.getElementById('refStatus').style.color='#10b981';
-    // 自动生成固定seed
-    if(!fixedSeed) fixedSeed=Math.floor(Math.random()*999999);
-    document.getElementById('lockSeed').checked=true;
-    lockSeed=true;
-  };
-  reader.readAsDataURL(file);
-}
-
-/* ========== 智能提示词过滤器 ========== */
-const CN_EN_MAP={'少女':'young girl','少年':'young boy','女人':'woman','男人':'man','女性':'female','男性':'male','仙女':'fairy','精灵':'elf','天使':'angel','女神':'goddess','法师':'mage','剑士':'swordsman','骑士':'knight','公主':'princess','女王':'queen','歌手':'singer','偶像':'idol','舞者':'dancer','兽耳':'animal ears','猫耳':'cat ears','犬耳':'wolf ears','狐耳':'fox ears','兔耳':'rabbit ears','狼':'wolf','蛇':'snake','鹿':'deer','狐':'fox','猫':'cat','龙':'dragon','凤凰':'phoenix','拟人':'anthropomorphic','长发':'long flowing hair','短发':'short hair','双马尾':'twin tails','马尾':'ponytail','银发':'silver hair','白发':'white hair','金发':'blonde hair','黑发':'black hair','蓝发':'blue hair','粉发':'pink hair','紫发':'purple hair','红发':'red hair','汉服':'hanfu','旗袍':'cheongsam','和服':'kimono','婚纱':'wedding dress','校服':'school uniform','铠甲':'armor','斗篷':'cloak','机甲':'mecha suit','哥特装':'gothic dress','洛丽塔':'lolita fashion','森林':'forest','花海':'flower field','星空':'starry sky','月亮':'moon','月光':'moonlight','樱花':'cherry blossoms','海边':'seaside','宫殿':'palace','神殿':'temple','舞台':'stage','微笑':'gentle smile','跳舞':'dancing','唱歌':'singing','飞翔':'flying','魔法':'magic','火焰':'flames','冰':'ice','雷电':'lightning','花瓣':'flower petals falling','蝴蝶':'butterflies','光点':'glowing particles','极光':'aurora','翅膀':'wings','法杖':'magic staff','剑':'sword','王冠':'crown','面具':'mask','唯美':'aesthetic','梦幻':'dreamy','治愈':'healing','神秘':'mysterious','优雅':'elegant','可爱':'cute','华丽':'gorgeous','霸气':'powerful','白羊座':'Aries','金牛座':'Taurus','双子座':'Gemini','巨蟹座':'Cancer','狮子座':'Leo','处女座':'Virgo','天秤座':'Libra','天蝎座':'Scorpio','射手座':'Sagittarius','摩羯座':'Capricorn','水瓶座':'Aquarius','双鱼座':'Pisces'};
-const THEME_DETECT=[
-{keys:['偶像','歌手','舞者','舞台','女团','男团','歌姬'],add:'idol aesthetic, stage lighting, spotlight, dynamic pose'},
-{keys:['古风','仙侠','国风','汉服','修仙','江湖'],add:'Chinese fantasy, xianxia, ethereal atmosphere, flowing silk'},
-{keys:['兽耳','猫耳','犬耳','狐耳','兔耳','拟人','狼','狐','鹿','蛇'],add:'kemonomimi, detailed animal ears, cute expression'},
-{keys:['机甲','科幻','赛博','机械','未来'],add:'cyberpunk, sci-fi, neon glow, holographic effects'},
-{keys:['童话','治愈','Q版','萌宠','可爱'],add:'soft pastel palette, cute illustration, gentle lighting'},
-{keys:['哥特','玫瑰','宝石','皇冠','暗黑'],add:'dark romantic aesthetic, rich jewel tones, ornate details'},
-{keys:['星座','花妖','花仙','花神'],add:'zodiac fantasy, floral motif, constellation pattern'},
-{keys:['战斗','热血','技能','变身','魔法'],add:'dynamic action, energy aura, dramatic impact'}
-];
-
+/* ========== 智能提示词 ========== */
 function smartFilter(rawText){
-  let text=rawText.trim();
-  // 安全清洗（根据安全级别）
-  const cfg=SAFE_LEVELS[safeLevel]||SAFE_LEVELS.normal;
-  let blockedWords=[];
-  for(const bad of cfg.block){
-    if(text.toLowerCase().includes(bad.toLowerCase())){
-      blockedWords.push(bad);
-      text=text.replace(new RegExp(bad.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'');
-    }
-  }
-  if(blockedWords.length>0){
-    const msg='🛡️ 已自动过滤'+blockedWords.length+'个敏感词：'+blockedWords.slice(0,5).join('、')+(blockedWords.length>5?'等':'');
-    if(typeof showToast==='function')showToast(msg);
-    else{const t=document.createElement('div');t.style.cssText='position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(139,92,246,.92);color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;z-index:9999;backdrop-filter:blur(8px);transition:opacity .4s';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},3000)}
-  }
-  // 中文→英文
-  let translated=text;
-  const sortedKeys=Object.keys(CN_EN_MAP).sort((a,b)=>b.length-a.length);
-  for(const cn of sortedKeys){translated=translated.replace(new RegExp(cn,'g'),CN_EN_MAP[cn])}
-  translated=translated.replace(/[,，\s]+/g,' ').replace(/^[\s,]+|[\s,]+$/g,'');
-  // 主题检测
-  let addBoost='';
-  for(const theme of THEME_DETECT){
-    for(const key of theme.keys){if(rawText.includes(key)){addBoost+=(addBoost?', ':'')+theme.add;break}}
-  }
-  const qualityBoost='highly detailed, sharp focus, professional coloring, exquisite lighting';
-  const finalPrompt=[translated,addBoost,qualityBoost].filter(Boolean).join(', ');
-  return{cleaned:text,translated,boosted:finalPrompt};
+let text=rawText.trim();
+const cfg=SAFE_LEVELS[safeLevel]||SAFE_LEVELS.normal;
+for(const bad of cfg.block){if(text.toLowerCase().includes(bad.toLowerCase()))text=text.replace(new RegExp(bad.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'')}
+let translated=text;
+const sortedKeys=Object.keys(CN_EN_MAP).sort((a,b)=>b.length-a.length);
+for(const cn of sortedKeys)translated=translated.replace(new RegExp(cn,'g'),CN_EN_MAP[cn]);
+translated=translated.replace(/[,，\s]+/g,' ').replace(/^[\s,]+|[\s,]+$/g,'');
+let addBoost='';
+for(const theme of THEME_DETECT){for(const key of theme.keys){if(rawText.includes(key)){addBoost+=(addBoost?', ':'')+theme.add;break}}}
+const qualityBoost='highly detailed, sharp focus, professional coloring, exquisite lighting';
+return{cleaned:text,translated,boosted:[translated,addBoost,qualityBoost].filter(Boolean).join(', ')};
 }
-
-/* ========== 构建Prompt/URL ========== */
 function buildPrompt(base,styleIds){
-  const filtered=smartFilter(base);
-  const parts=['masterpiece, best quality, 8k, professional, beautiful'];
-  const negMods=[GLOBAL_NEG];
-  for(const id of styleIds){const s=STYLES.find(x=>x.id===id);if(s){parts.push(s.pos);negMods.push(s.neg)}}
-  // 安全级别额外负面词
-  const cfg=SAFE_LEVELS[safeLevel]||SAFE_LEVELS.normal;
-  if(cfg.add_neg) negMods.push(cfg.add_neg);
-  parts.push(filtered.boosted);
-  return{prompt:parts.join(', '),negative:negMods.join(', '),_debug:filtered};
+const filtered=smartFilter(base);
+const parts=['masterpiece, best quality, 8k, professional, beautiful'];
+const negMods=[GLOBAL_NEG];
+for(const id of styleIds){const s=STYLES.find(x=>x.id===id);if(s){parts.push(s.pos);negMods.push(s.neg)}}
+const cfg=SAFE_LEVELS[safeLevel]||SAFE_LEVELS.normal;
+if(cfg.add_neg)negMods.push(cfg.add_neg);
+parts.push(filtered.boosted);
+return{prompt:parts.join(', '),negative:negMods.join(', ')};
 }
 function buildUrl(prompt,negative,w,h,seed){
-  // 按编码后总URL长度控制，避免HTTP 431错误（请求头过大）
-  const MAX_URL=7500;
-  const ep=encodeURIComponent(prompt);
-  const en=encodeURIComponent(negative.length>500?negative.substring(0,500):negative);
-  const base=`https://image.pollinations.ai/prompt/${ep}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=flux&nologo=true&negative=${en}`;
-  if(base.length<=MAX_URL)return base;
-  // 逐步截断prompt直到URL在限制内
-  const overLen=base.length-MAX_URL;
-  // 编码后每字符约3字节，留余量多截一些
-  const cutChars=Math.ceil(overLen/3)+50;
-  const shortPrompt=prompt.length>cutChars?prompt.substring(0,prompt.length-cutChars):prompt;
-  const esp=encodeURIComponent(shortPrompt);
-  return`https://image.pollinations.ai/prompt/${esp}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=flux&nologo=true&negative=${en}`;
+const MAX_URL=7500;
+const ep=encodeURIComponent(prompt);
+const en=encodeURIComponent((negative.length>500?negative.substring(0,500):negative));
+const base=`https://image.pollinations.ai/prompt/${ep}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=flux&nologo=true&negative=${en}`;
+if(base.length<=MAX_URL)return base;
+const overLen=base.length-MAX_URL;
+const cutChars=Math.ceil(overLen/3)+50;
+const sp=prompt.length>cutChars?prompt.substring(0,prompt.length-cutChars):prompt;
+return`https://image.pollinations.ai/prompt/${encodeURIComponent(sp)}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=flux&nologo=true&negative=${en}`;
 }
 
-/* ========== 水印绘制 ========== */
-function drawWatermark(canvas,shape,color,mode){
-  const ctx=canvas.getContext('2d');
-  const size=Math.min(canvas.width,canvas.height);
-  if(mode==='tile'){
-    // 铺满模式
-    const fontSize=Math.max(20,size*0.06);
-    ctx.font=`${fontSize}px serif`;
-    ctx.fillStyle=color;
-    ctx.globalAlpha=0.25;
-    const gap=fontSize*3;
-    for(let y=0;y<canvas.height+gap;y+=gap){
-      for(let x=-gap;x<canvas.width+gap;x+=gap){
-        ctx.save();
-        ctx.translate(x,y);
-        ctx.rotate(-Math.PI/6);
-        ctx.fillText(shape,0,0);
-        ctx.restore();
-      }
-    }
-  }else{
-    // 角标模式
-    const fontSize=Math.max(28,size*0.1);
-    ctx.font=`${fontSize}px serif`;
-    ctx.fillStyle=color;
-    ctx.globalAlpha=0.7;
-    const margin=fontSize*0.6;
-    ctx.fillText(shape,canvas.width-margin-fontSize,canvas.height-margin*0.5);
-    // 小角标
-    ctx.globalAlpha=0.3;
-    ctx.font=`${fontSize*0.5}px serif`;
-    ctx.fillText(shape,margin,margin+fontSize*0.5);
-  }
-  ctx.globalAlpha=1;
-}
-
-/* ========== 图片下载（支持多格式） ========== */
-function downloadImg(url,name){
-  // 尝试通过canvas转换格式
-  const img=new Image();
-  if(!url.startsWith('blob:'))img.crossOrigin='anonymous';
-  img.onload=function(){
-    try{
-      const cvs=document.createElement('canvas');
-      cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
-      cvs.getContext('2d').drawImage(img,0,0);
-      const mime=exportFmt==='png'?'image/png':exportFmt==='webp'?'image/webp':'image/jpeg';
-      cvs.toBlob(function(blob){
-        if(blob){
-          const a=document.createElement('a');
-          a.href=URL.createObjectURL(blob);
-          a.download=name+'.'+exportFmt;
-          a.click();
-          URL.revokeObjectURL(a.href);
-        }else{
-          // fallback: 直接下载URL
-          const a=document.createElement('a');a.href=url;a.download=name+'.jpg';a.click();
-        }
-      },mime,0.92);
-    }catch(e){
-      const a=document.createElement('a');a.href=url;a.download=name+'.jpg';a.click();
-    }
-  };
-  img.onerror=function(){
-    const a=document.createElement('a');a.href=url;a.download=name+'.jpg';a.click();
-  };
-  img.src=url;
-}
-
-/* ========== 图片生成主流程 ========== */
-// fetch下载图片为blob（解决微信浏览器无法直接加载外部图片的问题）
+/* ========== 图片获取 ========== */
 async function fetchImgBlob(url,maxRetries=3){
-  for(let attempt=0;attempt<maxRetries;attempt++){
-    try{
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),60000);
-      const r=await fetch(url,{mode:'cors',signal:controller.signal});
-      clearTimeout(timer);
-      if(r.status===429||r.status===431){
-        const wait=[3000,6000,12000][attempt]||12000;
-        if(attempt<maxRetries-1){await new Promise(r=>setTimeout(r,wait));continue;}
-        throw new Error('HTTP'+r.status);
-      }
-      if(!r.ok)throw new Error('HTTP'+r.status);
-      return await r.blob();
-    }catch(e){
-      if(e.name==='AbortError')throw new Error('请求超时');
-      if(attempt<maxRetries-1){await new Promise(r=>setTimeout(r,3000));continue;}
-      throw e;
-    }
-  }
+for(let attempt=0;attempt<maxRetries;attempt++){
+try{
+const controller=new AbortController();
+const timer=setTimeout(()=>controller.abort(),60000);
+const r=await fetch(url,{mode:'cors',signal:controller.signal});
+clearTimeout(timer);
+if(r.status===429||r.status===431){const wait=[3000,6000,12000][attempt]||12000;if(attempt<maxRetries-1){await new Promise(r=>setTimeout(r,wait));continue;}throw new Error('HTTP'+r.status)}
+if(!r.ok)throw new Error('HTTP'+r.status);
+return await r.blob();
+}catch(e){
+if(e.name==='AbortError')throw new Error('请求超时');
+if(attempt<maxRetries-1){await new Promise(r=>setTimeout(r,3000));continue;}
+throw e;
+}
+}
 }
 
-async function genImages(){
-  if(isGenImg) return;
-  const base=document.getElementById('imgPrompt').value.trim();
-  if(!base){alert('请输入描述～');return}
-  isGenImg=true;
-  const btn=document.getElementById('imgGenBtn');
-  btn.disabled=true;btn.textContent='🎨 生成中...';
-  const prog=document.getElementById('imgProgress');
-  const fill=document.getElementById('imgProgressFill');
-  const ptxt=document.getElementById('imgProgressText');
-  prog.classList.add('show');fill.style.width='0%';
-  ptxt.textContent=`准备生成 ${imgCount} 张图片...`;
-  const resultArea=document.getElementById('imgResult');
-  resultArea.innerHTML='';
-  const cards=[];
-  for(let i=0;i<imgCount;i++){
-    const card=document.createElement('div');card.className='gen-card';
-    card.innerHTML=`<div class="loading"><span class="spin">⏳</span><span>生成中 ${i+1}/${imgCount}</span></div>`;
-    resultArea.appendChild(card);cards.push(card);
-  }
-  const{prompt,negative,_debug}=buildPrompt(base,[...selectedStyles]);
-  // 过滤器日志
-  if(_debug){
-    const logDiv=document.createElement('details');
-    logDiv.style.cssText='margin-bottom:10px;font-size:11px;color:var(--text2)';
-    logDiv.innerHTML=`<summary style="cursor:pointer;color:var(--pri)">🔍 智能过滤日志</summary><div style="background:rgba(0,0,0,.3);padding:8px;border-radius:8px;margin-top:6px;line-height:1.6"><div><b>清洗：</b>${_debug.cleaned||'(无变化)'}</div><div><b>翻译：</b>${_debug.translated||'(无中文词)'}</div><div><b>最终：</b>${_debug.boosted}</div></div>`;
-    resultArea.parentElement.insertBefore(logDiv,resultArea);
-  }
-  // 确定seed
-  const useLockSeed=lockSeed||document.getElementById('lockSeed').checked;
-  if(useLockSeed&&!fixedSeed) fixedSeed=Math.floor(Math.random()*999999);
-  let done=0;
-  // 并发控制：每次最多同时生成3张，避免API限流和浏览器连接耗尽
-  const CONCURRENCY=3;
-  let nextIdx=0;
-  async function runOne(i){
-    const seed=useLockSeed?(fixedSeed+i):(Math.floor(Math.random()*999999)+i);
-    const url=buildUrl(prompt,negative,imgW,imgH,seed);
-    try{
-      ptxt.textContent=`图片${i+1}/${imgCount} 生成中...`;
-      const blob=await fetchImgBlob(url);
-      let finalUrl=URL.createObjectURL(blob);
-      if(document.getElementById('wmOn').checked){
-        try{
-          const img=new Image();
-          await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=finalUrl});
-          const cvs=document.createElement('canvas');
-          cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
-          cvs.getContext('2d').drawImage(img,0,0);
-          drawWatermark(cvs,wmShape,wmColor,wmMode);
-          URL.revokeObjectURL(finalUrl);
-          finalUrl=cvs.toDataURL('image/jpeg',0.92);
-        }catch(wmErr){}
-      }
-      const card=cards[i];
-      const resultIdx=genResults.length;
-      genResults.push({url:finalUrl,prompt:base});
-      card.innerHTML=`<img src="${finalUrl}" alt="生成图" style="cursor:pointer" onclick="openFullByResult(${resultIdx})"><div class="actions"><button class="act-btn act-dl" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();downloadByResult(${resultIdx})">📦 下载</button><button class="act-btn act-save" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();saveToGalByResult(${resultIdx})">💾 保存</button><button class="act-btn act-wm" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();shareImgResult(${resultIdx})">📤 分享</button><button class="act-btn" style="padding:6px 12px;font-size:12px;background:rgba(139,92,246,.5)" onclick="event.stopPropagation();regenSingle(${i})">🔄 重新生成</button></div>`;
-      saveToGal(finalUrl,base,true);
-      renderGallery();
-      setTimeout(()=>dataURLtoDownload(finalUrl,`幻灵创作_${Date.now()}_${i+1}.jpg`),1000+800*i);
-    }catch(e){
-      cards[i].innerHTML=`<div class="loading" style="color:#f87171"><span>❌</span><span>${e.message||'生成失败'}</span></div>`;
-    }
-    done++;
-    const pct=Math.round(done/imgCount*100);
-    fill.style.width=pct+'%';
-    ptxt.textContent=`已完成 ${done}/${imgCount}`;
-    if(done>=imgCount){setTimeout(()=>prog.classList.remove('show'),1500);isGenImg=false;btn.disabled=false;btn.textContent='✨ 开始生成';if(document.getElementById('autoClearOn').checked)document.getElementById('imgPrompt').value=''}
-  }
-  // 并发调度器：始终保持CONCURRENCY个任务在跑
-  async function worker(){
-    while(nextIdx<imgCount){
-      const i=nextIdx++;
-      await runOne(i);
-    }
-  }
-  const workers=Array.from({length:Math.min(CONCURRENCY,imgCount)},()=>worker());
-  await Promise.all(workers);
+/* ========== 水印 ========== */
+function drawWatermark(canvas,shape,color,mode){
+const ctx=canvas.getContext('2d');
+const size=Math.min(canvas.width,canvas.height);
+if(mode==='tile'){
+const fontSize=Math.max(20,size*0.06);
+ctx.font=`${fontSize}px serif`;ctx.fillStyle=color;ctx.globalAlpha=0.25;
+const gap=fontSize*3;
+for(let y=0;y<canvas.height+gap;y+=gap){for(let x=-gap;x<canvas.width+gap;x+=gap){ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/6);ctx.fillText(shape,0,0);ctx.restore()}}
+}else{
+const fontSize=Math.max(28,size*0.1);
+ctx.font=`${fontSize}px serif`;ctx.fillStyle=color;ctx.globalAlpha=0.7;
+const margin=fontSize*0.6;
+ctx.fillText(shape,canvas.width-margin-fontSize,canvas.height-margin*0.5);
+ctx.globalAlpha=0.3;ctx.font=`${fontSize*0.5}px serif`;
+ctx.fillText(shape,margin,margin+fontSize*0.5);
+}
+ctx.globalAlpha=1;
 }
 
-function downloadByResult(idx){
-  const r=genResults[idx];if(!r)return;
-  if(r.type==='video'){dataURLtoDownload(r.frames[0],'幻灵视频帧_'+Date.now()+'.jpg')}
-  else{downloadImg(r.url,'幻灵创作_'+Date.now())}
-}
-
-async function regenSingle(cardIdx){
-  const card=document.querySelectorAll('#imgResult .gen-card')[cardIdx];
-  if(!card||isGenImg)return;
-  const base=document.getElementById('imgPrompt').value.trim();
-  if(!base){alert('提示词已清空，请重新输入描述后再生成～');return}
-  card.innerHTML='<div class="loading"><span class="spin">⏳</span><span>重新生成中...</span></div>';
-  const{prompt,negative}=buildPrompt(base,[...selectedStyles]);
-  const seed=Math.floor(Math.random()*999999);
-  const url=buildUrl(prompt,negative,imgW,imgH,seed);
-  try{
-    const blob=await fetchImgBlob(url);
-    let finalUrl=URL.createObjectURL(blob);
-    if(document.getElementById('wmOn').checked){
-      try{
-        const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=finalUrl});
-        const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
-        cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);
-        URL.revokeObjectURL(finalUrl);finalUrl=cvs.toDataURL('image/jpeg',0.92);
-      }catch(wmErr){}
-    }
-    const resultIdx=genResults.length;
-    genResults.push({url:finalUrl,prompt:base});
-    card.innerHTML=`<img src="${finalUrl}" alt="生成图" style="cursor:pointer" onclick="openFullByResult(${resultIdx})"><div class="actions"><button class="act-btn act-dl" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();downloadByResult(${resultIdx})">📦 下载</button><button class="act-btn act-save" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();saveToGalByResult(${resultIdx})">💾 保存</button><button class="act-btn act-wm" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();shareImgResult(${resultIdx})">📤 分享</button><button class="act-btn" style="padding:6px 12px;font-size:12px;background:rgba(139,92,246,.5)" onclick="event.stopPropagation();regenSingle(${cardIdx})">🔄 重新生成</button></div>`;
-    saveToGal(finalUrl,base,true);renderGallery();
-    setTimeout(()=>dataURLtoDownload(finalUrl,`幻灵创作_${Date.now()}.jpg`),500);
-  }catch(e){
-    card.innerHTML=`<div class="loading" style="color:#f87171"><span>❌</span><span>${e.message||'生成失败'}</span></div>`;
-  }
-}
-
-/* ========== 视频生成 ========== */
-async function genVideo(){
-  if(isGenVid) return;
-  const base=document.getElementById('vidPrompt').value.trim();
-  if(!base){alert('请输入视频描述～');return}
-  isGenVid=true;
-  const btn=document.getElementById('vidGenBtn');
-  btn.disabled=true;btn.textContent='🎬 生成中...';
-  const prog=document.getElementById('vidProgress');
-  const fill=document.getElementById('vidProgressFill');
-  const ptxt=document.getElementById('vidProgressText');
-  prog.classList.add('show');fill.style.width='0%';
-  const resultArea=document.getElementById('vidResult');
-  resultArea.innerHTML='';
-  let vw,vh;
-  if(vidW===16&&vidH===9){vw=1280;vh=720}else if(vidW===9&&vidH===16){vw=720;vh=1280}else{vw=1024;vh=1024}
-  const styleObj=VID_STYLES.find(s=>s.id===vidStyle)||VID_STYLES[0];
-  const targetFrames=parseInt(document.getElementById('frameCount').value)||4;
-  // 使用分镜模板或默认
-  let shots;
-  if(selectedSB){
-    const sb=STORYBOARDS.find(s=>s.id===selectedSB);
-    let baseShots=sb.shots;
-    // 调整到目标帧数
-    if(baseShots.length>targetFrames){
-      baseShots=baseShots.slice(0,targetFrames);
-    }else if(baseShots.length<targetFrames){
-      const extras=['detail shot, intricate elements','side angle, dramatic perspective','close-up reaction, emotional expression','wide establishing shot, environmental context','dynamic motion, energy particles','final pose, triumphant moment'];
-      while(baseShots.length<targetFrames){
-        baseShots.push(extras[baseShots.length%sb.shots.length]||'creative angle, cinematic composition');
-      }
-    }
-    shots=baseShots.map(s=>({label:s,desc:`${s} of ${base}, ${styleObj.desc}, cinematic quality`}));
-  }else{
-    const defaultShots=['close-up shot','dynamic motion scene','wide panoramic view','climax spectacular moment','emotional detail','epic final pose','transitional flow','dramatic reveal'];
-    const shotDescs=[
-      `close-up shot of ${base}, ${styleObj.desc}, dramatic lighting, detailed face`,
-      `dynamic scene of ${base}, ${styleObj.desc}, motion blur, energy effects`,
-      `wide shot of ${base}, ${styleObj.desc}, beautiful environment, epic composition`,
-      `climax moment of ${base}, ${styleObj.desc}, spectacular effects, glowing particles`,
-      `emotional detail of ${base}, ${styleObj.desc}, soft lighting, intimate mood`,
-      `epic pose of ${base}, ${styleObj.desc}, triumphant stance, heroic lighting`,
-      `transitional flow of ${base}, ${styleObj.desc}, smooth motion, graceful movement`,
-      `dramatic reveal of ${base}, ${styleObj.desc}, mysterious atmosphere, cinematic depth`
-    ];
-    shots=[];
-    for(let i=0;i<targetFrames;i++){
-      shots.push({label:defaultShots[i%defaultShots.length],desc:shotDescs[i%shotDescs.length]});
-    }
-  }
-  ptxt.textContent=`生成分镜（0/${shots.length}）...`;
-  const frameUrls=[];let frameDone=0;
-  const framePromises=shots.map(async(shot,idx)=>{
-    const{prompt,negative}=buildPrompt(shot.desc,[...selectedStyles]);
-    const url=buildUrl(prompt,negative,vw,vh,Math.floor(Math.random()*999999)+idx*100);
-    try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}catch(e){frameUrls[idx]=url}
-    frameDone++;
-    fill.style.width=Math.round(frameDone/shots.length*50)+'%';
-    ptxt.textContent=`生成分镜（${frameDone}/${shots.length}）...`;
-  });
-  await Promise.all(framePromises);
-  const validFrames=frameUrls.filter(u=>u);
-  if(validFrames.length<2){ptxt.textContent='❌ 生成失败，请重试';setTimeout(()=>prog.classList.remove('show'),2000);isGenVid=false;btn.disabled=false;btn.textContent='🎬 生成视频';return}
-  if(document.getElementById('vidWmOn').checked){
-    for(let i=0;i<validFrames.length;i++){
-      try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
-    }
-  }
-  fill.style.width='100%';ptxt.textContent='✅ 视频生成完成！';
-  const vidIdx=genResults.length;
-  genResults.push({type:'video',frames:validFrames,prompt:base,style:styleObj.name,ratio:vidW+':'+vidH});
-  // 自动保存到作品区
-  saveToGal(validFrames[0],`[视频分镜] ${styleObj.name}: ${base}`,true);
-  renderGallery();
-  // 自动下载所有帧到本地（间隔800ms防止浏览器拦截）
-  validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵视频分镜_${Date.now()}_${i+1}.jpg`),1000+800*i)});
-  resultArea.innerHTML=`<div class="vid-player" id="vidPlayer_${vidIdx}" style="position:relative;width:100%;max-width:500px;margin:0 auto;aspect-ratio:${vidW}/${vidH};border-radius:12px;overflow:hidden;background:#000">${validFrames.map((f,i)=>`<img src="${f}" class="vid-frame" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:${i===0?1:0};transition:opacity 1.2s;animation:kenburns_${i%4} 4s ease-in-out infinite alternate">`).join('')}</div><div style="text-align:center;margin-top:12px"><div style="font-size:12px;color:var(--text2);margin-bottom:8px">${vidW}:${vidH} · ${styleObj.name} · ${validFrames.length}分镜 · 自动轮播</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="act-btn act-save" style="padding:8px 16px;font-size:13px;border-radius:10px" onclick="downloadVidCurrentFrame(${vidIdx})">📦 下载当前帧</button><button class="act-btn act-save" style="padding:8px 16px;font-size:13px;border-radius:10px" onclick="saveVidFrames(${vidIdx})">💾 下载全部帧图</button><button class="act-btn act-wm" style="padding:8px 16px;font-size:13px;border-radius:10px" onclick="shareVidResult(${vidIdx})">📤 分享</button><button class="act-btn" style="padding:8px 16px;font-size:13px;border-radius:10px;background:rgba(139,92,246,.5)" onclick="regenVideo()">🔄 重新生成</button></div></div>`;
-  let curFrame=0;
-  const playerEl=document.getElementById('vidPlayer_'+vidIdx);
-  if(playerEl){setInterval(()=>{const frames=playerEl.querySelectorAll('.vid-frame');if(!frames.length)return;frames[curFrame].style.opacity='0';curFrame=(curFrame+1)%frames.length;frames[curFrame].style.opacity='1'},3000)}
-  setTimeout(()=>prog.classList.remove('show'),2000);
-  isGenVid=false;btn.disabled=false;btn.textContent='🎬 生成视频';if(document.getElementById('autoClearOn').checked)document.getElementById('vidPrompt').value='';
-}
-function saveVidFrames(idx){
-  const r=genResults[idx];if(!r||!r.frames)return;
-  r.frames.forEach((f,i)=>{
-    const a=document.createElement('a');a.href=f;a.download='幻灵帧'+(i+1)+'.jpg';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-  });
-}
-function downloadVidCurrentFrame(idx){
-  const r=genResults[idx];if(!r||!r.frames)return;
-  // 获取当前可见帧（opacity=1的那帧）
-  const playerEl=document.getElementById('vidPlayer_'+idx);
-  let frameData=r.frames[0];
-  if(playerEl){
-    const visibleFrame=playerEl.querySelector('.vid-frame[style*="opacity: 1"], .vid-frame[style*="opacity:1"]');
-    if(visibleFrame){
-      const idx2=Array.from(playerEl.querySelectorAll('.vid-frame')).indexOf(visibleFrame);
-      if(idx2>=0)frameData=r.frames[idx2];
-    }
-  }
-  dataURLtoDownload(frameData,'幻灵视频帧_'+Date.now()+'.jpg');
+/* ========== 下载 ========== */
+function downloadImg(url,name){
+const img=new Image();
+if(!url.startsWith('blob:'))img.crossOrigin='anonymous';
+img.onload=function(){
+try{
+const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
+cvs.getContext('2d').drawImage(img,0,0);
+const mime=exportFmt==='png'?'image/png':exportFmt==='webp'?'image/webp':'image/jpeg';
+cvs.toBlob(function(blob){
+if(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.'+exportFmt;a.click();URL.revokeObjectURL(a.href)}
+else{const a=document.createElement('a');a.href=url;a.download=name+'.jpg';a.click()}
+},mime,0.92);
+}catch(e){const a=document.createElement('a');a.href=url;a.download=name+'.jpg';a.click()}
+};
+img.onerror=function(){const a=document.createElement('a');a.href=url;a.download=name+'.jpg';a.click()};
+img.src=url;
 }
 function dataURLtoDownload(dataURL,filename){
-  // 兼容blob URL和data URL，确保手机端能下载
-  const doDownload=(url)=>{
-    const a=document.createElement('a');a.href=url;a.download=filename;
-    a.style.display='none';document.body.appendChild(a);a.click();
-    setTimeout(()=>document.body.removeChild(a),200);
-  };
-  if(dataURL.startsWith('blob:')){
-    // blob URL直接下载
-    doDownload(dataURL);
-  }else{
-    // data URL转blob再下载，兼容性更好
-    try{
-      fetch(dataURL).then(r=>r.blob()).then(blob=>{
-        const url=URL.createObjectURL(blob);
-        doDownload(url);
-        setTimeout(()=>URL.revokeObjectURL(url),5000);
-      }).catch(()=>doDownload(dataURL));
-    }catch(e){doDownload(dataURL)}
-  }
+const doDownload=(url)=>{const a=document.createElement('a');a.href=url;a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),200)};
+if(dataURL.startsWith('blob:')){doDownload(dataURL)}
+else{try{fetch(dataURL).then(r=>r.blob()).then(blob=>{const url=URL.createObjectURL(blob);doDownload(url);setTimeout(()=>URL.revokeObjectURL(url),5000)}).catch(()=>doDownload(dataURL))}catch(e){doDownload(dataURL)}}
 }
-function regenVideo(){
-  if(isGenVid)return;
-  const base=document.getElementById('vidPrompt').value.trim();
-  if(!base){alert('提示词已清空，请重新输入描述后再生成～');return}
-  genVideo();
-}
-function shareVidResult(idx){
-  const r=genResults[idx];if(!r)return;
-  const text='【幻灵创作坊】我用AI生成了'+r.frames.length+'帧分镜视频\n风格：'+r.style+'\n提示词：'+r.prompt;
-  // 尝试使用Web Share API
-  if(navigator.share){
-    // 先尝试分享第一帧图片
-    fetch(r.frames[0]).then(resp=>resp.blob()).then(blob=>{
-      const file=new File([blob],'幻灵分镜.jpg',{type:'image/jpeg'});
-      navigator.share({title:'幻灵创作坊 - 视频分镜',text:text,files:[file]}).catch(()=>{
-        navigator.share({title:'幻灵创作坊 - 视频分镜',text:text}).catch(()=>{copyToClipboard(text)});
-      });
-    }).catch(()=>{copyToClipboard(text)});
-  }else{
-    copyToClipboard(text);
-  }
-}
+
+/* ========== 分享 ========== */
 function copyToClipboard(text){
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(text).then(()=>{alert('已复制到剪贴板，可粘贴分享给朋友～')}).catch(()=>{fallbackCopy(text)});
-  }else{fallbackCopy(text)}
-}
-function shareImgResult(idx){
-  const r=genResults[idx];if(!r)return;
-  const text='【幻灵创作坊】我用AI生成了一张图片\n提示词：'+r.prompt;
-  if(navigator.share){
-    fetch(r.url).then(resp=>resp.blob()).then(blob=>{
-      const file=new File([blob],'幻灵创作.jpg',{type:'image/jpeg'});
-      navigator.share({title:'幻灵创作坊',text:text,files:[file]}).catch(()=>{
-        navigator.share({title:'幻灵创作坊',text:text}).catch(()=>{copyToClipboard(text)});
-      });
-    }).catch(()=>{copyToClipboard(text)});
-  }else{copyToClipboard(text)}
+if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>alert('已复制到剪贴板～')).catch(()=>fallbackCopy(text))}else fallbackCopy(text);
 }
 function fallbackCopy(text){
-  const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');alert('已复制到剪贴板，可粘贴分享给朋友～')}catch(e){alert('复制失败，请手动复制：\n'+text)}
-  document.body.removeChild(ta);
+const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;left:-9999px';
+document.body.appendChild(ta);ta.select();
+try{document.execCommand('copy');alert('已复制到剪贴板～')}catch(e){alert('复制失败')}
+document.body.removeChild(ta);
+}
+function shareResult(text,imgUrl){
+if(navigator.share&&imgUrl){
+fetch(imgUrl).then(r=>r.blob()).then(blob=>{
+const file=new File([blob],'幻灵创作.jpg',{type:'image/jpeg'});
+navigator.share({title:'幻灵创作坊',text,files:[file]}).catch(()=>navigator.share({title:'幻灵创作坊',text}).catch(()=>copyToClipboard(text)));
+}).catch(()=>copyToClipboard(text));
+}else if(navigator.share){navigator.share({title:'幻灵创作坊',text}).catch(()=>copyToClipboard(text))}
+else copyToClipboard(text);
 }
 
-/* ========== 档案卡生成 ========== */
-async function genProfile(){
-  const name=document.getElementById('pfName').value.trim();
-  const title=document.getElementById('pfTitle').value.trim();
-  const quote=document.getElementById('pfQuote').value.trim();
-  const desc=document.getElementById('pfDesc').value.trim();
-  const s1=document.getElementById('pfStat1').value.trim()||'★8';
-  const s2=document.getElementById('pfStat2').value.trim()||'★8';
-  const s3=document.getElementById('pfStat3').value.trim()||'★8';
-  if(!desc){alert('请输入角色描述用于生成图片～');return}
-  if(!name){alert('请输入角色名称～');return}
-  const prog=document.getElementById('pfProgress');
-  const fill=document.getElementById('pfProgressFill');
-  const ptxt=document.getElementById('pfProgressText');
-  prog.classList.add('show');fill.style.width='0%';
-  ptxt.textContent='生成角色图片...';
-  const{prompt,negative}=buildPrompt(desc+', character profile, standing pose, full body, clean background',[...pfStyle]);
-  const url=buildUrl(prompt,negative,768,1024,Math.floor(Math.random()*999999));
-  try{
-    const blob=await fetchImgBlob(url);
-    const localUrl=URL.createObjectURL(blob);
-    fill.style.width='80%';ptxt.textContent='合成档案卡...';
-    const resultDiv=document.getElementById('pfResult');
-    resultDiv.innerHTML=`<div class="profile-card"><div class="profile-img-wrap"><img src="${localUrl}"><div class="profile-overlay"><div class="profile-name">${name}</div><div class="profile-title">${title||'原创角色'}</div><div class="profile-quote">"${quote||''}"</div></div></div><div class="profile-info">${desc}</div><div class="profile-stats"><div class="profile-stat"><div class="val">${s1}</div><div class="lbl">战力</div></div><div class="profile-stat"><div class="val">${s2}</div><div class="lbl">魅力</div></div><div class="profile-stat"><div class="val">${s3}</div><div class="lbl">智慧</div></div></div></div><div style="text-align:center;margin-top:12px"><button class="act-btn act-save" style="padding:8px 20px;font-size:13px;border-radius:10px" onclick="saveProfileCard('${localUrl}','${name}')">💾 保存档案卡</button></div>`;
-    saveToGal(localUrl,`[档案卡] ${name}: ${desc}`,true);
-    renderGallery();
-    fill.style.width='100%';ptxt.textContent='✅ 档案卡生成完成！';
-    if(document.getElementById('autoClearOn').checked){['pfName','pfTitle','pfQuote','pfStat1','pfStat2','pfStat3','pfDesc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})}
-    setTimeout(()=>prog.classList.remove('show'),1500);
-  }catch(e){
-    ptxt.textContent='❌ 图片加载失败：'+(e.message||'网络错误');
-    setTimeout(()=>prog.classList.remove('show'),2000);
-  }
+/* ====================================================================
+   AI绘图
+   ==================================================================== */
+async function genDrawImages(){
+if(isGen)return;
+const base=document.getElementById('drawPrompt').value.trim();
+if(!base){alert('请输入描述～');return}
+isGen=true;
+const btn=document.getElementById('drawGenBtn');
+btn.disabled=true;btn.textContent='🎨 生成中...';
+const prog=document.getElementById('drawProgress');
+const fill=document.getElementById('drawProgressFill');
+const ptxt=document.getElementById('drawProgressText');
+prog.classList.add('show');fill.style.width='0%';
+ptxt.textContent=`准备生成 ${drawCount} 张图片...`;
+const resultArea=document.getElementById('drawResult');
+resultArea.innerHTML='';
+const cards=[];
+for(let i=0;i<drawCount;i++){
+const card=document.createElement('div');card.className='gen-card';
+card.innerHTML=`<div class="loading"><span class="spin">⏳</span><span>生成中 ${i+1}/${drawCount}</span></div>`;
+resultArea.appendChild(card);cards.push(card);
 }
-function saveProfileCard(imgUrl,name){
-  saveToGal(imgUrl,'[档案卡] '+name);
-  alert('档案卡已保存到作品区～');
+const{prompt,negative}=buildPrompt(base,[...drawStyles]);
+let done=0;
+const tasks=[];
+for(let i=0;i<drawCount;i++){
+const seed=Math.floor(Math.random()*999999)+i*100;
+const url=buildUrl(prompt,negative,drawW,drawH,seed);
+tasks.push((async()=>{
+try{
+ptxt.textContent=`图片${i+1} 下载中...`;
+const blob=await fetchImgBlob(url);
+let finalUrl=URL.createObjectURL(blob);
+if(document.getElementById('wmOn').checked){
+try{
+const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=finalUrl});
+const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
+cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);
+URL.revokeObjectURL(finalUrl);finalUrl=cvs.toDataURL('image/jpeg',0.92);
+}catch(e){}
+}
+const resultIdx=genResults.length;
+genResults.push({url:finalUrl,prompt:base,type:'image'});
+cards[i].innerHTML=`<img src="${finalUrl}" alt="生成图" style="cursor:pointer" onclick="openFullByResult(${resultIdx})"><div class="actions"><button class="act-btn act-dl" style="padding:5px 10px;font-size:11px" onclick="event.stopPropagation();dlResult(${resultIdx})">📦 下载</button><button class="act-btn act-save" style="padding:5px 10px;font-size:11px" onclick="event.stopPropagation();saveToGalByResult(${resultIdx})">💾 保存</button><button class="act-btn act-wm" style="padding:5px 10px;font-size:11px" onclick="event.stopPropagation();shareResult('【幻灵创作坊】AI绘图: ${base.replace(/'/g,'')}','${finalUrl.substring(0,50)}')">📤 分享</button></div>`;
+saveToGal(finalUrl,base,true);renderGallery();
+}catch(e){
+cards[i].innerHTML=`<div class="loading" style="color:#f87171"><span>❌</span><span>${e.message||'生成失败'}</span></div>`;
+}
+done++;
+fill.style.width=Math.round(done/drawCount*100)+'%';
+ptxt.textContent=`已完成 ${done}/${drawCount}`;
+if(done>=drawCount){setTimeout(()=>prog.classList.remove('show'),1500);isGen=false;btn.disabled=false;btn.textContent='✨ 开始生成'}
+})());
+}
+await Promise.all(tasks);
+}
+function dlResult(idx){const r=genResults[idx];if(!r)return;downloadImg(r.url,'幻灵创作_'+Date.now())}
+function saveToGalByResult(idx){const r=genResults[idx];if(!r)return;saveToGal(r.url,r.prompt)}
+function openFullByResult(idx){const r=genResults[idx];if(!r)return;openFull(r.url)}
+
+/* ====================================================================
+   图生视频
+   ==================================================================== */
+function handleI2VUpload(input){
+const file=input.files[0];if(!file)return;
+const reader=new FileReader();
+reader.onload=function(e){
+i2vImgData=e.target.result;
+document.getElementById('i2vUploadArea').style.display='none';
+const prev=document.getElementById('i2vPreview');
+prev.style.display='block';
+prev.innerHTML=`<div class="upload-preview"><img src="${i2vImgData}"><button class="up-del" onclick="removeI2VImg()">✕</button></div>`;
+};
+reader.readAsDataURL(file);
+}
+function removeI2VImg(){
+i2vImgData=null;
+document.getElementById('i2vUploadArea').style.display='';
+document.getElementById('i2vPreview').style.display='none';
+document.getElementById('i2vFileInput').value='';
 }
 
-/* ========== 作品存储 ========== */
-function saveToGalByResult(idx){const r=genResults[idx];if(!r)return;if(r.type==='video'){saveToGal(r.frames[0],'[视频分镜] '+r.style+': '+r.prompt)}else{saveToGal(r.url,r.prompt)}}
-function openFullByResult(idx){const r=genResults[idx];if(!r)return;openFull(r.type==='video'?r.frames[0]:r.url)}
-function loadGallery(){try{const d=JSON.parse(localStorage.getItem('hl_gal')||'[]');gal=d.filter(g=>g.url)}catch(e){gal=[]}}
-function saveGallery(){try{localStorage.setItem('hl_gal',JSON.stringify(gal));return true}catch(e){while(gal.length>1){gal.pop();try{localStorage.setItem('hl_gal',JSON.stringify(gal));return true}catch(e2){}}return false}}
+async function genI2VVideo(){
+if(isGen)return;
+if(!i2vImgData){alert('请先上传一张图片');return}
+isGen=true;
+const btn=document.getElementById('i2vGenBtn');
+btn.disabled=true;btn.textContent='🖼️ 生成中...';
+const prog=document.getElementById('i2vProgress');
+const fill=document.getElementById('i2vProgressFill');
+const ptxt=document.getElementById('i2vProgressText');
+prog.classList.add('show');fill.style.width='0%';
+// 计算帧数：每秒2帧，最少6帧，最多60帧
+const fps=2;
+const totalFrames=Math.min(60,Math.max(6,i2vDur*fps));
+const transitionDur=Math.max(1.5,i2vDur/totalFrames*1.5);
+ptxt.textContent=`生成 ${totalFrames} 帧动态画面...`;
+// 基于上传的图片，通过AI生成不同视角/变化的帧
+let vw,vh;
+if(i2vW===16&&i2vH===9){vw=1280;vh=720}else if(i2vW===9&&i2vH===16){vw=720;vh=1280}else{vw=1024;vh=1024}
+// 将上传图片作为参考，生成多帧变体
+const frameVariations=[];
+const effectDescs={
+'kenburns':['slight zoom in, close-up','medium view, pan right','wide shot, pan left','medium close, slight tilt'],
+'zoom-in':['extreme wide shot','wide establishing shot','medium shot','close-up detail','extreme close-up'],
+'zoom-out':['extreme close-up','close-up detail','medium shot','wide establishing shot','extreme wide panorama'],
+'pan-left':['right side view','center view, slightly right','center view','center view, slightly left','left side view'],
+'pan-right':['left side view','center view, slightly left','center view','center view, slightly right','right side view'],
+'rotate':['front view, slight left tilt','front view','front view, slight right tilt','slight overhead angle','dramatic low angle'],
+'parallax':['foreground focus, blurred background','balanced focus','background focus, blurred foreground','mid-ground focus','panoramic depth'],
+'dream':['soft focus, ethereal glow','sharp focus, vivid colors','high contrast, dramatic','soft pastel, dreamy haze','golden hour warm light']
+};
+const variations=effectDescs[i2vEffect]||effectDescs['kenburns'];
+for(let i=0;i<totalFrames;i++){
+const vIdx=i%variations.length;
+frameVariations.push(`${variations[vIdx]}, cinematic quality, smooth motion, consistent style`);
+}
+const frameUrls=[];
+let frameDone=0;
+// 分批生成，每批最多4张
+const batchSize=4;
+for(let batch=0;batch<Math.ceil(totalFrames/batchSize);batch++){
+const batchPromises=[];
+for(let j=0;j<batchSize&&(batch*batchSize+j)<totalFrames;j++){
+const idx=batch*batchSize+j;
+const variation=frameVariations[idx];
+const prompt=`masterpiece, best quality, 8k, ${variation}, same scene, consistent character and style`;
+const negative=GLOBAL_NEG+', inconsistent, different character, different style';
+const seed=Math.floor(Math.random()*999999)+idx*37;
+const url=buildUrl(prompt,negative,vw,vh,seed);
+batchPromises.push((async()=>{
+try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}
+catch(e){frameUrls[idx]=i2vImgData} // fallback到原图
+frameDone++;
+fill.style.width=Math.round(frameDone/totalFrames*80)+'%';
+ptxt.textContent=`生成分镜 (${frameDone}/${totalFrames})...`;
+})());
+}
+await Promise.all(batchPromises);
+}
+const validFrames=frameUrls.filter(u=>u);
+if(validFrames.length<2){
+ptxt.textContent='❌ 生成失败，请重试';
+setTimeout(()=>prog.classList.remove('show'),2000);
+isGen=false;btn.disabled=false;btn.textContent='🖼️ 生成视频';return;
+}
+// 加水印
+if(document.getElementById('wmOn').checked){
+for(let i=0;i<validFrames.length;i++){
+try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
+}
+}
+fill.style.width='100%';ptxt.textContent='✅ 视频生成完成！';
+// 构建播放器
+const vidIdx=genResults.length;
+genResults.push({type:'video',frames:validFrames,prompt:'[图生视频]',style:i2vEffect,duration:i2vDur});
+saveToGal(validFrames[0],'[图生视频] '+i2vEffect,true);
+renderGallery();
+showVideoPlayer('i2vResult',validFrames,i2vW/i2vH,transitionDur,i2vDur,vidIdx);
+validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵图生视频_${Date.now()}_${i+1}.jpg`),1000+600*i)});
+setTimeout(()=>prog.classList.remove('show'),2000);
+isGen=false;btn.disabled=false;btn.textContent='🖼️ 生成视频';
+}
+
+/* ====================================================================
+   AI短剧
+   ==================================================================== */
+async function genDrama(){
+if(isGen)return;
+const base=document.getElementById('dramaPrompt').value.trim();
+if(!base){alert('请输入故事大纲～');return}
+isGen=true;
+const btn=document.getElementById('dramaGenBtn');
+btn.disabled=true;btn.textContent='🎬 生成中...';
+const prog=document.getElementById('dramaProgress');
+const fill=document.getElementById('dramaProgressFill');
+const ptxt=document.getElementById('dramaProgressText');
+prog.classList.add('show');fill.style.width='0%';
+const scenesDiv=document.getElementById('dramaScenes');
+scenesDiv.innerHTML='';
+const resultDiv=document.getElementById('dramaResult');
+resultDiv.innerHTML='';
+// 获取该类型的分镜模板
+const template=DRAMA_TEMPLATES[dramaGenre]||DRAMA_TEMPLATES.fantasy;
+let shots=[];
+for(let i=0;i<dramaFrames;i++){
+const tplIdx=i%template.length;
+shots.push({label:`第${i+1}场`,desc:`${template[tplIdx]}, ${base}`,fullDesc:`${template[tplIdx]} of the story: ${base}, cinematic quality, detailed`});
+}
+ptxt.textContent=`生成分镜（0/${shots.length}）...`;
+let vw,vh;vw=1280;vh=720; // 短剧默认16:9
+const frameUrls=[];
+let frameDone=0;
+// 分批生成
+const batchSize=4;
+for(let batch=0;batch<Math.ceil(shots.length/batchSize);batch++){
+const batchPromises=[];
+for(let j=0;j<batchSize&&(batch*batchSize+j)<shots.length;j++){
+const idx=batch*batchSize+j;
+const shot=shots[idx];
+const{prompt,negative}=buildPrompt(shot.fullDesc,[...dramaStyles]);
+const seed=Math.floor(Math.random()*999999)+idx*53;
+const url=buildUrl(prompt,negative,vw,vh,seed);
+batchPromises.push((async()=>{
+try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}
+catch(e){frameUrls[idx]=''}
+frameDone++;
+fill.style.width=Math.round(frameDone/shots.length*70)+'%';
+ptxt.textContent=`生成分镜（${frameDone}/${shots.length}）...`;
+// 实时预览当前帧
+if(frameUrls[idx]){
+const sceneEl=document.createElement('div');sceneEl.className='scene-item fade-in';
+sceneEl.innerHTML=`<div class="sc-num">${idx+1}/${shots.length}</div><div class="sc-title">${shot.label}</div><div class="sc-frame"><img src="${frameUrls[idx]}"></div><div class="sc-desc">${shot.label}: ${template[idx%template.length]}</div>`;
+scenesDiv.appendChild(sceneEl);
+}
+})());
+}
+await Promise.all(batchPromises);
+}
+const validFrames=frameUrls.filter(u=>u);
+if(validFrames.length<2){
+ptxt.textContent='❌ 生成失败，请重试';
+setTimeout(()=>prog.classList.remove('show'),2000);
+isGen=false;btn.disabled=false;btn.textContent='🎬 生成分镜短片';return;
+}
+// 加水印
+if(document.getElementById('wmOn').checked){
+for(let i=0;i<validFrames.length;i++){
+try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
+}
+}
+fill.style.width='100%';ptxt.textContent=`✅ 短剧生成完成！${validFrames.length}帧 · 约${Math.round(validFrames.length*3)}秒`;
+// 保存并展示播放器
+const vidIdx=genResults.length;
+genResults.push({type:'drama',frames:validFrames,prompt:base,genre:dramaGenre,duration:Math.round(validFrames.length*3)});
+saveToGal(validFrames[0],`[AI短剧·${dramaGenre}] ${base.substring(0,30)}`,true);
+renderGallery();
+const transitionDur=Math.max(1.5,validFrames.length>12?2:1.5);
+showVideoPlayer('dramaResult',validFrames,16/9,transitionDur,Math.round(validFrames.length*3),vidIdx);
+validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵短剧_${dramaGenre}_${Date.now()}_${i+1}.jpg`),1000+500*i)});
+setTimeout(()=>prog.classList.remove('show'),2000);
+isGen=false;btn.disabled=false;btn.textContent='🎬 生成分镜短片';
+}
+
+/* ====================================================================
+   一键成片
+   ==================================================================== */
+async function genOneClick(){
+if(isGen)return;
+const base=document.getElementById('ocPrompt').value.trim();
+if(!base){alert('请输入描述～');return}
+isGen=true;
+const btn=document.getElementById('ocGenBtn');
+btn.disabled=true;btn.textContent='⚡ 生成中...';
+const prog=document.getElementById('ocProgress');
+const fill=document.getElementById('ocProgressFill');
+const ptxt=document.getElementById('ocProgressText');
+prog.classList.add('show');fill.style.width='0%';
+const resultDiv=document.getElementById('ocResult');
+resultDiv.innerHTML='';
+// 根据时长计算帧数（每秒2帧）
+const fps=2;
+const totalFrames=Math.min(60,Math.max(6,Math.round(ocDur*fps)));
+const tpl=OC_TEMPLATES[ocTemplate]||OC_TEMPLATES.character;
+ptxt.textContent=`生成 ${totalFrames} 帧画面（${ocTemplate}模板）...`;
+let vw,vh;
+if(ocW===16&&ocH===9){vw=1280;vh=720}else if(ocW===9&&ocH===16){vw=720;vh=1280}else{vw=1024;vh=1024}
+const frameUrls=[];
+let frameDone=0;
+const batchSize=4;
+for(let batch=0;batch<Math.ceil(totalFrames/batchSize);batch++){
+const batchPromises=[];
+for(let j=0;j<batchSize&&(batch*batchSize+j)<totalFrames;j++){
+const idx=batch*batchSize+j;
+const shotDesc=tpl.shots[idx%tpl.shots.length];
+const fullDesc=`${shotDesc}, ${base}, ${tpl.desc}, cinematic quality, professional`;
+const{prompt,negative}=buildPrompt(fullDesc,drawStyles.size?['anime']:['anime']);
+const seed=Math.floor(Math.random()*999999)+idx*41;
+const url=buildUrl(prompt,negative,vw,vh,seed);
+batchPromises.push((async()=>{
+try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}
+catch(e){frameUrls[idx]=''}
+frameDone++;
+fill.style.width=Math.round(frameDone/totalFrames*80)+'%';
+ptxt.textContent=`生成帧 (${frameDone}/${totalFrames})...`;
+})());
+}
+await Promise.all(batchPromises);
+}
+const validFrames=frameUrls.filter(u=>u);
+if(validFrames.length<2){
+ptxt.textContent='❌ 生成失败';
+setTimeout(()=>prog.classList.remove('show'),2000);
+isGen=false;btn.disabled=false;btn.textContent='⚡ 一键生成';return;
+}
+// 加水印
+if(document.getElementById('wmOn').checked){
+for(let i=0;i<validFrames.length;i++){
+try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
+}
+}
+fill.style.width='100%';ptxt.textContent=`✅ 一键成片完成！${validFrames.length}帧 · ${ocDur}秒`;
+const vidIdx=genResults.length;
+genResults.push({type:'video',frames:validFrames,prompt:base,style:ocTemplate,duration:ocDur});
+saveToGal(validFrames[0],`[一键成片·${ocTemplate}] ${base.substring(0,30)}`,true);
+renderGallery();
+const transitionDur=Math.max(1.2,ocDur/validFrames.length*1.2);
+showVideoPlayer('ocResult',validFrames,ocW/ocH,transitionDur,ocDur,vidIdx);
+validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵一键成片_${ocTemplate}_${Date.now()}_${i+1}.jpg`),1000+400*i)});
+setTimeout(()=>prog.classList.remove('show'),2000);
+isGen=false;btn.disabled=false;btn.textContent='⚡ 一键生成';
+}
+
+/* ====================================================================
+   通用视频播放器
+   ==================================================================== */
+function showVideoPlayer(containerId,frames,ar,transitionDur,duration,vidIdx){
+const container=document.getElementById(containerId);
+if(!container)return;
+const kbAnims=['kb0','kb1','kb2','kb3','kbZoomIn','kbZoomOut','kbPanLeft','kbPanRight'];
+container.innerHTML=`
+<div class="vid-player" id="vidPlayer_${vidIdx}" style="--ar:${ar}">
+${frames.map((f,i)=>`<img src="${f}" class="vid-frame${i===0?' active':''}" style="animation:${kbAnims[i%kbAnims.length]} ${transitionDur+2}s ease-in-out infinite alternate" data-idx="${i}">`).join('')}
+</div>
+<div class="vid-controls">
+<button class="vc-btn" id="vcPlay_${vidIdx}" onclick="toggleVidPlay(${vidIdx})">⏸</button>
+<div class="vc-progress" onclick="seekVid(event,${vidIdx})"><div class="vc-fill" id="vcFill_${vidIdx}" style="width:0%"></div></div>
+<div class="vc-time" id="vcTime_${vidIdx}">0:00/${formatTime(duration)}</div>
+</div>
+<div style="text-align:center;margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+<button class="act-btn act-save" style="padding:6px 14px;font-size:12px;border-radius:8px" onclick="dlVidFrames(${vidIdx})">📦 下载全部帧</button>
+<button class="act-btn act-wm" style="padding:6px 14px;font-size:12px;border-radius:8px" onclick="shareVidResult(${vidIdx})">📤 分享</button>
+</div>
+<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--text2)">${Math.round(ar*10)/10} · ${frames.length}帧 · ${duration}秒 · 自动轮播</div>
+`;
+// 启动轮播
+startVidLoop(vidIdx,frames,transitionDur*1000,duration);
+}
+
+const vidPlayers={};
+function startVidLoop(vidIdx,frames,interval,duration){
+vidPlayers[vidIdx]={frames,current:0,interval,duration,playing:true,startTime:Date.now(),timer:null};
+vidPlayers[vidIdx].timer=setInterval(()=>advanceVidFrame(vidIdx),interval);
+// 进度更新
+vidPlayers[vidIdx].progressTimer=setInterval(()=>updateVidProgress(vidIdx),200);
+}
+function advanceVidFrame(vidIdx){
+const vp=vidPlayers[vidIdx];if(!vp||!vp.playing)return;
+const playerEl=document.getElementById('vidPlayer_'+vidIdx);if(!playerEl)return;
+const allFrames=playerEl.querySelectorAll('.vid-frame');
+allFrames[vp.current].classList.remove('active');
+vp.current=(vp.current+1)%vp.frames.length;
+allFrames[vp.current].classList.add('active');
+}
+function updateVidProgress(vidIdx){
+const vp=vidPlayers[vidIdx];if(!vp)return;
+const elapsed=(Date.now()-vp.startTime)/1000;
+const loopTime=vp.duration;
+const pos=elapsed%loopTime;
+const pct=Math.min(100,pos/loopTime*100);
+const fillEl=document.getElementById('vcFill_'+vidIdx);
+if(fillEl)fillEl.style.width=pct+'%';
+const timeEl=document.getElementById('vcTime_'+vidIdx);
+if(timeEl)timeEl.textContent=formatTime(Math.floor(pos))+'/'+formatTime(vp.duration);
+}
+function toggleVidPlay(vidIdx){
+const vp=vidPlayers[vidIdx];if(!vp)return;
+vp.playing=!vp.playing;
+const btn=document.getElementById('vcPlay_'+vidIdx);
+if(btn)btn.textContent=vp.playing?'⏸':'▶';
+if(vp.playing){vp.startTime=Date.now()-vp.current*(vp.interval/1000)*1000;vp.timer=setInterval(()=>advanceVidFrame(vidIdx),vp.interval)}
+else{clearInterval(vp.timer);clearInterval(vp.progressTimer)}
+}
+function seekVid(e,vidIdx){
+const vp=vidPlayers[vidIdx];if(!vp)return;
+const rect=e.currentTarget.getBoundingClientRect();
+const pct=(e.clientX-rect.left)/rect.width;
+const targetFrame=Math.floor(pct*vp.frames.length);
+const playerEl=document.getElementById('vidPlayer_'+vidIdx);if(!playerEl)return;
+const allFrames=playerEl.querySelectorAll('.vid-frame');
+allFrames[vp.current].classList.remove('active');
+vp.current=Math.max(0,Math.min(vp.frames.length-1,targetFrame));
+allFrames[vp.current].classList.add('active');
+vp.startTime=Date.now();
+}
+function formatTime(s){const m=Math.floor(s/60);const sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec}
+function dlVidFrames(vidIdx){
+const vp=vidPlayers[vidIdx];if(!vp)return;
+vp.frames.forEach((f,i)=>{dataURLtoDownload(f,`幻灵帧_${Date.now()}_${i+1}.jpg`);});
+}
+function shareVidResult(vidIdx){
+const r=genResults[vidIdx];if(!r)return;
+const text='【幻灵创作坊】我用AI生成了视频\n'+r.frames.length+'帧 · '+(r.duration||'?')+'秒\n提示词：'+r.prompt;
+shareResult(text,r.frames[0]);
+}
+
+/* ====================================================================
+   作品存储
+   ==================================================================== */
+function loadGallery(){try{const d=JSON.parse(localStorage.getItem('hl_gal_v7')||'[]');gal=d.filter(g=>g.url)}catch(e){gal=[]}}
+function saveGallery(){try{localStorage.setItem('hl_gal_v7',JSON.stringify(gal));return true}catch(e){while(gal.length>1){gal.pop();try{localStorage.setItem('hl_gal_v7',JSON.stringify(gal));return true}catch(e2){}}return false}}
 function saveToGal(url,prompt,silent){
-  if(!url)return;
-  if(gal.find(g=>g.url===url)){if(!silent)alert('已收藏过了～');return}
-  gal.unshift({url,prompt:prompt||'',time:Date.now(),type:'image'});
-  if(gal.length>50)gal.pop();
-  const ok=saveGallery();
-  if(!silent){if(ok)showDraftBadge();else alert('存储空间不足，已自动清理旧作品')}
+if(!url)return;
+if(gal.find(g=>g.url===url)){if(!silent)alert('已收藏过了～');return}
+gal.unshift({url,prompt:prompt||'',time:Date.now(),type:'image'});
+if(gal.length>50)gal.pop();
+const ok=saveGallery();
+if(!silent){if(ok){}else alert('存储空间不足，已自动清理旧作品')}
 }
-function delFromGal(idx){if(!confirm('删除这张作品？'))return;gal.splice(idx,1);saveGallery();renderGallery()}
+function delFromGal(idx){gal.splice(idx,1);saveGallery();renderGallery()}
 function clearGallery(){if(!confirm('确定清空所有作品？'))return;gal=[];saveGallery();renderGallery()}
 function renderGallery(){
-  const grid=document.getElementById('galGrid');const empty=document.getElementById('galEmpty');const badge=document.getElementById('galCount');
-  badge.textContent=gal.length;
-  if(!gal.length){grid.innerHTML='';empty.style.display='block';return}
-  empty.style.display='none';
-  grid.innerHTML=gal.map((g,i)=>`<div class="gal-item" onclick="openFullByGal(${i})"><img src="${g.url}" alt="作品" loading="lazy"><div class="gal-prompt">${g.prompt||''}</div><button class="gal-del" onclick="event.stopPropagation();delFromGal(${i})">✕</button></div>`).join('');
+const grid=document.getElementById('galGrid');const empty=document.getElementById('galEmpty');const badge=document.getElementById('galCount');
+badge.textContent=gal.length;
+if(!gal.length){grid.innerHTML='';empty.style.display='block';return}
+empty.style.display='none';
+grid.innerHTML=gal.map((g,i)=>`<div class="gal-item" onclick="openFullByGal(${i})"><img src="${g.url}" alt="作品" loading="lazy"><div class="gal-prompt">${g.prompt||''}</div><button class="gal-del" onclick="event.stopPropagation();delFromGal(${i})">✕</button></div>`).join('');
 }
 function openFullByGal(idx){const g=gal[idx];if(!g)return;openFull(g.url)}
 function openFull(url){document.getElementById('fsImg').src=url;document.getElementById('fullView').classList.add('show')}
 function closeFull(){document.getElementById('fullView').classList.remove('show')}
-function saveFsImg(){const url=document.getElementById('fsImg').src;downloadImg(url,'幻灵创作_'+Date.now())}
-function shareFsImg(){
-  const url=document.getElementById('fsImg').src;
-  if(navigator.share){
-    fetch(url).then(resp=>resp.blob()).then(blob=>{
-      const file=new File([blob],'幻灵创作.jpg',{type:'image/jpeg'});
-      navigator.share({title:'幻灵创作坊',text:'来看看我用AI创作的作品～',files:[file]}).catch(()=>{
-        navigator.share({title:'幻灵创作坊',text:'来看看我用AI创作的作品～'}).catch(()=>{fallbackCopy('来看看我用AI创作的作品～')});
-      });
-    }).catch(()=>{fallbackCopy('来看看我用AI创作的作品～')});
-  }else{fallbackCopy('来看看我用AI创作的作品～')}
-}
+function saveFsImg(){downloadImg(document.getElementById('fsImg').src,'幻灵创作_'+Date.now())}
+function shareFsImg(){shareResult('来看看我用AI创作的作品～',document.getElementById('fsImg').src)}
 
 /* ========== 启动 ========== */
 init();
