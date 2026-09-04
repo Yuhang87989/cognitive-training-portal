@@ -20,7 +20,7 @@ if(typeof caches !== 'undefined'){
   caches.keys().then(function(n){ n.forEach(function(k){ caches.delete(k); }); }).catch(function(){});
 }
 
-var SITE_VERSION = '448';  // 发布时更新这一个数字即可，其他地方自动同步
+var SITE_VERSION = '451';  // 发布时更新这一个数字即可，其他地方自动同步
 
 (function(){
   var STORED_VER = localStorage.getItem('_site_ver') || '';
@@ -216,7 +216,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
 .nav-icon{font-size:16px;margin-bottom:2px}
 .nav-label{font-size:8px}
 </style>
-<link rel="stylesheet" href="css/style.css?v=445"/>
+<link rel="stylesheet" href="css/style.css?v=451"/>
 <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js"></script>
 <script>if(/MicroMessenger/i.test(navigator.userAgent)){document.addEventListener("DOMContentLoaded",function(){twemoji.parse(document.body,{base:"https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/",ext:".svg",size:""})})}</script>
 <script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
@@ -988,7 +988,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
             console.log("[初始化] 门户加载完成");
             if (typeof window.recordPetProgress === 'function') window.recordPetProgress('login');
             if ("serviceWorker" in navigator) {
-                // [V421c] 禁用SW注册，避免缓存劫持 /* navigator.serviceWorker.register('./sw.js?v=445').catch(function(err) {}); */
+                // [V421c] 禁用SW注册，避免缓存劫持 /* navigator.serviceWorker.register('./sw.js?v=451').catch(function(err) {}); */
             }
         } else if (retries < 50) {
             setTimeout(function() { safeInitPortal(retries + 1); }, 100);
@@ -1054,50 +1054,92 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Helvetica Neue'
         <button onclick="resetGame()" style="flex:1;padding:14px;background:#667eea;border:none;border-radius:12px;color:white;font-size:14px;cursor:pointer;">重新开始</button>
     </div>
 </div>
-<script defer src="js/config.js?v=445"></script>
-<script defer src="js/ctm.js?v=445"></script>
-<script defer src="js/db.js?v=445"></script>
-<script defer src="js/utils.js?v=445"></script>
-<script defer src="js/storage.js?v=445"></script>
-<script defer src="js/user.js?v=445"></script>
-<script defer src="js/audio.js?v=445"></script>
-<script defer src="js/data/podcasts.js?v=445"></script>
-<script defer src="js/data/videos.js?v=445"></script>
-<script defer src="js/data/games-config.js?v=445"></script>
-<script defer src="js/data/topics.js?v=445"></script>
-<script defer src="js/ui-pet.js?v=445"></script>
-<script defer src="js/modules/ui.js?v=445"></script>
-<script defer src="js/modules/week-plans.js?v=445"></script>
-<script defer src="js/modules/data-sync.js?v=445"></script>
-<script defer src="js/modules/pet.js?v=445"></script>
-<script defer src="js/modules/topics.js?v=445"></script>
-<script defer src="js/modules/practice.js?v=445"></script>
-<script defer src="js/modules/deepseek.js?v=445"></script>
-<script defer src="js/modules/wrongbook.js?v=445"></script>
-<script defer src="js/modules/games.js?v=445"></script>
-<script defer src="js/modules/podcast.js?v=445"></script>
-<script defer src="js/modules/video.js?v=445"></script>
-<script defer src="js/modules/player.js?v=445"></script>
-<script defer src="js/modules/thinking.js?v=445"></script>
-<script defer src="js/modules/method.js?v=445"></script>
-<script defer src="js/modules/self-drive.js?v=445"></script>
-<script defer src="js/modules/map.js?v=445"></script>
-<script defer src="js/modules/assessment.js?v=445"></script>
-<script defer src="js/modules/my-page.js?v=445"></script>
-<script defer src="js/modules/pomodoro.js?v=445"></script>
-<script defer src="js/modules/library.js?v=445"></script>
-<script defer src="js/modules/notepad.js?v=448"></script>
-<script defer src="js/modules/sync.js?v=445"></script>
-<script defer src="js/modules/exam.js?v=445"></script>
-<script defer src="js/modules/paper-tool.js?v=445"></script>
-<script defer src="js/modules/mindmap.js?v=445"></script>
-<script defer src="js/modules/calculator.js?v=445"></script>
-<script defer src="js/modules/plan.js?v=445"></script>
-<script defer src="js/modules/local-db.js?v=445"></script>
-<script defer src="js/modules/cloud-sync.js?v=445"></script>
-<script defer src="js/modules/stats.js?v=445"></script>
-<script defer src="js/modules/usage-stats.js?v=445"></script>
-<script defer src="js/modules/parent-dashboard.js?v=445"></script>
-<script defer src="js/modules/admin-dashboard.js?v=445"></script>
+<script defer src="js/config.js?v=451"></script>
+<script defer src="js/ctm.js?v=451"></script>
+<script defer src="js/db.js?v=451"></script>
+<script defer src="js/utils.js?v=451"></script>
+<script defer src="js/storage.js?v=451"></script>
+<script defer src="js/user.js?v=451"></script>
+<script defer src="js/audio.js?v=451"></script>
+<script defer src="js/data/podcasts.js?v=451"></script>
+<script defer src="js/data/videos.js?v=451"></script>
+<script defer src="js/data/games-config.js?v=451"></script>
+<script defer src="js/data/topics.js?v=451"></script>
+<script defer src="js/ui-pet.js?v=451"></script>
+<script defer src="js/modules/ui.js?v=451"></script>
+<script defer src="js/modules/week-plans.js?v=451"></script>
+<script defer src="js/modules/data-sync.js?v=451"></script>
+<script defer src="js/modules/pet.js?v=451"></script>
+<script defer src="js/modules/topics.js?v=451"></script>
+<script defer src="js/modules/practice.js?v=451"></script>
+<script defer src="js/modules/deepseek.js?v=451"></script>
+<script defer src="js/modules/wrongbook.js?v=451"></script>
+<script defer src="js/modules/games.js?v=451"></script>
+<script defer src="js/modules/podcast.js?v=451"></script>
+<script defer src="js/modules/video.js?v=451"></script>
+<script defer src="js/modules/player.js?v=451"></script>
+<script defer src="js/modules/thinking.js?v=451"></script>
+<script defer src="js/modules/method.js?v=451"></script>
+<script defer src="js/modules/self-drive.js?v=451"></script>
+<script defer src="js/modules/map.js?v=451"></script>
+<script defer src="js/modules/assessment.js?v=451"></script>
+<script defer src="js/modules/my-page.js?v=451"></script>
+<script defer src="js/modules/pomodoro.js?v=451"></script>
+<script defer src="js/modules/library.js?v=451"></script>
+<script defer src="js/modules/notepad.js?v=451"></script>
+<script defer src="js/modules/sync.js?v=451"></script>
+<script defer src="js/modules/exam.js?v=451"></script>
+<script defer src="js/modules/paper-tool.js?v=451"></script>
+<script defer src="js/modules/mindmap.js?v=451"></script>
+<script defer src="js/modules/calculator.js?v=451"></script>
+<script defer src="js/modules/plan.js?v=451"></script>
+<script defer src="js/modules/local-db.js?v=451"></script>
+<script defer src="js/modules/cloud-sync.js?v=451"></script>
+<script defer src="js/modules/stats.js?v=451"></script>
+<script defer src="js/modules/usage-stats.js?v=451"></script>
+<script defer src="js/modules/parent-dashboard.js?v=451"></script>
+<script defer src="js/modules/admin-dashboard.js?v=451"></script>
+
+<!-- 幻灵创作坊 iframe 全屏容器 -->
+<div id="creative-fullscreen" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:3000;display:none;flex-direction:column;background:#0a0612;">
+    <div style="display:flex;align-items:center;padding:10px 16px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;">
+        <div onclick="closeCreativeWorkshop()" style="color:white;font-size:24px;cursor:pointer;padding:4px 12px;display:flex;align-items:center;gap:6px;">← 返回</div>
+        <div style="flex:1;font-size:16px;font-weight:600;color:white;text-align:center;">✨ 幻灵创作坊</div>
+        <div style="width:60px;"></div>
+    </div>
+    <iframe id="creative-iframe" style="flex:1;width:100%;border:none;background:#0a0612;" allow="camera;microphone;fullscreen" allowfullscreen></iframe>
+</div>
+<script>
+function openCreativeWorkshop() {
+    var container = document.getElementById('creative-fullscreen');
+    var iframe = document.getElementById('creative-iframe');
+    if (container && iframe) {
+        iframe.src = '幻灵创作坊.html';
+        container.style.display = 'flex';
+        window._creativeOpen = true;
+        location.hash = '#fs=creative';
+        // 隐藏底部导航
+        var bottomNav = document.querySelector('.bottom-nav');
+        if (bottomNav) bottomNav.style.display = 'none';
+    }
+}
+function closeCreativeWorkshop() {
+    var container = document.getElementById('creative-fullscreen');
+    var iframe = document.getElementById('creative-iframe');
+    if (container) container.style.display = 'none';
+    if (iframe) iframe.src = 'about:blank';
+    window._creativeOpen = false;
+    location.hash = '';
+    // 恢复底部导航
+    var bottomNav = document.querySelector('.bottom-nav');
+    if (bottomNav) bottomNav.style.display = '';
+}
+// 监听浏览器返回按钮
+window.addEventListener('hashchange', function() {
+    if (window._creativeOpen && location.hash.indexOf('#fs=creative') === -1) {
+        closeCreativeWorkshop();
+    }
+});
+</script>
 </body>
-</html> 
+</html>

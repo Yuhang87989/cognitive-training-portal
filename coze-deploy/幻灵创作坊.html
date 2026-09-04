@@ -485,9 +485,9 @@ const GLOBAL_NEG='ugly, deformed, blurry, low quality, bad anatomy, bad hands, e
 
 /* ========== 安全级别配置 ========== */
 const SAFE_LEVELS={
-  strict:{block:['血腥','暴力','恐怖','猎奇','暗黑','哥特','死亡','尸体','裸体','色情','自杀','虐待','杀人','断肢','gore','bloody','violent','nude','naked','horror','death','kill','torture','sex','porn','dark','mysterious'],add_neg:'dark, mysterious, gothic, scary, horror'},
-  normal:{block:['血腥','暴力','恐怖','猎奇','死亡','尸体','裸体','色情','自杀','虐待','杀人','断肢','gore','bloody','violent','nude','naked','horror','death','kill','torture','sex','porn'],add_neg:'gore, bloody, violent, nude, horror, death'},
-  relaxed:{block:['裸体','色情','自杀','虐待','杀人','nude','naked','porn','sex','suicide','torture','murder'],add_neg:'nude, explicit'}
+  strict:{block:['血腥','暴力','恐怖','猎奇','暗黑','哥特','死亡','尸体','裸体','色情','自杀','虐待','杀人','断肢','武器','枪械','毒品','吸烟','饮酒','脏话','辱骂','歧视','政治敏感','邪教','迷信','赌博','裸露','胸部','臀部','私密','性感','暴露','比基尼','泳装','内衣','浴巾','湿身','gore','bloody','violent','nude','naked','horror','death','kill','torture','sex','porn','dark','mysterious','weapon','gun','drug','smoke','alcohol','swear','racism','nazi','cult','gambling','nipple','breast','buttocks','bikini','swimsuit','underwear','lingerie','explicit','nsfw','lewd','erotic','hentai','topless','bare','obscene','vulgar','indecent','suggestive','provocative','risqué','fetish','bdsm','bondage','strip','pole dance','peep','voyeur','upskirt','downblouse','wardrobe','malfunction','flasher','exhibitionist','crotch','cleft','cleavage','armpit','thigh','stocking','garter','corset','negligee','camisole','teddy','bodysuit','leotard','fishnet','pantyhose','thong','g-string','pasties','chastity','orgasm','masturb','erection','ejacul','dildo','vibrat','sex toy','condom','lubric','prostit','escort','massage parlor','strip club','peep show','adult film','xxx','jail','prison','handcuff','chain','rope binding','struggle','suffocat','drown','hang','slit','slash','wound','scar','bruise','blood bath','dismember','decapitat','amputee','mutilat','corpse','skeleton','skull','zombie','vampire','werewolf','demon','possessed','haunted','cursed','ghost spirit','paranormal','occult','satanic','sacrifice','ritual','blood ritual'],add_neg:'dark, mysterious, gothic, scary, horror, weapon, gun, drug, nude, blood, skull, demon, occult, violence, explicit, nsfw'},
+  normal:{block:['血腥','暴力','恐怖','猎奇','死亡','尸体','裸体','色情','自杀','虐待','杀人','断肢','武器','枪械','毒品','赌博','裸露','性感','暴露','比基尼','内衣','gore','bloody','violent','nude','naked','horror','death','kill','torture','sex','porn','weapon','gun','drug','gambling','bikini','underwear','lingerie','explicit','nsfw','lewd','erotic','hentai','topless','bare','obscene','suggestive','cleavage','thigh','zombie','vampire','demon','skeleton','skull','blood','wound','suffocat','drown','hang','corpse','cursed','occult','satanic','sacrifice'],add_neg:'gore, bloody, violent, nude, horror, death, weapon, gun, drug, blood, skull, demon, explicit, nsfw'},
+  relaxed:{block:['裸体','色情','自杀','虐待','杀人','裸露','nude','naked','porn','sex','suicide','torture','murder','explicit','nsfw','lewd','erotic','hentai','topless','obscene','blood','corpse','skull'],add_neg:'nude, explicit, nsfw, blood, corpse'}
 };
 
 /* ========== 状态 ========== */
@@ -645,10 +645,17 @@ function smartFilter(rawText){
   let text=rawText.trim();
   // 安全清洗（根据安全级别）
   const cfg=SAFE_LEVELS[safeLevel]||SAFE_LEVELS.normal;
+  let blockedWords=[];
   for(const bad of cfg.block){
     if(text.toLowerCase().includes(bad.toLowerCase())){
-      text=text.replace(new RegExp(bad,'gi'),'');
+      blockedWords.push(bad);
+      text=text.replace(new RegExp(bad.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'');
     }
+  }
+  if(blockedWords.length>0){
+    const msg='🛡️ 已自动过滤'+blockedWords.length+'个敏感词：'+blockedWords.slice(0,5).join('、')+(blockedWords.length>5?'等':'');
+    if(typeof showToast==='function')showToast(msg);
+    else{const t=document.createElement('div');t.style.cssText='position:fixed;top:60px;left:50%;transform:translateX(-50%);background:rgba(139,92,246,.92);color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;z-index:9999;backdrop-filter:blur(8px);transition:opacity .4s';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),400)},3000)}
   }
   // 中文→英文
   let translated=text;

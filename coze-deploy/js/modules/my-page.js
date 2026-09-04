@@ -837,8 +837,8 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="openFullscreenPage('assessment')">
                         <span>🧩</span> 能力测评
                     </button>
-                    <button class="foldable-btn" onclick="window.location.href='幻灵创作坊.html'">
-                        <span>🎨</span> 幻灵创作坊
+                    <button class="foldable-btn" onclick="openCreativeWorkshop()">
+                        <span>✨</span> 幻灵创作坊
                     </button>
                 </div>
             </div>
