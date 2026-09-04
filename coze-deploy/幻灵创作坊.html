@@ -296,6 +296,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center">💡 多选可融合不同画风，创造独特风格</div>
 </div>
 <div class="card fade-in">
+<div class="card-title">⚡ 生成模型</div>
+<select class="styled-select" id="modelSelect" onchange="pickModel(this)">
+<option value="turbo" selected>🚀 速度优先（1-3秒/张，推荐）</option>
+<option value="zimage">⚖️ 均衡模式（3-5秒/张，高质量）</option>
+<option value="flux">💎 画质优先（15-30秒/张，最高品质）</option>
+</select>
+<div style="font-size:11px;color:var(--text2);margin-top:6px;text-align:center">💡 速度优先适合快速预览，画质优先适合最终出图</div>
+</div>
+<div class="card fade-in">
 <div class="card-title">📐 画面尺寸</div>
 <select class="styled-select" id="drawSizeSelect" onchange="pickDrawSize(this)">
 <option value="1024x1024" selected>1:1 方图（1024×1024）</option>
@@ -441,6 +450,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 </div>
 <div class="card fade-in">
+<div class="card-title">⚡ 生成模型</div>
+<select class="styled-select" onchange="pickModel(this);this.closest('.panel').querySelectorAll('#modelSelect')&&(document.getElementById('modelSelect').value=imgModel)">
+<option value="turbo" selected>🚀 速度优先（1-3秒/张，推荐）</option>
+<option value="zimage">⚖️ 均衡模式（3-5秒/张）</option>
+<option value="flux">💎 画质优先（15-30秒/张）</option>
+</select>
+</div>
+<div class="card fade-in">
 <div class="card-title">🎞️ 分镜数量（决定视频时长）</div>
 <select class="styled-select" id="dramaFrameSelect" onchange="pickDramaFrames(this)">
 <option value="4">4帧 (~12秒)</option>
@@ -491,6 +508,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="prompt-box">
 <textarea id="ocPrompt" placeholder="描述你想要的内容...&#10;&#10;例如：银发狼耳少女，白色魔法袍，在月光森林中施展魔法" style="min-height:70px"></textarea>
 </div>
+</div>
+<div class="card fade-in">
+<div class="card-title">⚡ 生成模型</div>
+<select class="styled-select" onchange="pickModel(this)">
+<option value="turbo" selected>🚀 速度优先（1-3秒/张，推荐）</option>
+<option value="zimage">⚖️ 均衡模式（3-5秒/张）</option>
+<option value="flux">💎 画质优先（15-30秒/张）</option>
+</select>
 </div>
 <div class="card fade-in">
 <div class="card-title">⏱️ 视频时长</div>
@@ -695,6 +720,7 @@ let isGen=false;
 let genResults=[];
 let exportFmt='jpg';
 let safeLevel='normal';
+let imgModel='turbo'; // turbo=快速(1-3秒), flux=高质量(15-30秒), zimage=均衡(3-5秒)
 // 水印
 let wmShape='🐾',wmColor='rgba(168,85,247,0.6)',wmMode='corner';
 // AI绘图
@@ -761,6 +787,7 @@ function pickDrawSize(el){const [w,h]=el.value.split('x');drawW=parseInt(w);draw
 function pickDrawNum(el){drawCount=parseInt(el.value)}
 function pickFmt(el){exportFmt=el.value}
 function pickSafe(el){safeLevel=el.value}
+function pickModel(el){imgModel=el.value}
 function pickWmShape(el){document.querySelectorAll('#wmShapes .wm-shape').forEach(b=>b.classList.remove('active'));el.classList.add('active');wmShape=el.dataset.s}
 function pickWmColor(el){document.querySelectorAll('#wmColors .wm-color').forEach(b=>b.classList.remove('active'));el.classList.add('active');wmColor=el.dataset.c}
 function pickWmMode(el){document.querySelectorAll('.wm-mode').forEach(b=>b.classList.remove('active'));el.classList.add('active');wmMode=el.dataset.mode}
@@ -805,12 +832,12 @@ function buildUrl(prompt,negative,w,h,seed){
 const MAX_URL=7500;
 const ep=encodeURIComponent(prompt);
 const en=encodeURIComponent((negative.length>500?negative.substring(0,500):negative));
-const base=`https://image.pollinations.ai/prompt/${ep}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=flux&nologo=true&negative=${en}`;
+const base=`https://image.pollinations.ai/prompt/${ep}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=${imgModel}&nologo=true&negative=${en}`;
 if(base.length<=MAX_URL)return base;
 const overLen=base.length-MAX_URL;
 const cutChars=Math.ceil(overLen/3)+50;
 const sp=prompt.length>cutChars?prompt.substring(0,prompt.length-cutChars):prompt;
-return`https://image.pollinations.ai/prompt/${encodeURIComponent(sp)}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=flux&nologo=true&negative=${en}`;
+return`https://image.pollinations.ai/prompt/${encodeURIComponent(sp)}?width=${w}&height=${h}&seed=${seed||Math.floor(Math.random()*999999)}&model=${imgModel}&nologo=true&negative=${en}`;
 }
 
 /* ========== 图片获取 ========== */
@@ -910,7 +937,7 @@ const prog=document.getElementById('drawProgress');
 const fill=document.getElementById('drawProgressFill');
 const ptxt=document.getElementById('drawProgressText');
 prog.classList.add('show');fill.style.width='0%';
-ptxt.textContent=`准备生成 ${drawCount} 张图片...`;
+ptxt.textContent=`[${imgModel==='turbo'?'🚀极速':imgModel==='zimage'?'⚖️均衡':'💎高清'}] 准备生成 ${drawCount} 张图片...`;
 const resultArea=document.getElementById('drawResult');
 resultArea.innerHTML='';
 const cards=[];
