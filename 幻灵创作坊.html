@@ -825,49 +825,53 @@ async function genImages(){
   const useLockSeed=lockSeed||document.getElementById('lockSeed').checked;
   if(useLockSeed&&!fixedSeed) fixedSeed=Math.floor(Math.random()*999999);
   let done=0;
-  const tasks=[];
-  for(let i=0;i<imgCount;i++){
+  // 并发控制：每次最多同时生成3张，避免API限流和浏览器连接耗尽
+  const CONCURRENCY=3;
+  let nextIdx=0;
+  async function runOne(i){
     const seed=useLockSeed?(fixedSeed+i):(Math.floor(Math.random()*999999)+i);
     const url=buildUrl(prompt,negative,imgW,imgH,seed);
-    tasks.push((async()=>{
-      try{
-        ptxt.textContent=`图片${i+1} 下载中... (${url.length}字符)`;
-        // v4方案：fetch下载图片为blob，转本地URL显示（解决微信浏览器加载外部图片问题）
-        const blob=await fetchImgBlob(url);
-        let finalUrl=URL.createObjectURL(blob);
-        // 加水印：blob已下载，直接加载到canvas
-        if(document.getElementById('wmOn').checked){
-          try{
-            const img=new Image();
-            await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=finalUrl});
-            const cvs=document.createElement('canvas');
-            cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
-            cvs.getContext('2d').drawImage(img,0,0);
-            drawWatermark(cvs,wmShape,wmColor,wmMode);
-            URL.revokeObjectURL(finalUrl);
-            finalUrl=cvs.toDataURL('image/jpeg',0.92);
-          }catch(wmErr){}
-        }
-        // 更新卡片（用本地blob URL，不走外部域名）
-        const card=cards[i];
-        const resultIdx=genResults.length;
-        genResults.push({url:finalUrl,prompt:base});
-        card.innerHTML=`<img src="${finalUrl}" alt="生成图" style="cursor:pointer" onclick="openFullByResult(${resultIdx})"><div class="actions"><button class="act-btn act-dl" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();downloadByResult(${resultIdx})">📦 下载</button><button class="act-btn act-save" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();saveToGalByResult(${resultIdx})">💾 保存</button><button class="act-btn act-wm" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();shareImgResult(${resultIdx})">📤 分享</button><button class="act-btn" style="padding:6px 12px;font-size:12px;background:rgba(139,92,246,.5)" onclick="event.stopPropagation();regenSingle(${i})">🔄 重新生成</button></div>`;
-        saveToGal(finalUrl,base,true);
-        renderGallery();
-        // 自动下载到本地（间隔800ms防止浏览器拦截）
-        setTimeout(()=>dataURLtoDownload(finalUrl,`幻灵创作_${Date.now()}_${i+1}.jpg`),1000+800*i);
-      }catch(e){
-        cards[i].innerHTML=`<div class="loading" style="color:#f87171"><span>❌</span><span>${e.message||'生成失败'}</span></div>`;
+    try{
+      ptxt.textContent=`图片${i+1}/${imgCount} 生成中...`;
+      const blob=await fetchImgBlob(url);
+      let finalUrl=URL.createObjectURL(blob);
+      if(document.getElementById('wmOn').checked){
+        try{
+          const img=new Image();
+          await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=finalUrl});
+          const cvs=document.createElement('canvas');
+          cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;
+          cvs.getContext('2d').drawImage(img,0,0);
+          drawWatermark(cvs,wmShape,wmColor,wmMode);
+          URL.revokeObjectURL(finalUrl);
+          finalUrl=cvs.toDataURL('image/jpeg',0.92);
+        }catch(wmErr){}
       }
-      done++;
-      const pct=Math.round(done/imgCount*100);
-      fill.style.width=pct+'%';
-      ptxt.textContent=`已完成 ${done}/${imgCount}`;
-      if(done>=imgCount){setTimeout(()=>prog.classList.remove('show'),1500);isGenImg=false;btn.disabled=false;btn.textContent='✨ 开始生成';if(document.getElementById('autoClearOn').checked)document.getElementById('imgPrompt').value=''}
-    })());
+      const card=cards[i];
+      const resultIdx=genResults.length;
+      genResults.push({url:finalUrl,prompt:base});
+      card.innerHTML=`<img src="${finalUrl}" alt="生成图" style="cursor:pointer" onclick="openFullByResult(${resultIdx})"><div class="actions"><button class="act-btn act-dl" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();downloadByResult(${resultIdx})">📦 下载</button><button class="act-btn act-save" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();saveToGalByResult(${resultIdx})">💾 保存</button><button class="act-btn act-wm" style="padding:6px 12px;font-size:12px" onclick="event.stopPropagation();shareImgResult(${resultIdx})">📤 分享</button><button class="act-btn" style="padding:6px 12px;font-size:12px;background:rgba(139,92,246,.5)" onclick="event.stopPropagation();regenSingle(${i})">🔄 重新生成</button></div>`;
+      saveToGal(finalUrl,base,true);
+      renderGallery();
+      setTimeout(()=>dataURLtoDownload(finalUrl,`幻灵创作_${Date.now()}_${i+1}.jpg`),1000+800*i);
+    }catch(e){
+      cards[i].innerHTML=`<div class="loading" style="color:#f87171"><span>❌</span><span>${e.message||'生成失败'}</span></div>`;
+    }
+    done++;
+    const pct=Math.round(done/imgCount*100);
+    fill.style.width=pct+'%';
+    ptxt.textContent=`已完成 ${done}/${imgCount}`;
+    if(done>=imgCount){setTimeout(()=>prog.classList.remove('show'),1500);isGenImg=false;btn.disabled=false;btn.textContent='✨ 开始生成';if(document.getElementById('autoClearOn').checked)document.getElementById('imgPrompt').value=''}
   }
-  await Promise.all(tasks);
+  // 并发调度器：始终保持CONCURRENCY个任务在跑
+  async function worker(){
+    while(nextIdx<imgCount){
+      const i=nextIdx++;
+      await runOne(i);
+    }
+  }
+  const workers=Array.from({length:Math.min(CONCURRENCY,imgCount)},()=>worker());
+  await Promise.all(workers);
 }
 
 function downloadByResult(idx){
