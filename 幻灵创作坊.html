@@ -2,6 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>幻灵创作坊 v7</title>
 <style>
@@ -1052,7 +1054,7 @@ const ZHIPU_VIDEO_API='https://qiuyhang1688.com.cn/api/zhipu/videos/generations'
 const ZHIPU_RESULT_API='https://qiuyhang1688.com.cn/api/zhipu/async-result/';
 // 视频文件中转（ufileos直链无CORS头，经自有服务器转发才能fetch下载/保存）
 const MEDIA_MIRROR='https://qiuyhang1688.com.cn/api/mediamirror/';
-function mirrorUrl(u){return MEDIA_MIRROR+encodeURIComponent(u);}
+function mirrorUrl(u){return MEDIA_MIRROR+u.replace(/^https?:\/\//,'https/');}
 // 运镜/风格 → 英文prompt增强
 const VIDEO_FX={
 'kenburns':'slow cinematic camera, gentle push in with subtle pan, smooth motion, film look',
@@ -1123,44 +1125,7 @@ if(d.task_status==='FAIL')throw new Error((d.error&&d.error.message)||'视频生
 throw new Error('生成超时，请重试');
 }
 
-// 真视频播放器
-function showRealVideo(containerId,vid,prompt,meta){
-const c=document.getElementById(containerId);
-if(!c)return;
-const ts=Date.now();
-const coverAttr=vid.cover?`<img src="${vid.cover}" class="real-video" alt="封面" style="object-fit:cover">`:'';
-c.innerHTML=`<div class="real-video-wrap">
-<video class="real-video" id="rv_${ts}" src="${vid.url}" ${vid.cover?`poster="${vid.cover}"`:''} controls playsinline preload="metadata">${coverAttr}您的浏览器不支持视频播放</video>
-<div class="video-actions">
-<button class="act-btn act-save" style="padding:7px 16px;font-size:13px;border-radius:9px" onclick="downloadVideo('${vid.url}','${meta.name}_${ts}.mp4')">⬇️ 下载 MP4</button>
-<button class="act-btn" style="padding:7px 16px;font-size:13px;border-radius:9px;background:linear-gradient(135deg,#ec4899,#8b5cf6)" onclick="shareVideo('${vid.url}','${(meta.label||'AI视频').replace(/'/g,'')}')">📤 分享视频</button>
-</div>
-<div class="video-meta" id="rvmeta_${ts}">${meta.label} · ${meta.duration}秒 · MP4 · <span style="color:#a78bfa">💾 正在保存到本地作品库…</span><br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成，建议下载或分享保存</span></div>
-</div>`;
-const v=c.querySelector('video');if(v)v.play().catch(()=>{});
-persistVideo(vid.url,vid.cover,meta).then(ok=>{
-const m=document.getElementById('rvmeta_'+ts);
-if(m)m.innerHTML=`${meta.label} · ${meta.duration}秒 · MP4 · ${ok?'<span style="color:#34d399">✅ 已永久保存到作品库</span>':'<span style="color:#fbbf24">⚠️ 自动保存未完成，请点「下载MP4」手动保存</span>'}<br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成，建议下载或分享保存</span>`;
-}).catch(()=>{});
-}
-
-// 分享视频（优先系统分享，可直接发微信好友/朋友圈）
-async function shareVideo(url,title){
-try{
-const resp=await fetch(mirrorUrl(url));
-const blob=await resp.blob();
-const file=new File([blob],'幻灵AI视频.mp4',{type:'video/mp4'});
-if(navigator.canShare&&navigator.canShare({files:[file]})){
-await navigator.share({files:[file],title:'幻灵创作坊',text:'来看看我用AI生成的视频！'});
-return;
-}
-}catch(e){if(e&&e.name==='AbortError')return;}
-// 降级：复制链接
-copyText(url);
-alert('当前环境不支持直接分享文件，链接已复制（链接24小时内有效，请尽快打开）');
-}
-
-// 视频持久化到IndexedDB（作品库永久保存）
+// 视频持久化到IndexedDB（作品库永久保存）底层函数
 function idbOpen(){
 return new Promise((res,rej)=>{
 const rq=indexedDB.open('hl_gal_db',1);
@@ -1191,24 +1156,134 @@ tx.objectStore('videos').delete(id);
 tx.oncomplete=()=>{db.close();res(true)};tx.onerror=()=>{db.close();res(false)};
 });
 }
-// 视频生成成功后：拉取视频文件存IndexedDB + 写元数据到作品库
-async function persistVideo(videoUrl,coverUrl,meta){
-try{
-const vid='v_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
-const resp=await fetch(mirrorUrl(videoUrl));
-if(!resp.ok)return false;
-const blob=await resp.blob();
-if(blob.size<10000)return false;
-await idbPut(vid,blob);
-if(coverUrl){try{const cr=await fetch(mirrorUrl(coverUrl));if(cr.ok){const cb=await cr.blob();if(cb.size>1000)await idbPut(vid+'_c',cb);}}catch(e){}}
-gal.unshift({type:'video',vid,url:'',prompt:meta.label||'AI视频',duration:meta.duration||5,time:Date.now()});
-if(gal.length>60)gal.pop();
-saveGallery();
-renderGallery();
-return true;
-}catch(e){return false;}
+// 视频blob缓存（下载/分享/保存复用，避免重复拉取）
+const __vblob={};
+const __rv={};
+const APP_VER='v460';
+async function fetchVideoBlob(url){
+  if(__vblob[url])return __vblob[url];
+  const resp=await fetch(mirrorUrl(url));
+  if(!resp.ok)throw new Error('HTTP '+resp.status);
+  const blob=await resp.blob();
+  if(blob.size<10000)throw new Error('视频文件异常('+blob.size+'B)');
+  __vblob[url]=blob;
+  return blob;
 }
-function downloadVideo(url,name){const a=document.createElement('a');a.href=mirrorUrl(url);a.download=name;document.body.appendChild(a);a.click();a.remove()}
+function downloadBlob(blob,name){
+  const a=document.createElement('a');
+  const u=URL.createObjectURL(blob);
+  a.href=u;a.download=name||('幻灵AI视频_'+Date.now()+'.mp4');
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u),8000);
+}
+function setBtn(btn,txt,dis){if(!btn)return;btn.textContent=txt;btn.disabled=!!dis;}
+async function downloadVideoBlob(url,name,btn){
+  const old='⬇️ 下载 MP4';
+  try{
+    setBtn(btn,'⏳ 准备下载…',true);
+    const blob=await fetchVideoBlob(url);
+    downloadBlob(blob,name);
+    setBtn(btn,'✅ 已开始下载',true);
+    setTimeout(()=>setBtn(btn,old,false),2500);
+  }catch(e){
+    setBtn(btn,'⬇️ 重试下载',false);
+    alert('下载失败：'+(e.message||'网络错误')+'\n\n可尝试：长按视频画面选「保存视频」，或换 Chrome/Edge 浏览器打开');
+  }
+}
+async function shareVideo(url,title,btn){
+  const old='📤 分享视频';
+  try{
+    setBtn(btn,'⏳ 准备分享…',true);
+    const blob=await fetchVideoBlob(url);
+    const file=new File([blob],'幻灵AI视频.mp4',{type:'video/mp4'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:'幻灵创作坊',text:'来看看我用AI生成的视频！'});}
+      catch(e){if(e&&e.name!=='AbortError')throw e;}
+    }else{
+      downloadBlob(blob,'幻灵AI视频_'+Date.now()+'.mp4');
+      alert('当前浏览器不支持直接分享文件，视频已开始下载，可到微信/QQ里发给好友');
+    }
+  }catch(e){
+    alert('分享准备失败：'+(e.message||'网络错误')+'\n可先点「下载MP4」存到手机再分享');
+  }finally{setBtn(btn,old,false);}
+}
+// 结果页按钮入口（从注册表取URL，避免超长链接写进onclick）
+function rvDl(ts,btn){const r=__rv[ts];if(r)downloadVideoBlob(r.url,(r.name||'幻灵AI视频')+'_'+ts+'.mp4',btn);}
+function rvShare(ts,btn){const r=__rv[ts];if(r)shareVideo(r.url,(r.meta&&r.meta.label)||'AI视频',btn);}
+function rvSave(ts,btn){const r=__rv[ts];if(r)saveVideoToGallery(r.url,r.cover,r.meta,btn);}
+
+// 真视频播放器
+function showRealVideo(containerId,vid,prompt,meta){
+const c=document.getElementById(containerId);
+if(!c)return;
+const ts=Date.now();
+__rv[ts]={url:vid.url,cover:vid.cover,meta:meta||{}};
+c.innerHTML=`<div class="real-video-wrap">
+<video class="real-video" id="rv_${ts}" src="${vid.url}" ${vid.cover?`poster="${vid.cover}"`:''} controls playsinline preload="metadata">您的浏览器不支持视频播放</video>
+<div class="video-actions">
+<button class="act-btn act-save" style="padding:7px 16px;font-size:13px;border-radius:9px" onclick="rvDl(${ts},this)">⬇️ 下载 MP4</button>
+<button class="act-btn" style="padding:7px 16px;font-size:13px;border-radius:9px;background:linear-gradient(135deg,#ec4899,#8b5cf6)" onclick="rvShare(${ts},this)">📤 分享视频</button>
+<button class="act-btn" style="padding:7px 16px;font-size:13px;border-radius:9px" onclick="rvSave(${ts},this)">💾 保存到作品库</button>
+</div>
+<div class="video-meta" id="rvmeta_${ts}">${meta.label} · ${meta.duration}秒 · MP4 · <span style="color:#a78bfa">💾 正在自动保存到作品库…</span><br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成 · ${APP_VER}</span></div>
+</div>`;
+const v=c.querySelector('video');if(v)v.play().catch(()=>{});
+persistVideo(vid.url,vid.cover,meta).then(r=>{
+const m=document.getElementById('rvmeta_'+ts);
+if(!m)return;
+const base=`${meta.label} · ${meta.duration}秒 · MP4 · `;
+const foot=`<br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成 · ${APP_VER}</span>`;
+if(r.ok){
+  m.innerHTML=base+'<span style="color:#34d399">✅ 已永久保存到作品库（作品tab可看）</span>'+foot;
+}else{
+  m.innerHTML=base+`<span style="color:#fbbf24">⚠️ 自动保存未成功：${r.err||'未知错误'}</span> <button onclick="rvSave(${ts},this)" style="margin-left:6px;padding:3px 10px;border-radius:8px;border:1px solid rgba(251,191,36,.5);background:rgba(251,191,36,.12);color:#fbbf24;font-size:12px;cursor:pointer">💾 重试保存</button>`+foot;
+}
+}).catch(()=>{});
+}
+
+// 视频持久化到IndexedDB（作品库永久保存），返回 {ok,err}
+async function persistVideo(videoUrl,coverUrl,meta,readyBlob){
+const vid='v_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+let blob=readyBlob||null;
+if(!blob){
+  try{
+    const resp=await fetch(mirrorUrl(videoUrl));
+    if(!resp.ok)return{ok:false,err:'网络错误 HTTP '+resp.status,vid};
+    blob=await resp.blob();
+    if(blob.size<10000)return{ok:false,err:'视频文件异常',vid};
+  }catch(e){return{ok:false,err:'视频下载失败（网络/跨域）',vid};}
+}
+try{ await idbPut(vid,blob); }
+catch(e){return{ok:false,err:'浏览器本地库不可用（隐私模式或存储空间不足）',vid,blob};}
+if(coverUrl){try{const cr=await fetch(mirrorUrl(coverUrl));if(cr.ok){const cb=await cr.blob();if(cb.size>1000)await idbPut(vid+'_c',cb);}}catch(e){}}
+try{
+  gal.unshift({type:'video',vid,url:'',prompt:(meta&&meta.label)||'AI视频',duration:(meta&&meta.duration)||5,time:Date.now()});
+  if(gal.length>60)gal.pop();
+  saveGallery();
+  renderGallery();
+}catch(e){return{ok:false,err:'作品库写入失败（本地存储已满）',vid,blob};}
+__vblob[videoUrl]=blob;
+return{ok:true,vid,blob};
+}
+// 手动保存到作品库（失败给出明确原因和兜底引导）
+async function saveVideoToGallery(url,coverUrl,meta,btn){
+  const old='💾 保存到作品库';
+  try{
+    setBtn(btn,'⏳ 保存中…',true);
+    const cached=__vblob[url]||null;
+    const r=await persistVideo(url,coverUrl,meta,cached);
+    if(!r.ok){
+      setBtn(btn,'💾 重试保存',false);
+      alert('保存到作品库失败：'+(r.err||'未知错误')+'\n\n建议点「下载MP4」把视频存到手机相册，同样可以长期保存');
+      return;
+    }
+    setBtn(btn,'✅ 已保存到作品库',true);
+    setTimeout(()=>setBtn(btn,old,false),2500);
+  }catch(e){
+    setBtn(btn,old,false);
+    alert('保存失败，请重试；或点「下载MP4」存到手机');
+  }
+}
 function copyText(t){navigator.clipboard?navigator.clipboard.writeText(t).then(()=>alert('链接已复制')):prompt('复制链接:',t)}
 
 /* ====================================================================
@@ -1426,13 +1501,13 @@ return `<div class="gal-item" onclick="openFullByGal(${i})"><img src="${g.url}" 
 }).join('');
 // 异步给视频项填入本地blob
 gal.forEach((g,i)=>{if(g.type==='video'&&g.vid){
-idbGet(g.vid).then(blob=>{if(blob){const el=grid.querySelector(`video[data-vid="${g.vid}"]`);if(el)el.src=URL.createObjectURL(blob)}}).catch(()=>{});
+idbGet(g.vid).then(blob=>{const el=grid.querySelector(`video[data-vid="${g.vid}"]`);if(!el)return;if(blob){el.src=URL.createObjectURL(blob);}else{const card=el.closest('.gal-item');if(card){card.style.opacity='.55';const pp=card.querySelector('.gal-play');if(pp)pp.innerHTML='⚠️';}}}).catch(()=>{});
 idbGet(g.vid+'_c').then(blob=>{if(blob){const el=grid.querySelector(`video[data-vid="${g.vid}"]`);if(el)el.poster=URL.createObjectURL(blob)}}).catch(()=>{});
 }});
 }
 let fsCurrent=null;
 function openFullByGal(idx){const g=gal[idx];if(!g)return;
-if(g.type==='video'&&g.vid){idbGet(g.vid).then(blob=>{if(blob){fsCurrent={type:'video',blob,name:'幻灵AI视频_'+Date.now()+'.mp4'};openFullMedia(URL.createObjectURL(blob),true)}}).catch(()=>{});return}
+if(g.type==='video'&&g.vid){idbGet(g.vid).then(blob=>{if(blob){fsCurrent={type:'video',blob,name:'幻灵AI视频_'+Date.now()+'.mp4'};openFullMedia(URL.createObjectURL(blob),true)}else{alert('该视频文件未保存成功（本地库缺失），请重新生成后点「下载MP4」存到手机')}}).catch(()=>{alert('本地作品库读取失败');});return}
 fsCurrent={type:'image',url:g.url};openFullMedia(g.url,false);
 }
 function openFullMedia(url,isVideo){
