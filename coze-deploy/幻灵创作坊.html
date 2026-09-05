@@ -1159,7 +1159,7 @@ tx.oncomplete=()=>{db.close();res(true)};tx.onerror=()=>{db.close();res(false)};
 // 视频blob缓存（下载/分享/保存复用，避免重复拉取）
 const __vblob={};
 const __rv={};
-const APP_VER='v460';
+const APP_VER='v461';
 async function fetchVideoBlob(url){
   if(__vblob[url])return __vblob[url];
   const resp=await fetch(mirrorUrl(url));
@@ -1225,13 +1225,13 @@ c.innerHTML=`<div class="real-video-wrap">
 <button class="act-btn" style="padding:7px 16px;font-size:13px;border-radius:9px;background:linear-gradient(135deg,#ec4899,#8b5cf6)" onclick="rvShare(${ts},this)">📤 分享视频</button>
 <button class="act-btn" style="padding:7px 16px;font-size:13px;border-radius:9px" onclick="rvSave(${ts},this)">💾 保存到作品库</button>
 </div>
-<div class="video-meta" id="rvmeta_${ts}">${meta.label} · ${meta.duration}秒 · MP4 · <span style="color:#a78bfa">💾 正在自动保存到作品库…</span><br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成 · ${APP_VER}</span></div>
+<div class="video-meta" id="rvmeta_${ts}">${meta.label} · ${meta.duration}秒 · MP4 🔊 · <span style="color:#a78bfa">💾 正在自动保存到作品库…</span><br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成 · ${APP_VER}</span></div>
 </div>`;
 const v=c.querySelector('video');if(v)v.play().catch(()=>{});
 persistVideo(vid.url,vid.cover,meta).then(r=>{
 const m=document.getElementById('rvmeta_'+ts);
 if(!m)return;
-const base=`${meta.label} · ${meta.duration}秒 · MP4 · `;
+const base=`${meta.label} · ${meta.duration}秒 · MP4 🔊 · `;
 const foot=`<br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成 · ${APP_VER}</span>`;
 if(r.ok){
   m.innerHTML=base+'<span style="color:#34d399">✅ 已永久保存到作品库（作品tab可看）</span>'+foot;
@@ -1305,7 +1305,7 @@ const dur=i2vDur===10?10:5;
 const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1280x720';
 const prompt=`Bring this image to life with natural, smooth motion. ${fx}. High quality, consistent with the original image, no scene change.`;
 fill.style.width='10%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
-const taskId=await submitVideo({model:'cogvideox-flash',prompt,image_url:b64,quality:'speed',duration:dur,size});
+const taskId=await submitVideo({model:'cogvideox-flash',prompt,image_url:b64,quality:'speed',duration:dur,size,with_audio:true});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='100%';ptxt.textContent='✅ 视频生成完成！';
@@ -1337,7 +1337,7 @@ try{
 const filtered=smartFilter(base).boosted;
 const genreHint=({fantasy:'epic fantasy adventure, magical world, cinematic',romance:'sweet romantic drama, warm soft lighting',action:'intense action battle, dynamic effects, energy',scifi:'sci-fi future world, neon technology, space',slice:'warm healing daily life, cozy slice of life',mystery:'suspense mystery, dark atmospheric, thriller'}[dramaGenre])||'cinematic film';
 const prompt=`${filtered}. ${genreHint}. A single continuous cinematic shot, smooth camera movement, professional film color grading, masterpiece quality.`;
-const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:5,size:'1280x720'});
+const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:5,size:'1280x720',with_audio:true});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='100%';ptxt.textContent='✅ 视频生成完成！';
@@ -1371,7 +1371,7 @@ const style=OC_VIDEO_STYLE[ocTemplate]||OC_VIDEO_STYLE.character;
 const dur=ocDur===10?10:5;
 const size=VID_SIZE_MAP[ocW+'x'+ocH]||'1280x720';
 const prompt=`${filtered}. ${style}. Smooth cinematic motion, professional film quality, beautiful lighting, highly detailed.`;
-const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:dur,size});
+const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:dur,size,with_audio:true});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='100%';ptxt.textContent=`✅ 一键成片完成！${dur}秒真视频`;
