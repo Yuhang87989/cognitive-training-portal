@@ -1037,9 +1037,9 @@ document.getElementById('i2vFileInput').value='';
 /* ====================================================================
    智谱 CogVideoX-Flash 真视频生成（免费）
    ==================================================================== */
-const ZHIPU_KEY = atob('ZmU0NmM4OTNhZGJiNDRlNWIzNzQyNzU3MTA1NjhhZTEuZTdVdTRKaDNRZlgyMzlnMg==');
-const ZHIPU_VIDEO_API='https://open.bigmodel.cn/api/paas/v4/videos/generations';
-const ZHIPU_RESULT_API='https://open.bigmodel.cn/api/paas/v4/async-result/';
+// 走自有服务器Nginx反代（Key在服务端注入，前端不持有）
+const ZHIPU_VIDEO_API='https://qiuyhang1688.com.cn/api/zhipu/videos/generations';
+const ZHIPU_RESULT_API='https://qiuyhang1688.com.cn/api/zhipu/async-result/';
 // 运镜/风格 → 英文prompt增强
 const VIDEO_FX={
 'kenburns':'slow cinematic camera, gentle push in with subtle pan, smooth motion, film look',
@@ -1084,7 +1084,7 @@ img.src=dataUrl;
 async function submitVideo(payload){
 const r=await fetch(ZHIPU_VIDEO_API,{
 method:'POST',
-headers:{'Authorization':'Bearer '+ZHIPU_KEY,'Content-Type':'application/json'},
+headers:{'Content-Type':'application/json'},
 body:JSON.stringify(payload)
 });
 const d=await r.json();
@@ -1097,7 +1097,7 @@ const start=Date.now();
 const TIMEOUT=6*60*1000;
 while(Date.now()-start<TIMEOUT){
 await sleep(5000);
-const r=await fetch(ZHIPU_RESULT_API+taskId,{headers:{'Authorization':'Bearer '+ZHIPU_KEY}});
+const r=await fetch(ZHIPU_RESULT_API+taskId);
 const d=await r.json();
 if(onTick)onTick(d,Math.min(95,Math.round((Date.now()-start)/1000*1.2)));
 if(d.task_status==='SUCCESS'){
