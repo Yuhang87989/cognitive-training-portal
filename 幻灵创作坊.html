@@ -1050,6 +1050,9 @@ document.getElementById('i2vFileInput').value='';
 // 走自有服务器Nginx反代（Key在服务端注入，前端不持有）
 const ZHIPU_VIDEO_API='https://qiuyhang1688.com.cn/api/zhipu/videos/generations';
 const ZHIPU_RESULT_API='https://qiuyhang1688.com.cn/api/zhipu/async-result/';
+// 视频文件中转（ufileos直链无CORS头，经自有服务器转发才能fetch下载/保存）
+const MEDIA_MIRROR='https://qiuyhang1688.com.cn/api/mediamirror/';
+function mirrorUrl(u){return MEDIA_MIRROR+encodeURIComponent(u);}
 // 运镜/风格 → 英文prompt增强
 const VIDEO_FX={
 'kenburns':'slow cinematic camera, gentle push in with subtle pan, smooth motion, film look',
@@ -1137,14 +1140,14 @@ c.innerHTML=`<div class="real-video-wrap">
 const v=c.querySelector('video');if(v)v.play().catch(()=>{});
 persistVideo(vid.url,vid.cover,meta).then(ok=>{
 const m=document.getElementById('rvmeta_'+ts);
-if(m)m.innerHTML=`${meta.label} · ${meta.duration}秒 · MP4 · ${ok?'<span style="color:#34d399">✅ 已永久保存到作品库</span>':'<span style="color:#fbbf24">⚠️ 本地存储空间不足，请下载MP4保存</span>'}<br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成，建议下载或分享保存</span>`;
+if(m)m.innerHTML=`${meta.label} · ${meta.duration}秒 · MP4 · ${ok?'<span style="color:#34d399">✅ 已永久保存到作品库</span>':'<span style="color:#fbbf24">⚠️ 自动保存未完成，请点「下载MP4」手动保存</span>'}<br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成，建议下载或分享保存</span>`;
 }).catch(()=>{});
 }
 
 // 分享视频（优先系统分享，可直接发微信好友/朋友圈）
 async function shareVideo(url,title){
 try{
-const resp=await fetch(url);
+const resp=await fetch(mirrorUrl(url));
 const blob=await resp.blob();
 const file=new File([blob],'幻灵AI视频.mp4',{type:'video/mp4'});
 if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -1192,19 +1195,20 @@ tx.oncomplete=()=>{db.close();res(true)};tx.onerror=()=>{db.close();res(false)};
 async function persistVideo(videoUrl,coverUrl,meta){
 try{
 const vid='v_'+Date.now()+'_'+Math.floor(Math.random()*1e6);
-const resp=await fetch(videoUrl);
+const resp=await fetch(mirrorUrl(videoUrl));
 if(!resp.ok)return false;
 const blob=await resp.blob();
 if(blob.size<10000)return false;
 await idbPut(vid,blob);
-gal.unshift({type:'video',vid,url:coverUrl||videoUrl,prompt:meta.label||'AI视频',duration:meta.duration||5,time:Date.now()});
+if(coverUrl){try{const cr=await fetch(mirrorUrl(coverUrl));if(cr.ok){const cb=await cr.blob();if(cb.size>1000)await idbPut(vid+'_c',cb);}}catch(e){}}
+gal.unshift({type:'video',vid,url:'',prompt:meta.label||'AI视频',duration:meta.duration||5,time:Date.now()});
 if(gal.length>60)gal.pop();
 saveGallery();
 renderGallery();
 return true;
 }catch(e){return false;}
 }
-function downloadVideo(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';document.body.appendChild(a);a.click();a.remove()}
+function downloadVideo(url,name){const a=document.createElement('a');a.href=mirrorUrl(url);a.download=name;document.body.appendChild(a);a.click();a.remove()}
 function copyText(t){navigator.clipboard?navigator.clipboard.writeText(t).then(()=>alert('链接已复制')):prompt('复制链接:',t)}
 
 /* ====================================================================
@@ -1392,7 +1396,7 @@ shareResult(text,r.frames[0]);
 /* ====================================================================
    作品存储
    ==================================================================== */
-function loadGallery(){try{const d=JSON.parse(localStorage.getItem('hl_gal_v7')||'[]');gal=d.filter(g=>g.url&&!(g.type==='video'&&!g.vid))}catch(e){gal=[]}}
+function loadGallery(){try{const d=JSON.parse(localStorage.getItem('hl_gal_v7')||'[]');gal=d.filter(g=>(g.url||g.vid)&&!(g.type==='video'&&!g.vid))}catch(e){gal=[]}}
 function saveGallery(){try{localStorage.setItem('hl_gal_v7',JSON.stringify(gal));return true}catch(e){while(gal.length>1){gal.pop();try{localStorage.setItem('hl_gal_v7',JSON.stringify(gal));return true}catch(e2){}}return false}}
 function saveToGal(url,prompt,silent){
 if(!url)return;
@@ -1402,8 +1406,8 @@ if(gal.length>50)gal.pop();
 const ok=saveGallery();
 if(!silent){if(ok){}else alert('存储空间不足，已自动清理旧作品')}
 }
-function delFromGal(idx){const g=gal[idx];if(g&&g.vid)idbDel(g.vid);gal.splice(idx,1);saveGallery();renderGallery()}
-function clearGallery(){if(!confirm('确定清空所有作品？'))return;gal.forEach(g=>{if(g&&g.vid)idbDel(g.vid)});gal=[];saveGallery();renderGallery()}
+function delFromGal(idx){const g=gal[idx];if(g&&g.vid){idbDel(g.vid);idbDel(g.vid+'_c');}gal.splice(idx,1);saveGallery();renderGallery()}
+function clearGallery(){if(!confirm('确定清空所有作品？'))return;gal.forEach(g=>{if(g&&g.vid){idbDel(g.vid);idbDel(g.vid+'_c');}});gal=[];saveGallery();renderGallery()}
 function renderGallery(){
 const grid=document.getElementById('galGrid');const empty=document.getElementById('galEmpty');const badge=document.getElementById('galCount');
 badge.textContent=gal.length;
@@ -1412,7 +1416,7 @@ empty.style.display='none';
 grid.innerHTML=gal.map((g,i)=>{
 if(g.type==='video'&&g.vid){
 return `<div class="gal-item" onclick="openFullByGal(${i})" style="position:relative">
-<video data-vid="${g.vid}" muted preload="metadata" poster="${g.url||''}"></video>
+<video data-vid="${g.vid}" muted preload="metadata"></video>
 <div class="gal-vid-badge">🎬 ${g.duration||5}秒</div>
 <div class="gal-play"><span>▶️</span></div>
 <div class="gal-prompt">${g.prompt||''}</div>
@@ -1421,7 +1425,10 @@ return `<div class="gal-item" onclick="openFullByGal(${i})" style="position:rela
 return `<div class="gal-item" onclick="openFullByGal(${i})"><img src="${g.url}" alt="作品" loading="lazy"><div class="gal-prompt">${g.prompt||''}</div><button class="gal-del" onclick="event.stopPropagation();delFromGal(${i})">✕</button></div>`;
 }).join('');
 // 异步给视频项填入本地blob
-gal.forEach((g,i)=>{if(g.type==='video'&&g.vid){idbGet(g.vid).then(blob=>{if(blob){const el=grid.querySelector(`video[data-vid="${g.vid}"]`);if(el)el.src=URL.createObjectURL(blob)}}).catch(()=>{})}});
+gal.forEach((g,i)=>{if(g.type==='video'&&g.vid){
+idbGet(g.vid).then(blob=>{if(blob){const el=grid.querySelector(`video[data-vid="${g.vid}"]`);if(el)el.src=URL.createObjectURL(blob)}}).catch(()=>{});
+idbGet(g.vid+'_c').then(blob=>{if(blob){const el=grid.querySelector(`video[data-vid="${g.vid}"]`);if(el)el.poster=URL.createObjectURL(blob)}}).catch(()=>{});
+}});
 }
 let fsCurrent=null;
 function openFullByGal(idx){const g=gal[idx];if(!g)return;
