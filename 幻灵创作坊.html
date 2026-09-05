@@ -197,6 +197,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 /* === 过渡动画 === */
 .fade-in{animation:fadeIn .4s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* === 逐步翻页工作台（参数页 → 生成结果页） === */
+.step-page{display:none}
+.step-page.active{display:block;animation:fadeIn .35s ease}
+.step-topbar{position:sticky;top:8px;z-index:30;display:flex;align-items:center;gap:10px;margin-bottom:12px;background:var(--bg);padding:6px 0}
+.step-back{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:9px 16px;font-size:14px;cursor:pointer;white-space:nowrap;font-weight:600}
+.step-back:active{transform:scale(.96)}
+.step-title{font-size:15px;font-weight:700;color:var(--text)}
+.step-page .progress-wrap{position:sticky;top:56px;z-index:20}
+.split-placeholder{background:var(--card);border:2px dashed var(--border);border-radius:14px;padding:48px 20px;text-align:center;color:var(--text2);font-size:13px;line-height:1.9}
+.split-placeholder .sp-icon{font-size:52px;margin-bottom:14px;filter:drop-shadow(0 4px 12px rgba(168,85,247,.35))}
+.real-video{width:100%;border-radius:12px;background:#000;display:block;aspect-ratio:16/9;object-fit:contain}
+.real-video-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;backdrop-filter:blur(6px)}
+.video-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.video-meta{text-align:center;margin-top:8px;font-size:11px;color:var(--text2);line-height:1.6}
+.poll-dots::after{content:'...';animation:dots 1.4s steps(4) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
 </style>
 </head>
 <body>
@@ -281,6 +297,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
 <!-- ===== AI绘图 ===== -->
 <div id="panel-draw" class="panel">
+<div class="step-page active" id="drawStep1">
 <div class="card fade-in">
 <div style="display:flex;justify-content:space-between;align-items:center">
 <div class="card-title" style="margin:0">✏️ 描述你想画的画面</div>
@@ -368,46 +385,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </select>
 </div>
 <button class="gen-btn" id="drawGenBtn" onclick="genDrawImages()">✨ 开始生成</button>
+</div>
+<div class="step-page" id="drawStep2">
+<div class="step-topbar"><button class="step-back" onclick="goStep('draw',1)">← 返回修改</button><span class="step-title">✨ 生成结果</span></div>
+填写描述、选择画风<br>点击「开始生成」，作品将在这里展示</div>
 <div class="progress-wrap" id="drawProgress">
 <div class="progress-bar"><div class="fill" id="drawProgressFill"></div></div>
 <div class="progress-text" id="drawProgressText">准备中...</div>
 </div>
 <div class="result-area" id="drawResult"></div>
 </div>
+</div>
 
 <!-- ===== 图生视频 ===== -->
 <div id="panel-img2vid" class="panel">
+<div class="step-page active" id="i2vStep1">
 <div class="card fade-in">
 <div class="card-title">📷 上传源图片</div>
 <div class="upload-area" id="i2vUploadArea" onclick="document.getElementById('i2vFileInput').click()">
 <div class="ua-icon">🖼️</div>
 <div class="ua-text">点击上传一张图片</div>
-<div class="ua-hint">支持 JPG / PNG / WebP</div>
+<div class="ua-hint">支持 JPG / PNG / WebP，AI 让图片真正动起来</div>
 </div>
 <input type="file" id="i2vFileInput" accept="image/*" style="display:none" onchange="handleI2VUpload(this)">
 <div id="i2vPreview" style="display:none"></div>
 </div>
 <div class="card fade-in">
-<div class="card-title">🎬 动态效果</div>
+<div class="card-title">🎥 运镜效果</div>
 <div class="template-grid" id="i2vEffects">
-<div class="tpl-card selected" data-fx="kenburns" onclick="pickI2VEffect(this)"><div class="emoji">🎥</div><div class="name">Ken Burns</div><div class="desc">经典缓慢推拉+平移</div></div>
-<div class="tpl-card" data-fx="zoom-in" onclick="pickI2VEffect(this)"><div class="emoji">🔍</div><div class="name">推进聚焦</div><div class="desc">从远到近缓缓推进</div></div>
-<div class="tpl-card" data-fx="zoom-out" onclick="pickI2VEffect(this)"><div class="emoji">🌐</div><div class="name">拉远全景</div><div class="desc">从特写缓缓拉远</div></div>
+<div class="tpl-card selected" data-fx="kenburns" onclick="pickI2VEffect(this)"><div class="emoji">🎥</div><div class="name">经典运镜</div><div class="desc">缓慢推拉+平移</div></div>
+<div class="tpl-card" data-fx="zoom-in" onclick="pickI2VEffect(this)"><div class="emoji">🔍</div><div class="name">推进聚焦</div><div class="desc">缓缓推近主体</div></div>
+<div class="tpl-card" data-fx="zoom-out" onclick="pickI2VEffect(this)"><div class="emoji">🌐</div><div class="name">拉远全景</div><div class="desc">特写到全景</div></div>
 <div class="tpl-card" data-fx="pan-left" onclick="pickI2VEffect(this)"><div class="emoji">👈</div><div class="name">向左平移</div><div class="desc">镜头缓慢左移</div></div>
 <div class="tpl-card" data-fx="pan-right" onclick="pickI2VEffect(this)"><div class="emoji">👉</div><div class="name">向右平移</div><div class="desc">镜头缓慢右移</div></div>
-<div class="tpl-card" data-fx="rotate" onclick="pickI2VEffect(this)"><div class="emoji">🔄</div><div class="name">微旋环绕</div><div class="desc">轻微旋转环绕效果</div></div>
-<div class="tpl-card" data-fx="parallax" onclick="pickI2VEffect(this)"><div class="emoji">🏔️</div><div class="name">视差纵深</div><div class="desc">前后景差速运动</div></div>
-<div class="tpl-card" data-fx="dream" onclick="pickI2VEffect(this)"><div class="emoji">💫</div><div class="name">梦幻呼吸</div><div class="desc">柔和缩放呼吸感</div></div>
+<div class="tpl-card" data-fx="rotate" onclick="pickI2VEffect(this)"><div class="emoji">🔄</div><div class="name">环绕微旋</div><div class="desc">轻微旋转环绕</div></div>
+<div class="tpl-card" data-fx="parallax" onclick="pickI2VEffect(this)"><div class="emoji">🏔️</div><div class="name">视差纵深</div><div class="desc">前景背景差速</div></div>
+<div class="tpl-card" data-fx="dream" onclick="pickI2VEffect(this)"><div class="emoji">💫</div><div class="name">梦幻氛围</div><div class="desc">柔和呼吸感</div></div>
 </div>
 </div>
 <div class="card fade-in">
 <div class="card-title">⏱️ 视频时长</div>
 <select class="styled-select" id="i2vDurSelect" onchange="pickI2VDur(this)">
-<option value="5">5秒</option>
-<option value="10">10秒</option>
-<option value="15" selected>15秒</option>
-<option value="20">20秒</option>
-<option value="30">30秒</option>
+<option value="5" selected>5 秒（生成更快）</option>
+<option value="10">10 秒</option>
 </select>
 </div>
 <div class="card fade-in">
@@ -418,20 +438,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <option value="1x1">1:1 方形</option>
 </select>
 </div>
-<div class="card fade-in">
-<div class="card-title">🎵 配乐氛围</div>
-<div class="music-tags" id="i2vMusicTags"></div>
+<button class="gen-btn" id="i2vGenBtn" onclick="genI2VVideo()">🎬 生成 AI 真视频（约1分钟）</button>
 </div>
-<button class="gen-btn" id="i2vGenBtn" onclick="genI2VVideo()">🖼️ 生成视频</button>
+<div class="step-page" id="i2vStep2">
+<div class="step-topbar"><button class="step-back" onclick="goStep('img2vid',1)">← 返回修改</button><span class="step-title">🖼️ 图生视频</span></div>
+上传图片、选择运镜效果<br>点击生成，AI 真视频将在这里播放<br><span style="font-size:11px;opacity:.65">智谱 CogVideoX · 免费生成 · MP4 视频</span></div>
 <div class="progress-wrap" id="i2vProgress">
 <div class="progress-bar"><div class="fill" id="i2vProgressFill"></div></div>
 <div class="progress-text" id="i2vProgressText">准备中...</div>
 </div>
 <div id="i2vResult"></div>
 </div>
+</div>
 
 <!-- ===== AI短剧 ===== -->
 <div id="panel-drama" class="panel">
+<div class="step-page active" id="dramaStep1">
 <div class="card fade-in">
 <div class="card-title">📝 故事大纲</div>
 <div class="prompt-box">
@@ -477,6 +499,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="music-tags" id="dramaMusicTags"></div>
 </div>
 <button class="gen-btn" id="dramaGenBtn" onclick="genDrama()">🎬 生成分镜短片</button>
+<button class="gen-btn" id="dramaVideoBtn" onclick="genDramaVideo()" style="margin-top:8px;background:linear-gradient(135deg,#be185d,#9333ea)">🎥 生成 AI 真视频（约1分钟）</button>
+</div>
+<div class="step-page" id="dramaStep2">
+<div class="step-topbar"><button class="step-back" onclick="goStep('drama',1)">← 返回修改</button><span class="step-title">🎬 短剧创作</span></div>
+输入故事大纲、选择类型<br>点「生成分镜」看图集故事板<br>或点「生成 AI 真视频」直接出片<br><span style="font-size:11px;opacity:.65">真视频由智谱 CogVideoX 生成 · 免费</span></div>
+
 <div class="progress-wrap" id="dramaProgress">
 <div class="progress-bar"><div class="fill" id="dramaProgressFill"></div></div>
 <div class="progress-text" id="dramaProgressText">准备中...</div>
@@ -486,18 +514,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <!-- 最终视频播放器 -->
 <div id="dramaResult" style="margin-top:14px"></div>
 </div>
+</div>
 
 <!-- ===== 一键成片 ===== -->
 <div id="panel-oneclick" class="panel">
+<div class="step-page active" id="ocStep1">
 <div class="card fade-in">
-<div class="card-title">⚡ 选择视频模板</div>
+<div class="card-title">🎬 选择视频风格</div>
 <div class="template-grid" id="ocTemplateGrid">
-<div class="tpl-card selected" data-tpl="character" onclick="pickOCTemplate(this)"><div class="emoji">👤</div><div class="name">角色展示</div><div class="desc">多角度展示角色形象，含特写、全身、动态</div></div>
-<div class="tpl-card" data-tpl="album" onclick="pickOCTemplate(this)"><div class="emoji">📸</div><div class="name">图集轮播</div><div class="desc">多张图片自动轮播，配过渡动效</div></div>
-<div class="tpl-card" data-tpl="product" onclick="pickOCTemplate(this)"><div class="emoji">🛍️</div><div class="name">产品展示</div><div class="desc">产品特写+使用场景展示</div></div>
-<div class="tpl-card" data-tpl="landscape" onclick="pickOCTemplate(this)"><div class="emoji">🏞️</div><div class="name">风景大片</div><div class="desc">壮美风景Ken Burns式动态展示</div></div>
-<div class="tpl-card" data-tpl="story" onclick="pickOCTemplate(this)"><div class="emoji">📖</div><div class="name">故事叙述</div><div class="desc">起承转合四幕式故事动画</div></div>
-<div class="tpl-card" data-tpl="idol" onclick="pickOCTemplate(this)"><div class="emoji">🎤</div><div class="name">偶像舞台</div><div class="desc">舞台表演风格，灯光特效</div></div>
+<div class="tpl-card selected" data-tpl="character" onclick="pickOCTemplate(this)"><div class="emoji">👤</div><div class="name">角色展示</div><div class="desc">特写与全身交替运镜</div></div>
+<div class="tpl-card" data-tpl="album" onclick="pickOCTemplate(this)"><div class="emoji">📸</div><div class="name">回忆相册</div><div class="desc">温暖光影缓慢移动</div></div>
+<div class="tpl-card" data-tpl="product" onclick="pickOCTemplate(this)"><div class="emoji">🛍️</div><div class="name">产品广告</div><div class="desc">质感光影环绕展示</div></div>
+<div class="tpl-card" data-tpl="landscape" onclick="pickOCTemplate(this)"><div class="emoji">🏞️</div><div class="name">风景大片</div><div class="desc">航拍视角光影流动</div></div>
+<div class="tpl-card" data-tpl="story" onclick="pickOCTemplate(this)"><div class="emoji">📖</div><div class="name">电影叙事</div><div class="desc">电影感故事情境</div></div>
+<div class="tpl-card" data-tpl="idol" onclick="pickOCTemplate(this)"><div class="emoji">🎤</div><div class="name">舞台表演</div><div class="desc">聚光灯活力运镜</div></div>
 </div>
 </div>
 <div class="card fade-in">
@@ -506,26 +536,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <button class="act-btn" style="padding:4px 10px;font-size:12px;border-radius:6px" onclick="document.getElementById('ocPrompt').value=''">🗑️</button>
 </div>
 <div class="prompt-box">
-<textarea id="ocPrompt" placeholder="描述你想要的内容...&#10;&#10;例如：银发狼耳少女，白色魔法袍，在月光森林中施展魔法" style="min-height:70px"></textarea>
+<textarea id="ocPrompt" placeholder="描述你想要的视频内容...&#10;&#10;例如：银发狼耳少女，白色魔法袍，在月光森林中施展魔法，粒子光芒飞舞" style="min-height:70px"></textarea>
 </div>
-</div>
-<div class="card fade-in">
-<div class="card-title">⚡ 生成模型</div>
-<select class="styled-select" onchange="pickModel(this)">
-<option value="turbo" selected>🚀 速度优先（1-3秒/张，推荐）</option>
-<option value="zimage">⚖️ 均衡模式（3-5秒/张）</option>
-<option value="flux">💎 画质优先（15-30秒/张）</option>
-</select>
 </div>
 <div class="card fade-in">
 <div class="card-title">⏱️ 视频时长</div>
 <select class="styled-select" id="ocDurSelect" onchange="pickOCDur(this)">
-<option value="10">10秒</option>
-<option value="15">15秒</option>
-<option value="20" selected>20秒</option>
-<option value="30">30秒</option>
-<option value="45">45秒</option>
-<option value="60">60秒</option>
+<option value="5" selected>5 秒（生成更快）</option>
+<option value="10">10 秒</option>
 </select>
 </div>
 <div class="card fade-in">
@@ -536,16 +554,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <option value="1x1">1:1 方形</option>
 </select>
 </div>
-<div class="card fade-in">
-<div class="card-title">🎵 配乐</div>
-<div class="music-tags" id="ocMusicTags"></div>
+<button class="gen-btn" id="ocGenBtn" onclick="genOneClick()">⚡ 生成 AI 视频（约1分钟）</button>
 </div>
-<button class="gen-btn" id="ocGenBtn" onclick="genOneClick()">⚡ 一键生成</button>
+<div class="step-page" id="ocStep2">
+<div class="step-topbar"><button class="step-back" onclick="goStep('oneclick',1)">← 返回修改</button><span class="step-title">⚡ 一键成片</span></div>
+输入描述、选择视频风格<br>点击生成，AI 真视频将在这里播放<br><span style="font-size:11px;opacity:.65">智谱 CogVideoX · 免费生成 · MP4 视频</span></div>
 <div class="progress-wrap" id="ocProgress">
 <div class="progress-bar"><div class="fill" id="ocProgressFill"></div></div>
 <div class="progress-text" id="ocProgressText">准备中...</div>
 </div>
 <div id="ocResult" style="margin-top:14px"></div>
+</div>
 </div>
 
 <!-- ===== 作品 ===== -->
@@ -774,6 +793,14 @@ if(panel){panel.classList.add('active');panel.querySelectorAll('.card').forEach(
 if(name==='gal') renderGallery();
 }
 
+/* ========== 步骤翻页（参数页 → 结果页） ========== */
+function goStep(panel,step){
+const s1=document.getElementById(panel+'Step1'),s2=document.getElementById(panel+'Step2');
+if(s1)s1.classList.toggle('active',step===1);
+if(s2)s2.classList.toggle('active',step===2);
+window.scrollTo({top:0,behavior:'smooth'});
+}
+
 /* ========== 选择函数 ========== */
 function toggleDrawStyle(el,id){
 if(drawStyles.has(id)){if(drawStyles.size<=1)return;drawStyles.delete(id);el.classList.remove('selected')}
@@ -930,6 +957,7 @@ async function genDrawImages(){
 if(isGen)return;
 const base=document.getElementById('drawPrompt').value.trim();
 if(!base){alert('请输入描述～');return}
+goStep('draw',2);
 isGen=true;
 const btn=document.getElementById('drawGenBtn');
 btn.disabled=true;btn.textContent='🎨 生成中...';
@@ -1006,239 +1034,208 @@ document.getElementById('i2vPreview').style.display='none';
 document.getElementById('i2vFileInput').value='';
 }
 
+/* ====================================================================
+   智谱 CogVideoX-Flash 真视频生成（免费）
+   ==================================================================== */
+const ZHIPU_KEY = atob('ZmU0NmM4OTNhZGJiNDRlNWIzNzQyNzU3MTA1NjhhZTEuZTdVdTRKaDNRZlgyMzlnMg==');
+const ZHIPU_VIDEO_API='https://open.bigmodel.cn/api/paas/v4/videos/generations';
+const ZHIPU_RESULT_API='https://open.bigmodel.cn/api/paas/v4/async-result/';
+// 运镜/风格 → 英文prompt增强
+const VIDEO_FX={
+'kenburns':'slow cinematic camera, gentle push in with subtle pan, smooth motion, film look',
+'zoom-in':'camera slowly zooms in toward the subject, depth of field, cinematic close-up',
+'zoom-out':'camera slowly zooms out revealing the full scene, epic wide shot',
+'pan-left':'camera pans smoothly to the left, parallax between foreground and background',
+'pan-right':'camera pans smoothly to the right, parallax between foreground and background',
+'rotate':'slow cinematic orbit around the subject, slight rotation, dynamic angle',
+'parallax':'strong parallax depth, foreground and background moving at different speeds, 3D feel',
+'dream':'dreamy soft motion, gentle breathing zoom, ethereal atmosphere, floating light particles'
+};
+const OC_VIDEO_STYLE={
+character:'character showcase video, alternating close-up and full body shots, dynamic posing, cinematic lighting',
+album:'warm nostalgic photo album coming to life, soft golden light, gentle camera movement, emotional',
+product:'premium product commercial, glossy studio lighting, slow rotating showcase, luxury advertising style',
+landscape:'breathtaking landscape film, aerial drone view, sweeping clouds and light, nature documentary style',
+story:'cinematic movie scene with narrative atmosphere, dramatic lighting, film grain, epic storytelling',
+idol:'energetic stage performance, flashing spotlights, dynamic dance camera movement, concert atmosphere'
+};
+const VID_SIZE_MAP={'16x9':'1280x720','9x16':'720x1280','1x1':'1024x1024'};
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function hidePlaceholder(id){const el=document.getElementById(id);if(el)el.style.display='none'}
+
+// 压缩图片为 base64（≤5MB）
+function fileToSmallBase64(dataUrl,maxSide){
+return new Promise(resolve=>{
+const img=new Image();
+img.onload=()=>{
+let w=img.naturalWidth,h=img.naturalHeight;
+const target=maxSide||1024;
+if(Math.max(w,h)>target){const s=target/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}
+const cvs=document.createElement('canvas');cvs.width=w;cvs.height=h;
+cvs.getContext('2d').drawImage(img,0,0,w,h);
+resolve(cvs.toDataURL('image/jpeg',0.88));
+};
+img.src=dataUrl;
+});
+}
+
+// 提交视频任务
+async function submitVideo(payload){
+const r=await fetch(ZHIPU_VIDEO_API,{
+method:'POST',
+headers:{'Authorization':'Bearer '+ZHIPU_KEY,'Content-Type':'application/json'},
+body:JSON.stringify(payload)
+});
+const d=await r.json();
+if(d.error||!d.id)throw new Error((d.error&&d.error.message)||'提交失败');
+return d.id;
+}
+// 轮询结果
+async function pollVideo(taskId,onTick){
+const start=Date.now();
+const TIMEOUT=6*60*1000;
+while(Date.now()-start<TIMEOUT){
+await sleep(5000);
+const r=await fetch(ZHIPU_RESULT_API+taskId,{headers:{'Authorization':'Bearer '+ZHIPU_KEY}});
+const d=await r.json();
+if(onTick)onTick(d,Math.min(95,Math.round((Date.now()-start)/1000*1.2)));
+if(d.task_status==='SUCCESS'){
+const v=d.video_result&&d.video_result[0];
+if(!v)throw new Error('无视频结果');
+return{url:v.url,cover:v.cover_image_url};
+}
+if(d.task_status==='FAIL')throw new Error((d.error&&d.error.message)||'视频生成失败');
+}
+throw new Error('生成超时，请重试');
+}
+
+// 真视频播放器
+function showRealVideo(containerId,vid,prompt,meta){
+const c=document.getElementById(containerId);
+if(!c)return;
+const ts=Date.now();
+const coverAttr=vid.cover?`<img src="${vid.cover}" class="real-video" alt="封面" style="object-fit:cover">`:'';
+c.innerHTML=`<div class="real-video-wrap">
+<video class="real-video" src="${vid.url}" ${vid.cover?`poster="${vid.cover}"`:''} controls playsinline preload="metadata">${coverAttr}您的浏览器不支持视频播放</video>
+<div class="video-actions">
+<button class="act-btn act-save" style="padding:7px 16px;font-size:13px;border-radius:9px" onclick="downloadVideo('${vid.url}','${meta.name}_${ts}.mp4')">⬇️ 下载 MP4</button>
+<button class="act-btn" style="padding:7px 16px;font-size:13px;border-radius:9px" onclick="copyText('${vid.url}')">🔗 复制链接</button>
+</div>
+<div class="video-meta">${meta.label} · ${meta.duration}秒 · MP4<br><span style="opacity:.6">视频生成约需1分钟，由智谱 CogVideoX 免费提供</span></div>
+</div>`;
+const v=c.querySelector('video');if(v)v.play().catch(()=>{});
+}
+function downloadVideo(url,name){const a=document.createElement('a');a.href=url;a.download=name;a.target='_blank';document.body.appendChild(a);a.click();a.remove()}
+function copyText(t){navigator.clipboard?navigator.clipboard.writeText(t).then(()=>alert('链接已复制')):prompt('复制链接:',t)}
+
+/* ====================================================================
+   图生视频（真·图生视频）
+   ==================================================================== */
 async function genI2VVideo(){
 if(isGen)return;
 if(!i2vImgData){alert('请先上传一张图片');return}
+goStep('img2vid',2);
 isGen=true;
 const btn=document.getElementById('i2vGenBtn');
-btn.disabled=true;btn.textContent='🖼️ 生成中...';
-const prog=document.getElementById('i2vProgress');
-const fill=document.getElementById('i2vProgressFill');
-const ptxt=document.getElementById('i2vProgressText');
-prog.classList.add('show');fill.style.width='0%';
-// 计算帧数：每秒2帧，最少6帧，最多60帧
-const fps=2;
-const totalFrames=Math.min(60,Math.max(6,i2vDur*fps));
-const transitionDur=Math.max(1.5,i2vDur/totalFrames*1.5);
-ptxt.textContent=`生成 ${totalFrames} 帧动态画面...`;
-// 基于上传的图片，通过AI生成不同视角/变化的帧
-let vw,vh;
-if(i2vW===16&&i2vH===9){vw=1280;vh=720}else if(i2vW===9&&i2vH===16){vw=720;vh=1280}else{vw=1024;vh=1024}
-// 将上传图片作为参考，生成多帧变体
-const frameVariations=[];
-const effectDescs={
-'kenburns':['slight zoom in, close-up','medium view, pan right','wide shot, pan left','medium close, slight tilt'],
-'zoom-in':['extreme wide shot','wide establishing shot','medium shot','close-up detail','extreme close-up'],
-'zoom-out':['extreme close-up','close-up detail','medium shot','wide establishing shot','extreme wide panorama'],
-'pan-left':['right side view','center view, slightly right','center view','center view, slightly left','left side view'],
-'pan-right':['left side view','center view, slightly left','center view','center view, slightly right','right side view'],
-'rotate':['front view, slight left tilt','front view','front view, slight right tilt','slight overhead angle','dramatic low angle'],
-'parallax':['foreground focus, blurred background','balanced focus','background focus, blurred foreground','mid-ground focus','panoramic depth'],
-'dream':['soft focus, ethereal glow','sharp focus, vivid colors','high contrast, dramatic','soft pastel, dreamy haze','golden hour warm light']
-};
-const variations=effectDescs[i2vEffect]||effectDescs['kenburns'];
-for(let i=0;i<totalFrames;i++){
-const vIdx=i%variations.length;
-frameVariations.push(`${variations[vIdx]}, cinematic quality, smooth motion, consistent style`);
-}
-const frameUrls=[];
-let frameDone=0;
-// 分批生成，每批最多4张
-const batchSize=4;
-for(let batch=0;batch<Math.ceil(totalFrames/batchSize);batch++){
-const batchPromises=[];
-for(let j=0;j<batchSize&&(batch*batchSize+j)<totalFrames;j++){
-const idx=batch*batchSize+j;
-const variation=frameVariations[idx];
-const prompt=`masterpiece, best quality, 8k, ${variation}, same scene, consistent character and style`;
-const negative=GLOBAL_NEG+', inconsistent, different character, different style';
-const seed=Math.floor(Math.random()*999999)+idx*37;
-const url=buildUrl(prompt,negative,vw,vh,seed);
-batchPromises.push((async()=>{
-try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}
-catch(e){frameUrls[idx]=i2vImgData} // fallback到原图
-frameDone++;
-fill.style.width=Math.round(frameDone/totalFrames*80)+'%';
-ptxt.textContent=`生成分镜 (${frameDone}/${totalFrames})...`;
-})());
-}
-await Promise.all(batchPromises);
-}
-const validFrames=frameUrls.filter(u=>u);
-if(validFrames.length<2){
-ptxt.textContent='❌ 生成失败，请重试';
-setTimeout(()=>prog.classList.remove('show'),2000);
-isGen=false;btn.disabled=false;btn.textContent='🖼️ 生成视频';return;
-}
-// 加水印
-if(document.getElementById('wmOn').checked){
-for(let i=0;i<validFrames.length;i++){
-try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
-}
-}
+btn.disabled=true;btn.textContent='⏳ 提交任务...';
+const prog=document.getElementById('i2vProgress'),fill=document.getElementById('i2vProgressFill'),ptxt=document.getElementById('i2vProgressText');
+prog.classList.add('show');fill.style.width='5%';ptxt.innerHTML='🖼️ 压缩图片<span class="poll-dots"></span>';
+try{
+const b64=await fileToSmallBase64(i2vImgData,1024);
+const fx=VIDEO_FX[i2vEffect]||VIDEO_FX.kenburns;
+const dur=i2vDur===10?10:5;
+const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1280x720';
+const prompt=`Bring this image to life with natural, smooth motion. ${fx}. High quality, consistent with the original image, no scene change.`;
+fill.style.width='10%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
+const taskId=await submitVideo({model:'cogvideox-flash',prompt,image_url:b64,quality:'speed',duration:dur,size});
+fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
+const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='100%';ptxt.textContent='✅ 视频生成完成！';
-// 构建播放器
 const vidIdx=genResults.length;
-genResults.push({type:'video',frames:validFrames,prompt:'[图生视频]',style:i2vEffect,duration:i2vDur});
-saveToGal(validFrames[0],'[图生视频] '+i2vEffect,true);
+genResults.push({type:'realvideo',videoUrl:vid.url,cover:vid.cover,prompt:'[图生视频] '+i2vEffect,duration:dur});
+if(vid.cover)saveToGal(vid.cover,'[图生视频] '+i2vEffect,true);
 renderGallery();
-showVideoPlayer('i2vResult',validFrames,i2vW/i2vH,transitionDur,i2vDur,vidIdx);
-validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵图生视频_${Date.now()}_${i+1}.jpg`),1000+600*i)});
-setTimeout(()=>prog.classList.remove('show'),2000);
-isGen=false;btn.disabled=false;btn.textContent='🖼️ 生成视频';
+showRealVideo('i2vResult',vid,'',{name:'幻灵图生视频',label:'图生视频',duration:dur});
+setTimeout(()=>prog.classList.remove('show'),2500);
+}catch(e){
+fill.style.width='0%';ptxt.textContent='❌ '+(e.message||'生成失败，请重试');
+setTimeout(()=>prog.classList.remove('show'),4000);
+}
+isGen=false;btn.disabled=false;btn.textContent='🎬 生成 AI 真视频（约1分钟）';
 }
 
 /* ====================================================================
-   AI短剧
+   AI短剧 · 真视频（文生视频）
    ==================================================================== */
-async function genDrama(){
+async function genDramaVideo(){
 if(isGen)return;
 const base=document.getElementById('dramaPrompt').value.trim();
-if(!base){alert('请输入故事大纲～');return}
+if(!base){alert('请先输入故事大纲～');return}
+goStep('drama',2);
 isGen=true;
-const btn=document.getElementById('dramaGenBtn');
-btn.disabled=true;btn.textContent='🎬 生成中...';
-const prog=document.getElementById('dramaProgress');
-const fill=document.getElementById('dramaProgressFill');
-const ptxt=document.getElementById('dramaProgressText');
-prog.classList.add('show');fill.style.width='0%';
-const scenesDiv=document.getElementById('dramaScenes');
-scenesDiv.innerHTML='';
-const resultDiv=document.getElementById('dramaResult');
-resultDiv.innerHTML='';
-// 获取该类型的分镜模板
-const template=DRAMA_TEMPLATES[dramaGenre]||DRAMA_TEMPLATES.fantasy;
-let shots=[];
-for(let i=0;i<dramaFrames;i++){
-const tplIdx=i%template.length;
-shots.push({label:`第${i+1}场`,desc:`${template[tplIdx]}, ${base}`,fullDesc:`${template[tplIdx]} of the story: ${base}, cinematic quality, detailed`});
-}
-ptxt.textContent=`生成分镜（0/${shots.length}）...`;
-let vw,vh;vw=1280;vh=720; // 短剧默认16:9
-const frameUrls=[];
-let frameDone=0;
-// 分批生成
-const batchSize=4;
-for(let batch=0;batch<Math.ceil(shots.length/batchSize);batch++){
-const batchPromises=[];
-for(let j=0;j<batchSize&&(batch*batchSize+j)<shots.length;j++){
-const idx=batch*batchSize+j;
-const shot=shots[idx];
-const{prompt,negative}=buildPrompt(shot.fullDesc,[...dramaStyles]);
-const seed=Math.floor(Math.random()*999999)+idx*53;
-const url=buildUrl(prompt,negative,vw,vh,seed);
-batchPromises.push((async()=>{
-try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}
-catch(e){frameUrls[idx]=''}
-frameDone++;
-fill.style.width=Math.round(frameDone/shots.length*70)+'%';
-ptxt.textContent=`生成分镜（${frameDone}/${shots.length}）...`;
-// 实时预览当前帧
-if(frameUrls[idx]){
-const sceneEl=document.createElement('div');sceneEl.className='scene-item fade-in';
-sceneEl.innerHTML=`<div class="sc-num">${idx+1}/${shots.length}</div><div class="sc-title">${shot.label}</div><div class="sc-frame"><img src="${frameUrls[idx]}"></div><div class="sc-desc">${shot.label}: ${template[idx%template.length]}</div>`;
-scenesDiv.appendChild(sceneEl);
-}
-})());
-}
-await Promise.all(batchPromises);
-}
-const validFrames=frameUrls.filter(u=>u);
-if(validFrames.length<2){
-ptxt.textContent='❌ 生成失败，请重试';
-setTimeout(()=>prog.classList.remove('show'),2000);
-isGen=false;btn.disabled=false;btn.textContent='🎬 生成分镜短片';return;
-}
-// 加水印
-if(document.getElementById('wmOn').checked){
-for(let i=0;i<validFrames.length;i++){
-try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
-}
-}
-fill.style.width='100%';ptxt.textContent=`✅ 短剧生成完成！${validFrames.length}帧 · 约${Math.round(validFrames.length*3)}秒`;
-// 保存并展示播放器
+const btn=document.getElementById('dramaVideoBtn');
+btn.disabled=true;btn.textContent='⏳ 提交任务...';
+const prog=document.getElementById('dramaProgress'),fill=document.getElementById('dramaProgressFill'),ptxt=document.getElementById('dramaProgressText');
+prog.classList.add('show');fill.style.width='8%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
+try{
+const filtered=smartFilter(base).boosted;
+const genreHint=({fantasy:'epic fantasy adventure, magical world, cinematic',romance:'sweet romantic drama, warm soft lighting',action:'intense action battle, dynamic effects, energy',scifi:'sci-fi future world, neon technology, space',slice:'warm healing daily life, cozy slice of life',mystery:'suspense mystery, dark atmospheric, thriller'}[dramaGenre])||'cinematic film';
+const prompt=`${filtered}. ${genreHint}. A single continuous cinematic shot, smooth camera movement, professional film color grading, masterpiece quality.`;
+const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:5,size:'1280x720'});
+fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
+const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
+fill.style.width='100%';ptxt.textContent='✅ 视频生成完成！';
 const vidIdx=genResults.length;
-genResults.push({type:'drama',frames:validFrames,prompt:base,genre:dramaGenre,duration:Math.round(validFrames.length*3)});
-saveToGal(validFrames[0],`[AI短剧·${dramaGenre}] ${base.substring(0,30)}`,true);
+genResults.push({type:'realvideo',videoUrl:vid.url,cover:vid.cover,prompt:'[AI短剧视频] '+base.substring(0,30),duration:5});
+if(vid.cover)saveToGal(vid.cover,'[AI短剧·'+dramaGenre+'] '+base.substring(0,30),true);
 renderGallery();
-const transitionDur=Math.max(1.5,validFrames.length>12?2:1.5);
-showVideoPlayer('dramaResult',validFrames,16/9,transitionDur,Math.round(validFrames.length*3),vidIdx);
-validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵短剧_${dramaGenre}_${Date.now()}_${i+1}.jpg`),1000+500*i)});
-setTimeout(()=>prog.classList.remove('show'),2000);
-isGen=false;btn.disabled=false;btn.textContent='🎬 生成分镜短片';
+showRealVideo('dramaResult',vid,base,{name:'幻灵AI短剧',label:'AI短剧 · '+dramaGenre,duration:5});
+setTimeout(()=>prog.classList.remove('show'),2500);
+}catch(e){
+fill.style.width='0%';ptxt.textContent='❌ '+(e.message||'生成失败，请重试');
+setTimeout(()=>prog.classList.remove('show'),4000);
+}
+isGen=false;btn.disabled=false;btn.textContent='🎥 生成 AI 真视频（约1分钟）';
 }
 
 /* ====================================================================
-   一键成片
+   一键成片（真·文生视频）
    ==================================================================== */
 async function genOneClick(){
 if(isGen)return;
 const base=document.getElementById('ocPrompt').value.trim();
 if(!base){alert('请输入描述～');return}
+goStep('oneclick',2);
 isGen=true;
 const btn=document.getElementById('ocGenBtn');
-btn.disabled=true;btn.textContent='⚡ 生成中...';
-const prog=document.getElementById('ocProgress');
-const fill=document.getElementById('ocProgressFill');
-const ptxt=document.getElementById('ocProgressText');
-prog.classList.add('show');fill.style.width='0%';
-const resultDiv=document.getElementById('ocResult');
-resultDiv.innerHTML='';
-// 根据时长计算帧数（每秒2帧）
-const fps=2;
-const totalFrames=Math.min(60,Math.max(6,Math.round(ocDur*fps)));
-const tpl=OC_TEMPLATES[ocTemplate]||OC_TEMPLATES.character;
-ptxt.textContent=`生成 ${totalFrames} 帧画面（${ocTemplate}模板）...`;
-let vw,vh;
-if(ocW===16&&ocH===9){vw=1280;vh=720}else if(ocW===9&&ocH===16){vw=720;vh=1280}else{vw=1024;vh=1024}
-const frameUrls=[];
-let frameDone=0;
-const batchSize=4;
-for(let batch=0;batch<Math.ceil(totalFrames/batchSize);batch++){
-const batchPromises=[];
-for(let j=0;j<batchSize&&(batch*batchSize+j)<totalFrames;j++){
-const idx=batch*batchSize+j;
-const shotDesc=tpl.shots[idx%tpl.shots.length];
-const fullDesc=`${shotDesc}, ${base}, ${tpl.desc}, cinematic quality, professional`;
-const{prompt,negative}=buildPrompt(fullDesc,drawStyles.size?['anime']:['anime']);
-const seed=Math.floor(Math.random()*999999)+idx*41;
-const url=buildUrl(prompt,negative,vw,vh,seed);
-batchPromises.push((async()=>{
-try{const blob=await fetchImgBlob(url);frameUrls[idx]=URL.createObjectURL(blob)}
-catch(e){frameUrls[idx]=''}
-frameDone++;
-fill.style.width=Math.round(frameDone/totalFrames*80)+'%';
-ptxt.textContent=`生成帧 (${frameDone}/${totalFrames})...`;
-})());
-}
-await Promise.all(batchPromises);
-}
-const validFrames=frameUrls.filter(u=>u);
-if(validFrames.length<2){
-ptxt.textContent='❌ 生成失败';
-setTimeout(()=>prog.classList.remove('show'),2000);
-isGen=false;btn.disabled=false;btn.textContent='⚡ 一键生成';return;
-}
-// 加水印
-if(document.getElementById('wmOn').checked){
-for(let i=0;i<validFrames.length;i++){
-try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=validFrames[i]});const cvs=document.createElement('canvas');cvs.width=img.naturalWidth;cvs.height=img.naturalHeight;cvs.getContext('2d').drawImage(img,0,0);drawWatermark(cvs,wmShape,wmColor,wmMode);validFrames[i]=cvs.toDataURL('image/jpeg',.92)}catch(e){}
-}
-}
-fill.style.width='100%';ptxt.textContent=`✅ 一键成片完成！${validFrames.length}帧 · ${ocDur}秒`;
-const vidIdx=genResults.length;
-genResults.push({type:'video',frames:validFrames,prompt:base,style:ocTemplate,duration:ocDur});
-saveToGal(validFrames[0],`[一键成片·${ocTemplate}] ${base.substring(0,30)}`,true);
+btn.disabled=true;btn.textContent='⏳ 提交任务...';
+const prog=document.getElementById('ocProgress'),fill=document.getElementById('ocProgressFill'),ptxt=document.getElementById('ocProgressText');
+prog.classList.add('show');fill.style.width='8%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
+try{
+const filtered=smartFilter(base).boosted;
+const style=OC_VIDEO_STYLE[ocTemplate]||OC_VIDEO_STYLE.character;
+const dur=ocDur===10?10:5;
+const size=VID_SIZE_MAP[ocW+'x'+ocH]||'1280x720';
+const prompt=`${filtered}. ${style}. Smooth cinematic motion, professional film quality, beautiful lighting, highly detailed.`;
+const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:dur,size});
+fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
+const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
+fill.style.width='100%';ptxt.textContent=`✅ 一键成片完成！${dur}秒真视频`;
+genResults.push({type:'realvideo',videoUrl:vid.url,cover:vid.cover,prompt:'[一键成片·'+ocTemplate+'] '+base.substring(0,30),duration:dur});
+if(vid.cover)saveToGal(vid.cover,'[一键成片·'+ocTemplate+'] '+base.substring(0,30),true);
 renderGallery();
-const transitionDur=Math.max(1.2,ocDur/validFrames.length*1.2);
-showVideoPlayer('ocResult',validFrames,ocW/ocH,transitionDur,ocDur,vidIdx);
-validFrames.forEach((f,i)=>{setTimeout(()=>dataURLtoDownload(f,`幻灵一键成片_${ocTemplate}_${Date.now()}_${i+1}.jpg`),1000+400*i)});
-setTimeout(()=>prog.classList.remove('show'),2000);
-isGen=false;btn.disabled=false;btn.textContent='⚡ 一键生成';
+showRealVideo('ocResult',vid,base,{name:'幻灵一键成片',label:'一键成片 · '+ocTemplate,duration:dur});
+setTimeout(()=>prog.classList.remove('show'),2500);
+}catch(e){
+fill.style.width='0%';ptxt.textContent='❌ '+(e.message||'生成失败，请重试');
+setTimeout(()=>prog.classList.remove('show'),4000);
+}
+isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分钟）';
 }
 
 /* ====================================================================
-   通用视频播放器
+   通用视频播放器（旧·图片轮播，供AI短剧分镜用）
    ==================================================================== */
 function showVideoPlayer(containerId,frames,ar,transitionDur,duration,vidIdx){
 const container=document.getElementById(containerId);
