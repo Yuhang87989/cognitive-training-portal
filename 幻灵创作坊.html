@@ -1176,7 +1176,7 @@ tx.oncomplete=()=>{db.close();res(true)};tx.onerror=()=>{db.close();res(false)};
 // 视频blob缓存（下载/分享/保存复用，避免重复拉取）
 const __vblob={};
 const __rv={};
-const APP_VER='v461';
+const APP_VER='v462';
 async function fetchVideoBlob(url){
   if(__vblob[url])return __vblob[url];
   const resp=await fetch(mirrorUrl(url));
