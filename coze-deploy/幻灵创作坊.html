@@ -550,6 +550,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <select class="styled-select" id="ocDurSelect" onchange="pickOCDur(this)">
 <option value="5" selected>5 秒（生成更快）</option>
 <option value="10">10 秒</option>
+<option value="60">🎬 1分钟长视频（10段拼接·约10分钟）</option>
 </select>
 </div>
 <div class="card fade-in">
@@ -1075,6 +1076,22 @@ story:'cinematic movie scene with narrative atmosphere, dramatic lighting, film 
 idol:'energetic stage performance, flashing spotlights, dynamic dance camera movement, concert atmosphere'
 };
 const VID_SIZE_MAP={'16x9':'1280x720','9x16':'720x1280','1x1':'1024x1024'};
+// V462 长视频拼接
+const CONCAT_API='https://qiuyhang1688.com.cn/api/concat/';
+const LONG_SEG=10,LONG_DUR=6;
+const I2V_LONG_FX=['kenburns','zoom-in','pan-left','zoom-out','rotate','pan-right','parallax','dream','kenburns','zoom-out'];
+const TEXT_LONG_PHASE=[
+'Opening scene, wide establishing shot, setting the mood',
+'Camera slowly pushes in, revealing details',
+'Gentle pan to the left, new perspective emerges',
+'Dynamic movement builds, energy increases',
+'Close-up moment, focusing on key elements',
+'Camera pulls back, showing the broader context',
+'Smooth pan right, transitioning viewpoint',
+'Dramatic low angle, powerful cinematic presence',
+'Aerial sweeping view, bird-eye perspective',
+'Grand finale, epic wide shot, satisfying resolution'
+];
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function hidePlaceholder(id){const el=document.getElementById(id);if(el)el.style.display='none'}
@@ -1212,8 +1229,8 @@ function rvDl(ts,btn){const r=__rv[ts];if(r)downloadVideoBlob(r.url,(r.name||'�
 function rvShare(ts,btn){const r=__rv[ts];if(r)shareVideo(r.url,(r.meta&&r.meta.label)||'AI视频',btn);}
 function rvSave(ts,btn){const r=__rv[ts];if(r)saveVideoToGallery(r.url,r.cover,r.meta,btn);}
 
-// 真视频播放器
-function showRealVideo(containerId,vid,prompt,meta){
+// 真视频播放器（V462 支持 readyBlob，拼接视频无需重复下载）
+function showRealVideo(containerId,vid,prompt,meta,readyBlob){
 const c=document.getElementById(containerId);
 if(!c)return;
 const ts=Date.now();
@@ -1293,8 +1310,24 @@ async function genI2VVideo(){
 if(isGen)return;
 if(!i2vImgData){alert('请先上传一张图片');return}
 goStep('img2vid',2);
-isGen=true;
 const btn=document.getElementById('i2vGenBtn');
+const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1280x720';
+// V462 长视频模式
+if(i2vDur===60){
+isGen=true;
+btn.disabled=true;btn.textContent='⏳ 长视频生成中…';
+try{
+await genLongVideo('i2v',{basePrompt:i2vEffect,size,containerId:'i2vResult',metaInfo:{name:'幻灵图生视频',label:'图生视频'},imgData:i2vImgData});
+}catch(e){
+const prog=document.getElementById('i2vProgress'),fill=document.getElementById('i2vProgressFill'),ptxt=document.getElementById('i2vProgressText');
+if(fill)fill.style.width='0%';
+if(ptxt)ptxt.textContent='❌ '+(e.message||'长视频生成失败，请重试');
+setTimeout(()=>{if(prog)prog.classList.remove('show')},4000);
+}
+isGen=false;btn.disabled=false;btn.textContent='🎬 生成 AI 真视频（约1分钟）';
+return;
+}
+isGen=true;
 btn.disabled=true;btn.textContent='⏳ 提交任务...';
 const prog=document.getElementById('i2vProgress'),fill=document.getElementById('i2vProgressFill'),ptxt=document.getElementById('i2vProgressText');
 prog.classList.add('show');fill.style.width='5%';ptxt.innerHTML='🖼️ 压缩图片<span class="poll-dots"></span>';
@@ -1302,7 +1335,6 @@ try{
 const b64=await fileToSmallBase64(i2vImgData,1024);
 const fx=VIDEO_FX[i2vEffect]||VIDEO_FX.kenburns;
 const dur=i2vDur===10?10:5;
-const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1280x720';
 const prompt=`Bring this image to life with natural, smooth motion. ${fx}. High quality, consistent with the original image, no scene change.`;
 fill.style.width='10%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
 const taskId=await submitVideo({model:'cogvideox-flash',prompt,image_url:b64,quality:'speed',duration:dur,size,with_audio:true});
@@ -1360,8 +1392,24 @@ if(isGen)return;
 const base=document.getElementById('ocPrompt').value.trim();
 if(!base){alert('请输入描述～');return}
 goStep('oneclick',2);
-isGen=true;
 const btn=document.getElementById('ocGenBtn');
+const size=VID_SIZE_MAP[ocW+'x'+ocH]||'1280x720';
+// V462 长视频模式
+if(ocDur===60){
+isGen=true;
+btn.disabled=true;btn.textContent='⏳ 长视频生成中…';
+try{
+await genLongVideo('oc',{basePrompt:base,size,containerId:'ocResult',metaInfo:{name:'幻灵一键成片',label:'一键成片 · '+ocTemplate}});
+}catch(e){
+const prog=document.getElementById('ocProgress'),fill=document.getElementById('ocProgressFill'),ptxt=document.getElementById('ocProgressText');
+if(fill)fill.style.width='0%';
+if(ptxt)ptxt.textContent='❌ '+(e.message||'长视频生成失败，请重试');
+setTimeout(()=>{if(prog)prog.classList.remove('show')},4000);
+}
+isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分钟）';
+return;
+}
+isGen=true;
 btn.disabled=true;btn.textContent='⏳ 提交任务...';
 const prog=document.getElementById('ocProgress'),fill=document.getElementById('ocProgressFill'),ptxt=document.getElementById('ocProgressText');
 prog.classList.add('show');fill.style.width='8%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
@@ -1369,7 +1417,6 @@ try{
 const filtered=smartFilter(base).boosted;
 const style=OC_VIDEO_STYLE[ocTemplate]||OC_VIDEO_STYLE.character;
 const dur=ocDur===10?10:5;
-const size=VID_SIZE_MAP[ocW+'x'+ocH]||'1280x720';
 const prompt=`${filtered}. ${style}. Smooth cinematic motion, professional film quality, beautiful lighting, highly detailed.`;
 const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:dur,size,with_audio:true});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
@@ -1383,6 +1430,84 @@ fill.style.width='0%';ptxt.textContent='❌ '+(e.message||'生成失败，请重
 setTimeout(()=>prog.classList.remove('show'),4000);
 }
 isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分钟）';
+}
+
+/* ====================================================================
+   V462 长视频拼接（10段×6秒 → 1分钟）
+   ==================================================================== */
+async function concatVideos(urls){
+const resp=await fetch(CONCAT_API,{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({urls})
+});
+if(!resp.ok){
+const err=await resp.json().catch(()=>({error:'HTTP '+resp.status}));
+throw new Error(err.error||'拼接服务异常');
+}
+const blob=await resp.blob();
+if(blob.size<50000)throw new Error('拼接后文件异常('+blob.size+'B)');
+return blob;
+}
+
+async function genLongVideo(type,opts){
+const{basePrompt,size,containerId,metaInfo,imgData}=opts;
+const progId=containerId.replace('Result','Progress');
+const fillId=containerId.replace('Result','ProgressFill');
+const ptxtId=containerId.replace('Result','ProgressText');
+const prog=document.getElementById(progId);
+const fill=document.getElementById(fillId);
+const ptxt=document.getElementById(ptxtId);
+if(!prog)return;
+prog.classList.add('show');
+fill.style.width='2%';
+ptxt.innerHTML='🎬 准备长视频生成（10段×6秒）<span class="poll-dots"></span>';
+const urls=[];
+const filtered=smartFilter(basePrompt).boosted;
+for(let i=0;i<LONG_SEG;i++){
+const segPct=Math.round((i/LONG_SEG)*85);
+fill.style.width=segPct+'%';
+ptxt.innerHTML=`🎬 长视频 第 ${i+1}/${LONG_SEG} 段渲染中<span class="poll-dots"></span>`;
+let prompt;
+if(type==='i2v'&&imgData){
+const fx=VIDEO_FX[I2V_LONG_FX[i]]||VIDEO_FX.kenburns;
+prompt=`Bring this image to life with natural motion. ${fx}. High quality, smooth cinematic movement.`;
+}else{
+const phase=TEXT_LONG_PHASE[i];
+prompt=`${filtered}. ${phase}. Cinematic quality, smooth continuous motion, highly detailed.`;
+}
+const payload={model:'cogvideox-flash',prompt,quality:'speed',duration:LONG_DUR,size,with_audio:true};
+if(type==='i2v'&&imgData){
+const b64=await fileToSmallBase64(imgData,1024);
+payload.image_url=b64;
+}
+const taskId=await submitVideo(payload);
+const vid=await pollVideo(taskId,(d,p)=>{
+const overall=Math.round(segPct+(p/100)*(85/LONG_SEG));
+fill.style.width=Math.min(90,overall)+'%';
+});
+urls.push(vid.url);
+}
+fill.style.width='92%';
+ptxt.innerHTML='🔗 拼接10段视频中（约30秒）<span class="poll-dots"></span>';
+let finalBlob;
+try{
+finalBlob=await concatVideos(urls);
+}catch(e){
+ptxt.textContent='⚠️ 拼接服务暂不可用，显示最后一段预览。可稍后重试';
+const lastVid={url:urls[urls.length-1],cover:''};
+fill.style.width='100%';
+showRealVideo(containerId,lastVid,basePrompt,{...metaInfo,duration:LONG_DUR});
+setTimeout(()=>prog.classList.remove('show'),5000);
+return;
+}
+fill.style.width='100%';
+ptxt.textContent=`✅ 长视频生成完成！${LONG_SEG*LONG_DUR}秒`;
+const blobUrl=URL.createObjectURL(finalBlob);
+__vblob[blobUrl]=finalBlob;
+genResults.push({type:'realvideo',videoUrl:blobUrl,cover:'',prompt:'[长视频·'+type+'] '+basePrompt.substring(0,30),duration:LONG_SEG*LONG_DUR});
+showRealVideo(containerId,{url:blobUrl,cover:''},basePrompt,{name:metaInfo.name,label:metaInfo.label+' · 1分钟长视频',duration:LONG_SEG*LONG_DUR},finalBlob);
+setTimeout(()=>prog.classList.remove('show'),2500);
 }
 
 /* ====================================================================
