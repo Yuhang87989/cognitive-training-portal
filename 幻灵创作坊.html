@@ -434,6 +434,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <select class="styled-select" id="i2vDurSelect" onchange="pickI2VDur(this)">
 <option value="5" selected>5 秒（生成更快）</option>
 <option value="10">10 秒</option>
+<option value="30">🎬 30秒长视频（6段·从图片续写）</option>
+<option value="60">🎬 60秒长视频（12段·从图片续写）</option>
 </select>
 </div>
 <div class="card fade-in">
@@ -1330,11 +1332,11 @@ goStep('img2vid',2);
 const btn=document.getElementById('i2vGenBtn');
 const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1280x720';
 // V462 长视频模式
-if(i2vDur===60){
+if(i2vDur>=30&&i2vDur<=60){
 isGen=true;
 btn.disabled=true;btn.textContent='⏳ 长视频生成中…';
 try{
-await genLongVideo('i2v',{basePrompt:i2vEffect,size,containerId:'i2vResult',metaInfo:{name:'幻灵图生视频',label:'图生视频'},imgData:i2vImgData});
+await genLongVideo('i2v',{basePrompt:i2vEffect,size,containerId:'i2vResult',metaInfo:{name:'幻灵图生视频',label:'图生视频',duration:i2vDur},imgData:i2vImgData,mode:'seamless',seg:i2vDur===30?6:12});
 }catch(e){
 const prog=document.getElementById('i2vProgress'),fill=document.getElementById('i2vProgressFill'),ptxt=document.getElementById('i2vProgressText');
 if(fill)fill.style.width='0%';
@@ -1535,7 +1537,7 @@ urls.push(vid.url);
 if(mode_!=='shot')lastFrame=await extractLastFrame(vid.url);
 }
 fill.style.width='92%';
-ptxt.innerHTML=`🔗 拼接${seg}段视频中（约30秒）<span class="poll-dots"></span>`;
+ptxt.innerHTML=`🔗 拼接${seg}段视频中（约${total}秒）<span class="poll-dots"></span>`;
 let finalBlob=null,lastErr=null;
 for(let __t=0;__t<2;__t++){
 try{
