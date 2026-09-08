@@ -1536,11 +1536,21 @@ if(mode_!=='shot')lastFrame=await extractLastFrame(vid.url);
 }
 fill.style.width='92%';
 ptxt.innerHTML=`🔗 拼接${seg}段视频中（约30秒）<span class="poll-dots"></span>`;
-let finalBlob;
+let finalBlob=null,lastErr=null;
+for(let __t=0;__t<2;__t++){
 try{
+if(__t>0){ptxt.innerHTML=`🔗 首次拼接失败，自动重试中（第${__t+1}次）...<span class="poll-dots"></span>`;}
 finalBlob=await concatVideos(urls);
+break;
 }catch(e){
-ptxt.textContent='⚠️ 拼接服务暂不可用，显示最后一段预览。可稍后重试';
+lastErr=e;
+if(__t===0){fill.style.width='92%';ptxt.innerHTML=`⚠️ 拼接失败，稍后重试...<span class="poll-dots"></span>`;await sleep(1500);}
+}
+}
+if(!finalBlob){
+const msg=(lastErr&&lastErr.message)||'未知错误';
+console.error('[concat] 拼接失败:',lastErr);
+ptxt.textContent='⚠️ 拼接失败：'+msg+'，已显示最后一段。可稍后重试';
 const lastVid={url:urls[urls.length-1],cover:''};
 fill.style.width='100%';
 showRealVideo(containerId,lastVid,basePrompt,{...metaInfo,duration:dur});
