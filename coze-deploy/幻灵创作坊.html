@@ -550,7 +550,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <select class="styled-select" id="ocDurSelect" onchange="pickOCDur(this)">
 <option value="5" selected>5 秒（生成更快）</option>
 <option value="10">10 秒</option>
-<option value="60">🎬 1分钟长视频（10段拼接·约10分钟）</option>
+<option value="60">🎬 1分钟长视频（6段×10秒·约6-8分钟）</option>
 </select>
 </div>
 <div class="card fade-in">
@@ -1078,7 +1078,7 @@ idol:'energetic stage performance, flashing spotlights, dynamic dance camera mov
 const VID_SIZE_MAP={'16x9':'1280x720','9x16':'720x1280','1x1':'1024x1024'};
 // V462 长视频拼接
 const CONCAT_API='https://qiuyhang1688.com.cn/api/concat/';
-const LONG_SEG=10,LONG_DUR=6;
+const LONG_SEG=6,LONG_DUR=10;
 const I2V_LONG_FX=['kenburns','zoom-in','pan-left','zoom-out','rotate','pan-right','parallax','dream','kenburns','zoom-out'];
 const TEXT_LONG_PHASE=[
 'Opening scene, wide establishing shot, setting the mood',
@@ -1449,7 +1449,7 @@ isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分�
 }
 
 /* ====================================================================
-   V462 长视频拼接（10段×6秒 → 1分钟）
+   V464 长视频拼接（6段×10秒 → 1分钟）
    ==================================================================== */
 async function concatVideos(urls){
 const resp=await fetch(CONCAT_API,{
@@ -1477,7 +1477,7 @@ const ptxt=document.getElementById(ptxtId);
 if(!prog)return;
 prog.classList.add('show');
 fill.style.width='2%';
-ptxt.innerHTML='🎬 准备长视频生成（10段×6秒）<span class="poll-dots"></span>';
+ptxt.innerHTML='🎬 准备长视频生成（6段×10秒）<span class="poll-dots"></span>';
 const urls=[];
 const filtered=smartFilter(basePrompt).boosted;
 let lastFrame=null;
