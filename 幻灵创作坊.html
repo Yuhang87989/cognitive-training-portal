@@ -1112,6 +1112,22 @@ img.src=dataUrl;
 });
 }
 
+// V462路径B：抽取视频尾帧（作为下一段的续写起点画面，保证长视频画面连贯）
+function extractLastFrame(url){
+if(!url)return Promise.resolve(null);
+return new Promise(resolve=>{
+const v=document.createElement('video');
+v.muted=true;v.playsInline=true;v.crossOrigin='anonymous';v.preload='auto';
+let done=false;
+const finish=(d)=>{if(done)return;done=true;try{v.removeAttribute('src');v.load()}catch(e){}resolve(d)};
+v.onerror=()=>finish(null);
+v.onloadedmetadata=()=>{try{v.currentTime=Math.max(0,(v.duration||1)-0.15)}catch(e){finish(null)}};
+v.onseeked=()=>{try{const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);finish(c.toDataURL('image/jpeg',0.85))}catch(e){finish(null)}};
+setTimeout(()=>{try{if(!done&&v.readyState>=1&&!isNaN(v.duration)&&v.duration>0)v.currentTime=Math.max(0,v.duration-0.15)}catch(e){finish(null)}},1200);
+v.src=mirrorUrl(url);
+});
+}
+
 // 提交视频任务
 async function submitVideo(payload){
 const r=await fetch(ZHIPU_VIDEO_API,{
@@ -1176,7 +1192,7 @@ tx.oncomplete=()=>{db.close();res(true)};tx.onerror=()=>{db.close();res(false)};
 // 视频blob缓存（下载/分享/保存复用，避免重复拉取）
 const __vblob={};
 const __rv={};
-const APP_VER='v462';
+const APP_VER='v463';
 async function fetchVideoBlob(url){
   if(__vblob[url])return __vblob[url];
   const resp=await fetch(mirrorUrl(url));
@@ -1464,29 +1480,40 @@ fill.style.width='2%';
 ptxt.innerHTML='🎬 准备长视频生成（10段×6秒）<span class="poll-dots"></span>';
 const urls=[];
 const filtered=smartFilter(basePrompt).boosted;
+let lastFrame=null;
 for(let i=0;i<LONG_SEG;i++){
 const segPct=Math.round((i/LONG_SEG)*85);
 fill.style.width=segPct+'%';
 ptxt.innerHTML=`🎬 长视频 第 ${i+1}/${LONG_SEG} 段渲染中<span class="poll-dots"></span>`;
 let prompt;
+const payload={model:'cogvideox-flash',quality:'speed',duration:LONG_DUR,size,with_audio:true};
+if(i===0){
 if(type==='i2v'&&imgData){
 const fx=VIDEO_FX[I2V_LONG_FX[i]]||VIDEO_FX.kenburns;
 prompt=`Bring this image to life with natural motion. ${fx}. High quality, smooth cinematic movement.`;
+payload.image_url=await fileToSmallBase64(imgData,1024);
 }else{
 const phase=TEXT_LONG_PHASE[i];
 prompt=`${filtered}. ${phase}. Cinematic quality, smooth continuous motion, highly detailed.`;
 }
-const payload={model:'cogvideox-flash',prompt,quality:'speed',duration:LONG_DUR,size,with_audio:true};
-if(type==='i2v'&&imgData){
-const b64=await fileToSmallBase64(imgData,1024);
-payload.image_url=b64;
+}else if(lastFrame){
+// V462路径B：以上一段尾帧为起点无缝续写，画面/场景保持连贯
+const phase=TEXT_LONG_PHASE[i]||'continue the motion naturally';
+prompt=`Continue this exact scene seamlessly from where it ended. ${phase}. Keep the same characters, style and setting, smooth natural continuous motion, no scene change, no hard cut.`;
+payload.image_url=lastFrame;
+}else{
+const phase=TEXT_LONG_PHASE[i]||'continue the motion naturally';
+prompt=`${filtered}. ${phase}. Cinematic quality, smooth continuous motion, keep the same scene.`;
 }
+payload.prompt=prompt;
 const taskId=await submitVideo(payload);
 const vid=await pollVideo(taskId,(d,p)=>{
 const overall=Math.round(segPct+(p/100)*(85/LONG_SEG));
 fill.style.width=Math.min(90,overall)+'%';
 });
 urls.push(vid.url);
+// 抽本段尾帧，作为下一段续写的起点画面
+lastFrame=await extractLastFrame(vid.url);
 }
 fill.style.width='92%';
 ptxt.innerHTML='🔗 拼接10段视频中（约30秒）<span class="poll-dots"></span>';
