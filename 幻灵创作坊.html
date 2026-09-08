@@ -446,6 +446,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <option value="1x1">1:1 方形</option>
 </select>
 </div>
+<div class="card fade-in">
+<div class="card-title">🎙️ 旁白配音（可选·长视频）</div>
+<div class="prompt-box">
+<textarea id="i2vVoice" placeholder="输入成片旁白文案，AI 将合成语音合入视频…&#10;&#10;例如：一位少女在森林中遇见了受伤的小龙，悉心照料后，小龙带她飞向云端浮岛，展开一段奇幻冒险。" style="min-height:60px"></textarea>
+</div>
+</div>
 <button class="gen-btn" id="i2vGenBtn" onclick="genI2VVideo()">🎬 生成 AI 真视频（约1分钟）</button>
 </div>
 <div class="step-page" id="i2vStep2">
@@ -563,6 +569,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <option value="9x16">9:16 竖屏</option>
 <option value="1x1">1:1 方形</option>
 </select>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎙️ 旁白配音（可选·长视频）</div>
+<div class="prompt-box">
+<textarea id="ocVoice" placeholder="输入成片旁白文案，AI 将合成语音合入视频…&#10;&#10;例如：银发狼耳少女在月光森林中施展魔法，粒子的光芒在夜空中飞舞，一场温柔的冒险就此展开。" style="min-height:60px"></textarea>
+</div>
 </div>
 <button class="gen-btn" id="ocGenBtn" onclick="genOneClick()">⚡ 生成 AI 视频（约1分钟）</button>
 </div>
@@ -1336,7 +1348,8 @@ if(i2vDur>=30&&i2vDur<=60){
 isGen=true;
 btn.disabled=true;btn.textContent='⏳ 长视频生成中…';
 try{
-await genLongVideo('i2v',{basePrompt:i2vEffect,size,containerId:'i2vResult',metaInfo:{name:'幻灵图生视频',label:'图生视频',duration:i2vDur},imgData:i2vImgData,mode:'seamless',seg:i2vDur===30?6:12});
+const i2vVoice=document.getElementById('i2vVoice')?document.getElementById('i2vVoice').value:'';
+await genLongVideo('i2v',{basePrompt:i2vEffect,size,containerId:'i2vResult',metaInfo:{name:'幻灵图生视频',label:'图生视频',duration:i2vDur},imgData:i2vImgData,mode:'seamless',seg:i2vDur===30?6:12,voice:i2vVoice});
 }catch(e){
 const prog=document.getElementById('i2vProgress'),fill=document.getElementById('i2vProgressFill'),ptxt=document.getElementById('i2vProgressText');
 if(fill)fill.style.width='0%';
@@ -1419,7 +1432,8 @@ isGen=true;
 btn.disabled=true;btn.textContent='⏳ 长视频生成中…';
 try{
 const lm=ocDur===30?'shot':'seamless';
-await genLongVideo('oc',{basePrompt:base,size,containerId:'ocResult',metaInfo:{name:'幻灵一键成片',label:'一键成片 · '+ocTemplate},mode:lm});
+const ocVoice=document.getElementById('ocVoice')?document.getElementById('ocVoice').value:'';
+await genLongVideo('oc',{basePrompt:base,size,containerId:'ocResult',metaInfo:{name:'幻灵一键成片',label:'一键成片 · '+ocTemplate},mode:lm,voice:ocVoice});
 }catch(e){
 const prog=document.getElementById('ocProgress'),fill=document.getElementById('ocProgressFill'),ptxt=document.getElementById('ocProgressText');
 if(fill)fill.style.width='0%';
@@ -1455,11 +1469,13 @@ isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分�
 /* ====================================================================
    V464 长视频拼接（6段×10秒 → 1分钟）
    ==================================================================== */
-async function concatVideos(urls){
+async function concatVideos(urls,voice){
+const body={urls};
+if(voice&&voice.trim())body.voice=voice.trim();
 const resp=await fetch(CONCAT_API,{
 method:'POST',
 headers:{'Content-Type':'application/json'},
-body:JSON.stringify({urls})
+body:JSON.stringify(body)
 });
 if(!resp.ok){
 const err=await resp.json().catch(()=>({error:'HTTP '+resp.status}));
@@ -1479,7 +1495,7 @@ const LONG_SHOTS=[
 'Close-up moment, focusing on key elements'
 ];
 async function genLongVideo(type,opts){
-const{basePrompt,size,containerId,metaInfo,imgData,mode}=opts;
+const{basePrompt,size,containerId,metaInfo,imgData,mode,voice}=opts;
 const mode_=mode==='shot'?'shot':'seamless';
 // 实测智谱免费单段最多5秒：分镜30秒=6段, 续写60秒=12段
 const seg=mode_==='shot'?6:12;
@@ -1537,12 +1553,12 @@ urls.push(vid.url);
 if(mode_!=='shot')lastFrame=await extractLastFrame(vid.url);
 }
 fill.style.width='92%';
-ptxt.innerHTML=`🔗 拼接${seg}段视频中（约${total}秒）<span class="poll-dots"></span>`;
+ptxt.innerHTML=`${voice&&voice.trim()?`🔗 拼接${seg}段并合成旁白配音中（约${total}秒）`:`🔗 拼接${seg}段视频中（约${total}秒）`}<span class="poll-dots"></span>`;
 let finalBlob=null,lastErr=null;
 for(let __t=0;__t<2;__t++){
 try{
 if(__t>0){ptxt.innerHTML=`🔗 首次拼接失败，自动重试中（第${__t+1}次）...<span class="poll-dots"></span>`;}
-finalBlob=await concatVideos(urls);
+finalBlob=await concatVideos(urls,voice);
 break;
 }catch(e){
 lastErr=e;
@@ -1560,7 +1576,7 @@ setTimeout(()=>prog.classList.remove('show'),5000);
 return;
 }
 fill.style.width='100%';
-ptxt.textContent=`✅ 长视频生成完成！${total}秒`;
+ptxt.textContent=`✅ 长视频生成完成！${total}秒${voice&&voice.trim()?'（含旁白配音）':''}`;
 const blobUrl=URL.createObjectURL(finalBlob);
 __vblob[blobUrl]=finalBlob;
 genResults.push({type:'realvideo',videoUrl:blobUrl,cover:'',prompt:'[长视频·'+type+'] '+basePrompt.substring(0,30),duration:total});
