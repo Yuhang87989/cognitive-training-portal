@@ -1262,7 +1262,7 @@ c.innerHTML=`<div class="real-video-wrap">
 <div class="video-meta" id="rvmeta_${ts}">${meta.label} · ${meta.duration}秒 · MP4 🔊 · <span style="color:#a78bfa">💾 正在自动保存到作品库…</span><br><span style="opacity:.6">视频由智谱 CogVideoX 免费生成 · ${APP_VER}</span></div>
 </div>`;
 const v=c.querySelector('video');if(v)v.play().catch(()=>{});
-persistVideo(vid.url,vid.cover,meta).then(r=>{
+persistVideo(vid.url,vid.cover,meta,readyBlob).then(r=>{
 const m=document.getElementById('rvmeta_'+ts);
 if(!m)return;
 const base=`${meta.label} · ${meta.duration}秒 · MP4 🔊 · `;
