@@ -1122,7 +1122,7 @@ let done=false;
 const finish=(d)=>{if(done)return;done=true;try{v.removeAttribute('src');v.load()}catch(e){}resolve(d)};
 v.onerror=()=>finish(null);
 v.onloadedmetadata=()=>{try{v.currentTime=Math.max(0,(v.duration||1)-0.15)}catch(e){finish(null)}};
-v.onseeked=()=>{try{const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);finish(c.toDataURL('image/jpeg',0.85))}catch(e){finish(null)}};
+v.onseeked=()=>{try{const c=document.createElement('canvas');let w=v.videoWidth,h=v.videoHeight;const maxS=1024;if(Math.max(w,h)>maxS){const s=maxS/Math.max(w,h);w=Math.round(w*s);h=Math.round(h*s)}c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);finish(c.toDataURL('image/jpeg',0.8))}catch(e){finish(null)}};
 setTimeout(()=>{try{if(!done&&v.readyState>=1&&!isNaN(v.duration)&&v.duration>0)v.currentTime=Math.max(0,v.duration-0.15)}catch(e){finish(null)}},1200);
 v.src=mirrorUrl(url);
 });
@@ -1192,7 +1192,7 @@ tx.oncomplete=()=>{db.close();res(true)};tx.onerror=()=>{db.close();res(false)};
 // 视频blob缓存（下载/分享/保存复用，避免重复拉取）
 const __vblob={};
 const __rv={};
-const APP_VER='v463';
+const APP_VER='v464';
 async function fetchVideoBlob(url){
   if(__vblob[url])return __vblob[url];
   const resp=await fetch(mirrorUrl(url));
