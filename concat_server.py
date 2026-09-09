@@ -14,6 +14,48 @@ import shutil
 
 app = Flask(__name__)
 
+
+def _tencent_creds():
+    """读取腾讯云语音合成密钥：环境变量优先，其次本地区密钥文件（密钥不放入仓库）"""
+    sid = os.environ.get('TENCENT_SECRET_ID', '')
+    skey = os.environ.get('TENCENT_SECRET_KEY', '')
+    if not sid or not skey:
+        kf = '/opt/concat/tts.key'
+        if os.path.exists(kf):
+            for line in open(kf, encoding='utf-8'):
+                line = line.strip()
+                if line.startswith('id='):
+                    sid = line[3:]
+                elif line.startswith('key='):
+                    skey = line[4:]
+    if not sid or not skey:
+        raise RuntimeError('缺少腾讯云语音合成密钥：请配置环境变量 TENCENT_SECRET_ID/KEY 或 /opt/concat/tts.key')
+    return sid, skey
+
+
+def _synth_tencent(text, out_mp3):
+    import base64
+    from tencentcloud.common import credential
+    from tencentcloud.common.profile.client_profile import ClientProfile
+    from tencentcloud.common.profile.http_profile import HttpProfile
+    from tencentcloud.tts.v20190823 import tts_client, models
+    sid, skey = _tencent_creds()
+    cred = credential.Credential(sid, skey)
+    http = HttpProfile()
+    http.endpoint = 'tts.tencentcloudapi.com'
+    cp = ClientProfile()
+    cp.httpProfile = http
+    client = tts_client.TtsClient(cred, 'ap-guangzhou', cp)
+    req = models.TextToVoiceRequest()
+    req.Text = text
+    req.SessionId = 'concat_' + str(int(__import__('time').time() * 1000))
+    req.ModelType = 1
+    req.VoiceType = 1002          # 智聆 标准中文女声（免费额度）
+    req.Codec = 'mp3'
+    resp = client.TextToVoice(req)
+    with open(out_mp3, 'wb') as f:
+        f.write(base64.b64decode(resp.Audio))
+
 # 临时目录清理
 WORK_DIR = '/tmp/concat_work'
 os.makedirs(WORK_DIR, exist_ok=True)
