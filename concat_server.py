@@ -80,23 +80,14 @@ def concat():
             shutil.rmtree(task_dir, ignore_errors=True)
             return jsonify({'error': '拼接后文件异常'}), 500
 
-        # ---- 可选旁白配音：edge-tts 合成中文语音并合入音轨 ----
+        # ---- 可选旁白配音：腾讯云 TTS 合成中文语音并合入音轨 ----
         final_fp = out_fp
         voice_status = 'none'
         if voice:
             try:
-                # 1) 合成旁白语音
-                import asyncio
+                # 1) 合成旁白语音（腾讯云 TTS，国内可达）
                 voice_mp3 = os.path.join(task_dir, 'voice.mp3')
-                try:
-                    import edge_tts
-                except ImportError:
-                    raise RuntimeError('edge-tts 未安装，请执行 pip install edge-tts')
-
-                async def _synth():
-                    c = edge_tts.Communicate(voice, voice='zh-CN-XiaoxiaoNeural', rate='+0%')
-                    await c.save(voice_mp3)
-                asyncio.run(_synth())
+                _synth_tencent(voice, voice_mp3)
                 if not os.path.exists(voice_mp3) or os.path.getsize(voice_mp3) < 1000:
                     raise RuntimeError('语音合成异常')
 
