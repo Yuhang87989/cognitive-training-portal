@@ -34,7 +34,7 @@ def _tencent_creds():
 
 
 def _synth_tencent(text, out_mp3):
-    import base64
+    import base64, time as _t
     from tencentcloud.common import credential
     from tencentcloud.common.profile.client_profile import ClientProfile
     from tencentcloud.common.profile.http_profile import HttpProfile
@@ -48,13 +48,16 @@ def _synth_tencent(text, out_mp3):
     client = tts_client.TtsClient(cred, 'ap-guangzhou', cp)
     req = models.TextToVoiceRequest()
     req.Text = text
-    req.SessionId = 'concat_' + str(int(__import__('time').time() * 1000))
+    req.SessionId = 'concat_' + str(int(_t.time() * 1000))
     req.ModelType = 1
     req.VoiceType = 1002          # 智聆 标准中文女声（免费额度）
     req.Codec = 'mp3'
+    t0 = _t.time()
     resp = client.TextToVoice(req)
     with open(out_mp3, 'wb') as f:
         f.write(base64.b64decode(resp.Audio))
+    print('[VOICE] 合成成功 text_len=%d audioKB=%d 耗时%.1fs' %
+          (len(text), len(resp.Audio)//1024, _t.time()-t0), flush=True)
 
 # 临时目录清理
 WORK_DIR = '/tmp/concat_work'
@@ -126,6 +129,8 @@ def concat():
         final_fp = out_fp
         voice_status = 'none'
         if voice:
+            print('[VOICE] 收到旁白 text_len=%d 内容前30字=%s' %
+                  (len(voice), voice[:30]), flush=True)
             try:
                 # 1) 合成旁白语音（腾讯云 TTS，国内可达）
                 voice_mp3 = os.path.join(task_dir, 'voice.mp3')
@@ -167,6 +172,9 @@ def concat():
                 final_fp = voiced_fp
                 voice_status = 'ok'
             except Exception as ve:
+                import traceback
+                print('[VOICE] 配音失败: %s' % str(ve), flush=True)
+                print(traceback.format_exc(), flush=True)
                 # 配音失败不回滚拼接结果，仅标记状态（前端可据此提示）
                 voice_status = 'fail:' + str(ve)
 
