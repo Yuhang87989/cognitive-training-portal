@@ -71,10 +71,11 @@ def concat():
         data = request.get_json(force=True)
         urls = data.get('urls', [])
         voice = (data.get('voice') or '').strip()
-        if not urls or len(urls) < 2:
-            return jsonify({'error': '至少需要 2 个视频 URL'}), 400
+        if not urls or len(urls) < 1:
+            return jsonify({'error': '至少需要 1 个视频 URL'}), 400
         if len(urls) > 20:
             return jsonify({'error': '最多支持 20 段视频'}), 400
+        single = len(urls) == 1  # 单段短视频：跳过拼接，直接配音
 
         # 创建工作目录
         task_id = 'task_' + str(int(__import__('time').time() * 1000))
@@ -106,26 +107,28 @@ def concat():
             for fp in files:
                 f.write(f"file '{fp}'\n")
 
-        # FFmpeg 拼接（stream copy，不重编码，速度快）
+        # FFmpeg 拼接（stream copy，不重编码，速度快）；单段短视频跳过拼接直接复用
         out_fp = os.path.join(task_dir, 'out.mp4')
-        cmd = [
-            'ffmpeg', '-y',
-            '-f', 'concat',
-            '-safe', '0',
-            '-i', list_fp,
-            '-c', 'copy',
-            '-movflags', '+faststart',
-            out_fp
-        ]
-        result = subprocess.run(cmd, capture_output=True, timeout=300)
-        if result.returncode != 0:
-            err_log = result.stderr.decode('utf-8', 'ignore')[-1000:]
-            shutil.rmtree(task_dir, ignore_errors=True)
-            return jsonify({'error': 'FFmpeg 拼接失败', 'log': err_log}), 500
-
-        if not os.path.exists(out_fp) or os.path.getsize(out_fp) < 10000:
-            shutil.rmtree(task_dir, ignore_errors=True)
-            return jsonify({'error': '拼接后文件异常'}), 500
+        if single:
+            out_fp = files[0]
+        else:
+            cmd = [
+                'ffmpeg', '-y',
+                '-f', 'concat',
+                '-safe', '0',
+                '-i', list_fp,
+                '-c', 'copy',
+                '-movflags', '+faststart',
+                out_fp
+            ]
+            result = subprocess.run(cmd, capture_output=True, timeout=300)
+            if result.returncode != 0:
+                err_log = result.stderr.decode('utf-8', 'ignore')[-1000:]
+                shutil.rmtree(task_dir, ignore_errors=True)
+                return jsonify({'error': 'FFmpeg 拼接失败', 'log': err_log}), 500
+            if not os.path.exists(out_fp) or os.path.getsize(out_fp) < 10000:
+                shutil.rmtree(task_dir, ignore_errors=True)
+                return jsonify({'error': '拼接后文件异常'}), 500
 
         # ---- 可选旁白配音：腾讯云 TTS 合成中文语音并合入音轨 ----
         final_fp = out_fp
