@@ -50,8 +50,10 @@ def _synth_tencent(text, out_mp3):
     req.Text = text
     req.SessionId = 'concat_' + str(int(_t.time() * 1000))
     req.ModelType = 1
-    req.VoiceType = 1002          # 智聆 标准中文女声（免费额度）
+    req.VoiceType = 1003          # 智聆 柔和女声（更接近真人朗读，免费额度）
     req.Codec = 'mp3'
+    req.Speed = -1                # 语速放缓一档，让旁白清晰自然、不赶
+    req.Volume = 2.0              # 音量略升，避免被背景音盖住
     t0 = _t.time()
     resp = client.TextToVoice(req)
     with open(out_mp3, 'wb') as f:
