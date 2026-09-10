@@ -1534,23 +1534,29 @@ const arr=[];
 const b=(basePrompt||'').trim();
 let story='';
 if(type!=='i2v'&&b.length>6)story='本片讲述：'+b.replace(/[。．\s,，]+$/,'').slice(0,50)+'。';
-// 开场（用最短字，确保开场不超长）
+// 第1段：开场（用最短字，确保开场不超长）
 let head=VOICE_OPEN_CN+(story?' '+story:'');
 if(head.length>120)head=VOICE_OPEN_CN+(story?' '+story.slice(0,80):'');
 arr.push(head);
 const fxcn=opt&&opt.fx?({'kenburns':'画面缓缓推近，','zoom-in':'镜头不断放大特写，','zoom-out':'镜头逐渐拉远，','pan-left':'镜头向左平移，','pan-right':'镜头向右平移，','rotate':'镜头环绕旋转，','parallax':'画面层次分明，','dream':'如梦似幻、雾气氤氲，'}[opt.fx]||''):'';
-for(let i=0;i<seg-1&&i<CN_NUM.length;i++){
-let s='第'+CN_NUM[i]+'幕，';
+const mid=seg-2; // 中间段数量（扣除开场+收尾），≥0
+for(let i=0;i<mid&&i<CN_NUM.length;i++){
+let s='第'+CN_NUM[i+1]+'幕，';
 if(i===0&&fxcn)s+=fxcn;
-s+=(VOICE_PHASE_CN[i]||'画面徐徐推进，故事渐入佳境。');
+s+=(VOICE_PHASE_CN[i+1]||'画面徐徐推进，故事渐入佳境。');
 if(s.length>120)s=s.slice(0,118)+'。';
 arr.push(s);
 }
-// 收尾
-let tail=VOICE_END_CN;
-if(seg>1)tail='第'+CN_NUM[Math.min(seg-1,CN_NUM.length-1)]+'幕，'+VOICE_PHASE_CN[Math.min(seg-1,VOICE_PHASE_CN.length-1)]+'。'+VOICE_END_CN;
+// 最后1段：末幕 + 收尾（合成一段，避免多出旁白无处安放）
+if(seg===1){
+arr[0]=head+' '+VOICE_END_CN;
+if(arr[0].length>120)arr[0]=arr[0].slice(0,118)+'。';
+}else{
+let tail='第'+CN_NUM[Math.min(mid+1,CN_NUM.length-1)]+'幕，'+VOICE_PHASE_CN[Math.min(mid+1,VOICE_PHASE_CN.length-1)]+'。'+VOICE_END_CN;
+if(fxcn&&mid+1===1)tail=fxcn+tail;
 if(tail.length>120)tail=tail.slice(0,118)+'。';
 arr.push(tail);
+}
 return arr;
 }
 // 用户自定义旁白若超长：按句子切分到每段 ≤100 字，逐段合成避免超限
