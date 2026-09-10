@@ -1479,7 +1479,11 @@ isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分�
    ==================================================================== */
 async function concatVideos(urls,voice){
 const body={urls};
-if(voice&&voice.trim())body.voice=voice.trim();
+// voice 为数组 = 逐段配音（每段一句短旁白，避免整段超 TTS 150字上限）；字符串 = 整段旧逻辑
+if(Array.isArray(voice)){
+const segs=voice.map(v=>(v||'').trim());
+if(segs.some(s=>s))body.voices=segs;
+}else if(voice&&voice.trim())body.voice=voice.trim();
 const resp=await fetch(CONCAT_API,{
 method:'POST',
 headers:{'Content-Type':'application/json'},
@@ -1522,6 +1526,56 @@ if(b.length>0)s+='本片讲述：'+b.replace(/[。．\s,，]+$/,'').slice(0,40)+
 s+='感谢观看，我们下期再见。';
 return s;
 }
+// V469 逐段配音：每段生成 1 句短旁白（≤120字），避免整段超过腾讯云 TTS 单次 150 字上限
+const VOICE_OPEN_CN='欢迎来到幻灵AI影视工坊。';
+const VOICE_END_CN='感谢观看，我们下期再见。';
+function autoVoiceSeg(type,basePrompt,seg,opt){
+const arr=[];
+const b=(basePrompt||'').trim();
+let story='';
+if(type!=='i2v'&&b.length>6)story='本片讲述：'+b.replace(/[。．\s,，]+$/,'').slice(0,50)+'。';
+// 开场（用最短字，确保开场不超长）
+let head=VOICE_OPEN_CN+(story?' '+story:'');
+if(head.length>120)head=VOICE_OPEN_CN+(story?' '+story.slice(0,80):'');
+arr.push(head);
+const fxcn=opt&&opt.fx?({'kenburns':'画面缓缓推近，','zoom-in':'镜头不断放大特写，','zoom-out':'镜头逐渐拉远，','pan-left':'镜头向左平移，','pan-right':'镜头向右平移，','rotate':'镜头环绕旋转，','parallax':'画面层次分明，','dream':'如梦似幻、雾气氤氲，'}[opt.fx]||''):'';
+for(let i=0;i<seg-1&&i<CN_NUM.length;i++){
+let s='第'+CN_NUM[i]+'幕，';
+if(i===0&&fxcn)s+=fxcn;
+s+=(VOICE_PHASE_CN[i]||'画面徐徐推进，故事渐入佳境。');
+if(s.length>120)s=s.slice(0,118)+'。';
+arr.push(s);
+}
+// 收尾
+let tail=VOICE_END_CN;
+if(seg>1)tail='第'+CN_NUM[Math.min(seg-1,CN_NUM.length-1)]+'幕，'+VOICE_PHASE_CN[Math.min(seg-1,VOICE_PHASE_CN.length-1)]+'。'+VOICE_END_CN;
+if(tail.length>120)tail=tail.slice(0,118)+'。';
+arr.push(tail);
+return arr;
+}
+// 用户自定义旁白若超长：按句子切分到每段 ≤100 字，逐段合成避免超限
+function splitVoiceBySeg(text,seg){
+const clean=(text||'').trim().replace(/[。．！？;；]+$/,'');
+const cuts=clean.split(/[。．！？;；]+/).filter(s=>s);
+const arr=[];let cur='';
+for(const part of cuts){
+if((cur+part).length>95&&cur){arr.push(cur);cur=part;}
+else cur=cur?cur+'。'+part:part;
+}
+if(cur)arr.push(cur);
+// 归并到 seg 段：段太多则合并，段太少则末尾段放剩余
+const out=[];
+if(arr.length<=seg){
+for(let i=0;i<arr.length;i++)out.push(arr[i]);
+for(let i=arr.length;i<seg-1;i++)out.push('');
+}else{
+for(let i=0;i<seg;i++){
+const from=Math.floor(i*arr.length/seg),to=Math.floor((i+1)*arr.length/seg);
+out.push(arr.slice(from,to).join('。').slice(0,100));
+}
+}
+return out;
+}
 async function genLongVideo(type,opts){
 const{basePrompt,size,containerId,metaInfo,imgData,mode,voice,fx,template}=opts;
 const mode_=mode==='shot'?'shot':'seamless';
@@ -1529,8 +1583,15 @@ const mode_=mode==='shot'?'shot':'seamless';
 const seg=mode_==='shot'?6:12;
 const dur=5;
 const total=seg*dur;
-// V468 自动配音：留空则自动识别成片并生成旁白，无需人为干预
-let vc=voice&&voice.trim()?voice.trim():autoVoice(type,basePrompt,seg,{fx,template});
+// V469 逐段配音：整段超150字会触发腾讯云TTS失败，改为按段生成短旁白（每段≤120字）
+let vc=null,vcArray=null;
+if(voice&&voice.trim()){
+const vt=voice.trim();
+vcArray=(vt.length>120)?splitVoiceBySeg(vt,seg):Array(seg).fill(vt);
+}else{
+vcArray=autoVoiceSeg(type,basePrompt,seg,{fx,template});
+}
+vc=vcArray&&vcArray.some(s=>s)?true:false;
 const progId=containerId.replace('Result','Progress');
 const fillId=containerId.replace('Result','ProgressFill');
 const ptxtId=containerId.replace('Result','ProgressText');
@@ -1588,7 +1649,7 @@ let finalBlob=null,lastErr=null;
 for(let __t=0;__t<2;__t++){
 try{
 if(__t>0){ptxt.innerHTML=`🔗 首次拼接失败，自动重试中（第${__t+1}次）...<span class="poll-dots"></span>`;}
-finalBlob=await concatVideos(urls,vc);
+finalBlob=await concatVideos(urls,vcArray);
 break;
 }catch(e){
 lastErr=e;
