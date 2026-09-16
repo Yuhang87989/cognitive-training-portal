@@ -101,6 +101,53 @@ def _mux_voice_into(video_fp, voice_mp3, out_fp, duration):
     return r.returncode, (r.stderr or b'')
 
 
+# 中文字幕字体：优先用 /opt/concat/font.ttf，不存在则尝试系统字体，都没有则跳过字幕烧录（不阻断成片）
+_SUB_FONT_CANDIDATES = [
+    '/opt/concat/font.ttf',
+    '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
+    '/usr/share/fonts/wqy-zenhei/wqy-zenhei.ttc',
+    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+    '/usr/share/fonts/truetype/arphic/uming.ttc',
+]
+
+def _find_sub_font():
+    for p in _SUB_FONT_CANDIDATES:
+        if os.path.exists(p):
+            return p
+    return None
+
+def _burn_subtitle(video_fp, text, out_fp, fontfile=None):
+    """用 drawtext 把一句中文字幕烧到底部（需中文字体，安全换行后显示）"""
+    if not text or not text.strip():
+        shutil.copyfile(video_fp, out_fp)
+        return 0, b''
+    fontfile = fontfile or _find_sub_font()
+    if not fontfile:
+        # 无中文字体：保持原视频（配音仍可用），标记跳过
+        shutil.copyfile(video_fp, out_fp)
+        return 0, 'NO_FONT'.encode()
+    # 超长自动截断，避免单行溢出画面
+    t = text.strip()
+    if len(t) > 30:
+        # 按中文标点断行
+        halves = t
+        if '，' in t:
+            idx = t.find('，', 0)
+            half = idx
+            t = t[:half] + '\n' + t[half+1:]
+    esc = t.replace('\\', '\\\\').replace(':', '\\:').replace("'", '').replace('%', '\\%').replace('\n', '\\n')
+    # 安全单行版本：drawtext textfile 方式避免转义地狱，用开启 text 也可
+    esc2 = t.replace("'", '').replace(':', '\\:').replace('%', '\\%').replace('\\', '\\\\').replace('\n', '\\n')
+    cmd = [
+        'ffmpeg', '-y', '-i', video_fp,
+        '-vf', f"drawtext=fontfile={fontfile}:text='{esc2}':fontcolor=white:fontsize=28:borderw=2:bordercolor=black:box=1:boxcolor=black@0.45:boxborderw=8:x=(w-text_w)/2:y=h-text_h-34",
+        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p',
+        '-c:a', 'copy', '-movflags', '+faststart', out_fp
+    ]
+    r = subprocess.run(cmd, capture_output=True, timeout=180)
+    return r.returncode, (r.stderr or b'')
+
+
 WORK_DIR = '/tmp/concat_work'
 os.makedirs(WORK_DIR, exist_ok=True)
 
@@ -112,10 +159,17 @@ def concat():
         urls = data.get('urls', [])
         voice = (data.get('voice') or '').strip()
         voices = data.get('voices') or []
+        subtitles = data.get('subtitles') or []
         if isinstance(voices, list):
             voices = [(v or '').strip() for v in voices]
         else:
             voices = []
+        if isinstance(subtitles, list):
+            subtitles = [(s or '').strip() for s in subtitles]
+        elif subtitles:
+            subtitles = [str(subtitles).strip()]
+        else:
+            subtitles = []
         if not urls or len(urls) < 1:
             return jsonify({'error': '至少需要 1 个视频 URL'}), 400
         if len(urls) > 20:
@@ -158,19 +212,31 @@ def concat():
             try:
                 for i, fp in enumerate(files):
                     vtext = voices[i] if i < len(voices) else ''
+                    # 先烧字幕画面（若有对应字幕文本），再合配音音轨
+                    cur_fp = fp
+                    sub_txt = subtitles[i] if i < len(subtitles) else (vtext if vtext else '')
+                    if sub_txt:
+                        subbed_fp = os.path.join(task_dir, f'subbed_{i:02d}.mp4')
+                        rc0, err0 = _burn_subtitle(fp, sub_txt, subbed_fp)
+                        if rc0 == 0 and os.path.exists(subbed_fp) and os.path.getsize(subbed_fp) > 10000 and err0 != 'NO_FONT'.encode():
+                            cur_fp = subbed_fp
+                        elif err0 == 'NO_FONT'.encode():
+                            print('[SUB] 第%d段无中文字体，跳过字幕（仅配音）' % (i+1), flush=True)
+                        else:
+                            print('[SUB] 第%d段字幕烧录失败，回退原画面: %s' % (i+1, err0.decode('utf-8','ignore')[-300:]), flush=True)
                     if not vtext:
-                        voiced_files.append(fp)
+                        voiced_files.append(cur_fp)
                         continue
                     print('[VOICE] 第%d段旁白 text_len=%d 内容前20字=%s' % (i+1, len(vtext), vtext[:20]), flush=True)
                     voice_mp3 = os.path.join(task_dir, f'voice_{i:02d}.mp3')
                     _synth_tencent(vtext, voice_mp3)
                     if not os.path.exists(voice_mp3) or os.path.getsize(voice_mp3) < 1000:
                         raise RuntimeError('第%d段语音合成异常' % (i+1))
-                    dur = _probe_duration(fp)
+                    dur = _probe_duration(cur_fp)
                     if dur <= 0:
                         dur = 5
                     voiced_fp = os.path.join(task_dir, f'voiced_{i:02d}.mp4')
-                    rc, err = _mux_voice_into(fp, voice_mp3, voiced_fp, dur)
+                    rc, err = _mux_voice_into(cur_fp, voice_mp3, voiced_fp, dur)
                     if rc != 0 or not os.path.exists(voiced_fp) or os.path.getsize(voiced_fp) < 10000:
                         raise RuntimeError('第%d段音轨合并失败: %s' % (i+1, err.decode('utf-8','ignore')[-400:]))
                     voiced_files.append(voiced_fp)
@@ -245,6 +311,17 @@ def concat():
                     return jsonify({'error': '拼接后文件异常'}), 500
 
             final_fp = out_fp
+            # 整段字幕：拼接后的最终画面烧入字幕（subtitle 取第0条，烧进画面后再合配音）
+            sub_txt = subtitles[0] if subtitles else ''
+            if sub_txt:
+                subbed_fp = os.path.join(task_dir, 'final_subbed.mp4')
+                rc0, err0 = _burn_subtitle(out_fp, sub_txt, subbed_fp)
+                if rc0 == 0 and os.path.exists(subbed_fp) and os.path.getsize(subbed_fp) > 10000 and err0 != 'NO_FONT'.encode():
+                    final_fp = subbed_fp
+                elif err0 == 'NO_FONT'.encode():
+                    print('[SUB] 无中文字体，跳过字幕（仅配音）', flush=True)
+                else:
+                    print('[SUB] 字幕烧录失败，回退原画面: %s' % (err0.decode('utf-8','ignore')[-300:]), flush=True)
             if voice:
                 print('[VOICE] 收到旁白 text_len=%d 内容前30字=%s' % (len(voice), voice[:30]), flush=True)
                 try:
@@ -254,13 +331,13 @@ def concat():
                         raise RuntimeError('语音合成异常')
                     probe = subprocess.run(
                         ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of',
-                         'default=noprint_wrappers=1:nokey=1', out_fp],
+                         'default=noprint_wrappers=1:nokey=1', final_fp],
                         capture_output=True, timeout=60)
                     duration = float(probe.stdout.decode('utf-8', 'ignore').strip() or 0)
                     if duration <= 0:
                         duration = (len(urls)) * 5
                     voiced_fp = os.path.join(task_dir, 'voiced.mp4')
-                    rc2, err2 = _mux_voice_into(out_fp, voice_mp3, voiced_fp, duration)
+                    rc2, err2 = _mux_voice_into(final_fp, voice_mp3, voiced_fp, duration)
                     if rc2 != 0 or not os.path.exists(voiced_fp) or os.path.getsize(voiced_fp) < 10000:
                         raise RuntimeError('音轨合并失败: ' + err2.decode('utf-8','ignore')[-800:])
                     final_fp = voiced_fp
