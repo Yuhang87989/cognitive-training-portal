@@ -35,7 +35,7 @@ def _tencent_creds():
     return sid, skey
 
 
-def _synth_tencent(text, out_mp3):
+def _synth_tencent(text, out_mp3, voice_type=1003):
     import base64, time as _t
     from tencentcloud.common import credential
     from tencentcloud.common.profile.client_profile import ClientProfile
@@ -52,7 +52,8 @@ def _synth_tencent(text, out_mp3):
     req.Text = text
     req.SessionId = 'concat_' + str(int(_t.time() * 1000))
     req.ModelType = 1
-    req.VoiceType = 1003          # 智聆 柔和女声（更接近真人朗读，免费额度）
+    # V477 音色可选：前端传入 voice_type（腾讯云TTS 音色ID），默认柔和女声
+    req.VoiceType = int(voice_type or 1003)
     req.Codec = 'mp3'
     req.Speed = -1                # 语速放缓一档，让旁白清晰自然、不赶
     req.Volume = 2.0              # 音量略升，避免被背景音盖住
@@ -158,6 +159,7 @@ def concat():
         data = request.get_json(force=True)
         urls = data.get('urls', [])
         voice = (data.get('voice') or '').strip()
+        voice_type = data.get('voice_type') or 1003
         voices = data.get('voices') or []
         subtitles = data.get('subtitles') or []
         if isinstance(voices, list):
@@ -229,7 +231,7 @@ def concat():
                         continue
                     print('[VOICE] 第%d段旁白 text_len=%d 内容前20字=%s' % (i+1, len(vtext), vtext[:20]), flush=True)
                     voice_mp3 = os.path.join(task_dir, f'voice_{i:02d}.mp3')
-                    _synth_tencent(vtext, voice_mp3)
+                    _synth_tencent(vtext, voice_mp3, voice_type)
                     if not os.path.exists(voice_mp3) or os.path.getsize(voice_mp3) < 1000:
                         raise RuntimeError('第%d段语音合成异常' % (i+1))
                     dur = _probe_duration(cur_fp)
@@ -326,7 +328,7 @@ def concat():
                 print('[VOICE] 收到旁白 text_len=%d 内容前30字=%s' % (len(voice), voice[:30]), flush=True)
                 try:
                     voice_mp3 = os.path.join(task_dir, 'voice.mp3')
-                    _synth_tencent(voice, voice_mp3)
+                    _synth_tencent(voice, voice_mp3, voice_type)
                     if not os.path.exists(voice_mp3) or os.path.getsize(voice_mp3) < 1000:
                         raise RuntimeError('语音合成异常')
                     probe = subprocess.run(
