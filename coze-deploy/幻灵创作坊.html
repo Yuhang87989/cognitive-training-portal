@@ -451,6 +451,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="prompt-box">
 <textarea id="i2vVoice" placeholder="留空则自动识别本成片并自动生成旁白配音（推荐）；也可手动输入想讲的故事文案。&#10;&#10;例如：一位少女在森林中遇见了受伤的小龙，悉心照料后，小龙带她飞向云端浮岛，展开一段奇幻冒险。" style="min-height:60px"></textarea>
 </div>
+<div style="margin-top:6px">
+<div style="font-size:12px;color:var(--text2);margin-bottom:4px">🎤 配音音色</div>
+<select class="styled-select" id="i2vVoiceSel">
+<option value="1003" selected>🗣️ 柔和女声（推荐）</option>
+<option value="1012">🎙️ 稳重男声</option>
+<option value="101004">📻 男主播·智云</option>
+<option value="101018">🎧 情感男声·智靖</option>
+<option value="603003">🧔 随和老李</option>
+</select>
+</div>
+
 </div>
 <button class="gen-btn" id="i2vGenBtn" onclick="genI2VVideo()">🎬 生成 AI 真视频（约1分钟）</button>
 </div>
@@ -510,6 +521,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <option value="5">🔹 5秒 · 短视频（快）</option>
 <option value="30">🎬 30秒 · 长视频（6段分镜）</option>
 <option value="60" selected>🎥 60秒 · 1分钟（12段尾帧续写·推荐）</option>
+</select>
+</div>
+<div class="card fade-in">
+<div class="card-title">🎤 配音音色</div>
+<select class="styled-select" id="dramaVoiceSel">
+<option value="1003" selected>🗣️ 柔和女声（推荐）</option>
+<option value="1012">🎙️ 稳重男声</option>
+<option value="101004">📻 男主播·智云</option>
+<option value="101018">🎧 情感男声·智靖</option>
+<option value="603003">🧔 随和老李</option>
 </select>
 </div>
 <div class="card fade-in">
@@ -582,6 +603,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <div class="card-title">🎙️ 旁白配音（可选·长视频）</div>
 <div class="prompt-box">
 <textarea id="ocVoice" placeholder="留空则自动识别本成片并自动生成旁白配音（推荐）；也可手动输入想讲的故事文案。&#10;&#10;例如：银发狼耳少女在月光森林中施展魔法，粒子的光芒在夜空中飞舞，一场温柔的冒险就此展开。" style="min-height:60px"></textarea>
+</div>
+<div style="margin-top:6px">
+<div style="font-size:12px;color:var(--text2);margin-bottom:4px">🎤 配音音色</div>
+<select class="styled-select" id="ocVoiceSel">
+<option value="1003" selected>🗣️ 柔和女声（推荐）</option>
+<option value="1012">🎙️ 稳重男声</option>
+<option value="101004">📻 男主播·智云</option>
+<option value="101018">🎧 情感男声·智靖</option>
+<option value="603003">🧔 随和老李</option>
+</select>
 </div>
 </div>
 <button class="gen-btn" id="ocGenBtn" onclick="genOneClick()">⚡ 生成 AI 视频（约1分钟）</button>
@@ -1098,7 +1129,11 @@ landscape:'breathtaking landscape film, aerial drone view, sweeping clouds and l
 story:'cinematic movie scene with narrative atmosphere, dramatic lighting, film grain, epic storytelling',
 idol:'energetic stage performance, flashing spotlights, dynamic dance camera movement, concert atmosphere'
 };
-const VID_SIZE_MAP={'16x9':'1280x720','9x16':'720x1280','1x1':'1024x1024'};
+// V477 全站视频升级：cogvideox-3 + quality + 更高分辨率（人更自然、画质更清晰）
+const VIDEO_MODEL='cogvideox-3';
+const VIDEO_QUALITY='quality';
+const VID_SIZE_MAP={'16x9':'1920x1080','9x16':'1080x1920','1x1':'1280x1280'};
+function curVoiceType(id){const el=document.getElementById(id);return(el&&el.value)?el.value:'1003';}
 // V462 长视频拼接
 const CONCAT_API='https://qiuyhang1688.com.cn/api/concat/';
 const LONG_SEG=6,LONG_DUR=10;
@@ -1350,7 +1385,7 @@ if(isGen)return;
 if(!i2vImgData){alert('请先上传一张图片');return}
 goStep('img2vid',2);
 const btn=document.getElementById('i2vGenBtn');
-const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1280x720';
+const size=VID_SIZE_MAP[i2vW+'x'+i2vH]||'1920x1080';
 // V462 长视频模式
 if(i2vDur>=30&&i2vDur<=60){
 isGen=true;
@@ -1377,11 +1412,11 @@ const fx=VIDEO_FX[i2vEffect]||VIDEO_FX.kenburns;
 const dur=i2vDur===10?10:5;
 const prompt=`Bring this image to life with natural, smooth motion. ${fx}. High quality, consistent with the original image, no scene change.`;
 fill.style.width='10%';ptxt.innerHTML='🚀 提交视频生成任务<span class="poll-dots"></span>';
-const taskId=await submitVideo({model:'cogvideox-flash',prompt,image_url:b64,quality:'speed',duration:dur,size,with_audio:false});
+const taskId=await submitVideo({model:VIDEO_MODEL,prompt,image_url:b64,quality:VIDEO_QUALITY,duration:dur,size,with_audio:false});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='90%';ptxt.innerHTML='🔗 合成旁白配音中<span class="poll-dots"></span>';
-const fb=await concatVideos([vid.url],autoVoiceShort(i2vEffect));
+const fb=await concatVideos([vid.url],autoVoiceShort(i2vEffect),null,curVoiceType('i2vVoiceSel'));
 const bUrl=URL.createObjectURL(fb);
 fill.style.width='100%';ptxt.textContent='✅ 视频生成完成（含配音）！';
 genResults.push({type:'realvideo',videoUrl:bUrl,cover:'',prompt:'[图生视频] '+i2vEffect,duration:dur});
@@ -1412,7 +1447,7 @@ btn.disabled=true;btn.textContent='⏳ 提交长视频任务...';
 try{
 const mode=dur===30?'shot':'seamless';
 const genHint=({fantasy:'奇幻冒险的世界',romance:'浪漫温馨的爱情',action:'热血激烈的战斗',scifi:'科幻未来的世界',slice:'温暖治愈的日常',mystery:'悬疑神秘的氛围'}[dramaGenre])||'精彩的故事情节';
-await genLongVideo('drama',{basePrompt:base+'。'+genHint,size:'1280x720',containerId:'dramaResult',metaInfo:{name:'幻灵AI短剧',label:'AI短剧 · '+dramaGenre+' · '+dur+'秒长视频'},mode:mode,voice:'',template:dramaGenre});
+await genLongVideo('drama',{basePrompt:base+'。'+genHint,size:'1920x1080',containerId:'dramaResult',metaInfo:{name:'幻灵AI短剧',label:'AI短剧 · '+dramaGenre+' · '+dur+'秒长视频'},mode:mode,voice:'',template:dramaGenre});
 fill.style.width='100%';setTimeout(()=>{const pr=document.getElementById('dramaProgress');if(pr)pr.classList.remove('show')},2500);
 }catch(e){
 const prog1=document.getElementById('dramaProgress'),f1=document.getElementById('dramaProgressFill'),t1=document.getElementById('dramaProgressText');
@@ -1433,11 +1468,11 @@ try{
 const filtered=smartFilter(base).boosted;
 const genreHint=({fantasy:'epic fantasy adventure, magical world, cinematic',romance:'sweet romantic drama, warm soft lighting',action:'intense action battle, dynamic effects, energy',scifi:'sci-fi future world, neon technology, space',slice:'warm healing daily life, cozy slice of life',mystery:'suspense mystery, dark atmospheric, thriller'}[dramaGenre])||'cinematic film';
 const prompt=`${filtered}. ${genreHint}. A single continuous cinematic shot, smooth camera movement, professional film color grading, masterpiece quality.`;
-const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:5,size:'1280x720',with_audio:false});
+const taskId=await submitVideo({model:VIDEO_MODEL,prompt,quality:VIDEO_QUALITY,duration:5,size:'1920x1080',with_audio:false});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='90%';ptxt.innerHTML='🔗 合成旁白配音中<span class="poll-dots"></span>';
-const fb=await concatVideos([vid.url],autoVoiceShort(base),autoVoiceShort(base));
+const fb=await concatVideos([vid.url],autoVoiceShort(base),autoVoiceShort(base),curVoiceType('dramaVoiceSel'));
 const bUrl=URL.createObjectURL(fb);
 fill.style.width='100%';ptxt.textContent='✅ 视频生成完成（含配音）！';
 genResults.push({type:'realvideo',videoUrl:bUrl,cover:'',prompt:'[AI短剧视频] '+base.substring(0,30),duration:5});
@@ -1459,7 +1494,7 @@ const base=document.getElementById('ocPrompt').value.trim();
 if(!base){alert('请输入描述～');return}
 goStep('oneclick',2);
 const btn=document.getElementById('ocGenBtn');
-const size=VID_SIZE_MAP[ocW+'x'+ocH]||'1280x720';
+const size=VID_SIZE_MAP[ocW+'x'+ocH]||'1920x1080';
 // 长视频模式：30秒=分镜拼接, 60秒=尾帧续写
 if(ocDur===30||ocDur===60){
 isGen=true;
@@ -1487,11 +1522,11 @@ const style=OC_VIDEO_STYLE[ocTemplate]||OC_VIDEO_STYLE.character;
 const dur=ocDur===10?10:5;
 const ocV=(document.getElementById('ocVoice')?document.getElementById('ocVoice').value.trim():'')||autoVoiceShort(base);
 const prompt=`${filtered}. ${style}. Smooth cinematic motion, professional film quality, beautiful lighting, highly detailed.`;
-const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',duration:dur,size,with_audio:false});
+const taskId=await submitVideo({model:VIDEO_MODEL,prompt,quality:VIDEO_QUALITY,duration:dur,size,with_audio:false});
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='90%';ptxt.innerHTML='🔗 合成旁白配音中<span class="poll-dots"></span>';
-const fb=await concatVideos([vid.url],ocV);
+const fb=await concatVideos([vid.url],ocV,null,curVoiceType('ocVoiceSel'));
 const bUrl=URL.createObjectURL(fb);
 fill.style.width='100%';ptxt.textContent=`✅ 一键成片完成！${dur}秒真视频（含配音）`;
 genResults.push({type:'realvideo',videoUrl:bUrl,cover:'',prompt:'[一键成片·'+ocTemplate+'] '+base.substring(0,30),duration:dur});
@@ -1507,8 +1542,10 @@ isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分�
 /* ====================================================================
    V464 长视频拼接（6段×10秒 → 1分钟）
    ==================================================================== */
-async function concatVideos(urls,voice,subs){
+async function concatVideos(urls,voice,subs,voiceType){
 const body={urls};
+const vt=(voiceType||'').trim();
+if(vt)body.voice_type=vt;
 // voice 为数组 = 逐段配音（每段一句短旁白，避免整段超 TTS 150字上限）；字符串 = 整段旧逻辑
 if(Array.isArray(voice)){
 const segs=voice.map(v=>(v||'').trim());
@@ -1641,6 +1678,9 @@ return out;
 }
 async function genLongVideo(type,opts){
 const{basePrompt,size,containerId,metaInfo,imgData,mode,voice,fx,template}=opts;
+// V477 音色：按功能读对应下拉，短剧/默认兜底柔和女声
+const _vtId=(type==='i2v')?'i2vVoiceSel':(type==='oc')?'ocVoiceSel':'dramaVoiceSel';
+const voiceType=curVoiceType(_vtId);
 const mode_=mode==='shot'?'shot':'seamless';
 // 实测智谱免费单段最多5秒：分镜30秒=6段, 续写60秒=12段
 const seg=mode_==='shot'?6:12;
@@ -1673,7 +1713,7 @@ const segPct=Math.round((i/seg)*85);
 fill.style.width=segPct+'%';
 ptxt.innerHTML=`🎬 长视频 第 ${i+1}/${seg} 段渲染中<span class="poll-dots"></span>`;
 let prompt;
-const payload={model:'cogvideox-flash',quality:'speed',duration:dur,size,with_audio:false};
+const payload={model:VIDEO_MODEL,quality:VIDEO_QUALITY,duration:dur,size,with_audio:false};
 if(mode_==='shot'){
 // 分镜拼接：每段独立镜头，互不依赖，避免单点失败导致整片降级
 const shot=(TEXT_LONG_PHASE[i]||LONG_SHOTS[i]||'continue the motion naturally');
@@ -1712,7 +1752,7 @@ let finalBlob=null,lastErr=null;
 for(let __t=0;__t<2;__t++){
 try{
 if(__t>0){ptxt.innerHTML=`🔗 首次拼接失败，自动重试中（第${__t+1}次）...<span class="poll-dots"></span>`;}
-finalBlob=await concatVideos(urls,vcArray,vcArray);
+finalBlob=await concatVideos(urls,vcArray,vcArray,voiceType);
 break;
 }catch(e){
 lastErr=e;
