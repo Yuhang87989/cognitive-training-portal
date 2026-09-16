@@ -1407,7 +1407,7 @@ const taskId=await submitVideo({model:'cogvideox-flash',prompt,quality:'speed',d
 fill.style.width='15%';ptxt.innerHTML='🎬 AI 渲染视频中（约40-60秒）<span class="poll-dots"></span>';
 const vid=await pollVideo(taskId,(d,p)=>{fill.style.width=p+'%';});
 fill.style.width='90%';ptxt.innerHTML='🔗 合成旁白配音中<span class="poll-dots"></span>';
-const fb=await concatVideos([vid.url],autoVoiceShort(base));
+const fb=await concatVideos([vid.url],autoVoiceShort(base),autoVoiceShort(base));
 const bUrl=URL.createObjectURL(fb);
 fill.style.width='100%';ptxt.textContent='✅ 视频生成完成（含配音）！';
 genResults.push({type:'realvideo',videoUrl:bUrl,cover:'',prompt:'[AI短剧视频] '+base.substring(0,30),duration:5});
@@ -1477,13 +1477,20 @@ isGen=false;btn.disabled=false;btn.textContent='⚡ 生成 AI 视频（约1分�
 /* ====================================================================
    V464 长视频拼接（6段×10秒 → 1分钟）
    ==================================================================== */
-async function concatVideos(urls,voice){
+async function concatVideos(urls,voice,subs){
 const body={urls};
 // voice 为数组 = 逐段配音（每段一句短旁白，避免整段超 TTS 150字上限）；字符串 = 整段旧逻辑
 if(Array.isArray(voice)){
 const segs=voice.map(v=>(v||'').trim());
 if(segs.some(s=>s))body.voices=segs;
 }else if(voice&&voice.trim())body.voice=voice.trim();
+// 字幕：数组时逐段烧录对应文字，字符串时整段
+if(Array.isArray(subs)){
+const st=subs.map(s=>(s||'').trim());
+if(st.some(s=>s))body.subtitles=st;
+}else if(subs&&String(subs).trim()){
+body.subtitles=[String(subs).trim()];
+}
 const resp=await fetch(CONCAT_API,{
 method:'POST',
 headers:{'Content-Type':'application/json'},
@@ -1520,42 +1527,62 @@ s+='感谢观看，我们下期再见。';
 return s;
 }
 function autoVoiceShort(basePrompt){
-let s='欢迎来到幻灵AI影视工坊。';
 const b=(basePrompt||'').trim();
-if(b.length>0)s+='本片讲述：'+b.replace(/[。．\s,，]+$/,'').slice(0,40)+'。';
-s+='感谢观看，我们下期再见。';
-return s;
+// 去掉"欢迎来到/感谢观看"模板腔：直接以用户描写的故事情节为主体的解说
+if(b.length>0)return b.replace(/[。．\s,，]+$/,'').slice(0,70);
+return '一段由AI生成的精彩影像，描绘了动人的故事画面。';
 }
 // V469 逐段配音：每段生成 1 句短旁白（≤120字），避免整段超过腾讯云 TTS 单次 150 字上限
 const VOICE_OPEN_CN='欢迎来到幻灵AI影视工坊。';
 const VOICE_END_CN='感谢观看，我们下期再见。';
 function autoVoiceSeg(type,basePrompt,seg,opt){
+// 以用户描写的故事为主体，按画面阶段生成贴合情节的分段解说（去掉"欢迎来到/第X幕/感谢观看"空话）
 const arr=[];
-const b=(basePrompt||'').trim();
-let story='';
-if(type!=='i2v'&&b.length>6)story='本片讲述：'+b.replace(/[。．\s,，]+$/,'').slice(0,50)+'。';
-// 第1段：开场（用最短字，确保开场不超长）
-let head=VOICE_OPEN_CN+(story?' '+story:'');
-if(head.length>120)head=VOICE_OPEN_CN+(story?' '+story.slice(0,80):'');
-arr.push(head);
+const story=(basePrompt||'').trim().replace(/[。．\s,，]+$/,'');
 const fxcn=opt&&opt.fx?({'kenburns':'画面缓缓推近，','zoom-in':'镜头不断放大特写，','zoom-out':'镜头逐渐拉远，','pan-left':'镜头向左平移，','pan-right':'镜头向右平移，','rotate':'镜头环绕旋转，','parallax':'画面层次分明，','dream':'如梦似幻、雾气氤氲，'}[opt.fx]||''):'';
-const mid=seg-2; // 中间段数量（扣除开场+收尾），≥0
-for(let i=0;i<mid&&i<CN_NUM.length;i++){
-let s='第'+CN_NUM[i+1]+'幕，';
-if(i===0&&fxcn)s+=fxcn;
-s+=(VOICE_PHASE_CN[i+1]||'画面徐徐推进，故事渐入佳境。');
+// 故事推进语：贴合画面阶段，而非"第X幕画面展开"
+const NARR_PHASE_CN=['镜头缓缓打开，故事就此展开','画面里的人物和情景一点点浮现','镜头轻轻移动，画面有了新变化','气氛逐渐浓厚，情节向前推进','特写之下，细节和情绪都清晰起来','镜头拉远，整个场景尽收眼底','视角转换，故事迎来新的发展','画面推向高潮，情绪层层升温','镜头平稳下来，故事慢慢收束','光影定格，画面归于宁静'];// 贴合本段画面的解说推进句
+if(type==='i2v'){ // 图生视频：无用户故事，围绕画面推进行解说
+const ph=seg<=2?2:Math.min(seg,10);
+const head=(fxcn?fxcn:'画面随音乐缓缓流动，')+'一段生动的光影徐徐展开';
+arr.push(head.length>120?head.slice(0,118)+'。':head);
+for(let i=1;i<seg;i++){
+let s=(NARR_PHASE_CN[i%NARR_PHASE_CN.length]||'画面持续推进，光影不断变化。');
 if(s.length>120)s=s.slice(0,118)+'。';
 arr.push(s);
 }
-// 最后1段：末幕 + 收尾（合成一段，避免多出旁白无处安放）
-if(seg===1){
-arr[0]=head+' '+VOICE_END_CN;
-if(arr[0].length>120)arr[0]=arr[0].slice(0,118)+'。';
-}else{
-let tail='第'+CN_NUM[Math.min(mid+1,CN_NUM.length-1)]+'幕，'+VOICE_PHASE_CN[Math.min(mid+1,VOICE_PHASE_CN.length-1)]+'。'+VOICE_END_CN;
-if(fxcn&&mid+1===1)tail=fxcn+tail;
+return arr;
+}
+// 有用户故事：把故事按画面切分到各段，各段解说贴合该段故事
+if(story.length>0){
+const sentences=story.split(/[。．！？!?；;]+/).filter(s=>s);
+if(sentences.length>=seg){
+// 每段对应一句故事情节
+for(let i=0;i<seg;i++){
+let s=(sentences[i]||'').trim();
+if(!s)s=(NARR_PHASE_CN[i%NARR_PHASE_CN.length]||'画面持续推进。');
+if(s.length>120)s=s.slice(0,118)+'。';
+arr.push(s);
+}
+return arr;
+}
+// 故事句少于段数：首段放开场+故事，其后补推进句，末段收束
+arr.push((fxcn?fxcn:'')+story.slice(0,70));
+for(let i=1;i<seg-1;i++){
+let s=NARR_PHASE_CN[(i+1)%NARR_PHASE_CN.length]||'画面持续推进。';
+if(s.length>120)s=s.slice(0,118)+'。';
+arr.push(s);
+}
+let tail=(NARR_PHASE_CN[Math.min(seg,10)-1]||'光影定格，画面归于宁静。');
 if(tail.length>120)tail=tail.slice(0,118)+'。';
 arr.push(tail);
+return arr;
+}
+// 兜底（无故事）：用推进句铺满
+for(let i=0;i<seg;i++){
+let s=(fxcn&&i===0?fxcn:'')+(NARR_PHASE_CN[i%NARR_PHASE_CN.length]||'画面持续推进。');
+if(s.length>120)s=s.slice(0,118)+'。';
+arr.push(s);
 }
 return arr;
 }
@@ -1655,7 +1682,7 @@ let finalBlob=null,lastErr=null;
 for(let __t=0;__t<2;__t++){
 try{
 if(__t>0){ptxt.innerHTML=`🔗 首次拼接失败，自动重试中（第${__t+1}次）...<span class="poll-dots"></span>`;}
-finalBlob=await concatVideos(urls,vcArray);
+finalBlob=await concatVideos(urls,vcArray,vcArray);
 break;
 }catch(e){
 lastErr=e;
