@@ -889,6 +889,12 @@ window.renderMyPage = function(container) {
                     <button class="foldable-btn" onclick="cloudManualSync()">
                         <span>🔄</span> 立即同步
                     </button>
+                    <button class="foldable-btn" onclick="cloudExportData()">
+                        <span>📤</span> 导出我的数据
+                    </button>
+                    <button class="foldable-btn" onclick="cloudDeleteAccount()" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24);color:white;font-weight:600;">
+                        <span>🗑️</span> 删除我的账号
+                    </button>
                 </div>
             </div>
         </div>
@@ -1187,6 +1193,49 @@ window.cloudManualSync = function () {
     window.showToast && window.showToast('正在同步…');
     window.portalSync.syncNow().then(function (ok) {
         if (ok) window.showToast && window.showToast('✅ 同步完成');
+    });
+};
+
+// 导出我的数据：拉取云端成长档案并下载为JSON
+window.cloudExportData = function () {
+    if (!window.portalSync) { window.showToast && window.showToast('同步模块未加载'); return; }
+    if (!window.portalSync.isLoggedIn()) { window.showToast && window.showToast('尚未开通云同步，请先登录'); return; }
+    window.showToast && window.showToast('正在导出…');
+    window.portalSync.exportData().then(function (res) {
+        if (!res || res.code !== 0) throw new Error((res && res.message) || '导出失败');
+        var d = res.data;
+        var head = '导出时间：' + (d.exported_at || new Date().toISOString()) + '\n手机号：' + (d.phone || '') + (d.nickname ? ('\n昵称：' + d.nickname) : '');
+        var content = head + '\n\n===== 成长数据 =====\n' + JSON.stringify(d.items || {}, null, 2);
+        var blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = '成长档案_' + (d.phone || 'export') + '_' + new Date().getTime() + '.json';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 3000);
+        window.showToast && window.showToast('✅ 已导出成长数据');
+    }).catch(function (e) {
+        window.showToast && window.showToast('❌ ' + (e.message || '导出失败'));
+    });
+};
+
+// 删除我的账号：清空云端成长档案与账号（需密码+二次确认）
+window.cloudDeleteAccount = function () {
+    if (!window.portalSync) { window.showToast && window.showToast('同步模块未加载'); return; }
+    if (!window.portalSync.isLoggedIn()) { window.showToast && window.showToast('尚未开通云同步，请先登录'); return; }
+    var pwdEl = document.getElementById('sync-password-input');
+    var pwd = (pwdEl && pwdEl.value) ? pwdEl.value.trim() : '';
+    if (!pwd) { window.showToast && window.showToast('请先在上方密码框输入登录密码，再点击删除'); return; }
+    if (!window.confirm('⚠️ 确认删除？\n\n将永久清除云端成长档案（测评、训练记录、日记等），且不可恢复。\n请确认已导出重要数据。')) return;
+    window.showToast && window.showToast('正在删除…');
+    window.portalSync.deleteData(pwd).then(function (res) {
+        if (!res || res.code !== 0) throw new Error((res && res.message) || '删除失败');
+        if (window.portalSync.logout) window.portalSync.logout();
+        if (window.cloudRefreshPanel) window.cloudRefreshPanel();
+        else if (window.cloudLoadPanel) window.cloudLoadPanel();
+        window.showToast && window.showToast('✅ 账号及云端数据已删除');
+    }).catch(function (e) {
+        window.showToast && window.showToast('❌ ' + (e.message || '删除失败'));
     });
 };
 

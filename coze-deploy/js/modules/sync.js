@@ -283,6 +283,21 @@
         getNickname: function () { return localStorage.getItem(NICK_KEY); },
         getDeviceCode: function () { return localStorage.getItem(DC_KEY); },
         getLastSync: function () { return (getMeta().lastSync) || 0; },
-        isLoggedIn: function () { return !!localStorage.getItem(DC_KEY); }
+        isLoggedIn: function () { return !!localStorage.getItem(DC_KEY); },
+        // 导出全部云端成长数据（家长数据管理）
+        exportData: function () {
+            var dc = localStorage.getItem(DC_KEY);
+            if (!dc) {
+                if (window.showToast) window.showToast('尚未开通云同步，请先登录');
+                return Promise.reject(new Error('未登录'));
+            }
+            return api('/data/export', { method: 'POST', body: JSON.stringify({ device_code: dc }) });
+        },
+        // 删除云端成长数据（含账号，需密码确认防盗删）
+        deleteData: function (password) {
+            var dc = localStorage.getItem(DC_KEY);
+            if (!dc) return Promise.reject(new Error('未登录'));
+            return api('/data/delete', { method: 'POST', body: JSON.stringify({ device_code: dc, password: password || null }) });
+        }
     };
 })();
