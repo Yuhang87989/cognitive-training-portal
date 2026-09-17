@@ -36,11 +36,12 @@ def _tencent_creds():
 
 
 def _synth_tencent(text, out_mp3, voice_type=1003):
-    # V479 自动分片：腾讯云基础TTS单次中文上限150字，超出按标点切段逐段合成再拼接
+    # V480 自动分片：腾讯云基础TTS单次中文上限150字，留余量按145字切段
     text = (text or '').strip()
     if len(text) <= 150:
         return _synth_once(text, out_mp3, voice_type)
-    pieces = _split_tts_text(text, 150)
+    TTS_CHUNK = 145  # 留5字余量，避免卡边界
+    pieces = _split_tts_text(text, TTS_CHUNK)
     mp3s = []
     for i, p in enumerate(pieces):
         tmp = out_mp3 + ('.part%d.mp3' % i)
