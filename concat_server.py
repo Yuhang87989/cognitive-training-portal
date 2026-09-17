@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-视频拼接服务 - 幻灵创作坊 V469
+视频拼接服务 - 幻灵创作坊 V480
 接收多个视频 URL，下载后用 FFmpeg 拼接为一个 mp4 返回
 支持可选旁白配音：
   - voice（字符串）：整段一次合成（旧逻辑，长文本超150字会失败）
@@ -431,7 +431,7 @@ def concat():
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'ok', 'version': 'v469'})
+    return jsonify({'status': 'ok', 'version': 'v480'})
 
 
 if __name__ == '__main__':
