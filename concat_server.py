@@ -36,6 +36,34 @@ def _tencent_creds():
 
 
 def _synth_tencent(text, out_mp3, voice_type=1003):
+    # V479 自动分片：腾讯云基础TTS单次中文上限150字，超出按标点切段逐段合成再拼接
+    text = (text or '').strip()
+    if len(text) <= 150:
+        return _synth_once(text, out_mp3, voice_type)
+    pieces = _split_tts_text(text, 150)
+    mp3s = []
+    for i, p in enumerate(pieces):
+        tmp = out_mp3 + ('.part%d.mp3' % i)
+        _synth_once(p, tmp, voice_type)
+        mp3s.append(tmp)
+    listf = out_mp3 + '_parts.txt'
+    with open(listf, 'w', encoding='utf-8') as f:
+        for m in mp3s:
+            f.write("file '%s'\n" % m)
+    r = subprocess.run(['ffmpeg', '-y', '-f', 'concat', '-safe', '0', '-i', listf,
+                        '-c', 'copy', out_mp3],
+                       capture_output=True, timeout=120)
+    for m in mp3s:
+        try: os.remove(m)
+        except Exception: pass
+    try: os.remove(listf)
+    except Exception: pass
+    if r.returncode != 0 or not os.path.exists(out_mp3) or os.path.getsize(out_mp3) < 1000:
+        raise RuntimeError('分片拼接失败: %s' % (r.stderr.decode('utf-8','ignore')[-200:]))
+    print('[VOICE] 分片合成 text_len=%d pieces=%d' % (len(text), len(mp3s)), flush=True)
+
+
+def _synth_once(text, out_mp3, voice_type):
     import base64, time as _t
     from tencentcloud.common import credential
     from tencentcloud.common.profile.client_profile import ClientProfile
@@ -64,6 +92,26 @@ def _synth_tencent(text, out_mp3, voice_type=1003):
     print('[VOICE] 合成成功 text_len=%d audioKB=%d 耗时%.1fs' %
           (len(text), len(resp.Audio)//1024, _t.time()-t0), flush=True)
 
+
+def _split_tts_text(text, limit):
+    """按中文标点把文本切成不超过 limit 字的片段，优先语义完整处断句"""
+    pieces, cur = [], ''
+    ends = '。！？；\n'
+    for ch in text:
+        cur += ch
+        if len(cur) >= int(limit * 0.6) and ch in ends:
+            pieces.append(cur)
+            cur = ''
+    if cur:
+        pieces.append(cur)
+    out = []
+    for p in pieces:
+        while len(p) > limit:
+            out.append(p[:limit])
+            p = p[limit:]
+        if p:
+            out.append(p)
+    return [x.strip() for x in out if x and x.strip()]
 
 def _probe_duration(fp):
     """探测视频时长（秒）"""
