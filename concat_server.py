@@ -88,7 +88,7 @@ def _mux_voice_into(video_fp, voice_mp3, out_fp, duration):
         f"[1:a]aloop=loop=-1:size=2e+09,aformat=sample_fmts=fltp:channel_layouts=stereo:sample_rates=44100,volume=1.0[a1]",
         '-map', '0:v',
         '-map', '[a1]',
-        '-c:v', 'copy',
+        '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p',
         '-c:a', 'aac',
         '-ar', '44100',
         '-ac', '2',
@@ -117,6 +117,14 @@ def _find_sub_font():
             return p
     return None
 
+def _normalize_video(video_fp, out_fp):
+    """把视频流统一编码为 libx264，保证 concat 拼接时各段编码一致"""
+    cmd = ['ffmpeg', '-y', '-i', video_fp,
+           '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p',
+           '-an', '-movflags', '+faststart', out_fp]
+    r = subprocess.run(cmd, capture_output=True, timeout=180)
+    return r.returncode
+
 def _burn_subtitle(video_fp, text, out_fp, fontfile=None):
     """用 drawtext 把一句中文字幕烧到底部（需中文字体，安全换行后显示）"""
     if not text or not text.strip():
@@ -141,7 +149,7 @@ def _burn_subtitle(video_fp, text, out_fp, fontfile=None):
     esc2 = t.replace("'", '').replace(':', '\\:').replace('%', '\\%').replace('\\', '\\\\').replace('\n', '\\n')
     cmd = [
         'ffmpeg', '-y', '-i', video_fp,
-        '-vf', f"drawtext=fontfile={fontfile}:text='{esc2}':fontcolor=white:fontsize=28:borderw=2:bordercolor=black:box=1:boxcolor=black@0.45:boxborderw=8:x=(w-text_w)/2:y=h-text_h-34",
+        '-vf', f"drawtext=fontfile={fontfile}:text='{esc2}':fontcolor=white:fontsize=46:borderw=4:bordercolor=black:box=1:boxcolor=black@0.5:boxborderw=14:x=(w-text_w)/2:y=h-text_h-60",
         '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p',
         '-c:a', 'copy', '-movflags', '+faststart', out_fp
     ]
@@ -227,7 +235,10 @@ def concat():
                         else:
                             print('[SUB] 第%d段字幕烧录失败，回退原画面: %s' % (i+1, err0.decode('utf-8','ignore')[-300:]), flush=True)
                     if not vtext:
-                        voiced_files.append(cur_fp)
+                        # 无旁白段也统一编码为 libx264，保证与其它段编码一致，避免 concat -c copy 失败
+                        norm_fp = os.path.join(task_dir, f'norm_{i:02d}.mp4')
+                        _err = _normalize_video(cur_fp, norm_fp)
+                        voiced_files.append(norm_fp if os.path.exists(norm_fp) and os.path.getsize(norm_fp) > 10000 else cur_fp)
                         continue
                     print('[VOICE] 第%d段旁白 text_len=%d 内容前20字=%s' % (i+1, len(vtext), vtext[:20]), flush=True)
                     voice_mp3 = os.path.join(task_dir, f'voice_{i:02d}.mp3')
