@@ -766,6 +766,8 @@ function registerNewUser() {
         phone: phone,
         password: password,
         grade: parseInt(grade),
+        isMinor: window.guessIsMinor ? window.guessIsMinor(grade) : (parseInt(grade) >= 4 && parseInt(grade) <= 10),
+        minorMode: true, /* 未成年默认开启未成年人模式 */
         difficulty: difficulty,
         level: level,
         points: 0,
@@ -1193,7 +1195,7 @@ function calculateCognitiveData() {
 
 // ====== 1. 专注力计算 ======
 // V449：舒尔特/视觉搜索/快速点击/注意力追踪/听音辨位/Stroop冲突抑制/母题训练
-    const attentionGames = ['schulte', 'visual', 'tap', 'attention', 'audio', 'stroop', 'emotion'];
+    const attentionGames = ['schulte', 'visual', 'tap', 'attention', 'audio', 'stroop'];
     let attentionScore = _gameDimScore(50, attentionGames, gameScores, gameCounts, 10, 15, 2, 8);
     // 母题训练贡献专注力
     const topicStats = user.topicStats || {};
@@ -1204,9 +1206,13 @@ function calculateCognitiveData() {
 
 
 // ====== 2. 记忆力计算 ======
-// V449：数字记忆/图案匹配/文字记忆/记忆宫殿 + 学霸方法记忆训练、母题训练
-    const memoryGames = ['digit', 'pattern', 'text', 'palace'];
-    let memoryScore = _gameDimScore(50, memoryGames, gameScores, gameCounts, 8, 16, 3, 10);
+// 来源：数字记忆、图形记忆、学霸方法记忆训练、母题训练
+    let memoryScore = 50;
+    const memoryGames = ['digit', 'pattern'];
+    memoryGames.forEach(g => {
+        if (gameScores[g]) memoryScore += Math.min(gameScores[g] / 8, 15);
+        if (gameCounts[g]) memoryScore += Math.min(gameCounts[g] * 3, 8);
+    });
     // 母题训练正确率贡献记忆力
     if (topicCount > 0) {
         const topicAccuracy = topicCorrect / topicCount;
@@ -1221,9 +1227,13 @@ function calculateCognitiveData() {
 
 
 // ====== 3. 思维力计算 ======
-// V449：逻辑/找不同/图形/速算/空间/词汇/分类/数形/守恒/网络/逆向/实验 + 社交情景/生活排序康复游戏 + 思维训练
-    const thinkingGames = ['reason', 'diff', 'shape', 'math', 'space', 'word', 'classify', 'numshape', 'conserve', 'network', 'reverse', 'experiment', 'social', 'routine'];
-    let thinkingScore = _gameDimScore(50, thinkingGames, gameScores, gameCounts, 10, 14, 2, 8);
+// 来源：图形推理、找不同、思维训练（逻辑、批判、系统、逆向、抽象）
+    let thinkingScore = 50;
+    const thinkingGames = ['reason', 'diff'];
+    thinkingGames.forEach(g => {
+        if (gameScores[g]) thinkingScore += Math.min(gameScores[g] / 10, 12);
+        if (gameCounts[g]) thinkingScore += Math.min(gameCounts[g] * 2, 6);
+    });
     // 思维训练统计 (type: logic, critical, system, reverse, abstract)
     const thinkingTypes = ['logic', 'critical', 'system', 'reverse', 'abstract'];
     thinkingTypes.forEach(t => {
@@ -1468,44 +1478,52 @@ function openAbout() {
         <div style="text-align:center;padding:20px 0;">
             <div style="font-size:48px;margin-bottom:12px;">🧠</div>
             <div style="font-size:20px;font-weight:bold;color:#333;margin-bottom:8px;">认知训练门户</div>
-            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V305</div>
+            <div style="font-size:13px;color:#999;margin-bottom:20px;">版本 V481 · 宇航智荟</div>
         </div>
         <div style="background:#f5f7ff;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">📱 产品介绍</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                认知训练门户是一款专为12-16岁青少年设计的综合学习平台。通过科学的认知训练、思维导图工具和AI智能辅导，帮助学生提升学习效率，培养良好的学习习惯。
+                认知训练门户是专为12-16岁青少年设计的综合学习与认知训练平台。通过科学的认知训练、思维工具和AI智能辅导，帮助青少年提升学习效率、培养良好习惯，并守护健康上网环境。
             </div>
         </div>
         <div style="background:#fff3e0;border-radius:12px;padding:16px;margin-bottom:16px;">
             <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">✨ 核心功能</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                • 🧠 思维导图 - 拖拽编辑、5种视觉样式、多文件管理<br>
-                • 📅 学习计划 - 日期切换、数据持久化<br>
+                • 🧠 认知训练 - 科学化能力提升<br>
+                • 🧭 思维导图 - 拖拽编辑、多文件管理<br>
                 • 📝 模拟考试 - 完整测评体系<br>
                 • 📚 学习图书馆 - 多格式阅读支持<br>
                 • 🐱 虚拟宠物 - 陪伴式成长激励<br>
-                • 💪 自驱力训练 - 学习动力培养<br>
-                • 🤖 AI精准练 - 薄弱点智能诊断<br>
-                • 🎧 播客课堂 - 音频学习资源<br>
-                • 📒 错题本 - 自动收集、反复练习
+                • 🤖 AI辅导 - 适龄智能问答与错题诊断<br>
+                • 📒 错题本 - 自动收集、反复练习<br>
+                • 👪 家长看板 - 学习监控、时间管控、未成年人保护
             </div>
         </div>
-        <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-bottom:16px;">
-            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">🔧 技术架构</div>
+        <div style="background:#eef2ff;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">🛡️ 未成年人保护</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                • 传统Script模块化架构（放弃ES6 Modules）<br>
-                • 全函数挂载window，确保兼容性<br>
-                • localStorage本地数据持久化<br>
+                本平台面向未成年用户默认开启保护模式：<br>
+                • AI对话内容适龄安全过滤<br>
+                • 家长可一键开启/关闭保护模式<br>
+                • 清晰的隐私说明与数据导出、删除权利<br>
+                我们严格遵守《未成年人网络保护条例》及国家相关法律法规。
             </div>
         </div>
         <div style="background:#e8f5e9;border-radius:12px;padding:16px;margin-bottom:16px;">
-            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">👨‍💻 开发团队</div>
+            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">🔐 隐私与数据</div>
             <div style="font-size:13px;color:#666;line-height:1.8;">
-                宇航智荟开发团队<br>
+                您的学习数据加密保存在设备与云端（手机号+密码保护），仅用于学习记录同步。家长可在「我的 → 云同步」随时<b>导出</b>或<b>删除</b>全部数据。<br>
+            </div>
+        </div>
+        <div style="background:#e3f2fd;border-radius:12px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">👨‍💻 关于我们</div>
+            <div style="font-size:13px;color:#666;line-height:1.8;">
+                宇航智荟 · 专注青少年认知发展与网络素养<br>
+                反馈建议：我的 → 关于信息 → 反馈建议
             </div>
         </div>
         <div style="text-align:center;font-size:12px;color:#999;margin-bottom:16px;">
-            © 2026 认知训练门户 版权所有
+            © 2026 认知训练门户 · 宇航智荟 版权所有
         </div>
         <button class="modal-close" onclick="window.closeModal()" style="width:100%;">关闭</button>
     `;

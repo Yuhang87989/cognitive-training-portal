@@ -594,10 +594,21 @@ async function callDeepSeekAPI(messages, temperature) {
     }
     
     var systemPrompt = '';
+    // 未成年人保护（合规 V481）：当前用户未成年人模式开启时，注入适龄安全系统指令
+    try {
+        var __cur = window.getCurrentUserData ? window.getCurrentUserData() : null;
+        var __minor = window.isMinorModeOn ? window.isMinorModeOn(__cur && __cur.id) : false;
+        if (__minor) {
+            systemPrompt = '当前对话者为未成年人。请以耐心、适龄、正向的方式作答，使用简明语言；'
+                + '不提供任何暴力、色情、烟草、赌博、自残、违法或诱导沉迷内容；'
+                + '涉及医疗、法律等专业问题时，先提示寻求家长或专业人士帮助；'
+                + '回答保持积极健康、贴合未成年人认知水平。';
+        }
+    } catch (__e) {}
     if (typeof window.deepseekMode !== 'undefined') {
-        systemPrompt = window.deepseekMode === 'deepthink' ? 
+        systemPrompt = (systemPrompt ? systemPrompt + '\n' : '') + (window.deepseekMode === 'deepthink' ? 
             '你是一个深度思考助手。请先进行详细分析推理，再给出最终答案。用&lt;think&gt;标签包裹思考过程。' : 
-            '你是一个友好的AI助手，请简洁明了地回答问题。';
+            '你是一个友好的AI助手，请简洁明了地回答问题。');
     }
     
     var fullMessages = [];

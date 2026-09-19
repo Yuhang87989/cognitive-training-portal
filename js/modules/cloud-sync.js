@@ -3,6 +3,46 @@
 // 微信登录：确认即入 + 手机号可选绑定
 // ==========================================
 
+// 未成年人判定工具（未成年人网络保护合规 V481）
+// 依据年级推断是否年满16周岁：四年级(4)~高一(10) 默认视为未成年；其他(0)/高二高三(11/12) 由家长在看板手控
+window.guessIsMinor = function (grade) {
+    var g = parseInt(grade, 10);
+    if (isNaN(g)) return true; /* 信息缺失时从保护原则从严 */
+    if (g >= 4 && g <= 10) return true;
+    return false;
+};
+// 未成年人模式总开关：家长可在看板覆盖（localStorage 存覆盖值）
+window.setMinorMode = function (uid, on) {
+    try {
+        var raw = localStorage.getItem('cognitive_training_v137');
+        var data = raw ? JSON.parse(raw) : null;
+        if (!data || !data.users) return false;
+        for (var i = 0; i < data.users.length; i++) {
+            if (data.users[i].id === uid) { data.users[i].minorMode = !!on; break; }
+        }
+        localStorage.setItem('cognitive_training_v137', JSON.stringify(data));
+        return true;
+    } catch (e) { return false; }
+};
+// 读取某用户当前未成年人模式是否生效
+window.isMinorModeOn = function (uid) {
+    try {
+        var raw = localStorage.getItem('cognitive_training_v137');
+        var data = raw ? JSON.parse(raw) : null;
+        if (!data || !data.users) return false;
+        for (var i = 0; i < data.users.length; i++) {
+            if (!uid || data.users[i].id === uid) {
+                // 存在显式未成年标记且模式未关 → 生效；信息缺失从严
+                var on = data.users[i].minorMode;
+                if (data.users[i].isMinor === true && on !== false) return true;
+                if (data.users[i].isMinor === false) return false;
+                if (on === true) return true;
+            }
+        }
+        return false;
+    } catch (e) { return false; }
+};
+
 window.CloudSync = {
     version: 'V416',
     enabled: false,
@@ -135,6 +175,8 @@ window.CloudSync = {
                 avatar: '🧒',
                 isWxUser: true,
                 role: 'student',
+                isMinor: window.guessIsMinor ? window.guessIsMinor(grade) : (grade >= 4 && grade <= 10),
+                minorMode: true, /* 未成年默认开启未成年人模式 */
                 createdAt: new Date().toISOString(),
                 stats: { totalQuestions: 0, correctAnswers: 0, totalMinutes: 0, streakDays: 0, lastActiveDate: null },
                 weeklyProgress: {},

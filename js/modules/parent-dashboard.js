@@ -58,6 +58,11 @@
                         <div style="font-size:14px;font-weight:600;color:#333;">鼓励留言</div>
                         <div style="font-size:11px;color:#666;">给孩子打气</div>
                     </div>
+                    <div onclick="window.showParentMinorControl()" style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:14px;padding:16px;cursor:pointer;">
+                        <div style="font-size:24px;margin-bottom:6px;">👧</div>
+                        <div style="font-size:14px;font-weight:600;color:#333;">未成年人保护</div>
+                        <div style="font-size:11px;color:#666;">模式开关与说明</div>
+                    </div>
                 </div>
             </div>
         `;
@@ -569,6 +574,77 @@
             return [];
         }
     }
+
+    // ===== 未成年人保护开关（合规 V481） =====
+    window.showParentMinorControl = function() {
+        // 取所有本地用户（优先带未成年标记的），供家长逐人管理
+        var users = [];
+        try {
+            var data = window.loadData ? window.loadData() : { users: [] };
+            users = data.users || [];
+        } catch (e) {}
+        // 无数据时降级读 localStorage
+        if (!users.length) {
+            try {
+                var raw = localStorage.getItem('cognitive_training_v137');
+                var d2 = raw ? JSON.parse(raw) : null;
+                if (d2 && d2.users) users = d2.users;
+            } catch (e2) {}
+        }
+        var list = users.length ? users : [{}];
+        var uidOf = function(u, i) { return u.id || 'u' + i; };
+
+        function isOn(uid) { return window.isMinorModeOn ? window.isMinorModeOn(uid) : false; }
+        function isMinorFlag(uid) {
+            for (var i = 0; i < users.length; i++) if (String(users[i].id) === String(uid)) return users[i].isMinor === true;
+            return false;
+        }
+
+        var rows = list.map(function(u, i) {
+            var uid = uidOf(u, i);
+            var on = isOn(uid);
+            var flag = isMinorFlag(uid);
+            var stateTag = on
+                ? '<span style="background:#eef2ff;color:#667eea;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600;">👧 未成年人模式已开启</span>'
+                : '<span style="background:#f0f0f0;color:#888;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600;">未成年人模式已关闭</span>';
+            var reason = flag
+                ? '（依据年级自动判定为未成年人）'
+                : '（依据年级未自动判定；可手动开启加强保护）';
+            if (!u.id) rows = ''; /* 兜底无用户 */
+            return '<div style="background:white;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #eee;">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+                    '<div style="font-size:14px;font-weight:600;color:#333;">' + (u.name || '孩子') + (u.grade ? '（年级 ' + u.grade + '）' : '') + '</div>' +
+                    stateTag +
+                '</div>' +
+                '<div style="font-size:11px;color:#999;margin-bottom:10px;">' + reason + '</div>' +
+                '<button onclick="window.toggleMinorMode(\'' + uid + '\')" style="width:100%;padding:10px;background:' + (on ? '#ff6b6b' : 'linear-gradient(135deg,#667eea,#764ba2)') + ';color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">' +
+                    (on ? '关闭未成年人模式' : '开启未成年人模式') +
+                '</button></div>';
+        }).filter(Boolean).join('') || '<div style="text-align:center;color:#999;font-size:13px;padding:20px;">暂无孩子账号</div>';
+
+        var mask = document.createElement('div');
+        mask.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:10001;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+        mask.innerHTML = '<div style="background:white;border-radius:16px;padding:22px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto;">' +
+            '<div style="font-size:18px;font-weight:700;color:#333;margin-bottom:4px;">👧 未成年人保护</div>' +
+            '<div style="font-size:12px;color:#666;margin-bottom:16px;line-height:1.6;">依据《未成年人网络保护条例》及网信办最新征求意见稿，对未成年人用户默认开启保护模式（AI对话内容安全提示、使用提醒等）。</div>' +
+            rows +
+            '<div style="font-size:11px;color:#bbb;margin-top:12px;line-height:1.5;">提示：如需调整请家长本人操作；关闭后孩子将不再受模式约束。</div>' +
+            '<button onclick="this.closest(\'div[style*=z-index:10001]\').remove()" style="width:100%;margin-top:12px;padding:10px;background:#f5f5f5;color:#666;border:none;border-radius:8px;font-size:14px;cursor:pointer;">关闭</button>' +
+        '</div>';
+        mask.onclick = function(e) { if (e.target === mask) mask.remove(); };
+        document.body.appendChild(mask);
+    };
+
+    // 切换某个孩子账号的未成年人模式
+    window.toggleMinorMode = function(uid) {
+        var on = window.isMinorModeOn ? window.isMinorModeOn(uid) : false;
+        if (window.setMinorMode && window.setMinorMode(uid, !on)) {
+            window.showToast && window.showToast(on ? '已关闭未成年人模式' : '已开启未成年人模式');
+            window.showParentMinorControl();
+        } else {
+            window.showToast && window.showToast('操作失败，请重试');
+        }
+    };
 
     console.log('[V416] 家长看板模块加载完成');
 
